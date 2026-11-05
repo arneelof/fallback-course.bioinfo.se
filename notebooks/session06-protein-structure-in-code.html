@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>Session 6 — Protein Structure in code – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta content="../" name="quarto:offset"/>
+<link href="../session07.html" rel="next"/>
+<link href="../session06.html" rel="prev"/>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="../site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="../session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notebooks/session06-protein-structure-in-code.html">Session 6 — Notebook</a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="../">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="../KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#primary-and-quaternary-structure-whats-actually-in-the-file" href="#primary-and-quaternary-structure-whats-actually-in-the-file" id="toc-primary-and-quaternary-structure-whats-actually-in-the-file">Primary and quaternary structure: what’s actually in the file</a></li>
+<li><a class="nav-link" data-scroll-target="#secondary-structure-two-ways-to-assign-it" href="#secondary-structure-two-ways-to-assign-it" id="toc-secondary-structure-two-ways-to-assign-it">Secondary structure: two ways to assign it</a></li>
+<li><a class="nav-link" data-scroll-target="#rendering-the-tertiaryquaternary-structure" href="#rendering-the-tertiaryquaternary-structure" id="toc-rendering-the-tertiaryquaternary-structure">Rendering the tertiary/quaternary structure</a></li>
+<li><a class="nav-link" data-scroll-target="#a-structure-as-a-matrix-distance-and-contact-maps" href="#a-structure-as-a-matrix-distance-and-contact-maps" id="toc-a-structure-as-a-matrix-distance-and-contact-maps">A structure as a matrix: distance and contact maps</a></li>
+<li><a class="nav-link" data-scroll-target="#sequence-alignment-versus-structure-alignment" href="#sequence-alignment-versus-structure-alignment" id="toc-sequence-alignment-versus-structure-alignment">Sequence alignment versus structure alignment</a></li>
+<li><a class="nav-link" data-scroll-target="#measuring-a-real-quaternary-structure-distance" href="#measuring-a-real-quaternary-structure-distance" id="toc-measuring-a-real-quaternary-structure-distance">Measuring a real quaternary-structure distance</a></li>
+<li><a class="nav-link" data-scroll-target="#try-it-yourself" href="#try-it-yourself" id="toc-try-it-yourself">Try it yourself</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title">Session 6 — Protein Structure in code</h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<p><a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session06-protein-structure-in-code.ipynb" style="display:inline-block;padding:10px 18px;background-color:#F9AB00;color:#000000;font-weight:bold;text-decoration:none;border-radius:6px;font-family:sans-serif;font-size:14px;">▶  Open in Google Colab</a></p>
+<p>This notebook fetches two real crystal structures of human hemoglobin — the deoxy (“T”, tense) state <code>2HHB</code> and the oxy (“R”, relaxed) state <code>1HHO</code> — and uses them to make the four levels of protein structure, and the sequence-to-structure prediction problem, concrete: primary structure is just the residue list; secondary structure is computed here from the coordinates with PyMOL and compared with the PDB entry’s own annotation; quaternary structure is measured directly as a real distance in 3D space, and that distance is shown to actually change between the two structures — the real geometric signature of hemoglobin’s allosteric mechanism. Along the way it turns the structure into a distance map and a contact map, and compares sequence alignment with structure alignment for β-globin and five other proteins, from close relatives to an unrelated fold.</p>
+<p>Structure parsing and geometry use <a href="https://biopython.org/">Biopython</a> (<code>Bio.PDB</code>); secondary-structure assignment and rendering use <a href="https://pymol.org/">PyMOL</a> (open-source) as a Python library, without a window; structure alignment uses TM-align through the <a href="https://pypi.org/project/tmtools/"><code>tmtools</code></a> package.</p>
+<div class="cell" data-execution_count="1" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:33.153988Z","iopub.status.busy":"2026-10-04T19:21:33.153789Z","iopub.status.idle":"2026-10-04T19:21:33.163675Z","shell.execute_reply":"2026-10-04T19:21:33.162644Z"}}' id="38673705">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-hidden="true" href="#cb1-1" tabindex="-1"></a><span class="co"># Install the libraries Colab does not come with (does nothing if they are already installed)</span></span>
+<span id="cb1-2"><a aria-hidden="true" href="#cb1-2" tabindex="-1"></a><span class="im">import</span> importlib.util, subprocess, sys</span>
+<span id="cb1-3"><a aria-hidden="true" href="#cb1-3" tabindex="-1"></a><span class="cf">for</span> module, package <span class="kw">in</span> [(<span class="st">"Bio"</span>, <span class="st">"biopython"</span>), (<span class="st">"pymol"</span>, <span class="st">"pymol-open-source-whl"</span>), (<span class="st">"tmtools"</span>, <span class="st">"tmtools"</span>), (<span class="st">"matplotlib"</span>, <span class="st">"matplotlib"</span>)]:</span>
+<span id="cb1-4"><a aria-hidden="true" href="#cb1-4" tabindex="-1"></a>    <span class="cf">if</span> importlib.util.find_spec(module) <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb1-5"><a aria-hidden="true" href="#cb1-5" tabindex="-1"></a>        subprocess.run([sys.executable, <span class="st">"-m"</span>, <span class="st">"pip"</span>, <span class="st">"install"</span>, <span class="st">"-q"</span>, package], check<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+</div>
+<div class="cell" data-execution_count="2" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:33.166441Z","iopub.status.busy":"2026-10-04T19:21:33.166217Z","iopub.status.idle":"2026-10-04T19:21:34.941146Z","shell.execute_reply":"2026-10-04T19:21:34.940262Z"}}' id="4a050620">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-hidden="true" href="#cb2-1" tabindex="-1"></a><span class="im">import</span> subprocess</span>
+<span id="cb2-2"><a aria-hidden="true" href="#cb2-2" tabindex="-1"></a><span class="im">import</span> itertools</span>
+<span id="cb2-3"><a aria-hidden="true" href="#cb2-3" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-4"><a aria-hidden="true" href="#cb2-4" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-5"><a aria-hidden="true" href="#cb2-5" tabindex="-1"></a><span class="im">from</span> Bio.PDB <span class="im">import</span> PDBList, PDBParser</span>
+<span id="cb2-6"><a aria-hidden="true" href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a aria-hidden="true" href="#cb2-7" tabindex="-1"></a>PDB_IDS <span class="op">=</span> [<span class="st">"2hhb"</span>, <span class="st">"1hho"</span>]  <span class="co"># 2HHB = deoxy/T-state, 1HHO = oxy/R-state</span></span>
+<span id="cb2-8"><a aria-hidden="true" href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a aria-hidden="true" href="#cb2-9" tabindex="-1"></a>pdbl <span class="op">=</span> PDBList()</span>
+<span id="cb2-10"><a aria-hidden="true" href="#cb2-10" tabindex="-1"></a>paths <span class="op">=</span> {pdb_id: pdbl.retrieve_pdb_file(pdb_id, pdir<span class="op">=</span><span class="st">"."</span>, file_format<span class="op">=</span><span class="st">"pdb"</span>) <span class="cf">for</span> pdb_id <span class="kw">in</span> PDB_IDS}</span>
+<span id="cb2-11"><a aria-hidden="true" href="#cb2-11" tabindex="-1"></a>paths</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Downloading PDB structure '2hhb'...
+Downloading PDB structure '1hho'...</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>{'2hhb': './pdb2hhb.ent', '1hho': './pdb1hho.ent'}</code></pre>
+</div>
+</div>
+<section class="level2" id="primary-and-quaternary-structure-whats-actually-in-the-file">
+<h2 class="anchored" data-anchor-id="primary-and-quaternary-structure-whats-actually-in-the-file">Primary and quaternary structure: what’s actually in the file</h2>
+<p>Hemoglobin is a <strong>heterotetramer</strong>: two copies of an alpha chain and two copies of a beta chain (the same beta chain that is this course’s running example, <code>HBB</code>, first met on Session 3). Parsing the structure and just counting residues per chain already shows primary structure (the residue sequence itself) and sets up quaternary structure (how many chains, and which ones are identical).</p>
+<div class="cell" data-execution_count="3" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:34.943628Z","iopub.status.busy":"2026-10-04T19:21:34.943315Z","iopub.status.idle":"2026-10-04T19:21:35.103398Z","shell.execute_reply":"2026-10-04T19:21:35.102555Z"}}' id="36738e1c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a aria-hidden="true" href="#cb5-1" tabindex="-1"></a>parser <span class="op">=</span> PDBParser(QUIET<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-2"><a aria-hidden="true" href="#cb5-2" tabindex="-1"></a>structures <span class="op">=</span> {pdb_id: parser.get_structure(pdb_id, paths[pdb_id]) <span class="cf">for</span> pdb_id <span class="kw">in</span> PDB_IDS}</span>
+<span id="cb5-3"><a aria-hidden="true" href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a aria-hidden="true" href="#cb5-4" tabindex="-1"></a><span class="cf">for</span> pdb_id <span class="kw">in</span> PDB_IDS:</span>
+<span id="cb5-5"><a aria-hidden="true" href="#cb5-5" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"--- </span><span class="sc">{</span>pdb_id<span class="sc">.</span>upper()<span class="sc">}</span><span class="ss"> ---"</span>)</span>
+<span id="cb5-6"><a aria-hidden="true" href="#cb5-6" tabindex="-1"></a>    <span class="cf">for</span> chain <span class="kw">in</span> structures[pdb_id][<span class="dv">0</span>]:</span>
+<span id="cb5-7"><a aria-hidden="true" href="#cb5-7" tabindex="-1"></a>        protein_residues <span class="op">=</span> [r <span class="cf">for</span> r <span class="kw">in</span> chain <span class="cf">if</span> r.<span class="bu">id</span>[<span class="dv">0</span>] <span class="op">==</span> <span class="st">" "</span>]</span>
+<span id="cb5-8"><a aria-hidden="true" href="#cb5-8" tabindex="-1"></a>        hetero <span class="op">=</span> <span class="bu">sorted</span>({r.get_resname() <span class="cf">for</span> r <span class="kw">in</span> chain <span class="cf">if</span> r.<span class="bu">id</span>[<span class="dv">0</span>] <span class="op">!=</span> <span class="st">" "</span> <span class="kw">and</span> r.get_resname() <span class="op">!=</span> <span class="st">"HOH"</span>})</span>
+<span id="cb5-9"><a aria-hidden="true" href="#cb5-9" tabindex="-1"></a>        <span class="cf">if</span> protein_residues:</span>
+<span id="cb5-10"><a aria-hidden="true" href="#cb5-10" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"  chain </span><span class="sc">{</span>chain<span class="sc">.</span><span class="bu">id</span><span class="sc">}</span><span class="ss">: </span><span class="sc">{</span><span class="bu">len</span>(protein_residues)<span class="sc">}</span><span class="ss"> residues, ligands=</span><span class="sc">{</span>hetero<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 2HHB ---
+  chain A: 141 residues, ligands=['HEM']
+  chain B: 146 residues, ligands=['HEM', 'PO4']
+  chain C: 141 residues, ligands=['HEM']
+  chain D: 146 residues, ligands=['HEM', 'PO4']
+--- 1HHO ---
+  chain A: 141 residues, ligands=['HEM', 'OXY', 'PO4']
+  chain B: 146 residues, ligands=['HEM', 'OXY']</code></pre>
+</div>
+</div>
+<p><code>2HHB</code> has all four chains (A, B, C, D) in the file directly. <code>1HHO</code>’s file only contains one alpha/beta pair (A, B) — the crystal’s asymmetric unit — plus a <code>REMARK 350</code> symmetry record that generates the other half of the biological tetramer. That is what a <strong>rigid-body transformation</strong> (a rotation + translation, no shape change) is for, and it matters again below when measuring a quaternary distance in <code>1HHO</code>.</p>
+<p>Both structures agree: two 141-residue alpha chains, two 146-residue beta chains, each carrying one heme group (<code>HEM</code>) — consistent with the real human alpha- and beta-globin sequences.</p>
+</section>
+<section class="level2" id="secondary-structure-two-ways-to-assign-it">
+<h2 class="anchored" data-anchor-id="secondary-structure-two-ways-to-assign-it">Secondary structure: two ways to assign it</h2>
+<p>The PDB entry’s own annotation (available from EBI’s PDBe API, and used in Session 7) puts 117 of the 146 residues of <code>HBB</code>’s chain in alpha helices, with zero beta strands. Here the same question is answered a different way: PyMOL’s own built-in secondary-structure assignment algorithm (<code>dss</code>, run headlessly here, not the PDBe API) is applied directly to <code>2HHB</code>’s beta chain.</p>
+<div class="cell" data-execution_count="4" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:35.105593Z","iopub.status.busy":"2026-10-04T19:21:35.105384Z","iopub.status.idle":"2026-10-04T19:21:35.212845Z","shell.execute_reply":"2026-10-04T19:21:35.211762Z"}}' id="81a3c56c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a aria-hidden="true" href="#cb7-1" tabindex="-1"></a><span class="im">from</span> pymol <span class="im">import</span> cmd              <span class="co"># PyMOL as a Python library, no window needed</span></span>
+<span id="cb7-2"><a aria-hidden="true" href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a aria-hidden="true" href="#cb7-3" tabindex="-1"></a>cmd.load(paths[<span class="st">"2hhb"</span>], <span class="st">"hb"</span>)</span>
+<span id="cb7-4"><a aria-hidden="true" href="#cb7-4" tabindex="-1"></a>cmd.dss(<span class="st">"hb"</span>)                      <span class="co"># PyMOL's own secondary-structure assignment</span></span>
+<span id="cb7-5"><a aria-hidden="true" href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a aria-hidden="true" href="#cb7-6" tabindex="-1"></a>ss_list <span class="op">=</span> []</span>
+<span id="cb7-7"><a aria-hidden="true" href="#cb7-7" tabindex="-1"></a>cmd.iterate(<span class="st">"hb and chain B and polymer and name CA"</span>,</span>
+<span id="cb7-8"><a aria-hidden="true" href="#cb7-8" tabindex="-1"></a>            <span class="st">"ss_list.append(ss)"</span>, space<span class="op">=</span>{<span class="st">"ss_list"</span>: ss_list})</span>
+<span id="cb7-9"><a aria-hidden="true" href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a aria-hidden="true" href="#cb7-10" tabindex="-1"></a>total <span class="op">=</span> <span class="bu">len</span>(ss_list)</span>
+<span id="cb7-11"><a aria-hidden="true" href="#cb7-11" tabindex="-1"></a>helix <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> s <span class="kw">in</span> ss_list <span class="cf">if</span> s <span class="op">==</span> <span class="st">"H"</span>)</span>
+<span id="cb7-12"><a aria-hidden="true" href="#cb7-12" tabindex="-1"></a>strand <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> s <span class="kw">in</span> ss_list <span class="cf">if</span> s <span class="op">==</span> <span class="st">"S"</span>)</span>
+<span id="cb7-13"><a aria-hidden="true" href="#cb7-13" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"TOTAL"</span>, total)</span>
+<span id="cb7-14"><a aria-hidden="true" href="#cb7-14" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"HELIX"</span>, helix)</span>
+<span id="cb7-15"><a aria-hidden="true" href="#cb7-15" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"STRAND"</span>, strand)</span>
+<span id="cb7-16"><a aria-hidden="true" href="#cb7-16" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PCT_HELIX"</span>, <span class="bu">round</span>(<span class="dv">100</span> <span class="op">*</span> helix <span class="op">/</span> total, <span class="dv">1</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TOTAL 146
+HELIX 118
+STRAND 0
+PCT_HELIX 80.8</code></pre>
+</div>
+</div>
+<p>PyMOL’s <code>dss</code> finds <strong>118 of 146 residues (80.8%) in a helix and 0 in a strand</strong> — a different algorithm, run on the coordinates directly rather than through PDBe’s own annotation pipeline, and it lands on essentially the same answer as the PDB entry’s annotation (117/146, ≈80%, 0 strands). The one-residue difference is just where the two algorithms draw a helix boundary at its edges — both agree HBB is an almost purely alpha-helical protein with no beta content at all, now confirmed two independent ways.</p>
+</section>
+<section class="level2" id="rendering-the-tertiaryquaternary-structure">
+<h2 class="anchored" data-anchor-id="rendering-the-tertiaryquaternary-structure">Rendering the tertiary/quaternary structure</h2>
+<p>PyMOL, used as a Python library without a window, can also render an actual image of the tetramer: cartoon representation (so alpha helices are visible directly, matching the <code>dss</code> numbers above), one color per chain, and the four heme iron atoms shown as spheres.</p>
+<div class="cell" data-execution_count="5" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:35.216548Z","iopub.status.busy":"2026-10-04T19:21:35.216332Z","iopub.status.idle":"2026-10-04T19:21:42.825556Z","shell.execute_reply":"2026-10-04T19:21:42.824701Z"}}' id="9aa78a9a">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a aria-hidden="true" href="#cb9-1" tabindex="-1"></a>cmd.hide(<span class="st">"everything"</span>)</span>
+<span id="cb9-2"><a aria-hidden="true" href="#cb9-2" tabindex="-1"></a>cmd.show(<span class="st">"cartoon"</span>, <span class="st">"polymer"</span>)</span>
+<span id="cb9-3"><a aria-hidden="true" href="#cb9-3" tabindex="-1"></a>cmd.show(<span class="st">"spheres"</span>, <span class="st">"resn HEM and name FE"</span>)</span>
+<span id="cb9-4"><a aria-hidden="true" href="#cb9-4" tabindex="-1"></a>cmd.color(<span class="st">"skyblue"</span>, <span class="st">"chain A"</span>)</span>
+<span id="cb9-5"><a aria-hidden="true" href="#cb9-5" tabindex="-1"></a>cmd.color(<span class="st">"salmon"</span>, <span class="st">"chain B"</span>)</span>
+<span id="cb9-6"><a aria-hidden="true" href="#cb9-6" tabindex="-1"></a>cmd.color(<span class="st">"palecyan"</span>, <span class="st">"chain C"</span>)</span>
+<span id="cb9-7"><a aria-hidden="true" href="#cb9-7" tabindex="-1"></a>cmd.color(<span class="st">"lightpink"</span>, <span class="st">"chain D"</span>)</span>
+<span id="cb9-8"><a aria-hidden="true" href="#cb9-8" tabindex="-1"></a>cmd.color(<span class="st">"orange"</span>, <span class="st">"resn HEM and name FE"</span>)</span>
+<span id="cb9-9"><a aria-hidden="true" href="#cb9-9" tabindex="-1"></a>cmd.bg_color(<span class="st">"white"</span>)</span>
+<span id="cb9-10"><a aria-hidden="true" href="#cb9-10" tabindex="-1"></a>cmd.<span class="bu">set</span>(<span class="st">"ray_opaque_background"</span>, <span class="dv">0</span>)</span>
+<span id="cb9-11"><a aria-hidden="true" href="#cb9-11" tabindex="-1"></a>cmd.orient(<span class="st">"polymer"</span>)</span>
+<span id="cb9-12"><a aria-hidden="true" href="#cb9-12" tabindex="-1"></a>cmd.png(<span class="st">"_session06_2hhb_render.png"</span>, width<span class="op">=</span><span class="dv">900</span>, height<span class="op">=</span><span class="dv">700</span>, dpi<span class="op">=</span><span class="dv">150</span>, ray<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-13"><a aria-hidden="true" href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a aria-hidden="true" href="#cb9-14" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Image</span>
+<span id="cb9-15"><a aria-hidden="true" href="#cb9-15" tabindex="-1"></a>Image(<span class="st">"_session06_2hhb_render.png"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session06-protein-structure-in-code_files/figure-html/cell-6-output-1.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Two alpha chains (blue/cyan), two beta chains (salmon/pink), all four almost entirely built from alpha helices — what the <code>dss</code> numbers above said — arranged around each other with four heme groups (orange spheres) roughly at the corners. That spatial arrangement of four folded chains with respect to each other <strong>is</strong> quaternary structure.</p>
+</section>
+<section class="level2" id="a-structure-as-a-matrix-distance-and-contact-maps">
+<h2 class="anchored" data-anchor-id="a-structure-as-a-matrix-distance-and-contact-maps">A structure as a matrix: distance and contact maps</h2>
+<p>A list of 3D coordinates can be turned into a different representation: the distance between every pair of residues. For a chain of <span class="math inline">\(L\)</span> residues this is an <span class="math inline">\(L \times L\)</span> <strong>distance map</strong>. Thresholding it (here: Cβ atoms closer than 8 Å) gives a <strong>contact map</strong>, the definition used again in Sessions 10 and 12. Neither depends on how the protein is oriented in space, which is what makes them useful for comparing structures.</p>
+<div class="cell" data-execution_count="6" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:42.828297Z","iopub.status.busy":"2026-10-04T19:21:42.828107Z","iopub.status.idle":"2026-10-04T19:21:43.604562Z","shell.execute_reply":"2026-10-04T19:21:43.603494Z"}}' id="e1a6c341">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a aria-hidden="true" href="#cb10-1" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-2"><a aria-hidden="true" href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a aria-hidden="true" href="#cb10-3" tabindex="-1"></a><span class="kw">def</span> chain_coords(structure, chain_id, atom<span class="op">=</span><span class="st">"CA"</span>):</span>
+<span id="cb10-4"><a aria-hidden="true" href="#cb10-4" tabindex="-1"></a>    xyz <span class="op">=</span> []</span>
+<span id="cb10-5"><a aria-hidden="true" href="#cb10-5" tabindex="-1"></a>    <span class="cf">for</span> res <span class="kw">in</span> structure[<span class="dv">0</span>][chain_id]:</span>
+<span id="cb10-6"><a aria-hidden="true" href="#cb10-6" tabindex="-1"></a>        <span class="cf">if</span> res.<span class="bu">id</span>[<span class="dv">0</span>] <span class="op">==</span> <span class="st">" "</span>:</span>
+<span id="cb10-7"><a aria-hidden="true" href="#cb10-7" tabindex="-1"></a>            xyz.append(res[atom].coord <span class="cf">if</span> atom <span class="kw">in</span> res <span class="cf">else</span> res[<span class="st">"CA"</span>].coord)   <span class="co"># glycine has no CB</span></span>
+<span id="cb10-8"><a aria-hidden="true" href="#cb10-8" tabindex="-1"></a>    <span class="cf">return</span> np.array(xyz)</span>
+<span id="cb10-9"><a aria-hidden="true" href="#cb10-9" tabindex="-1"></a></span>
+<span id="cb10-10"><a aria-hidden="true" href="#cb10-10" tabindex="-1"></a><span class="kw">def</span> distance_map(xyz):</span>
+<span id="cb10-11"><a aria-hidden="true" href="#cb10-11" tabindex="-1"></a>    <span class="cf">return</span> np.linalg.norm(xyz[:, <span class="va">None</span>, :] <span class="op">-</span> xyz[<span class="va">None</span>, :, :], axis<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb10-12"><a aria-hidden="true" href="#cb10-12" tabindex="-1"></a></span>
+<span id="cb10-13"><a aria-hidden="true" href="#cb10-13" tabindex="-1"></a>d_ca <span class="op">=</span> distance_map(chain_coords(structures[<span class="st">"2hhb"</span>], <span class="st">"B"</span>, <span class="st">"CA"</span>))</span>
+<span id="cb10-14"><a aria-hidden="true" href="#cb10-14" tabindex="-1"></a>contacts <span class="op">=</span> distance_map(chain_coords(structures[<span class="st">"2hhb"</span>], <span class="st">"B"</span>, <span class="st">"CB"</span>)) <span class="op">&lt;</span> <span class="fl">8.0</span></span>
+<span id="cb10-15"><a aria-hidden="true" href="#cb10-15" tabindex="-1"></a>L <span class="op">=</span> <span class="bu">len</span>(d_ca)</span>
+<span id="cb10-16"><a aria-hidden="true" href="#cb10-16" tabindex="-1"></a>iu <span class="op">=</span> np.triu_indices(L, k<span class="op">=</span><span class="dv">6</span>)            <span class="co"># pairs at least 6 apart in sequence</span></span>
+<span id="cb10-17"><a aria-hidden="true" href="#cb10-17" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"beta chain: </span><span class="sc">{</span>L<span class="sc">}</span><span class="ss"> residues, </span><span class="sc">{</span>contacts[iu]<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss"> contacts between residues at least 6 apart in sequence"</span>)</span>
+<span id="cb10-18"><a aria-hidden="true" href="#cb10-18" tabindex="-1"></a></span>
+<span id="cb10-19"><a aria-hidden="true" href="#cb10-19" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">5</span>))</span>
+<span id="cb10-20"><a aria-hidden="true" href="#cb10-20" tabindex="-1"></a>im <span class="op">=</span> ax[<span class="dv">0</span>].imshow(d_ca, cmap<span class="op">=</span><span class="st">"viridis_r"</span>, vmax<span class="op">=</span><span class="dv">40</span>)</span>
+<span id="cb10-21"><a aria-hidden="true" href="#cb10-21" tabindex="-1"></a>fig.colorbar(im, ax<span class="op">=</span>ax[<span class="dv">0</span>], fraction<span class="op">=</span><span class="fl">0.046</span>, label<span class="op">=</span><span class="st">"Cα–Cα distance (Å)"</span>)</span>
+<span id="cb10-22"><a aria-hidden="true" href="#cb10-22" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"distance map"</span>)</span>
+<span id="cb10-23"><a aria-hidden="true" href="#cb10-23" tabindex="-1"></a>ax[<span class="dv">1</span>].imshow(contacts, cmap<span class="op">=</span><span class="st">"Greys"</span>)</span>
+<span id="cb10-24"><a aria-hidden="true" href="#cb10-24" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"contact map (Cβ–Cβ &lt; 8 Å)"</span>)</span>
+<span id="cb10-25"><a aria-hidden="true" href="#cb10-25" tabindex="-1"></a><span class="cf">for</span> a <span class="kw">in</span> ax:</span>
+<span id="cb10-26"><a aria-hidden="true" href="#cb10-26" tabindex="-1"></a>    a.set_xlabel(<span class="st">"residue"</span>)<span class="op">;</span> a.set_ylabel(<span class="st">"residue"</span>)</span>
+<span id="cb10-27"><a aria-hidden="true" href="#cb10-27" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>beta chain: 146 residues, 197 contacts between residues at least 6 apart in sequence</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session06-protein-structure-in-code_files/figure-html/cell-7-output-2.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The thick band along the diagonal is each helix touching itself (residue <span class="math inline">\(i\)</span> is always close to <span class="math inline">\(i \pm 1, \dots, i \pm 4\)</span>). The off-diagonal stripes are pairs of helices packed against each other: long-range contacts between residues far apart in sequence but close in space.</p>
+</section>
+<section class="level2" id="sequence-alignment-versus-structure-alignment">
+<h2 class="anchored" data-anchor-id="sequence-alignment-versus-structure-alignment">Sequence alignment versus structure alignment</h2>
+<p>A sequence alignment decides which residues correspond from the sequences alone. A structure alignment (here TM-align) decides from the 3D coordinates. Below, β-globin is compared with five proteins, from a close paralog to an unrelated fold. For each we report:</p>
+<ul>
+<li>the <strong>TM-score</strong> and RMSD of the structure alignment;</li>
+<li>the <strong>sequence identity</strong> over the structurally aligned residues;</li>
+<li>the score of the best <strong>sequence-only</strong> local alignment (Smith–Waterman, BLOSUM62), next to the scores of 200 alignments against shuffled versions of the same sequence: is there any sequence signal at all?</li>
+<li>how many of the structurally aligned residue pairs the sequence alignment also pairs up: does sequence alone get the <em>correspondence</em> right?</li>
+</ul>
+<div class="cell" data-execution_count="7" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:43.607498Z","iopub.status.busy":"2026-10-04T19:21:43.607173Z","iopub.status.idle":"2026-10-04T19:21:46.946634Z","shell.execute_reply":"2026-10-04T19:21:46.945688Z"}}' id="1e7886a4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a aria-hidden="true" href="#cb12-1" tabindex="-1"></a><span class="im">import</span> random, requests</span>
+<span id="cb12-2"><a aria-hidden="true" href="#cb12-2" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> Align</span>
+<span id="cb12-3"><a aria-hidden="true" href="#cb12-3" tabindex="-1"></a><span class="im">from</span> Bio.Align <span class="im">import</span> substitution_matrices</span>
+<span id="cb12-4"><a aria-hidden="true" href="#cb12-4" tabindex="-1"></a><span class="im">from</span> Bio.PDB <span class="im">import</span> PDBIO, Select</span>
+<span id="cb12-5"><a aria-hidden="true" href="#cb12-5" tabindex="-1"></a><span class="im">from</span> tmtools <span class="im">import</span> tm_align</span>
+<span id="cb12-6"><a aria-hidden="true" href="#cb12-6" tabindex="-1"></a><span class="im">from</span> tmtools.io <span class="im">import</span> get_structure, get_residue_data</span>
+<span id="cb12-7"><a aria-hidden="true" href="#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a aria-hidden="true" href="#cb12-8" tabindex="-1"></a>COMPARE <span class="op">=</span> [(<span class="st">"2HHB"</span>, <span class="st">"A"</span>, <span class="st">"alpha-globin (human)"</span>),</span>
+<span id="cb12-9"><a aria-hidden="true" href="#cb12-9" tabindex="-1"></a>           (<span class="st">"3RGK"</span>, <span class="st">"A"</span>, <span class="st">"myoglobin (human)"</span>),</span>
+<span id="cb12-10"><a aria-hidden="true" href="#cb12-10" tabindex="-1"></a>           (<span class="st">"1OJ6"</span>, <span class="st">"A"</span>, <span class="st">"neuroglobin (human)"</span>),</span>
+<span id="cb12-11"><a aria-hidden="true" href="#cb12-11" tabindex="-1"></a>           (<span class="st">"1IDR"</span>, <span class="st">"A"</span>, <span class="st">"truncated hemoglobin N (M. tuberculosis)"</span>),</span>
+<span id="cb12-12"><a aria-hidden="true" href="#cb12-12" tabindex="-1"></a>           (<span class="st">"1EMA"</span>, <span class="st">"A"</span>, <span class="st">"GFP (jellyfish), unrelated fold"</span>)]</span>
+<span id="cb12-13"><a aria-hidden="true" href="#cb12-13" tabindex="-1"></a></span>
+<span id="cb12-14"><a aria-hidden="true" href="#cb12-14" tabindex="-1"></a><span class="kw">class</span> OneChain(Select):</span>
+<span id="cb12-15"><a aria-hidden="true" href="#cb12-15" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, chain_id): <span class="va">self</span>.chain_id <span class="op">=</span> chain_id</span>
+<span id="cb12-16"><a aria-hidden="true" href="#cb12-16" tabindex="-1"></a>    <span class="kw">def</span> accept_chain(<span class="va">self</span>, chain): <span class="cf">return</span> chain.<span class="bu">id</span> <span class="op">==</span> <span class="va">self</span>.chain_id</span>
+<span id="cb12-17"><a aria-hidden="true" href="#cb12-17" tabindex="-1"></a>    <span class="kw">def</span> accept_residue(<span class="va">self</span>, res): <span class="cf">return</span> res.<span class="bu">id</span>[<span class="dv">0</span>] <span class="op">==</span> <span class="st">" "</span></span>
+<span id="cb12-18"><a aria-hidden="true" href="#cb12-18" tabindex="-1"></a></span>
+<span id="cb12-19"><a aria-hidden="true" href="#cb12-19" tabindex="-1"></a><span class="kw">def</span> chain_file(pdb_id, chain_id):</span>
+<span id="cb12-20"><a aria-hidden="true" href="#cb12-20" tabindex="-1"></a>    <span class="co">"""Download a PDB entry and save one chain (protein residues only) as its own file."""</span></span>
+<span id="cb12-21"><a aria-hidden="true" href="#cb12-21" tabindex="-1"></a>    full <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>pdb_id<span class="sc">}</span><span class="ss">.pdb"</span></span>
+<span id="cb12-22"><a aria-hidden="true" href="#cb12-22" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> os.path.exists(full):</span>
+<span id="cb12-23"><a aria-hidden="true" href="#cb12-23" tabindex="-1"></a>        r <span class="op">=</span> requests.get(<span class="ss">f"https://files.rcsb.org/download/</span><span class="sc">{</span>pdb_id<span class="sc">}</span><span class="ss">.pdb"</span>, timeout<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb12-24"><a aria-hidden="true" href="#cb12-24" tabindex="-1"></a>        r.raise_for_status()</span>
+<span id="cb12-25"><a aria-hidden="true" href="#cb12-25" tabindex="-1"></a>        <span class="bu">open</span>(full, <span class="st">"w"</span>).write(r.text)</span>
+<span id="cb12-26"><a aria-hidden="true" href="#cb12-26" tabindex="-1"></a>    out <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>pdb_id<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>chain_id<span class="sc">}</span><span class="ss">.pdb"</span></span>
+<span id="cb12-27"><a aria-hidden="true" href="#cb12-27" tabindex="-1"></a>    io <span class="op">=</span> PDBIO()<span class="op">;</span> io.set_structure(parser.get_structure(pdb_id, full))<span class="op">;</span> io.save(out, OneChain(chain_id))</span>
+<span id="cb12-28"><a aria-hidden="true" href="#cb12-28" tabindex="-1"></a>    <span class="cf">return</span> out</span>
+<span id="cb12-29"><a aria-hidden="true" href="#cb12-29" tabindex="-1"></a></span>
+<span id="cb12-30"><a aria-hidden="true" href="#cb12-30" tabindex="-1"></a><span class="kw">def</span> load(path):</span>
+<span id="cb12-31"><a aria-hidden="true" href="#cb12-31" tabindex="-1"></a>    coords, seq <span class="op">=</span> get_residue_data(<span class="bu">next</span>(get_structure(path).get_chains()))</span>
+<span id="cb12-32"><a aria-hidden="true" href="#cb12-32" tabindex="-1"></a>    <span class="cf">return</span> coords, seq</span>
+<span id="cb12-33"><a aria-hidden="true" href="#cb12-33" tabindex="-1"></a></span>
+<span id="cb12-34"><a aria-hidden="true" href="#cb12-34" tabindex="-1"></a><span class="kw">def</span> aligned_pairs(a, b):</span>
+<span id="cb12-35"><a aria-hidden="true" href="#cb12-35" tabindex="-1"></a>    <span class="co">"""Residue-index pairs (i, j) matched in two gapped alignment strings."""</span></span>
+<span id="cb12-36"><a aria-hidden="true" href="#cb12-36" tabindex="-1"></a>    pairs, i, j <span class="op">=</span> <span class="bu">set</span>(), <span class="dv">0</span>, <span class="dv">0</span></span>
+<span id="cb12-37"><a aria-hidden="true" href="#cb12-37" tabindex="-1"></a>    <span class="cf">for</span> x, y <span class="kw">in</span> <span class="bu">zip</span>(a, b):</span>
+<span id="cb12-38"><a aria-hidden="true" href="#cb12-38" tabindex="-1"></a>        <span class="cf">if</span> x <span class="op">!=</span> <span class="st">"-"</span> <span class="kw">and</span> y <span class="op">!=</span> <span class="st">"-"</span>:</span>
+<span id="cb12-39"><a aria-hidden="true" href="#cb12-39" tabindex="-1"></a>            pairs.add((i, j))</span>
+<span id="cb12-40"><a aria-hidden="true" href="#cb12-40" tabindex="-1"></a>        i <span class="op">+=</span> x <span class="op">!=</span> <span class="st">"-"</span><span class="op">;</span> j <span class="op">+=</span> y <span class="op">!=</span> <span class="st">"-"</span></span>
+<span id="cb12-41"><a aria-hidden="true" href="#cb12-41" tabindex="-1"></a>    <span class="cf">return</span> pairs</span>
+<span id="cb12-42"><a aria-hidden="true" href="#cb12-42" tabindex="-1"></a></span>
+<span id="cb12-43"><a aria-hidden="true" href="#cb12-43" tabindex="-1"></a>aligner <span class="op">=</span> Align.PairwiseAligner(mode<span class="op">=</span><span class="st">"local"</span>, substitution_matrix<span class="op">=</span>substitution_matrices.load(<span class="st">"BLOSUM62"</span>),</span>
+<span id="cb12-44"><a aria-hidden="true" href="#cb12-44" tabindex="-1"></a>                                open_gap_score<span class="op">=-</span><span class="dv">11</span>, extend_gap_score<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb12-45"><a aria-hidden="true" href="#cb12-45" tabindex="-1"></a></span>
+<span id="cb12-46"><a aria-hidden="true" href="#cb12-46" tabindex="-1"></a>hbb_coords, hbb_seq <span class="op">=</span> load(chain_file(<span class="st">"2HHB"</span>, <span class="st">"B"</span>))</span>
+<span id="cb12-47"><a aria-hidden="true" href="#cb12-47" tabindex="-1"></a>random.seed(<span class="dv">0</span>)</span>
+<span id="cb12-48"><a aria-hidden="true" href="#cb12-48" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="st">'compared with beta-globin'</span><span class="sc">:&lt;42}{</span><span class="st">'TM'</span><span class="sc">:&gt;6}{</span><span class="st">'RMSD'</span><span class="sc">:&gt;6}{</span><span class="st">'seq id'</span><span class="sc">:&gt;8}{</span><span class="st">'SW score'</span><span class="sc">:&gt;10}{</span><span class="st">'shuffled max'</span><span class="sc">:&gt;14}{</span><span class="st">'agree'</span><span class="sc">:&gt;7}</span><span class="ss">"</span>)</span>
+<span id="cb12-49"><a aria-hidden="true" href="#cb12-49" tabindex="-1"></a><span class="cf">for</span> pdb_id, chain_id, name <span class="kw">in</span> COMPARE:</span>
+<span id="cb12-50"><a aria-hidden="true" href="#cb12-50" tabindex="-1"></a>    coords, seq <span class="op">=</span> load(chain_file(pdb_id, chain_id))</span>
+<span id="cb12-51"><a aria-hidden="true" href="#cb12-51" tabindex="-1"></a>    tm <span class="op">=</span> tm_align(coords, hbb_coords, seq, hbb_seq)</span>
+<span id="cb12-52"><a aria-hidden="true" href="#cb12-52" tabindex="-1"></a>    struct <span class="op">=</span> aligned_pairs(tm.seqxA, tm.seqyA)</span>
+<span id="cb12-53"><a aria-hidden="true" href="#cb12-53" tabindex="-1"></a>    ident <span class="op">=</span> <span class="bu">sum</span>(seq[i] <span class="op">==</span> hbb_seq[j] <span class="cf">for</span> i, j <span class="kw">in</span> struct) <span class="op">/</span> <span class="bu">len</span>(struct)</span>
+<span id="cb12-54"><a aria-hidden="true" href="#cb12-54" tabindex="-1"></a>    best <span class="op">=</span> aligner.align(seq, hbb_seq)[<span class="dv">0</span>]</span>
+<span id="cb12-55"><a aria-hidden="true" href="#cb12-55" tabindex="-1"></a>    seq_pairs <span class="op">=</span> {(s1 <span class="op">+</span> k, s2 <span class="op">+</span> k) <span class="cf">for</span> (s1, e1), (s2, e2) <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>best.aligned) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(e1 <span class="op">-</span> s1)}</span>
+<span id="cb12-56"><a aria-hidden="true" href="#cb12-56" tabindex="-1"></a>    shuffled <span class="op">=</span> [aligner.score(<span class="st">""</span>.join(random.sample(seq, <span class="bu">len</span>(seq))), hbb_seq) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">200</span>)]</span>
+<span id="cb12-57"><a aria-hidden="true" href="#cb12-57" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:&lt;42}{</span>tm<span class="sc">.</span>tm_norm_chain2<span class="sc">:&gt;6.2f}{</span>tm<span class="sc">.</span>rmsd<span class="sc">:&gt;6.1f}{</span>ident<span class="sc">:&gt;8.0%}{</span>best<span class="sc">.</span>score<span class="sc">:&gt;10.0f}</span><span class="ss">"</span></span>
+<span id="cb12-58"><a aria-hidden="true" href="#cb12-58" tabindex="-1"></a>          <span class="ss">f"</span><span class="sc">{</span><span class="bu">max</span>(shuffled)<span class="sc">:&gt;14.0f}{</span><span class="bu">len</span>(struct <span class="op">&amp;</span> seq_pairs) <span class="op">/</span> <span class="bu">len</span>(struct)<span class="sc">:&gt;7.0%}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>compared with beta-globin                     TM  RMSD  seq id  SW score  shuffled max  agree
+alpha-globin (human)                        0.88   1.4     43%       288            43    95%
+myoglobin (human)                           0.91   1.5     25%       111            46    97%
+neuroglobin (human)                         0.82   2.0     22%        89            41    66%
+truncated hemoglobin N (M. tuberculosis)    0.57   3.2     16%        28            49     0%
+GFP (jellyfish), unrelated fold             0.33   5.1      6%        25            50     0%</code></pre>
+</div>
+</div>
+<p>TM-scores are normalized by the length of β-globin. Read the table from top to bottom:</p>
+<ul>
+<li><strong>Alpha-globin and myoglobin:</strong> the sequence alignment score is far above anything the shuffled sequences reach, and the sequence alignment pairs up almost exactly the same residues as the structure alignment.</li>
+<li><strong>Neuroglobin:</strong> still a clear sequence signal, but only about two thirds of the residue pairs agree; the sequence alignment has put gaps in the wrong places.</li>
+<li><strong>Truncated hemoglobin:</strong> the sequence alignment scores no better than shuffled sequences, and it pairs up none of the right residues. The structure alignment still finds a shared fold (TM-score well above GFP’s) over more than 100 residues: <strong>structure is more conserved than sequence.</strong></li>
+<li><strong>GFP:</strong> a low TM-score; the structures have nothing in common.</li>
+</ul>
+</section>
+<section class="level2" id="measuring-a-real-quaternary-structure-distance">
+<h2 class="anchored" data-anchor-id="measuring-a-real-quaternary-structure-distance">Measuring a real quaternary-structure distance</h2>
+<p>A concrete geometric property, rather than just a picture: the distance between the iron atoms of the two <strong>beta</strong>-chain hemes. This distance is the classic textbook signature of hemoglobin’s allosteric mechanism (Baldwin &amp; Chothia, 1979) — it should be larger in the deoxygenated (“T”, tense) state than in the oxygenated (“R”, relaxed) state, since the whole point of the T→R quaternary shift is that the two beta chains move closer together as oxygen binds.</p>
+<p>First, all six pairwise Fe–Fe distances within <code>2HHB</code> (T-state), which is small enough to have all four chains directly in one file:</p>
+<div class="cell" data-execution_count="8" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:46.950562Z","iopub.status.busy":"2026-10-04T19:21:46.950298Z","iopub.status.idle":"2026-10-04T19:21:46.959004Z","shell.execute_reply":"2026-10-04T19:21:46.958115Z"}}' id="4335944c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a aria-hidden="true" href="#cb14-1" tabindex="-1"></a>fe_2hhb <span class="op">=</span> {}</span>
+<span id="cb14-2"><a aria-hidden="true" href="#cb14-2" tabindex="-1"></a><span class="cf">for</span> chain <span class="kw">in</span> structures[<span class="st">"2hhb"</span>][<span class="dv">0</span>]:</span>
+<span id="cb14-3"><a aria-hidden="true" href="#cb14-3" tabindex="-1"></a>    <span class="cf">for</span> res <span class="kw">in</span> chain:</span>
+<span id="cb14-4"><a aria-hidden="true" href="#cb14-4" tabindex="-1"></a>        <span class="cf">if</span> res.get_resname() <span class="op">==</span> <span class="st">"HEM"</span>:</span>
+<span id="cb14-5"><a aria-hidden="true" href="#cb14-5" tabindex="-1"></a>            fe_2hhb[chain.<span class="bu">id</span>] <span class="op">=</span> res[<span class="st">"FE"</span>].get_coord()</span>
+<span id="cb14-6"><a aria-hidden="true" href="#cb14-6" tabindex="-1"></a></span>
+<span id="cb14-7"><a aria-hidden="true" href="#cb14-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"2HHB (deoxy, T-state) pairwise Fe-Fe distances:"</span>)</span>
+<span id="cb14-8"><a aria-hidden="true" href="#cb14-8" tabindex="-1"></a><span class="cf">for</span> a, b <span class="kw">in</span> itertools.combinations(<span class="bu">sorted</span>(fe_2hhb), <span class="dv">2</span>):</span>
+<span id="cb14-9"><a aria-hidden="true" href="#cb14-9" tabindex="-1"></a>    d <span class="op">=</span> np.linalg.norm(fe_2hhb[a] <span class="op">-</span> fe_2hhb[b])</span>
+<span id="cb14-10"><a aria-hidden="true" href="#cb14-10" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>d<span class="sc">:.2f}</span><span class="ss"> A"</span>)</span>
+<span id="cb14-11"><a aria-hidden="true" href="#cb14-11" tabindex="-1"></a></span>
+<span id="cb14-12"><a aria-hidden="true" href="#cb14-12" tabindex="-1"></a>beta_beta_T <span class="op">=</span> np.linalg.norm(fe_2hhb[<span class="st">"B"</span>] <span class="op">-</span> fe_2hhb[<span class="st">"D"</span>])</span>
+<span id="cb14-13"><a aria-hidden="true" href="#cb14-13" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Beta-beta Fe-Fe distance, T-state (2HHB): </span><span class="sc">{</span>beta_beta_T<span class="sc">:.2f}</span><span class="ss"> A"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2HHB (deoxy, T-state) pairwise Fe-Fe distances:
+  A-B: 36.49 A
+  A-C: 34.16 A
+  A-D: 24.35 A
+  B-C: 24.26 A
+  B-D: 39.51 A
+  C-D: 36.42 A
+
+Beta-beta Fe-Fe distance, T-state (2HHB): 39.51 A</code></pre>
+</div>
+</div>
+<p><code>1HHO</code>’s file only has one alpha/beta pair, so getting the <em>other</em> beta chain means actually applying the rigid-body transformation from the file’s <code>REMARK 350</code> record — the same kind of operation, in miniature, that structure-comparison tools like RMSD or TM-align (mentioned on the book page) use to superimpose whole structures onto each other.</p>
+<div class="cell" data-execution_count="9" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:46.964302Z","iopub.status.busy":"2026-10-04T19:21:46.964046Z","iopub.status.idle":"2026-10-04T19:21:46.971475Z","shell.execute_reply":"2026-10-04T19:21:46.969828Z"}}' id="53ba2334">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a aria-hidden="true" href="#cb16-1" tabindex="-1"></a>fe_1hho <span class="op">=</span> {}</span>
+<span id="cb16-2"><a aria-hidden="true" href="#cb16-2" tabindex="-1"></a><span class="cf">for</span> chain <span class="kw">in</span> structures[<span class="st">"1hho"</span>][<span class="dv">0</span>]:</span>
+<span id="cb16-3"><a aria-hidden="true" href="#cb16-3" tabindex="-1"></a>    <span class="cf">for</span> res <span class="kw">in</span> chain:</span>
+<span id="cb16-4"><a aria-hidden="true" href="#cb16-4" tabindex="-1"></a>        <span class="cf">if</span> res.get_resname() <span class="op">==</span> <span class="st">"HEM"</span>:</span>
+<span id="cb16-5"><a aria-hidden="true" href="#cb16-5" tabindex="-1"></a>            fe_1hho[chain.<span class="bu">id</span>] <span class="op">=</span> res[<span class="st">"FE"</span>].get_coord()</span>
+<span id="cb16-6"><a aria-hidden="true" href="#cb16-6" tabindex="-1"></a></span>
+<span id="cb16-7"><a aria-hidden="true" href="#cb16-7" tabindex="-1"></a><span class="co"># REMARK 350 BIOMT for the second copy in 1HHO's biological tetramer:</span></span>
+<span id="cb16-8"><a aria-hidden="true" href="#cb16-8" tabindex="-1"></a><span class="co"># swap x and y, negate z, no translation.</span></span>
+<span id="cb16-9"><a aria-hidden="true" href="#cb16-9" tabindex="-1"></a>R <span class="op">=</span> np.array([[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>],</span>
+<span id="cb16-10"><a aria-hidden="true" href="#cb16-10" tabindex="-1"></a>              [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb16-11"><a aria-hidden="true" href="#cb16-11" tabindex="-1"></a>              [<span class="dv">0</span>, <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>]])</span>
+<span id="cb16-12"><a aria-hidden="true" href="#cb16-12" tabindex="-1"></a></span>
+<span id="cb16-13"><a aria-hidden="true" href="#cb16-13" tabindex="-1"></a>fe_B <span class="op">=</span> np.array(fe_1hho[<span class="st">"B"</span>], dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb16-14"><a aria-hidden="true" href="#cb16-14" tabindex="-1"></a>fe_B_symmetry_mate <span class="op">=</span> R <span class="op">@</span> fe_B</span>
+<span id="cb16-15"><a aria-hidden="true" href="#cb16-15" tabindex="-1"></a></span>
+<span id="cb16-16"><a aria-hidden="true" href="#cb16-16" tabindex="-1"></a>beta_beta_R <span class="op">=</span> np.linalg.norm(fe_B <span class="op">-</span> fe_B_symmetry_mate)</span>
+<span id="cb16-17"><a aria-hidden="true" href="#cb16-17" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Beta-beta Fe-Fe distance, R-state (1HHO): </span><span class="sc">{</span>beta_beta_R<span class="sc">:.2f}</span><span class="ss"> A"</span>)</span>
+<span id="cb16-18"><a aria-hidden="true" href="#cb16-18" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Beta-beta Fe-Fe distance, T-state (2HHB): </span><span class="sc">{</span>beta_beta_T<span class="sc">:.2f}</span><span class="ss"> A"</span>)</span>
+<span id="cb16-19"><a aria-hidden="true" href="#cb16-19" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Contraction going deoxy (T) -&gt; oxy (R):    </span><span class="sc">{</span>beta_beta_T <span class="op">-</span> beta_beta_R<span class="sc">:.2f}</span><span class="ss"> A"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Beta-beta Fe-Fe distance, R-state (1HHO): 34.62 A
+Beta-beta Fe-Fe distance, T-state (2HHB): 39.51 A
+Contraction going deoxy (T) -&gt; oxy (R):    4.89 A</code></pre>
+</div>
+</div>
+<p>Two independently solved crystal structures of the same protein, in its two functional states, show the two beta hemes roughly <strong>5 Å closer together</strong> in the oxygenated state than in the deoxygenated one — a real, measured instance of the T→R quaternary transition, not just a textbook diagram. This is also the kind of number a quaternary structure-comparison metric (Ligand RMSD, interface RMSD, …) is built to summarize systematically across many structures at once, rather than one hand-picked distance at a time.</p>
+</section>
+<section class="level2" id="try-it-yourself">
+<h2 class="anchored" data-anchor-id="try-it-yourself">Try it yourself</h2>
+<p>Some things to change and re-run:</p>
+<ul>
+<li>Measure the <strong>alpha-alpha</strong> Fe-Fe distance instead (<code>fe_2hhb["A"]</code> vs <code>fe_2hhb["C"]</code>) — does it also change between the two states, and if so, by how much compared to the beta-beta distance?</li>
+<li>Fetch a different pair of PDB entries for the same T/R comparison — try <code>2hhb</code> (T) against <code>1bbb</code> (R) instead of <code>1hho</code>, and see whether the beta-beta contraction is consistent.</li>
+<li>Change the PyMOL render script above to color by secondary structure (<code>cmd.color("red", "ss H")</code>, <code>cmd.color("yellow", "ss S")</code>) instead of by chain, to see the helices highlighted directly on the structure.</li>
+</ul>
+<div class="cell" data-execution_count="10" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-04T19:21:46.977059Z","iopub.status.busy":"2026-10-04T19:21:46.976814Z","iopub.status.idle":"2026-10-04T19:21:46.980723Z","shell.execute_reply":"2026-10-04T19:21:46.979846Z"}}' id="f8cb001d">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a aria-hidden="true" href="#cb18-1" tabindex="-1"></a><span class="im">import</span> glob</span>
+<span id="cb18-2"><a aria-hidden="true" href="#cb18-2" tabindex="-1"></a><span class="co"># scratch files: the rendered image, and the downloaded and single-chain PDB files of the comparison</span></span>
+<span id="cb18-3"><a aria-hidden="true" href="#cb18-3" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> [<span class="st">"_session06_2hhb_render.png"</span>] <span class="op">+</span> glob.glob(<span class="st">"????.pdb"</span>) <span class="op">+</span> glob.glob(<span class="st">"????_?.pdb"</span>):</span>
+<span id="cb18-4"><a aria-hidden="true" href="#cb18-4" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(f):</span>
+<span id="cb18-5"><a aria-hidden="true" href="#cb18-5" tabindex="-1"></a>        os.remove(f)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+</div>
+<p>(Scratch files this notebook wrote to disk are cleaned up above; the <code>.ent</code> files of <code>2HHB</code> and <code>1HHO</code> are left in place so re-running the notebook doesn’t re-download them.)</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="Session 6: Protein Structure" class="pagination-link" href="../session06.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction" class="pagination-link" href="../session07.html">
+<span class="nav-page-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

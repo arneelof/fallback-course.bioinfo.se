@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>4  Session 4: Sequence Alignment – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./notebooks/session04-alignment-in-code.html" rel="next"/>
+<link href="./notebooks/session03-databases-in-code.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./session04.html"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#learning-goals" href="#learning-goals" id="toc-learning-goals"><span class="header-section-number">4.1</span> Learning goals</a></li>
+<li><a class="nav-link" data-scroll-target="#why-alignment-needs-an-algorithm" href="#why-alignment-needs-an-algorithm" id="toc-why-alignment-needs-an-algorithm"><span class="header-section-number">4.2</span> Why alignment needs an algorithm</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading" href="#further-reading" id="toc-further-reading"><span class="header-section-number">4.2.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#visualising-alignments-dot-plots" href="#visualising-alignments-dot-plots" id="toc-visualising-alignments-dot-plots"><span class="header-section-number">4.3</span> Visualising alignments: dot plots</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-1" href="#further-reading-1" id="toc-further-reading-1"><span class="header-section-number">4.3.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#dynamic-programming-needleman-wunsch-and-smith-waterman" href="#dynamic-programming-needleman-wunsch-and-smith-waterman" id="toc-dynamic-programming-needleman-wunsch-and-smith-waterman"><span class="header-section-number">4.4</span> Dynamic programming: Needleman-Wunsch and Smith-Waterman</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-2" href="#further-reading-2" id="toc-further-reading-2"><span class="header-section-number">4.4.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#gap-penalties-linear-vs.-affine" href="#gap-penalties-linear-vs.-affine" id="toc-gap-penalties-linear-vs.-affine"><span class="header-section-number">4.5</span> Gap penalties: linear vs. affine</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-3" href="#further-reading-3" id="toc-further-reading-3"><span class="header-section-number">4.5.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#substitution-matrices-pam-and-blosum" href="#substitution-matrices-pam-and-blosum" id="toc-substitution-matrices-pam-and-blosum"><span class="header-section-number">4.6</span> Substitution matrices: PAM and BLOSUM</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-4" href="#further-reading-4" id="toc-further-reading-4"><span class="header-section-number">4.6.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#is-the-score-significant" href="#is-the-score-significant" id="toc-is-the-score-significant"><span class="header-section-number">4.7</span> Is the score significant?</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-5" href="#further-reading-5" id="toc-further-reading-5"><span class="header-section-number">4.7.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#multiple-sequence-alignment" href="#multiple-sequence-alignment" id="toc-multiple-sequence-alignment"><span class="header-section-number">4.8</span> Multiple sequence alignment</a></li>
+<li><a class="nav-link" data-scroll-target="#from-alignment-to-tree" href="#from-alignment-to-tree" id="toc-from-alignment-to-tree"><span class="header-section-number">4.9</span> From alignment to tree</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-6" href="#further-reading-6" id="toc-further-reading-6"><span class="header-section-number">4.9.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#reading-an-alignment-entropy-and-sequence-logos" href="#reading-an-alignment-entropy-and-sequence-logos" id="toc-reading-an-alignment-entropy-and-sequence-logos"><span class="header-section-number">4.10</span> Reading an alignment: entropy and sequence logos</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-7" href="#further-reading-7" id="toc-further-reading-7"><span class="header-section-number">4.10.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#the-course-notebook" href="#the-course-notebook" id="toc-the-course-notebook"><span class="header-section-number">4.11</span> The course notebook</a></li>
+<li><a class="nav-link" data-scroll-target="#check-your-understanding" href="#check-your-understanding" id="toc-check-your-understanding"><span class="header-section-number">4.12</span> Check your understanding</a></li>
+<li><a class="nav-link" data-scroll-target="#the-lab" href="#the-lab" id="toc-the-lab"><span class="header-section-number">4.13</span> The lab</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#submitting-this-lab" href="#submitting-this-lab" id="toc-submitting-this-lab"><span class="header-section-number">4.13.1</span> Submitting this lab</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#whats-next" href="#whats-next" id="toc-whats-next"><span class="header-section-number">4.14</span> What’s next</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Sources for this page:</strong> Petras Kundrotas’s KB8029 lecture “Sequence Alignment” (Feb 2026) — this page follows its structure and worked examples, adapted and shortened for this book, not copied verbatim; three figures below (filling one DP cell; the completed Needleman-Wunsch traceback; linear vs. affine gap penalties) are taken directly from that lecture’s slides, and the globin gene tree was computed for this course; Dayhoff, Schwartz &amp; Orcutt (1978), <em>Atlas of Protein Sequence and Structure</em>, pp. 345-352 (origin of the PAM matrices); Henikoff &amp; Henikoff (1992), <em>PNAS</em> 89:10915-10919 (origin of the BLOSUM matrices); Wikipedia, <a href="https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm">Needleman–Wunsch algorithm</a>, <a href="https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm">Smith–Waterman algorithm</a>, <a href="https://en.wikipedia.org/wiki/Gap_penalty">Gap penalty</a>, <a href="https://en.wikipedia.org/wiki/Dot_plot_(bioinformatics)">Dot plot (bioinformatics)</a>, <a href="https://en.wikipedia.org/wiki/Standard_score">Standard score</a>, <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback–Leibler divergence</a>, <a href="https://en.wikipedia.org/wiki/Sequence_homology">Sequence homology</a>, <a href="https://en.wikipedia.org/wiki/Point_accepted_mutation">Point accepted mutation</a>, <a href="https://en.wikipedia.org/wiki/BLOSUM">BLOSUM</a>, <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">Multiple sequence alignment</a> — CC BY-SA 4.0; the notebook’s core algorithm code is adapted from Lukas Käll’s <a href="https://github.com/statisticalbiotechnology/bibook"><em>bibook</em></a> — CC BY 4.0. The guide-tree worked-example figure is original to this book, not from the lecture. The globin sequence logo is drawn for this book from the Pfam Globin family (PF00042) seed alignment, via <a href="https://www.ebi.ac.uk/interpro/entry/pfam/PF00042/">InterPro</a> (CC0), with <a href="https://logomaker.readthedocs.io/">logomaker</a>; sequence logos were introduced by Schneider &amp; Stephens (1990), <em>Nucleic Acids Research</em> 18:6097-6100; Wikipedia, <a href="https://en.wikipedia.org/wiki/Sequence_logo">Sequence logo</a> — CC BY-SA 4.0.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Notebook:</strong> <a href="notebooks/session04-alignment-in-code.html" target="_blank">Session 4 — Sequence Alignment in code</a> — the code behind this page. <a download="" href="./notebooks/session04-alignment-in-code.html">Download it</a> to run it yourself.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Homology
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<blockquote class="blockquote">
+<p>Two sequences walk into a bar. The bartender asks: “Are you two related?”</p>
+<p>They answer: “Depends on your gap penalty.”</p>
+</blockquote>
+</div>
+</div>
+<section class="level2" data-number="4.1" id="learning-goals">
+<h2 class="anchored" data-anchor-id="learning-goals" data-number="4.1"><span class="header-section-number">4.1</span> Learning goals</h2>
+<p>By the end of this session you should be able to:</p>
+<ul>
+<li>explain why sequence alignment needs a dedicated algorithm rather than brute-force comparison;</li>
+<li>work a small global alignment by hand using dynamic programming;</li>
+<li>explain the difference between global and local alignment;</li>
+<li>explain why an affine gap penalty is usually preferred over a linear one;</li>
+<li>explain what distinguishes the PAM and BLOSUM families of substitution matrices;</li>
+<li>explain why a high alignment score is not by itself significant;</li>
+<li>read a sequence logo, and explain how the entropy of each column of a multiple alignment shows which positions are conserved;</li>
+<li>read a simple phylogenetic tree, and tell orthologs from paralogs by speciation and duplication.</li>
+</ul>
+<p>Session 3 ended with two related sequences retrieved from the databases. This session asks the next question: <strong>which residues correspond to each other, and how much evidence does the alignment give for shared ancestry?</strong> An alignment is a hypothesis about that correspondence. It proposes which residues descend from the same ancestral position, so substitutions appear as aligned pairs, and insertions and deletions as gaps. The score of the alignment then says how plausible this proposed history is <em>under the chosen scoring scheme</em>. That is not the same as recovering the true evolutionary history, and much of this session is about the choices that go into the score.</p>
+</section>
+<section class="level2" data-number="4.2" id="why-alignment-needs-an-algorithm">
+<h2 class="anchored" data-anchor-id="why-alignment-needs-an-algorithm" data-number="4.2"><span class="header-section-number">4.2</span> Why alignment needs an algorithm</h2>
+<p>By definition, two sequences are <strong>homologous</strong> if and only if they share a common evolutionary origin. We cannot observe that ancestry directly, so we have to <em>infer</em> it from statistical evidence, usually the similarity (or identity) of the two sequences. Both measures require an alignment. <strong>Identity</strong> is the fraction of aligned positions with the same residue. <strong>Similarity</strong> is defined more loosely and also counts residues with shared physicochemical properties (two hydrophobic residues, say). High identity or similarity is therefore <em>evidence</em> for homology, not proof of it.</p>
+<p>Since homology is defined by a common ancestor, it follows that homologs come in two kinds, depending on the event that separated them:</p>
+<ul>
+<li><strong>orthologs</strong> are homologs separated by a <strong>speciation</strong> event, such as myoglobin in human and in mouse;</li>
+<li><strong>paralogs</strong> are homologs separated by a <strong>gene duplication</strong>, such as α- and β-globin, which descend from a duplicated ancestral globin gene.</li>
+</ul>
+<p>The two definitions refer to events, not to genomes, so paralogs need not be in the same genome. Human α-globin and mouse β-globin are paralogs too, because the duplication that separated the α- and β-globin genes happened before human and mouse diverged. Telling the two kinds apart therefore requires the order of events, and the section “From alignment to tree” below shows how a gene tree makes that order visible.</p>
+<p>To measure identity, we first have to decide which residues to compare. When two sequences have the same length, this is trivial: we place one under the other and count the matches. Real sequences usually differ in length, because insertions and deletions have accumulated over evolutionary time. Where we place one sequence under the other then changes the answer dramatically. Two example globin sequences that are 21.5% identical when aligned correctly can look as low as 4% identical if placed naively. Finding the right placement is therefore the real problem.</p>
+<p>Could we simply try every possible placement and keep the best one? Unfortunately not. For two sequences of length <span class="math inline">\(n\)</span>, allowing gaps, the number of possible alignments grows so fast that for <span class="math inline">\(n = 100\)</span> it is already around <span class="math inline">\(10^{59}\)</span>, far too many to search exhaustively. This is why <strong>dynamic programming</strong> algorithms are used for this problem. They find the guaranteed-optimal alignment without ever checking most of the possibilities. The trick is that many candidate alignments share the same beginnings. Dynamic programming therefore solves the best alignment of every pair of prefixes once, stores it, and reuses it. Before we turn to the algorithm, it helps to see what a good alignment looks like.</p>
+<section class="level3" data-number="4.2.1" id="further-reading">
+<h3 class="anchored" data-anchor-id="further-reading" data-number="4.2.1"><span class="header-section-number">4.2.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Sequence_homology">Sequence homology</a>: orthology, paralogy and the other relatedness terms, in more depth than needed here</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.3" id="visualising-alignments-dot-plots">
+<h2 class="anchored" data-anchor-id="visualising-alignments-dot-plots" data-number="4.3"><span class="header-section-number">4.3</span> Visualising alignments: dot plots</h2>
+<p>The simplest way to see whether two sequences are related is a <strong>dot plot</strong>, and it needs no algorithm at all. We put one sequence along each axis of a grid and mark a dot wherever the row and column residues match. A run of matches then lines up as a diagonal line, which the eye picks out immediately. A long alignment shows up as one long diagonal, a repeat as several parallel diagonals, and an inversion as a diagonal running in the opposite direction. A dot plot gives no score and no optimal alignment, so it is only a fast qualitative screen. It is still used today to visualise the output of real alignments (BLAST’s web output includes one), because a picture answers “is there a match here at all, and roughly where?” faster than a score does. To get an actual alignment, and a score for it, we need dynamic programming.</p>
+<section class="level3" data-number="4.3.1" id="further-reading-1">
+<h3 class="anchored" data-anchor-id="further-reading-1" data-number="4.3.1"><span class="header-section-number">4.3.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Dot_plot_(bioinformatics)">Dot plot (bioinformatics)</a> — filtering/windowing techniques for noisy real sequences, beyond the simple version above</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.4" id="dynamic-programming-needleman-wunsch-and-smith-waterman">
+<h2 class="anchored" data-anchor-id="dynamic-programming-needleman-wunsch-and-smith-waterman" data-number="4.4"><span class="header-section-number">4.4</span> Dynamic programming: Needleman-Wunsch and Smith-Waterman</h2>
+<p>Dynamic programming builds a matrix <span class="math inline">\(V\)</span> with one extra row and column (for handling the sequence starts), fills it in using a simple rule, and then traces back through it to read off the best alignment. Each cell <span class="math inline">\(V(i,j)\)</span> holds the score of the best alignment of the first <span class="math inline">\(i\)</span> residues of one sequence with the first <span class="math inline">\(j\)</span> residues of the other. It is filled as the best of three options: extending the alignment diagonally with a match or mismatch, or opening a gap from above or from the left.</p>
+<p><span class="math display">\[
+V(i,j) = \max \begin{cases} V(i-1,j-1) + s(x_i, y_j) \\ V(i-1,j) + g \\ V(i,j-1) + g \end{cases}
+\]</span></p>
+<p>Here <span class="math inline">\(s(x_i, y_j)\)</span> is a substitution score (see below) and <span class="math inline">\(g\)</span> is a gap penalty. In practice, filling one cell means computing all three candidates and keeping the largest. The figure shows this for cell <span class="math inline">\(V(1,1)\)</span> of a pair of 13- and 12-residue sequences, with a gap penalty of <span class="math inline">\(g=1\)</span>:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-cell-fill">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-cell-fill-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session04-cell-fill.png" style="width:90.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-cell-fill-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.1: Filling one cell, <span class="math inline">\(V(1,1)\)</span>, of the dynamic-programming matrix: all three candidates are computed and the largest is kept (gap penalty <span class="math inline">\(g=1\)</span>).
+</figcaption>
+</figure>
+</div>
+<p>Every other cell is filled in the same way, and only the numbers that go into the three candidates change. <strong>Worked example.</strong> The following case is small enough to do completely by hand. We align <span class="math inline">\(x =
+\texttt{GCAT}\)</span> against <span class="math inline">\(y = \texttt{GAC}\)</span>, with match <span class="math inline">\(= +1\)</span>, mismatch <span class="math inline">\(= -1\)</span> and gap <span class="math inline">\(= -1\)</span>:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s04-gcat-gac">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s04-gcat-gac-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 4.1: The dynamic-programming matrix for aligning <span class="math inline">\(x = \texttt{GCAT}\)</span> with <span class="math inline">\(y = \texttt{GAC}\)</span> (match <span class="math inline">\(+1\)</span>, mismatch <span class="math inline">\(-1\)</span>, gap <span class="math inline">\(-1\)</span>). The traceback path of the optimal alignment is in bold.
+</figcaption>
+<div aria-describedby="tbl-s04-gcat-gac-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th></th>
+<th>G</th>
+<th>A</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><strong>0</strong></td>
+<td>-1</td>
+<td>-2</td>
+<td>-3</td>
+</tr>
+<tr class="even">
+<td><strong>G</strong></td>
+<td>-1</td>
+<td><strong>1</strong></td>
+<td>0</td>
+<td>-1</td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td>-2</td>
+<td><strong>0</strong></td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td><strong>A</strong></td>
+<td>-3</td>
+<td>-1</td>
+<td><strong>1</strong></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td><strong>T</strong></td>
+<td>-4</td>
+<td>-2</td>
+<td>0</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Tracing back from the bottom-right corner (score 0) along the cells in bold in <a class="quarto-xref" href="#tbl-s04-gcat-gac">Table <span>4.1</span></a> gives the optimal global alignment:</p>
+<pre><code>G C A T
+G - A C</code></pre>
+<p>Here G matches G, C is deleted, A matches A, and T is mismatched with C, for a total score of <span class="math inline">\(1 - 1 + 1 - 1 = 0\)</span>.</p>
+<p>The same procedure works at the scale where it is actually used. The figure below shows two protein sequences of 12 and 13 residues, with the completed matrix and its full traceback path highlighted:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-nw-traceback">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-nw-traceback-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session04-nw-traceback.png" style="width:95.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-nw-traceback-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.2: The completed Needleman-Wunsch matrix for two protein sequences of 12 and 13 residues, with the traceback path highlighted.
+</figcaption>
+</figure>
+</div>
+<p>This algorithm, <strong>Needleman-Wunsch</strong>, produces a <em>global</em> alignment, in which the entire length of both sequences is forced into the result, gaps and all. Often, however, we want only the best-matching sub-region, that is, a <em>local</em> alignment. <strong>Smith-Waterman</strong> achieves this with one change to the same algorithm. Negative values in the matrix are reset to zero, and the traceback starts from the highest-scoring cell anywhere in the matrix (not necessarily the bottom-right corner) and stops as soon as it reaches a zero.</p>
+<p>Which of the two to use is a biological choice, not just a mechanical one. <strong>Global</strong> alignment is the right choice when we expect the two sequences to correspond along most of their length, as two myoglobins do. <strong>Local</strong> alignment is the right choice when they may share only a part, such as one domain common to two large multidomain proteins, or a short motif inside a long sequence. Forcing a global alignment on such sequences buries the shared region under a long tail of meaningless gaps. How the gaps are penalised is therefore the next question.</p>
+<section class="level3" data-number="4.4.1" id="further-reading-2">
+<h3 class="anchored" data-anchor-id="further-reading-2" data-number="4.4.1"><span class="header-section-number">4.4.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm">Needleman–Wunsch algorithm</a> and <a href="https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm">Smith–Waterman algorithm</a> — pseudocode and complexity analysis beyond what’s needed here</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.5" id="gap-penalties-linear-vs.-affine">
+<h2 class="anchored" data-anchor-id="gap-penalties-linear-vs.-affine" data-number="4.5"><span class="header-section-number">4.5</span> Gap penalties: linear vs. affine</h2>
+<p>So far <span class="math inline">\(g\)</span> has been a single flat number charged per gap position, and this choice matters more than it might seem. A <strong>linear</strong> gap penalty, <span class="math inline">\(g(n) = n \times g_{\text{op}}\)</span> for <span class="math inline">\(n\)</span> consecutive gaps, charges the same total whether the gaps are spread out or bunched together. Evolutionary insertions and deletions often affect contiguous stretches of residues. It is therefore usually more realistic to charge more for opening a gap than for extending one. A linear penalty, in contrast, can produce implausible alignments that scatter single gaps throughout and break up motifs that are conserved as a block.</p>
+<p>The fix is an <strong>affine</strong> gap penalty. It charges a larger cost <span class="math inline">\(g_{\text{op}}\)</span> to <em>open</em> a new gap and a much smaller cost <span class="math inline">\(g_{\text{ext}}\)</span> to <em>extend</em> an already open one (<span class="math inline">\(g_{\text{ext}} \ll
+g_{\text{op}}\)</span>):</p>
+<p><span class="math display">\[
+g(n) = g_{\text{op}} + (n-1) \times g_{\text{ext}}
+\]</span></p>
+<p>With this penalty, a single long gap costs less than the same number of gap positions scattered as many short gaps, which is the behaviour we want. The figure below makes this concrete. It shows the same two sequences aligned once with a linear penalty (top pair), where the gaps are scattered and break up the shared “QQW” motif, and once with an affine penalty (bottom pair), where the gaps are consolidated into contiguous stretches and “QQW” stays together:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-gap-penalty">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-gap-penalty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session04-gap-penalty.png" style="width:90.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-gap-penalty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.3: The same two sequences aligned with a linear gap penalty (top pair) and with an affine gap penalty (bottom pair).
+</figcaption>
+</figure>
+</div>
+<section class="level3" data-number="4.5.1" id="further-reading-3">
+<h3 class="anchored" data-anchor-id="further-reading-3" data-number="4.5.1"><span class="header-section-number">4.5.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Gap_penalty">Gap penalty</a> — covers this in more depth, including the position-dependent variant shown at the bottom of the figure above, which is beyond what this course needs</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.6" id="substitution-matrices-pam-and-blosum">
+<h2 class="anchored" data-anchor-id="substitution-matrices-pam-and-blosum" data-number="4.6"><span class="header-section-number">4.6</span> Substitution matrices: PAM and BLOSUM</h2>
+<p>The other ingredient of the alignment score is the substitution score <span class="math inline">\(s(x_i, y_j)\)</span>. These scores are <strong>log-odds scores</strong>, the logarithms of probability ratios from Session 1. Roughly, the score of residues <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> is the log of how often they are aligned in related proteins, divided by how often they would pair by chance given how common each residue is. A <strong>positive</strong> score therefore means that the pair is seen more often among related sequences than expected by chance, and a <strong>negative</strong> score that it is seen less often. Conservative substitutions (K and R, I and V) consequently score positively. Session 5’s profiles use the same idea, one column at a time. Two families of substitution matrices dominate, and they differ in the data and the model they are built from:</p>
+<ul>
+<li><strong>PAM</strong> (Point Accepted Mutations; Dayhoff, Schwartz &amp; Orcutt, 1978) is based on <strong>global</strong> alignments of <strong>closely related</strong> proteins and uses an <em>explicit</em> evolutionary model. The sequences are arranged into phylogenetic trees, ancestral sequences are inferred, and substitutions are counted along the branches of the tree. Matrices for larger distances (PAM250) are then extrapolated from the one for very short distances.</li>
+<li><strong>BLOSUM</strong> (BLOcks SUbstitution Matrix; Henikoff &amp; Henikoff, 1992) is instead based on <strong>local</strong>, ungapped alignments of <strong>distantly related</strong> proteins. Substitution frequencies are counted directly from conserved blocks of real multiple alignments, with no phylogenetic tree and no extrapolation. Each BLOSUM matrix (BLOSUM45, BLOSUM62, BLOSUM80, …) is therefore derived independently of the others.</li>
+</ul>
+<p>The two families are easy to confuse, because their numbering runs in <em>opposite</em> directions. A <strong>higher</strong> PAM number means a <strong>more distant</strong> comparison, so PAM250 suits more divergent sequences than PAM100. A <strong>higher</strong> BLOSUM number, in contrast, means a <strong>closer</strong> comparison, so BLOSUM80 suits more similar sequences than BLOSUM45.</p>
+<section class="level3" data-number="4.6.1" id="further-reading-4">
+<h3 class="anchored" data-anchor-id="further-reading-4" data-number="4.6.1"><span class="header-section-number">4.6.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Point_accepted_mutation">Point accepted mutation</a> and <a href="https://en.wikipedia.org/wiki/BLOSUM">BLOSUM</a> — the full derivation of each matrix family, beyond the conceptual level above</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.7" id="is-the-score-significant">
+<h2 class="anchored" data-anchor-id="is-the-score-significant" data-number="4.7"><span class="header-section-number">4.7</span> Is the score significant?</h2>
+<p>Once a substitution matrix and gap penalties are chosen, every alignment gets a score. A high score alone, however, does not prove that two sequences are homologous. The raw score depends on the sequence lengths, the substitution matrix and the gap penalties, so there is no universal threshold for “good enough”. One intuitive way to calibrate it is to compare the observed score with the scores of the same sequences shuffled, or of unrelated sequences, aligned in the same way. If the real score is far above almost all of them, chance is an unlikely explanation.</p>
+<p>For local alignments this comparison can be made precise. The best scores of unrelated sequences follow a known statistical distribution, an extreme-value distribution rather than a normal one. Database-search tools use this distribution to estimate an <strong>E-value</strong>, the number of hits this good expected by chance in a database of this size. Session 5 explains BLAST and E-values properly.</p>
+<section class="level3" data-number="4.7.1" id="further-reading-5">
+<h3 class="anchored" data-anchor-id="further-reading-5" data-number="4.7.1"><span class="header-section-number">4.7.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Extreme_value_theory">Extreme value theory</a>, in its general statistical form, beyond its use here</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.8" id="multiple-sequence-alignment">
+<h2 class="anchored" data-anchor-id="multiple-sequence-alignment" data-number="4.8"><span class="header-section-number">4.8</span> Multiple sequence alignment</h2>
+<p>So far we have aligned two sequences, but a protein family usually has many members, and aligning more than two sequences at once is harder than it looks. Exact dynamic programming extends to <span class="math inline">\(N\)</span> sequences, but its cost grows exponentially with <span class="math inline">\(N\)</span>, so it becomes impractical for more than a few short sequences. Practical methods therefore combine three ideas:</p>
+<ul>
+<li><strong>Progressive alignment</strong> builds a <strong>guide tree</strong> from all pairwise distances, aligns the closest pair first, and then adds sequences (or already aligned groups) one at a time. Early decisions are never revisited, so an early mistake can persist (ClustalW is the classic example).</li>
+<li><strong>Iterative refinement</strong> starts from a progressive alignment and repeatedly re-aligns parts of it, keeping the changes that improve the score (as in MUSCLE).</li>
+<li><strong>Consistency</strong> uses the agreement among all the pairwise alignments as extra information. If A aligns with B and B with C at a position, a multiple alignment in which A also matches C there is preferred (as in T-Coffee).</li>
+</ul>
+<p>Real tools often combine several of these ideas, and which works best depends on the number, length and divergence of the sequences.</p>
+<p>The guide tree for progressive alignment is built by the kind of hierarchical clustering used on any distance matrix. Every sequence starts as its own cluster, the closest pair of clusters is merged repeatedly, and the process stops once only one cluster remains. The merge order <em>is</em> the order in which the sequences are aligned. The figure shows a small worked example: five toy sequences that are almost identical except for sequence 4, their pairwise Hamming-distance matrix, and the resulting guide tree. Sequence 4 merges in only at the very last step, which reflects how clearly it differs from the other four.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-guidetree-worked-example">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-guidetree-worked-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session04-guidetree-worked-example.png" style="width:90.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-guidetree-worked-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.4: A guide tree for five toy sequences: the pairwise Hamming distances and the resulting order of merges.
+</figcaption>
+</figure>
+</div>
+<p>A guide tree is only an <em>ordering device</em> for the alignment and not necessarily a phylogenetic tree. It is usually built by a quick method (UPGMA) that assumes all lineages evolve at the same rate, so a fast-evolving sequence can end up in the wrong place. The third discussion problem shows such a case. To infer how the sequences are actually related, we need a method built for phylogeny. The two kinds of tree look alike but answer different questions:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-session04-guide-vs-phylo">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-session04-guide-vs-phylo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 4.2: A guide tree and a phylogenetic tree.
+</figcaption>
+<div aria-describedby="tbl-session04-guide-vs-phylo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%"/>
+<col style="width: 36%"/>
+<col style="width: 36%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Guide tree</th>
+<th>Phylogenetic tree</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Question</td>
+<td>In which order should the sequences be aligned?</td>
+<td>How are the sequences related by descent?</td>
+</tr>
+<tr class="even">
+<td>Built from</td>
+<td>Quick pairwise distances, often before any alignment</td>
+<td>A multiple alignment, with an evolutionary model</td>
+</tr>
+<tr class="odd">
+<td>Typical method</td>
+<td>UPGMA (equal rates assumed)</td>
+<td>Neighbour joining, maximum likelihood</td>
+</tr>
+<tr class="even">
+<td>What it is</td>
+<td>A computational shortcut</td>
+<td>A hypothesis about evolution</td>
+</tr>
+<tr class="odd">
+<td>Branch lengths</td>
+<td>Not meant to be read</td>
+<td>The amount of change</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section class="level2" data-number="4.9" id="from-alignment-to-tree">
+<h2 class="anchored" data-anchor-id="from-alignment-to-tree" data-number="4.9"><span class="header-section-number">4.9</span> From alignment to tree</h2>
+<p>A <strong>phylogenetic tree</strong> proposes how sequences are related by descent. The quickest route from an alignment to a tree uses the same ingredient as a guide tree, a matrix of pairwise distances, but combines it with a method built for phylogeny. <strong>Neighbour joining</strong> is such a method, because it allows lineages to evolve at different rates, which UPGMA does not. A tree is read as follows:</p>
+<ul>
+<li>The <strong>leaves</strong> are the sequences, and the internal <strong>nodes</strong> are inferred ancestors.</li>
+<li>The <strong>branch lengths</strong> show the amount of change (here, the fraction of differing residues).</li>
+<li>A <strong>clade</strong> is an ancestor with all its descendants.</li>
+<li>A tree is either <strong>rooted</strong> or <strong>unrooted</strong>. In a rooted tree the root marks the oldest ancestor, so the order of events can be read off. Distance methods give unrooted trees, and a root is added either with an <strong>outgroup</strong>, a sequence known to have branched off first, or, as here, at the midpoint of the longest path.</li>
+</ul>
+<p>The notebook uses these ideas to build a tree of α-globin, β-globin and myoglobin from human, mouse and chicken:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-globin-tree">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-globin-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session04-globin-tree.png" style="width:85.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-globin-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.5: A gene tree of nine globins (neighbour joining on the fraction of differing residues in pairwise BLOSUM62 alignments, midpoint-rooted). Red squares: gene duplications, where both branches contain the same species; the copies below them are paralogs. Blue circles: speciations; the copies are orthologs.
+</figcaption>
+</figure>
+</div>
+<p>This tree is a <strong>gene tree</strong>, and comparing it with the <strong>species tree</strong> (in which chicken branched off before human and mouse) tells the two kinds of homolog apart. The first split separates myoglobin from the haemoglobins, and the second separates α- from β-globin. Both splits are <strong>duplications</strong>, because each branch still contains all three species, so the genes must have been copied before birds and mammals diverged. Every node below them follows the species tree, with human and mouse joining first, so those nodes are <strong>speciations</strong>. Human and mouse α-globin are therefore orthologs (human α-globin differs from mouse α-globin at 14% of positions, and from chicken α-globin at 30%), while human α- and β-globin are paralogs (54% different).</p>
+<p>Two cautions apply. First, a tree does not by itself say how much each branch can be trusted. This is usually measured by <strong>bootstrap</strong> support: the alignment columns are resampled many times, the tree is rebuilt each time, and we count how often each branch reappears. Second, real phylogenetics uses models of how residues substitute, together with maximum likelihood (for example IQ-TREE or FastTree), whereas this course only needs the concepts. The fact that sequences are related by a tree comes back in Session 8’s homology-aware splits and in Session 12’s coevolution.</p>
+<section class="level3" data-number="4.9.1" id="further-reading-6">
+<h3 class="anchored" data-anchor-id="further-reading-6" data-number="4.9.1"><span class="header-section-number">4.9.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Phylogenetic_tree">Phylogenetic tree</a>, <a href="https://en.wikipedia.org/wiki/Neighbor_joining">Neighbor joining</a> and <a href="https://en.wikipedia.org/wiki/UPGMA">UPGMA</a></li>
+<li>Saitou &amp; Nei (1987), <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">The neighbor-joining method: a new method for reconstructing phylogenetic trees</a>, <em>Mol Biol Evol</em> 4:406-425</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.10" id="reading-an-alignment-entropy-and-sequence-logos">
+<h2 class="anchored" data-anchor-id="reading-an-alignment-entropy-and-sequence-logos" data-number="4.10"><span class="header-section-number">4.10</span> Reading an alignment: entropy and sequence logos</h2>
+<p>A multiple alignment of a whole family is too large to read row by row, so we need a way to summarise it. What matters is how each <strong>column</strong> varies. A position where every sequence has the same residue has been conserved through evolution, usually because it matters for structure or function. A position with many different residues, in contrast, is free to change.</p>
+<p>Session 1’s <strong>entropy</strong> puts a number on this variation. For the residue frequencies <span class="math inline">\(p_a\)</span> in a column, the entropy is</p>
+<p><span class="math display">\[
+H = -\sum_a p_a \log_2 p_a
+\]</span></p>
+<p>It is 0 bits for a fully conserved column and at most <span class="math inline">\(\log_2 20 \approx 4.32\)</span> bits for a protein column where all 20 amino acids are equally common (<span class="math inline">\(\log_2 4 = 2\)</span> bits for DNA). The column’s <strong>information content</strong> is the distance from that maximum, <span class="math inline">\(\log_2 20 - H\)</span>, so it is high for conserved columns and near zero for variable ones. (This is the simple version, which assumes that all amino acids are equally common in the background. Logo programs often correct for background frequencies and for small samples.)</p>
+<p>A <strong>sequence logo</strong> (Schneider &amp; Stephens 1990) turns these numbers into a picture by drawing each column as a stack of letters. The height of the stack is the column’s information content, and the height of each letter within the stack is its frequency. A tall stack with one big letter is therefore a conserved position, and a low stack of many small letters is a variable one. In the logo below, gaps also lower the stack, because the height is multiplied by the fraction of sequences that have a residue in that column.</p>
+<p>The logo of the Pfam globin family, 73 globins from bacteria, plants, worms, insects and vertebrates, shows how few positions are conserved across the whole family:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-globin-logo">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-globin-logo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session04-globin-logo.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-globin-logo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.6: Sequence logo of the Pfam Globin (PF00042) seed alignment: 73 sequences, 141 columns. Stack height is the information content in bits; letter height is the residue’s frequency. Colours by chemistry: hydrophobic black, polar green, basic blue, acidic red, amide purple. The three labelled columns are numbered as in human beta-globin (HBB, mature chain).
+</figcaption>
+</figure>
+</div>
+<p>Only two columns are identical in all 73 sequences. One is <strong>His92</strong> (F8, the “proximal” histidine, whose side chain binds the haem iron), and the other is <strong>Phe42</strong> (CD1, which packs against the haem). A third, <strong>His63</strong> (E7, the “distal” histidine, on the oxygen-binding side of the haem), is His in 73% of the sequences. The average column carries only 1.2 bits. The rest of the fold is held together by positions that stay hydrophobic (the black L, V, I and F stacks, often with several residues sharing a column) rather than by identical residues. An alignment can therefore point to the residues a protein cannot do without. It also shows how the same globin fold is kept even though most pairs of sequences in this alignment share fewer than 20% of their residues.</p>
+<p><strong>A motif without a family: signal peptides.</strong> Logos are not only for families of homologs. Many proteins that are secreted, or that end up in a membrane or in an organelle of the secretory pathway, begin with a <strong>signal peptide</strong>. This short N-terminal sequence, typically 15-30 residues long, sends the new chain into the secretory pathway, and it is cut off once it has done its job. The signal peptides of unrelated proteins share no ancestor and cannot be aligned residue by residue, but they share a design. The first collections, of a few dozen sequences around 1980, already showed a positively charged N-terminus, then a hydrophobic stretch, then a more polar end. The three parts are now called the <strong>n-region</strong>, the <strong>h-region</strong> and the <strong>c-region</strong>. We can draw the design as a logo if we line the signal peptides up on the one position they all have, the <strong>cleavage site</strong>, instead of aligning them by homology:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session04-sp-logo">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session04-sp-logo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-sp-logo.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session04-sp-logo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4.7: Sequence logos of experimentally supported signal peptides from UniProt (the Session 11 dataset), aligned on the cleavage site (dashed line). Positions −25 to −1 are the end of the signal peptide, +1 to +3 the start of the mature protein. Letters are coloured by property: hydrophobic dark grey, small (A, G, S) green, positive blue, negative red, other polar purple. The two logos have different y-scales.
+</figcaption>
+</figure>
+</div>
+<p>The logo shows two kinds of signal. In the h-region no column is conserved, but every column leans the same way, towards hydrophobic residues and above all leucine. What matters there is a property of a whole stretch, not a residue at a given position. Near the cut, in contrast, two single positions stand out. Positions −3 and −1 carry small, uncharged residues (mostly alanine, also glycine and serine), while position −2, between them, is free. This is the <strong>(−3, −1) rule</strong>, found in 1983 in a collection of 78 signal peptides (von Heijne, <a href="https://doi.org/10.1111/j.1432-1033.1983.tb07424.x"><em>Eur. J. Biochem.</em> 133:17</a>). The enzyme that cuts, signal peptidase, needs small side chains at these two positions. The positively charged n-region is blurred in the logo, because signal peptides differ in length, so the left-hand columns mix residues from different regions. It is clearest in bacteria (K and R).</p>
+<p>Like a family’s logo, this description can be turned into a score (Session 5’s PSSM). In 1986, von Heijne built a position weight matrix for positions −13 to +2 around the cleavage site (<a href="https://doi.org/10.1093/nar/14.11.4683"><em>Nucleic Acids Res.</em> 14:4683</a>). The signal peptide comes back several times in the course. Session 7 compares this weight matrix with a neural network, Session 8 uses the hydrophobicity of the h-region as a feature, and Session 11 lets recurrent networks find the regions by themselves.</p>
+<p>Two practical notes apply to logos. With few sequences, the frequencies are noisy and a column can look conserved by chance, so logo programs often apply a small-sample correction. Closely related sequences are also over-represented in most alignments, so real tools weight the sequences as well.</p>
+<p>A multiple alignment is therefore more than a picture, because each column gives a distribution of amino acids. Session 5 turns these distributions into position-specific scores.</p>
+<section class="level3" data-number="4.10.1" id="further-reading-7">
+<h3 class="anchored" data-anchor-id="further-reading-7" data-number="4.10.1"><span class="header-section-number">4.10.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">Multiple sequence alignment</a> — additional methods and applications, e.g. profile HMMs, which Session 5 picks up in full</li>
+<li>von Heijne (1990), <a href="https://doi.org/10.1007/BF01868635">The signal peptide</a>, <em>J. Membr. Biol.</em> 115:195, a short review of the signal-peptide design</li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Sequence_logo">Sequence logo</a>; Schneider &amp; Stephens (1990), “Sequence logos: a new way to display consensus sequences,” <em>Nucleic Acids Research</em> 18:6097-6100</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="4.11" id="the-course-notebook">
+<h2 class="anchored" data-anchor-id="the-course-notebook" data-number="4.11"><span class="header-section-number">4.11</span> The course notebook</h2>
+<p><code>notebooks/session04-alignment-in-code.ipynb</code> implements Needleman-Wunsch and Smith-Waterman from scratch, adapted from Lukas Käll’s open-access <a href="https://github.com/statisticalbiotechnology/bibook"><em>bibook</em></a> (CC BY 4.0). It starts with amino-acid sequences and a simple identity scoring scheme, in which a match scores +1 and any mismatch or gap −1. This is the <span class="math inline">\(V(i,j)\)</span> recurrence above, with the identity matrix standing in for <span class="math inline">\(s(x_i, y_j)\)</span>.</p>
+<p>Rather than presenting a finished matrix, the notebook fills a small worked example one cell at a time, with the reasoning printed out. The example is a real HBB fragment aligned against a hypothetical mutated variant of it. You then complete a partially filled matrix yourself before the real one is revealed, and the traceback is walked through in the same step-by-step way. Both halves of the algorithm thus appear as a sequence of small decisions rather than as a finished picture.</p>
+<p>The notebook then replaces the flat identity scheme with a real substitution matrix, the PAM250 matrix from the “Substitution matrices” section above, loaded from Biopython rather than typed in by hand. With it, the notebook compares global and local alignment of two real globin fragments (from HBB and myoglobin) that share one conserved motif but differ elsewhere. This makes two things directly visible: the practical difference between the two algorithms, and the effect of a graded substitution matrix compared with a flat identity scheme. Finally, the notebook builds the globin gene tree of the section “From alignment to tree” by neighbour joining. Open it in <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session04-alignment-in-code.ipynb">Google Colab</a> via the badge at the top of the notebook page to edit and run it yourself.</p>
+</section>
+<section class="level2" data-number="4.12" id="check-your-understanding">
+<h2 class="anchored" data-anchor-id="check-your-understanding" data-number="4.12"><span class="header-section-number">4.12</span> Check your understanding</h2>
+<p>The questions below give immediate feedback and cover the sections above. They are in the same style as the course’s live in-class peer-instruction quizzes, and the full question bank is in <code>quizzes/session04.md</code> in the repository.</p>
+<div id="session04-quiz"></div>
+<script>
+renderQuiz("session04-quiz", [
+  {
+    question: "In a sequence logo of a protein family, one column is a single tall letter about 4.3 bits high. What does that tell you?",
+    choices: [
+      "Almost every sequence has the same residue there (entropy near 0), so the position is conserved",
+      "The position is the most variable one in the family",
+      "The column is mostly gaps",
+      "The residue is the most common amino acid in proteins"
+    ],
+    correctIndex: 0,
+    explanation: "Stack height is the information content, log2(20) - H. A height near log2(20) = 4.32 bits means entropy near 0: one residue in every sequence."
+  },
+  {
+    question: "Human haemoglobin and human myoglobin arose from an ancient gene duplication within the same genome. What relationship do they have?",
+    choices: ["Orthologs", "Paralogs", "Analogs", "They are not homologous"],
+    correctIndex: 1,
+    explanation: "Paralogs are homologs separated by a gene duplication; orthologs are homologs separated by a speciation event. Paralogs can also sit in different species, if the duplication came before the speciation."
+  },
+  {
+    question: "For two sequences of length around 100, why is it infeasible to try every possible alignment and keep the best one?",
+    choices: [
+      "The number of possible alignments grows so fast (around 10^59 for n=100) that exhaustive search is impossible",
+      "Computers cannot store sequences longer than 100 characters",
+      "Substitution matrices are only defined for sequences shorter than 50 residues",
+      "Alignment scores are undefined once gaps are allowed"
+    ],
+    correctIndex: 0,
+    explanation: "The real number is around 10^59 possible alignments for n=100 &mdash; dynamic programming avoids ever checking most of them."
+  },
+  {
+    question: "Smith-Waterman turns Needleman-Wunsch's global algorithm into a local one with one specific change to the DP matrix. What is that change?",
+    choices: [
+      "Negative values in the matrix are reset to zero, and traceback starts from the highest-scoring cell anywhere and stops at a zero",
+      "The substitution matrix is replaced with a different one",
+      "The gap penalty is changed from linear to affine",
+      "The matrix's rows and columns are transposed"
+    ],
+    correctIndex: 0,
+    explanation: "This single change &mdash; flooring the matrix at zero &mdash; is what turns global alignment into local alignment."
+  },
+  {
+    question: "With an affine gap penalty g(n) = g_open + (n-1) &times; g_ext, using g_open = -10 and g_ext = -1, what is the total penalty for a single gap of length 4?",
+    choices: ["-13", "-40", "-11", "-4"],
+    correctIndex: 0,
+    explanation: "-10 + (4-1) &times; (-1) = -10 - 3 = -13."
+  },
+  {
+    question: "Which pairing correctly describes how PAM and BLOSUM numbering relate to evolutionary distance?",
+    choices: [
+      "A higher PAM number means a more distant comparison; a higher BLOSUM number means a more similar comparison",
+      "A higher PAM number means a more similar comparison; a higher BLOSUM number means a more distant comparison",
+      "Both a higher PAM number and a higher BLOSUM number mean a more distant comparison",
+      "Neither PAM nor BLOSUM numbering relates to evolutionary distance"
+    ],
+    correctIndex: 0,
+    explanation: "The two families' numbering runs in opposite directions &mdash; a common source of confusion."
+  },
+  {
+    question: "Human alpha-globin and mouse beta-globin come from different species. Are they orthologs?",
+    choices: [
+      "No: they are paralogs, because what separates them is the duplication of the ancestral globin gene into alpha and beta, which happened before human and mouse diverged",
+      "Yes: genes from different species are always orthologs",
+      "Yes, because both are haemoglobin subunits",
+      "They are not homologous at all"
+    ],
+    correctIndex: 0,
+    explanation: "Orthology and paralogy are defined by the event at the node that separates the two genes in a gene tree: speciation gives orthologs, duplication gives paralogs."
+  },
+  {
+    question: "Why is a guide tree for progressive alignment not automatically a phylogenetic tree?",
+    choices: [
+      "It is an ordering device built by a quick method (often UPGMA) that assumes equal rates of evolution; a fast-evolving sequence can be placed wrongly",
+      "Guide trees are always identical to phylogenetic trees",
+      "Guide trees are built from the final alignment, so they cannot be wrong",
+      "Phylogenetic trees cannot be built from distances"
+    ],
+    correctIndex: 0,
+    explanation: "Neighbour joining, which allows unequal rates, or likelihood methods are used for phylogeny; the third discussion problem shows UPGMA getting a tree wrong."
+  },
+  {
+    question: "Two proteins align with a high raw score. Why is that alone not enough to call them homologous?",
+    choices: [
+      "The raw score depends on sequence length, substitution matrix and gap penalties; it must be compared with the scores expected for unrelated sequences, which is what an E-value does",
+      "Because high scores are always produced by chance",
+      "Because alignment scores cannot be compared at all",
+      "Because only identical sequences are homologous"
+    ],
+    correctIndex: 0,
+    explanation: "Shuffled or unrelated sequences give a background distribution of scores; for local alignment it is an extreme-value distribution, the basis of BLAST's E-values (Session 5)."
+  }
+]);
+</script>
+</section>
+<section class="level2" data-number="4.13" id="the-lab">
+<h2 class="anchored" data-anchor-id="the-lab" data-number="4.13"><span class="header-section-number">4.13</span> The lab</h2>
+<p>The lab has four steps, all reached through <a download="" href="https://course.bioinfo.se/notebooks/session04-lab.ipynb"><code>notebooks/session04-lab.ipynb</code></a>:</p>
+<ol type="1">
+<li><strong>By hand</strong>: fill in a small Needleman-Wunsch dynamic-programming matrix and trace back the optimal alignment yourself, on paper. This time you use a real substitution matrix (BLOSUM62) instead of the course notebook’s flat identity scheme, on two real protein fragments that are not used anywhere else on this page. The lab notebook checks your work one row at a time rather than computing it for you.</li>
+<li><strong>In code</strong>: see how the score and the alignment from Step 1 change with different gap penalties and substitution matrices. A real search of the Swiss-Prot database, sent to EMBL-EBI’s HMMER server through its web API, then shows the same kind of sensitivity in a genuine E-value. With the wrong matrix, real relatives are not found at all.</li>
+<li><strong>In code</strong>: build and visualise a small, real multiple sequence alignment. This makes the progressive strategy from the section above concrete, on three short real windows from proteins used throughout this course.</li>
+<li><strong>By hand, then in code</strong>: work out the entropy of three columns of that alignment by hand. Then draw the sequence logo of the Pfam globin family, map its most conserved columns onto human HBB, and (optionally) see how few sequences it takes to be fooled by chance.</li>
+</ol>
+<p>When all four steps are done, answer the Session 4 lab quiz on Canvas using your own results.</p>
+<section class="level3" data-number="4.13.1" id="submitting-this-lab">
+<h3 class="anchored" data-anchor-id="submitting-this-lab" data-number="4.13.1"><span class="header-section-number">4.13.1</span> Submitting this lab</h3>
+<p>This lab is administered through Canvas, not through this book. See the course’s Canvas page for the current quiz, the deadline and how to submit.</p>
+</section>
+</section>
+<section class="level2" data-number="4.14" id="whats-next">
+<h2 class="anchored" data-anchor-id="whats-next" data-number="4.14"><span class="header-section-number">4.14</span> What’s next</h2>
+<p>Sequence alignment infers which residues correspond from the sequences alone, and Session 6 asks the same question directly in 3D, with structure alignment. Before that, Session 5 takes up two problems that this session leaves open. First, exact dynamic programming such as Needleman-Wunsch does not scale to searching a new sequence against an entire database, and that is what BLAST’s heuristic is for. Second, once we have many aligned sequences rather than two, we can build a <em>profile</em> from them.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="3 Session 3: Biological Databases" class="pagination-link" href="./session03.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="5 Session 5: Advanced Database Search &amp; Profile Methods" class="pagination-link" href="./session05.html">
+<span class="nav-page-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

@@ -1,0 +1,57 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 7 Lab: Linear Regression vs. a Small MLP</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 7 Lab: Linear Regression vs. a Small MLP</h1>
+<p class='meta'>Preview without answers, from <code>labs/session07-linear-vs-mlp.text2qti.md</code> (last change 2c399a07 2026-10-24). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='https://course.bioinfo.se/notebooks/session07-lab.ipynb' download>download session07-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>A teaser, not a full treatment &ndash; run notebooks/session07-lab.ipynb (Session 8 covers train/validation/test properly; Session 9 covers regularization and architecture choices) and report your own results.</p>
+<div class='text'><h2>The real dataset</h2><p>The notebook fetches 55 real proteins live from EBI&rsquo;s PDBe API (the same API as the Session 7 page&rsquo;s HBB example), or uses a cached copy of the same values if the API is not reachable. For each protein: its amino-acid composition (20 features) and its alpha-helix fraction (the target to predict), across a range of folds from almost no helix to mostly helix.</p></div>
+<div class='q'><div class='qhead'>Question 1 · short answer · 0.5 points</div><p>How many proteins are in the notebook&rsquo;s dataset, and how many features does each one have?</p>
+</div>
+<div class='text'><h2>Why hold anything out at all?</h2><p>Session 8 covers train/validation/test splitting properly; this is just enough of the idea for one teaser comparison.</p></div>
+<div class='q'><div class='qhead'>Question 2 · choose one · 1 point</div><p>Why does the notebook test both models on a held-out 25% of the proteins, rather than on the same data they were fit on?</p>
+<ul><li><p>Held-out data trains faster than the full dataset</p></li><li><p>Testing on data not used for fitting gives an estimate of how well the model generalizes to new examples, rather than how well it memorized the training data</p></li><li><p>It&rsquo;s required by scikit-learn&rsquo;s API</p></li><li><p>Held-out data always gives a lower error than training data</p></li></ul>
+</div>
+<div class='text'><h2>Two models, the same data</h2><p>Linear regression and a small, from-scratch multilayer perceptron (one hidden layer, <code>tanh</code>, plain gradient descent, in the same style as the XOR notebook&rsquo;s hidden-layer model), both fit on the training proteins and both tested on the same held-out ones.</p></div>
+<div class='q'><div class='qhead'>Question 3 · number · 1 point</div><p>What held-out MSE does the notebook report for linear regression?</p>
+</div>
+<div class='q'><div class='qhead'>Question 4 · number · 1 point</div><p>What held-out MSE does the notebook report for the MLP?</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · choose one · 1 point</div><p>The two held-out errors differ by about 0.0001, on 14 test proteins. What can you conclude?</p>
+<ul><li><p>Linear regression is the better model for this task</p></li><li><p>The MLP is the better model, because it is more flexible</p></li><li><p>It is essentially a tie on this split: a difference this small is no evidence that either model is better</p></li><li><p>The MLP must be overfitting, because its error is higher</p></li></ul>
+</div>
+<div class='text'><h2>How noisy is one split?</h2><p>Section 7 repeats the comparison on 10 different random splits of the same 55 proteins.</p></div>
+<div class='q'><div class='qhead'>Question 6 · number · 1 point</div><p>In how many of the 10 splits does the MLP have the lower test MSE?</p>
+</div>
+<div class='q'><div class='qhead'>Question 7 · number · 1 point</div><p>What is the largest linear-regression test MSE across the 10 splits, rounded to 3 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 8 · essay · 1 point</div><p>Section 8 of the notebook asked: if we really wanted to predict the secondary structure of each residue, what important information have we thrown away by representing an entire protein by 20 composition numbers? Answer in two or three sentences, and explain why a hidden layer cannot make up for it.</p>
+</div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>The notebook scrambles the sequence of the most helical protein. What does a model trained on amino-acid composition see for the scrambled sequence?</p>
+<ul><li><p>Exactly the same input vector as for the original, so it must give exactly the same prediction</p></li><li><p>A different input vector, so it predicts a lower helix fraction</p></li><li><p>An error, because the scrambled sequence is not a real protein</p></li><li><p>A vector of zeros</p></li></ul>
+</div>
+<div class='text'><h2>The mechanics, revisited</h2><p>A few conceptual checks on gradient descent and network structure, from earlier in this session.</p></div>
+<div class='q'><div class='qhead'>Question 10 · choose one · 0.5 points</div><p>In the MLP&rsquo;s training loop, what does the extra &ldquo;bias&rdquo; term (b1/b2) actually do?</p>
+<ul><li><p>It removes features that aren&rsquo;t informative</p></li><li><p>It&rsquo;s an extra weight with a constant (always-on) input, letting the model shift its output up or down independent of the input features &ndash; the same role the intercept plays in linear regression</p></li><li><p>It counts how many weights are unused</p></li><li><p>It is a fixed penalty subtracted from the loss</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 11 · choose one · 0.5 points</div><p>Each gradient descent step moves the weights in which direction?</p>
+<ul><li><p>The direction the loss is currently increasing</p></li><li><p>The direction of the negative gradient of the loss</p></li><li><p>A random direction, re-chosen every step</p></li><li><p>Directly toward zero for every weight</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 12 · choose one · 0.5 points</div><p>The notebook&rsquo;s MLP training loop prints training MSE at epoch 0 and after 3000 epochs. Based on your own run, what happened to it?</p>
+<ul><li><p>It decreased substantially and leveled off</p></li><li><p>It increased throughout training</p></li><li><p>It stayed exactly constant</p></li><li><p>It decreased, then increased back to its starting value</p></li></ul>
+</div>
+<div class='text'><h2>Last step -- the feedback survey</h2><p>Before the due date, fill in this lab&rsquo;s feedback survey, &ldquo;Session 7 Lab: feedback&rdquo;, in the same Canvas module. It is anonymous (Canvas records that you filled it in, not what you wrote), and the lab counts as done on time for the bonus points only when both this quiz and the survey are in. It asks for concrete suggestions: what was too long, what background was missing, errors, unclear instructions. Errors and suggestions can also be sent at any time with the <a href="https://bioinfo.se/internal/kb8029-feedback/">feedback form</a>.</p></div>
+</main></body></html>

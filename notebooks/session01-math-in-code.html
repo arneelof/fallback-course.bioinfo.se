@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>Session 1 — Math in code – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta content="../" name="quarto:offset"/>
+<link href="../session02.html" rel="next"/>
+<link href="../session01.html" rel="prev"/>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="../site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="../session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notebooks/session01-math-in-code.html">Session 1 — Notebook</a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="../">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="../KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#part-1-vectors-and-matrices" href="#part-1-vectors-and-matrices" id="toc-part-1-vectors-and-matrices">Part 1: Vectors and matrices</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#vectors-and-their-length" href="#vectors-and-their-length" id="toc-vectors-and-their-length">Vectors and their length</a></li>
+<li><a class="nav-link" data-scroll-target="#dimensions-and-shapes" href="#dimensions-and-shapes" id="toc-dimensions-and-shapes">Dimensions and shapes</a></li>
+<li><a class="nav-link" data-scroll-target="#the-dot-product" href="#the-dot-product" id="toc-the-dot-product">The dot product</a></li>
+<li><a class="nav-link" data-scroll-target="#matrix-multiplication-shapes-and-the-transpose" href="#matrix-multiplication-shapes-and-the-transpose" id="toc-matrix-multiplication-shapes-and-the-transpose">Matrix multiplication, shapes and the transpose</a></li>
+<li><a class="nav-link" data-scroll-target="#normalisation" href="#normalisation" id="toc-normalisation">Normalisation</a></li>
+<li><a class="nav-link" data-scroll-target="#eigenvectors-and-pca-found-by-the-computer" href="#eigenvectors-and-pca-found-by-the-computer" id="toc-eigenvectors-and-pca-found-by-the-computer">Eigenvectors and PCA, found by the computer</a></li>
+<li><a class="nav-link" data-scroll-target="#optional-the-cross-product-used-later-for-alphafold" href="#optional-the-cross-product-used-later-for-alphafold" id="toc-optional-the-cross-product-used-later-for-alphafold">Optional: the cross product (used later, for AlphaFold)</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#part-2-calculus-for-machine-learning" href="#part-2-calculus-for-machine-learning" id="toc-part-2-calculus-for-machine-learning">Part 2: Calculus for machine learning</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#derivatives-the-cheat-sheet" href="#derivatives-the-cheat-sheet" id="toc-derivatives-the-cheat-sheet">Derivatives: the cheat sheet</a></li>
+<li><a class="nav-link" data-scroll-target="#partial-derivatives-and-the-gradient" href="#partial-derivatives-and-the-gradient" id="toc-partial-derivatives-and-the-gradient">Partial derivatives and the gradient</a></li>
+<li><a class="nav-link" data-scroll-target="#gradient-descent-iterated" href="#gradient-descent-iterated" id="toc-gradient-descent-iterated">Gradient descent, iterated</a></li>
+<li><a class="nav-link" data-scroll-target="#optional-integrals" href="#optional-integrals" id="toc-optional-integrals">Optional: integrals</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#part-3-probability-and-statistics" href="#part-3-probability-and-statistics" id="toc-part-3-probability-and-statistics">Part 3: Probability and statistics</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#recap-expectation-variance-and-standard-deviation" href="#recap-expectation-variance-and-standard-deviation" id="toc-recap-expectation-variance-and-standard-deviation">Recap: expectation, variance and standard deviation</a></li>
+<li><a class="nav-link" data-scroll-target="#correlation-pearson-and-spearman" href="#correlation-pearson-and-spearman" id="toc-correlation-pearson-and-spearman">Correlation: Pearson and Spearman</a></li>
+<li><a class="nav-link" data-scroll-target="#conditional-probability" href="#conditional-probability" id="toc-conditional-probability">Conditional probability</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#optional-bayes-rule" href="#optional-bayes-rule" id="toc-optional-bayes-rule">Optional: Bayes’ rule</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#logs-and-log-odds" href="#logs-and-log-odds" id="toc-logs-and-log-odds">Logs and log-odds</a></li>
+<li><a class="nav-link" data-scroll-target="#likelihood" href="#likelihood" id="toc-likelihood">Likelihood</a></li>
+<li><a class="nav-link" data-scroll-target="#entropy-and-cross-entropy" href="#entropy-and-cross-entropy" id="toc-entropy-and-cross-entropy">Entropy and cross-entropy</a></li>
+<li><a class="nav-link" data-scroll-target="#p-values-with-a-t-test" href="#p-values-with-a-t-test" id="toc-p-values-with-a-t-test">p-values, with a t-test</a></li>
+<li><a class="nav-link" data-scroll-target="#the-multiple-testing-problem" href="#the-multiple-testing-problem" id="toc-the-multiple-testing-problem">The multiple testing problem</a></li>
+<li><a class="nav-link" data-scroll-target="#worked-example-rna-seq-differential-expression-and-the-volcano-plot" href="#worked-example-rna-seq-differential-expression-and-the-volcano-plot" id="toc-worked-example-rna-seq-differential-expression-and-the-volcano-plot">Worked example: RNA-seq differential expression and the volcano plot</a></li>
+</ul></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title">Session 1 — Math in code</h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<p><a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session01-math-in-code.ipynb" style="display:inline-block;padding:10px 18px;background-color:#F9AB00;color:#000000;font-weight:bold;text-decoration:none;border-radius:6px;font-family:sans-serif;font-size:14px;">▶  Open in Google Colab</a></p>
+<p>This notebook checks the worked examples and practice problems of the Session 1 page in code, in the same order as the page. It introduces no new ideas; Session 2 is where the code side of the course starts properly. Read the page first, work the practice problems by hand, then run the cells to check.</p>
+<p>The three parts follow the page:</p>
+<ol type="1">
+<li><strong>Vectors and matrices:</strong> length, dimensions and shapes, the dot product, matrix multiplication and the transpose, normalization, eigenvectors (found by the computer), and the optional cross product.</li>
+<li><strong>Calculus for machine learning:</strong> the derivative cheat sheet, the gradient (by hand and by automatic differentiation), gradient descent, and optional integrals.</li>
+<li><strong>Probability and statistics:</strong> a short recap, correlation (Pearson and Spearman), conditional probability (and optional Bayes’ rule), logs and log-odds, likelihood, p-values, multiple testing and the RNA-seq volcano plot.</li>
+</ol>
+<div class="cell" data-execution_count="1" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:05.540085Z","iopub.status.busy":"2026-09-28T14:00:05.539860Z","iopub.status.idle":"2026-09-28T14:00:07.558605Z","shell.execute_reply":"2026-09-28T14:00:07.557930Z"}}' id="3c5b3178">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-hidden="true" href="#cb1-1" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-2"><a aria-hidden="true" href="#cb1-2" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-3"><a aria-hidden="true" href="#cb1-3" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span>
+<span id="cb1-4"><a aria-hidden="true" href="#cb1-4" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a aria-hidden="true" href="#cb1-5" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-6"><a aria-hidden="true" href="#cb1-6" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-7"><a aria-hidden="true" href="#cb1-7" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb1-8"><a aria-hidden="true" href="#cb1-8" tabindex="-1"></a>torch.manual_seed(<span class="dv">0</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>&lt;torch._C.Generator at 0x7b6b0459fb30&gt;</code></pre>
+</div>
+</div>
+<section class="level1" id="part-1-vectors-and-matrices">
+<h1>Part 1: Vectors and matrices</h1>
+<section class="level2" id="vectors-and-their-length">
+<h2 class="anchored" data-anchor-id="vectors-and-their-length">Vectors and their length</h2>
+<p>A vector is an ordered list of numbers; its length (norm) is <span class="math inline">\(\lVert \mathbf{v} \rVert = \sqrt{v_1^2 + \dots + v_n^2}\)</span>.</p>
+<div class="cell" data-execution_count="2" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.561648Z","iopub.status.busy":"2026-09-28T14:00:07.561382Z","iopub.status.idle":"2026-09-28T14:00:07.565609Z","shell.execute_reply":"2026-09-28T14:00:07.565023Z"}}' id="4d1606ea">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a aria-hidden="true" href="#cb3-1" tabindex="-1"></a>v <span class="op">=</span> torch.tensor([<span class="fl">3.</span>, <span class="fl">4.</span>])</span>
+<span id="cb3-2"><a aria-hidden="true" href="#cb3-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"||(3, 4)|| ="</span>, torch.linalg.vector_norm(v).item())</span>
+<span id="cb3-3"><a aria-hidden="true" href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a aria-hidden="true" href="#cb3-4" tabindex="-1"></a><span class="co"># Practice problem 1a: length of (1, 2, 2)</span></span>
+<span id="cb3-5"><a aria-hidden="true" href="#cb3-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"practice problem 1a:"</span>, torch.linalg.vector_norm(torch.tensor([<span class="fl">1.</span>, <span class="fl">2.</span>, <span class="fl">2.</span>])).item())</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||(3, 4)|| = 5.0
+practice problem 1a: 3.0</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="dimensions-and-shapes">
+<h2 class="anchored" data-anchor-id="dimensions-and-shapes">Dimensions and shapes</h2>
+<p>The number of entries of a vector is its dimension; a matrix has a shape (rows, columns). In code, <code>.shape</code> tells you, and checking it is the habit that prevents most errors.</p>
+<div class="cell" data-execution_count="3" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.567674Z","iopub.status.busy":"2026-09-28T14:00:07.567523Z","iopub.status.idle":"2026-09-28T14:00:07.578499Z","shell.execute_reply":"2026-09-28T14:00:07.577772Z"}}' id="713087dc">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a aria-hidden="true" href="#cb5-1" tabindex="-1"></a>composition <span class="op">=</span> torch.rand(<span class="dv">20</span>)                 <span class="co"># amino acid composition of one protein</span></span>
+<span id="cb5-2"><a aria-hidden="true" href="#cb5-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"one protein's composition: dimension"</span>, composition.shape[<span class="dv">0</span>])</span>
+<span id="cb5-3"><a aria-hidden="true" href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a aria-hidden="true" href="#cb5-4" tabindex="-1"></a>expression <span class="op">=</span> torch.rand(<span class="dv">50</span>, <span class="dv">20000</span>)           <span class="co"># 50 samples x 20,000 genes</span></span>
+<span id="cb5-5"><a aria-hidden="true" href="#cb5-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"expression matrix shape:"</span>, <span class="bu">tuple</span>(expression.shape),</span>
+<span id="cb5-6"><a aria-hidden="true" href="#cb5-6" tabindex="-1"></a>      <span class="st">"-&gt; row = one sample, column = one gene"</span>)</span>
+<span id="cb5-7"><a aria-hidden="true" href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a aria-hidden="true" href="#cb5-8" tabindex="-1"></a>X <span class="op">=</span> torch.rand(<span class="dv">1000</span>, <span class="dv">20</span>)                     <span class="co"># 1,000 proteins x 20 features</span></span>
+<span id="cb5-9"><a aria-hidden="true" href="#cb5-9" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"protein feature matrix X:"</span>, <span class="bu">tuple</span>(X.shape))</span>
+<span id="cb5-10"><a aria-hidden="true" href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a aria-hidden="true" href="#cb5-11" tabindex="-1"></a>batch <span class="op">=</span> torch.zeros(<span class="dv">32</span>, <span class="dv">100</span>, <span class="dv">20</span>)             <span class="co"># 32 sequences x 100 positions x 20 amino acids (one-hot)</span></span>
+<span id="cb5-12"><a aria-hidden="true" href="#cb5-12" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"a batch of one-hot sequences is a 3D tensor:"</span>, <span class="bu">tuple</span>(batch.shape))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>one protein's composition: dimension 20
+expression matrix shape: (50, 20000) -&gt; row = one sample, column = one gene
+protein feature matrix X: (1000, 20)
+a batch of one-hot sequences is a 3D tensor: (32, 100, 20)</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="the-dot-product">
+<h2 class="anchored" data-anchor-id="the-dot-product">The dot product</h2>
+<p><span class="math inline">\(\mathbf{w} \cdot \mathbf{x} = w_1 x_1 + \dots + w_n x_n\)</span>: multiply corresponding entries and add. Its sign follows the angle between the vectors.</p>
+<div class="cell" data-execution_count="4" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.580743Z","iopub.status.busy":"2026-09-28T14:00:07.580609Z","iopub.status.idle":"2026-09-28T14:00:07.586583Z","shell.execute_reply":"2026-09-28T14:00:07.585947Z"}}' id="dd3e4167">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a aria-hidden="true" href="#cb7-1" tabindex="-1"></a>w <span class="op">=</span> torch.tensor([<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>])</span>
+<span id="cb7-2"><a aria-hidden="true" href="#cb7-2" tabindex="-1"></a>x <span class="op">=</span> torch.tensor([<span class="fl">1.</span>, <span class="fl">4.</span>])</span>
+<span id="cb7-3"><a aria-hidden="true" href="#cb7-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"(2, -1) . (1, 4) ="</span>, torch.dot(w, x).item())</span>
+<span id="cb7-4"><a aria-hidden="true" href="#cb7-4" tabindex="-1"></a>angle <span class="op">=</span> torch.rad2deg(torch.arccos(torch.dot(w, x) <span class="op">/</span> (torch.linalg.norm(w) <span class="op">*</span> torch.linalg.norm(x))))</span>
+<span id="cb7-5"><a aria-hidden="true" href="#cb7-5" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"angle between them: </span><span class="sc">{</span>angle<span class="sc">.</span>item()<span class="sc">:.0f}</span><span class="ss"> degrees (past 90, so the dot product is negative)"</span>)</span>
+<span id="cb7-6"><a aria-hidden="true" href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a aria-hidden="true" href="#cb7-7" tabindex="-1"></a><span class="co"># Practice problem 2</span></span>
+<span id="cb7-8"><a aria-hidden="true" href="#cb7-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"practice problem 2:"</span>, torch.dot(torch.tensor([<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>, <span class="fl">3.</span>]), torch.tensor([<span class="fl">1.</span>, <span class="fl">4.</span>, <span class="fl">0.</span>])).item())</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(2, -1) . (1, 4) = -2.0
+angle between them: 103 degrees (past 90, so the dot product is negative)
+practice problem 2: -2.0</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="matrix-multiplication-shapes-and-the-transpose">
+<h2 class="anchored" data-anchor-id="matrix-multiplication-shapes-and-the-transpose">Matrix multiplication, shapes and the transpose</h2>
+<p>A matrix–vector product is a batch of dot products, one per row. The rule: <span class="math inline">\((n \times m)(m \times k) \rightarrow (n \times k)\)</span>; the inner dimensions must match.</p>
+<div class="cell" data-execution_count="5" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.588711Z","iopub.status.busy":"2026-09-28T14:00:07.588555Z","iopub.status.idle":"2026-09-28T14:00:07.592986Z","shell.execute_reply":"2026-09-28T14:00:07.592267Z"}}' id="7575f579">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a aria-hidden="true" href="#cb9-1" tabindex="-1"></a>M <span class="op">=</span> torch.tensor([[<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>], [<span class="fl">0.</span>, <span class="fl">3.</span>]])</span>
+<span id="cb9-2"><a aria-hidden="true" href="#cb9-2" tabindex="-1"></a>x <span class="op">=</span> torch.tensor([<span class="fl">1.</span>, <span class="fl">4.</span>])</span>
+<span id="cb9-3"><a aria-hidden="true" href="#cb9-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"M @ x ="</span>, M <span class="op">@</span> x)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>M @ x = tensor([-2., 12.])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="6" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.595111Z","iopub.status.busy":"2026-09-28T14:00:07.594962Z","iopub.status.idle":"2026-09-28T14:00:07.600493Z","shell.execute_reply":"2026-09-28T14:00:07.599720Z"}}' id="4e6352c1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a aria-hidden="true" href="#cb11-1" tabindex="-1"></a><span class="co"># Shapes: 1,000 proteins x 20 features, and a classifier with 20 weights</span></span>
+<span id="cb11-2"><a aria-hidden="true" href="#cb11-2" tabindex="-1"></a>X <span class="op">=</span> torch.rand(<span class="dv">1000</span>, <span class="dv">20</span>)          <span class="co"># e.g. amino acid composition of 1,000 proteins</span></span>
+<span id="cb11-3"><a aria-hidden="true" href="#cb11-3" tabindex="-1"></a>w <span class="op">=</span> torch.randn(<span class="dv">20</span>)</span>
+<span id="cb11-4"><a aria-hidden="true" href="#cb11-4" tabindex="-1"></a>scores <span class="op">=</span> X <span class="op">@</span> w</span>
+<span id="cb11-5"><a aria-hidden="true" href="#cb11-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"X:"</span>, <span class="bu">tuple</span>(X.shape), <span class="st">" w:"</span>, <span class="bu">tuple</span>(w.shape), <span class="st">" X @ w:"</span>, <span class="bu">tuple</span>(scores.shape), <span class="st">"-&gt; one score per protein"</span>)</span>
+<span id="cb11-6"><a aria-hidden="true" href="#cb11-6" tabindex="-1"></a></span>
+<span id="cb11-7"><a aria-hidden="true" href="#cb11-7" tabindex="-1"></a>W <span class="op">=</span> torch.randn(<span class="dv">20</span>, <span class="dv">3</span>)            <span class="co"># three classes: three weight vectors side by side</span></span>
+<span id="cb11-8"><a aria-hidden="true" href="#cb11-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"W:"</span>, <span class="bu">tuple</span>(W.shape), <span class="st">" X @ W:"</span>, <span class="bu">tuple</span>((X <span class="op">@</span> W).shape), <span class="st">"-&gt; three scores per protein"</span>)</span>
+<span id="cb11-9"><a aria-hidden="true" href="#cb11-9" tabindex="-1"></a></span>
+<span id="cb11-10"><a aria-hidden="true" href="#cb11-10" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"X.T:"</span>, <span class="bu">tuple</span>(X.T.shape), <span class="st">" X.T @ X:"</span>, <span class="bu">tuple</span>((X.T <span class="op">@</span> X).shape))</span>
+<span id="cb11-11"><a aria-hidden="true" href="#cb11-11" tabindex="-1"></a></span>
+<span id="cb11-12"><a aria-hidden="true" href="#cb11-12" tabindex="-1"></a><span class="co"># The most common error: the inner dimensions do not match</span></span>
+<span id="cb11-13"><a aria-hidden="true" href="#cb11-13" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb11-14"><a aria-hidden="true" href="#cb11-14" tabindex="-1"></a>    X <span class="op">@</span> torch.randn(<span class="dv">21</span>)</span>
+<span id="cb11-15"><a aria-hidden="true" href="#cb11-15" tabindex="-1"></a><span class="cf">except</span> <span class="pp">RuntimeError</span> <span class="im">as</span> e:</span>
+<span id="cb11-16"><a aria-hidden="true" href="#cb11-16" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"X @ (21 weights) fails:"</span>, e)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>X: (1000, 20)  w: (20,)  X @ w: (1000,) -&gt; one score per protein
+W: (20, 3)  X @ W: (1000, 3) -&gt; three scores per protein
+X.T: (20, 1000)  X.T @ X: (20, 20)
+X @ (21 weights) fails: size mismatch, got input (1000), mat (1000x20), vec (21)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="7" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.602592Z","iopub.status.busy":"2026-09-28T14:00:07.602457Z","iopub.status.idle":"2026-09-28T14:00:07.609739Z","shell.execute_reply":"2026-09-28T14:00:07.609022Z"}}' id="976af048">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a aria-hidden="true" href="#cb13-1" tabindex="-1"></a><span class="co"># Worked example: three proteins, two features, w = (2, -1)</span></span>
+<span id="cb13-2"><a aria-hidden="true" href="#cb13-2" tabindex="-1"></a>X3 <span class="op">=</span> torch.tensor([[<span class="fl">0.5</span>, <span class="fl">0.1</span>], [<span class="fl">0.2</span>, <span class="fl">0.4</span>], [<span class="fl">0.3</span>, <span class="fl">0.3</span>]])</span>
+<span id="cb13-3"><a aria-hidden="true" href="#cb13-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"X @ w ="</span>, X3 <span class="op">@</span> torch.tensor([<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>]))</span>
+<span id="cb13-4"><a aria-hidden="true" href="#cb13-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"X transposed:</span><span class="ch">\n</span><span class="st">"</span>, X3.T)</span>
+<span id="cb13-5"><a aria-hidden="true" href="#cb13-5" tabindex="-1"></a></span>
+<span id="cb13-6"><a aria-hidden="true" href="#cb13-6" tabindex="-1"></a><span class="co"># Practice problem 4: shapes for a 500 samples x 20 genes matrix</span></span>
+<span id="cb13-7"><a aria-hidden="true" href="#cb13-7" tabindex="-1"></a>X4 <span class="op">=</span> torch.rand(<span class="dv">500</span>, <span class="dv">20</span>)<span class="op">;</span> u <span class="op">=</span> torch.rand(<span class="dv">500</span>)</span>
+<span id="cb13-8"><a aria-hidden="true" href="#cb13-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">practice problem 4:"</span>, <span class="bu">tuple</span>(X4.shape), <span class="bu">tuple</span>((X4 <span class="op">@</span> torch.rand(<span class="dv">20</span>)).shape),</span>
+<span id="cb13-9"><a aria-hidden="true" href="#cb13-9" tabindex="-1"></a>      <span class="bu">tuple</span>(X4.T.shape), <span class="bu">tuple</span>((X4.T <span class="op">@</span> X4).shape), <span class="st">" X.T @ u:"</span>, <span class="bu">tuple</span>((X4.T <span class="op">@</span> u).shape))</span>
+<span id="cb13-10"><a aria-hidden="true" href="#cb13-10" tabindex="-1"></a></span>
+<span id="cb13-11"><a aria-hidden="true" href="#cb13-11" tabindex="-1"></a><span class="co"># Practice problem 5</span></span>
+<span id="cb13-12"><a aria-hidden="true" href="#cb13-12" tabindex="-1"></a>X5 <span class="op">=</span> torch.tensor([[<span class="fl">1.</span>, <span class="fl">0.</span>, <span class="fl">2.</span>], [<span class="fl">0.</span>, <span class="fl">1.</span>, <span class="fl">1.</span>]])</span>
+<span id="cb13-13"><a aria-hidden="true" href="#cb13-13" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"practice problem 5: X @ w ="</span>, X5 <span class="op">@</span> torch.tensor([<span class="fl">1.</span>, <span class="fl">2.</span>, <span class="fl">3.</span>]), <span class="st">"</span><span class="ch">\n</span><span class="st"> X.T =</span><span class="ch">\n</span><span class="st">"</span>, X5.T)</span>
+<span id="cb13-14"><a aria-hidden="true" href="#cb13-14" tabindex="-1"></a></span>
+<span id="cb13-15"><a aria-hidden="true" href="#cb13-15" tabindex="-1"></a><span class="co"># (AB)^T = B^T A^T</span></span>
+<span id="cb13-16"><a aria-hidden="true" href="#cb13-16" tabindex="-1"></a>A_ <span class="op">=</span> torch.randn(<span class="dv">4</span>, <span class="dv">3</span>)<span class="op">;</span> B_ <span class="op">=</span> torch.randn(<span class="dv">3</span>, <span class="dv">2</span>)</span>
+<span id="cb13-17"><a aria-hidden="true" href="#cb13-17" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"(AB).T equals B.T @ A.T:"</span>, torch.allclose((A_ <span class="op">@</span> B_).T, B_.T <span class="op">@</span> A_.T))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>X @ w = tensor([0.9000, 0.0000, 0.3000])
+X transposed:
+ tensor([[0.5000, 0.2000, 0.3000],
+        [0.1000, 0.4000, 0.3000]])
+
+practice problem 4: (500, 20) (500,) (20, 500) (20, 20)  X.T @ u: (20,)
+practice problem 5: X @ w = tensor([7., 5.]) 
+ X.T =
+ tensor([[1., 0.],
+        [0., 1.],
+        [2., 1.]])
+(AB).T equals B.T @ A.T: True</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="normalisation">
+<h2 class="anchored" data-anchor-id="normalisation">Normalisation</h2>
+<p>Dividing by the length gives a unit vector. The same length formula, applied to all entries of a matrix, gives the Frobenius norm.</p>
+<div class="cell" data-execution_count="8" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.612097Z","iopub.status.busy":"2026-09-28T14:00:07.611932Z","iopub.status.idle":"2026-09-28T14:00:07.617979Z","shell.execute_reply":"2026-09-28T14:00:07.617306Z"}}' id="40d17148">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a aria-hidden="true" href="#cb15-1" tabindex="-1"></a>w <span class="op">=</span> torch.tensor([<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>])</span>
+<span id="cb15-2"><a aria-hidden="true" href="#cb15-2" tabindex="-1"></a>w_hat <span class="op">=</span> w <span class="op">/</span> torch.linalg.norm(w)</span>
+<span id="cb15-3"><a aria-hidden="true" href="#cb15-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"||w|| ="</span>, <span class="bu">round</span>(torch.linalg.norm(w).item(), <span class="dv">3</span>), <span class="st">"  unit vector:"</span>, w_hat,</span>
+<span id="cb15-4"><a aria-hidden="true" href="#cb15-4" tabindex="-1"></a>      <span class="st">"  its length:"</span>, torch.linalg.norm(w_hat).item())</span>
+<span id="cb15-5"><a aria-hidden="true" href="#cb15-5" tabindex="-1"></a></span>
+<span id="cb15-6"><a aria-hidden="true" href="#cb15-6" tabindex="-1"></a><span class="co"># Practice problem 3: normalise (3, 4)</span></span>
+<span id="cb15-7"><a aria-hidden="true" href="#cb15-7" tabindex="-1"></a>v <span class="op">=</span> torch.tensor([<span class="fl">3.</span>, <span class="fl">4.</span>])</span>
+<span id="cb15-8"><a aria-hidden="true" href="#cb15-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"practice problem 3:"</span>, v <span class="op">/</span> torch.linalg.norm(v))</span>
+<span id="cb15-9"><a aria-hidden="true" href="#cb15-9" tabindex="-1"></a></span>
+<span id="cb15-10"><a aria-hidden="true" href="#cb15-10" tabindex="-1"></a><span class="co"># Practice problem 1b: Frobenius norm of the 2x2 identity matrix</span></span>
+<span id="cb15-11"><a aria-hidden="true" href="#cb15-11" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"practice problem 1b:"</span>, torch.linalg.matrix_norm(torch.eye(<span class="dv">2</span>), <span class="bu">ord</span><span class="op">=</span><span class="st">"fro"</span>).item())</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>||w|| = 2.236   unit vector: tensor([ 0.8944, -0.4472])   its length: 0.9999999403953552
+practice problem 3: tensor([0.6000, 0.8000])
+practice problem 1b: 1.4142135381698608</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="eigenvectors-and-pca-found-by-the-computer">
+<h2 class="anchored" data-anchor-id="eigenvectors-and-pca-found-by-the-computer">Eigenvectors and PCA, found by the computer</h2>
+<p>No hand calculation: <code>torch.linalg.eigh</code> (or <code>np.linalg.eigh</code>) finds eigenvalues and eigenvectors, and we check <span class="math inline">\(A\mathbf{v} = \lambda\mathbf{v}\)</span>. PCA uses the eigenvectors of a covariance matrix <span class="math inline">\(X^\top X/(n-1)\)</span>.</p>
+<div class="cell" data-execution_count="9" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.620457Z","iopub.status.busy":"2026-09-28T14:00:07.620308Z","iopub.status.idle":"2026-09-28T14:00:07.626180Z","shell.execute_reply":"2026-09-28T14:00:07.625590Z"}}' id="140ab1de">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a aria-hidden="true" href="#cb17-1" tabindex="-1"></a><span class="co"># Eigenvalues/eigenvectors of a symmetric 2x2 matrix, found by the computer</span></span>
+<span id="cb17-2"><a aria-hidden="true" href="#cb17-2" tabindex="-1"></a>A <span class="op">=</span> torch.tensor([[<span class="fl">2.</span>, <span class="fl">1.</span>], [<span class="fl">1.</span>, <span class="fl">2.</span>]])</span>
+<span id="cb17-3"><a aria-hidden="true" href="#cb17-3" tabindex="-1"></a>eigvals, eigvecs <span class="op">=</span> torch.linalg.eigh(A)</span>
+<span id="cb17-4"><a aria-hidden="true" href="#cb17-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"eigenvalues:"</span>, eigvals)</span>
+<span id="cb17-5"><a aria-hidden="true" href="#cb17-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"eigenvectors (columns):</span><span class="ch">\n</span><span class="st">"</span>, eigvecs)</span>
+<span id="cb17-6"><a aria-hidden="true" href="#cb17-6" tabindex="-1"></a></span>
+<span id="cb17-7"><a aria-hidden="true" href="#cb17-7" tabindex="-1"></a><span class="co"># check: A @ v should equal eigenvalue * v for each eigenvector</span></span>
+<span id="cb17-8"><a aria-hidden="true" href="#cb17-8" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
+<span id="cb17-9"><a aria-hidden="true" href="#cb17-9" tabindex="-1"></a>    v <span class="op">=</span> eigvecs[:, i]</span>
+<span id="cb17-10"><a aria-hidden="true" href="#cb17-10" tabindex="-1"></a>    lam <span class="op">=</span> eigvals[i]</span>
+<span id="cb17-11"><a aria-hidden="true" href="#cb17-11" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"A @ v = </span><span class="sc">{</span>A <span class="op">@</span> v<span class="sc">}</span><span class="ss">,  lambda * v = </span><span class="sc">{</span>lam <span class="op">*</span> v<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb17-12"><a aria-hidden="true" href="#cb17-12" tabindex="-1"></a></span>
+<span id="cb17-13"><a aria-hidden="true" href="#cb17-13" tabindex="-1"></a><span class="co"># Practice problem 6: (1, -1) is an eigenvector with eigenvalue 1</span></span>
+<span id="cb17-14"><a aria-hidden="true" href="#cb17-14" tabindex="-1"></a>v6 <span class="op">=</span> torch.tensor([<span class="fl">1.</span>, <span class="op">-</span><span class="fl">1.</span>])</span>
+<span id="cb17-15"><a aria-hidden="true" href="#cb17-15" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">practice problem 6: A @ (1,-1) ="</span>, A <span class="op">@</span> v6)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>eigenvalues: tensor([1., 3.])
+eigenvectors (columns):
+ tensor([[-0.7071,  0.7071],
+        [ 0.7071,  0.7071]])
+A @ v = tensor([-0.7071,  0.7071]),  lambda * v = tensor([-0.7071,  0.7071])
+A @ v = tensor([2.1213, 2.1213]),  lambda * v = tensor([2.1213, 2.1213])
+
+practice problem 6: A @ (1,-1) = tensor([ 1., -1.])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="10" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.628114Z","iopub.status.busy":"2026-09-28T14:00:07.627971Z","iopub.status.idle":"2026-09-28T14:00:07.632547Z","shell.execute_reply":"2026-09-28T14:00:07.631866Z"}}' id="fe8410c5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a aria-hidden="true" href="#cb19-1" tabindex="-1"></a><span class="co"># PCA in miniature: 200 samples of two correlated features</span></span>
+<span id="cb19-2"><a aria-hidden="true" href="#cb19-2" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb19-3"><a aria-hidden="true" href="#cb19-3" tabindex="-1"></a>x1 <span class="op">=</span> rng.normal(size<span class="op">=</span><span class="dv">200</span>)</span>
+<span id="cb19-4"><a aria-hidden="true" href="#cb19-4" tabindex="-1"></a>data <span class="op">=</span> np.column_stack([x1, <span class="fl">0.8</span> <span class="op">*</span> x1 <span class="op">+</span> <span class="fl">0.3</span> <span class="op">*</span> rng.normal(size<span class="op">=</span><span class="dv">200</span>)])</span>
+<span id="cb19-5"><a aria-hidden="true" href="#cb19-5" tabindex="-1"></a>data <span class="op">=</span> data <span class="op">-</span> data.mean(axis<span class="op">=</span><span class="dv">0</span>)                          <span class="co"># centre the columns</span></span>
+<span id="cb19-6"><a aria-hidden="true" href="#cb19-6" tabindex="-1"></a>cov <span class="op">=</span> data.T <span class="op">@</span> data <span class="op">/</span> (<span class="bu">len</span>(data) <span class="op">-</span> <span class="dv">1</span>)                    <span class="co"># (2 x 200)(200 x 2) -&gt; (2 x 2)</span></span>
+<span id="cb19-7"><a aria-hidden="true" href="#cb19-7" tabindex="-1"></a>vals, vecs <span class="op">=</span> np.linalg.eigh(cov)</span>
+<span id="cb19-8"><a aria-hidden="true" href="#cb19-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"covariance matrix:</span><span class="ch">\n</span><span class="st">"</span>, cov.<span class="bu">round</span>(<span class="dv">3</span>))</span>
+<span id="cb19-9"><a aria-hidden="true" href="#cb19-9" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"first principal component (largest eigenvalue):"</span>, vecs[:, <span class="op">-</span><span class="dv">1</span>].<span class="bu">round</span>(<span class="dv">3</span>),</span>
+<span id="cb19-10"><a aria-hidden="true" href="#cb19-10" tabindex="-1"></a>      <span class="ss">f"explains </span><span class="sc">{</span>vals[<span class="op">-</span><span class="dv">1</span>] <span class="op">/</span> vals<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">:.0%}</span><span class="ss"> of the variance"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>covariance matrix:
+ [[0.929 0.724]
+ [0.724 0.658]]
+first principal component (largest eigenvalue): [-0.769 -0.639] explains 96% of the variance</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="optional-the-cross-product-used-later-for-alphafold">
+<h2 class="anchored" data-anchor-id="optional-the-cross-product-used-later-for-alphafold">Optional: the cross product (used later, for AlphaFold)</h2>
+<div class="cell" data-execution_count="11" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.634593Z","iopub.status.busy":"2026-09-28T14:00:07.634458Z","iopub.status.idle":"2026-09-28T14:00:07.639435Z","shell.execute_reply":"2026-09-28T14:00:07.638716Z"}}' id="f1512bee">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a aria-hidden="true" href="#cb21-1" tabindex="-1"></a>a <span class="op">=</span> torch.tensor([<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>, <span class="fl">3.</span>])</span>
+<span id="cb21-2"><a aria-hidden="true" href="#cb21-2" tabindex="-1"></a>b <span class="op">=</span> torch.tensor([<span class="fl">1.</span>, <span class="fl">4.</span>, <span class="fl">0.</span>])</span>
+<span id="cb21-3"><a aria-hidden="true" href="#cb21-3" tabindex="-1"></a>cross <span class="op">=</span> torch.cross(a, b, dim<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb21-4"><a aria-hidden="true" href="#cb21-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"a x b ="</span>, cross)</span>
+<span id="cb21-5"><a aria-hidden="true" href="#cb21-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"a . (a x b) ="</span>, torch.dot(a, cross).item(), <span class="st">" (should be 0 -- perpendicular to a)"</span>)</span>
+<span id="cb21-6"><a aria-hidden="true" href="#cb21-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"b . (a x b) ="</span>, torch.dot(b, cross).item(), <span class="st">" (should be 0 -- perpendicular to b)"</span>)</span>
+<span id="cb21-7"><a aria-hidden="true" href="#cb21-7" tabindex="-1"></a></span>
+<span id="cb21-8"><a aria-hidden="true" href="#cb21-8" tabindex="-1"></a><span class="co"># Optional practice problem</span></span>
+<span id="cb21-9"><a aria-hidden="true" href="#cb21-9" tabindex="-1"></a>a2 <span class="op">=</span> torch.tensor([<span class="fl">1.</span>, <span class="fl">2.</span>, <span class="fl">0.</span>])</span>
+<span id="cb21-10"><a aria-hidden="true" href="#cb21-10" tabindex="-1"></a>b2 <span class="op">=</span> torch.tensor([<span class="fl">0.</span>, <span class="fl">1.</span>, <span class="fl">3.</span>])</span>
+<span id="cb21-11"><a aria-hidden="true" href="#cb21-11" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">optional practice, (1,2,0) x (0,1,3):"</span>, torch.cross(a2, b2, dim<span class="op">=</span><span class="dv">0</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>a x b = tensor([-12.,   3.,   9.])
+a . (a x b) = 0.0  (should be 0 -- perpendicular to a)
+b . (a x b) = 0.0  (should be 0 -- perpendicular to b)
+
+optional practice, (1,2,0) x (0,1,3): tensor([ 6., -3.,  1.])</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section class="level1" id="part-2-calculus-for-machine-learning">
+<h1>Part 2: Calculus for machine learning</h1>
+<section class="level2" id="derivatives-the-cheat-sheet">
+<h2 class="anchored" data-anchor-id="derivatives-the-cheat-sheet">Derivatives: the cheat sheet</h2>
+<p>Checked with SymPy, including the sigmoid’s derivative <span class="math inline">\(\sigma(z)(1-\sigma(z))\)</span>.</p>
+<div class="cell" data-execution_count="12" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:07.641935Z","iopub.status.busy":"2026-09-28T14:00:07.641765Z","iopub.status.idle":"2026-09-28T14:00:08.027937Z","shell.execute_reply":"2026-09-28T14:00:08.027119Z"}}' id="2e5d5a8b">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a aria-hidden="true" href="#cb23-1" tabindex="-1"></a><span class="im">import</span> sympy <span class="im">as</span> sp</span>
+<span id="cb23-2"><a aria-hidden="true" href="#cb23-2" tabindex="-1"></a></span>
+<span id="cb23-3"><a aria-hidden="true" href="#cb23-3" tabindex="-1"></a>x_sym, z_sym <span class="op">=</span> sp.symbols(<span class="st">'x z'</span>)</span>
+<span id="cb23-4"><a aria-hidden="true" href="#cb23-4" tabindex="-1"></a></span>
+<span id="cb23-5"><a aria-hidden="true" href="#cb23-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"d/dx(5)      ="</span>, sp.diff(sp.Integer(<span class="dv">5</span>), x_sym))</span>
+<span id="cb23-6"><a aria-hidden="true" href="#cb23-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"d/dx(x**4)   ="</span>, sp.diff(x_sym<span class="op">**</span><span class="dv">4</span>, x_sym))</span>
+<span id="cb23-7"><a aria-hidden="true" href="#cb23-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"d/dx(e**x)   ="</span>, sp.diff(sp.exp(x_sym), x_sym))</span>
+<span id="cb23-8"><a aria-hidden="true" href="#cb23-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"d/dx(ln x)   ="</span>, sp.diff(sp.log(x_sym), x_sym))</span>
+<span id="cb23-9"><a aria-hidden="true" href="#cb23-9" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"d/dx(sin x)  ="</span>, sp.diff(sp.sin(x_sym), x_sym))</span>
+<span id="cb23-10"><a aria-hidden="true" href="#cb23-10" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"d/dx(cos x)  ="</span>, sp.diff(sp.cos(x_sym), x_sym))</span>
+<span id="cb23-11"><a aria-hidden="true" href="#cb23-11" tabindex="-1"></a></span>
+<span id="cb23-12"><a aria-hidden="true" href="#cb23-12" tabindex="-1"></a><span class="co"># Sigmoid derivative, verified against the closed form sigma(z)(1-sigma(z))</span></span>
+<span id="cb23-13"><a aria-hidden="true" href="#cb23-13" tabindex="-1"></a>sigma <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> sp.exp(<span class="op">-</span>z_sym))</span>
+<span id="cb23-14"><a aria-hidden="true" href="#cb23-14" tabindex="-1"></a>dsigma <span class="op">=</span> sp.diff(sigma, z_sym)</span>
+<span id="cb23-15"><a aria-hidden="true" href="#cb23-15" tabindex="-1"></a>check <span class="op">=</span> sp.simplify(dsigma <span class="op">-</span> sigma <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> sigma))</span>
+<span id="cb23-16"><a aria-hidden="true" href="#cb23-16" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"sigmoid'(z) - sigma(z)(1-sigma(z)) simplifies to:"</span>, check, <span class="st">"(should be 0)"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>d/dx(5)      = 0
+d/dx(x**4)   = 4*x**3
+d/dx(e**x)   = exp(x)
+d/dx(ln x)   = 1/x
+d/dx(sin x)  = cos(x)
+d/dx(cos x)  = -sin(x)
+sigmoid'(z) - sigma(z)(1-sigma(z)) simplifies to: 0 (should be 0)</code></pre>
+</div>
+</div>
+<p>The cheat-sheet figure: <span class="math inline">\(f(x)=\sin(x)\)</span> and <span class="math inline">\(f'(x)=\cos(x)\)</span>; the derivative is zero at the peaks and troughs of <span class="math inline">\(f\)</span>.</p>
+<div class="cell" data-execution_count="13" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.030499Z","iopub.status.busy":"2026-09-28T14:00:08.030267Z","iopub.status.idle":"2026-09-28T14:00:08.246663Z","shell.execute_reply":"2026-09-28T14:00:08.245784Z"}}' id="65b80fbe">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a aria-hidden="true" href="#cb25-1" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb25-2"><a aria-hidden="true" href="#cb25-2" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb25-3"><a aria-hidden="true" href="#cb25-3" tabindex="-1"></a></span>
+<span id="cb25-4"><a aria-hidden="true" href="#cb25-4" tabindex="-1"></a>xf <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">+</span> <span class="fl">0.5</span>, <span class="dv">400</span>)</span>
+<span id="cb25-5"><a aria-hidden="true" href="#cb25-5" tabindex="-1"></a>f_vals <span class="op">=</span> np.sin(xf)</span>
+<span id="cb25-6"><a aria-hidden="true" href="#cb25-6" tabindex="-1"></a>fprime_vals <span class="op">=</span> np.cos(xf)</span>
+<span id="cb25-7"><a aria-hidden="true" href="#cb25-7" tabindex="-1"></a></span>
+<span id="cb25-8"><a aria-hidden="true" href="#cb25-8" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">3.2</span>))</span>
+<span id="cb25-9"><a aria-hidden="true" href="#cb25-9" tabindex="-1"></a>ax.plot(xf, f_vals, label<span class="op">=</span><span class="vs">r"</span><span class="dv">$</span><span class="vs">f</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs">=</span><span class="dv">\s</span><span class="vs">in</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb25-10"><a aria-hidden="true" href="#cb25-10" tabindex="-1"></a>ax.plot(xf, fprime_vals, label<span class="op">=</span><span class="vs">r"</span><span class="dv">$</span><span class="vs">f'</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs">=</span><span class="er">\</span><span class="vs">cos</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>, color<span class="op">=</span><span class="st">"#d62728"</span>, linewidth<span class="op">=</span><span class="dv">2</span>, linestyle<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb25-11"><a aria-hidden="true" href="#cb25-11" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb25-12"><a aria-hidden="true" href="#cb25-12" tabindex="-1"></a><span class="cf">for</span> xv <span class="kw">in</span> [np.pi <span class="op">/</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="op">*</span> np.pi <span class="op">/</span> <span class="dv">2</span>]:</span>
+<span id="cb25-13"><a aria-hidden="true" href="#cb25-13" tabindex="-1"></a>    ax.axvline(xv, color<span class="op">=</span><span class="st">"gray"</span>, linewidth<span class="op">=</span><span class="fl">0.6</span>, linestyle<span class="op">=</span><span class="st">":"</span>)</span>
+<span id="cb25-14"><a aria-hidden="true" href="#cb25-14" tabindex="-1"></a>    ax.plot(xv, np.sin(xv), <span class="st">'o'</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb25-15"><a aria-hidden="true" href="#cb25-15" tabindex="-1"></a>    ax.plot(xv, <span class="dv">0</span>, <span class="st">'o'</span>, color<span class="op">=</span><span class="st">"#d62728"</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb25-16"><a aria-hidden="true" href="#cb25-16" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"x=</span><span class="sc">{</span>xv<span class="sc">:.4f}</span><span class="ss">  f(x)=</span><span class="sc">{</span>np<span class="sc">.</span>sin(xv)<span class="sc">:.4f}</span><span class="ss">  f'(x)=</span><span class="sc">{</span>np<span class="sc">.</span>cos(xv)<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb25-17"><a aria-hidden="true" href="#cb25-17" tabindex="-1"></a>ax.set_xlabel(<span class="st">"x"</span>)</span>
+<span id="cb25-18"><a aria-hidden="true" href="#cb25-18" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"upper right"</span>, framealpha<span class="op">=</span><span class="fl">0.9</span>)</span>
+<span id="cb25-19"><a aria-hidden="true" href="#cb25-19" tabindex="-1"></a>ax.set_title(<span class="st">"The derivative is zero where the original function is flat"</span>)</span>
+<span id="cb25-20"><a aria-hidden="true" href="#cb25-20" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb25-21"><a aria-hidden="true" href="#cb25-21" tabindex="-1"></a>plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>x=1.5708  f(x)=1.0000  f'(x)=0.000000
+x=4.7124  f(x)=-1.0000  f'(x)=-0.000000</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session01-math-in-code_files/figure-html/cell-14-output-2.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section class="level2" id="partial-derivatives-and-the-gradient">
+<h2 class="anchored" data-anchor-id="partial-derivatives-and-the-gradient">Partial derivatives and the gradient</h2>
+<p>The gradient of <span class="math inline">\(f(x_0, x_1) = 3x_0^2 + 2x_0 x_1\)</span> at <span class="math inline">\((1, 2)\)</span>, checked two ways: by hand, and by PyTorch’s automatic differentiation (the machinery Session 9’s backpropagation uses).</p>
+<div class="cell" data-execution_count="14" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.248919Z","iopub.status.busy":"2026-09-28T14:00:08.248770Z","iopub.status.idle":"2026-09-28T14:00:08.381010Z","shell.execute_reply":"2026-09-28T14:00:08.380199Z"}}' id="f5c0c347">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a aria-hidden="true" href="#cb27-1" tabindex="-1"></a><span class="co"># f(x0, x1) = 3*x0**2 + 2*x0*x1, at the point (1, 2)</span></span>
+<span id="cb27-2"><a aria-hidden="true" href="#cb27-2" tabindex="-1"></a>x0 <span class="op">=</span> torch.tensor(<span class="fl">1.</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb27-3"><a aria-hidden="true" href="#cb27-3" tabindex="-1"></a>x1 <span class="op">=</span> torch.tensor(<span class="fl">2.</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb27-4"><a aria-hidden="true" href="#cb27-4" tabindex="-1"></a>f <span class="op">=</span> <span class="dv">3</span><span class="op">*</span>x0<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> <span class="dv">2</span><span class="op">*</span>x0<span class="op">*</span>x1</span>
+<span id="cb27-5"><a aria-hidden="true" href="#cb27-5" tabindex="-1"></a>f.backward()</span>
+<span id="cb27-6"><a aria-hidden="true" href="#cb27-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"autograd gradient:"</span>, (x0.grad.item(), x1.grad.item()))</span>
+<span id="cb27-7"><a aria-hidden="true" href="#cb27-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"by-hand answer was: (10, 2) -- matches"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>autograd gradient: (10.0, 2.0)
+by-hand answer was: (10, 2) -- matches</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="gradient-descent-iterated">
+<h2 class="anchored" data-anchor-id="gradient-descent-iterated">Gradient descent, iterated</h2>
+<p><span class="math inline">\(x_{n+1} = x_n - \eta f'(x_n)\)</span> on <span class="math inline">\(f(x) = (x-3)^2\)</span> with <span class="math inline">\(\eta = 0.3\)</span>: the same table as on the page.</p>
+<div class="cell" data-execution_count="15" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.382978Z","iopub.status.busy":"2026-09-28T14:00:08.382847Z","iopub.status.idle":"2026-09-28T14:00:08.386428Z","shell.execute_reply":"2026-09-28T14:00:08.385785Z"}}' id="c16f56bc">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a aria-hidden="true" href="#cb29-1" tabindex="-1"></a><span class="kw">def</span> f(x):</span>
+<span id="cb29-2"><a aria-hidden="true" href="#cb29-2" tabindex="-1"></a>    <span class="cf">return</span> (x <span class="op">-</span> <span class="dv">3</span>)<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb29-3"><a aria-hidden="true" href="#cb29-3" tabindex="-1"></a></span>
+<span id="cb29-4"><a aria-hidden="true" href="#cb29-4" tabindex="-1"></a><span class="kw">def</span> fprime(x):</span>
+<span id="cb29-5"><a aria-hidden="true" href="#cb29-5" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">2</span><span class="op">*</span>(x <span class="op">-</span> <span class="dv">3</span>)</span>
+<span id="cb29-6"><a aria-hidden="true" href="#cb29-6" tabindex="-1"></a></span>
+<span id="cb29-7"><a aria-hidden="true" href="#cb29-7" tabindex="-1"></a>x <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb29-8"><a aria-hidden="true" href="#cb29-8" tabindex="-1"></a>eta <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb29-9"><a aria-hidden="true" href="#cb29-9" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">4</span>):</span>
+<span id="cb29-10"><a aria-hidden="true" href="#cb29-10" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"n=</span><span class="sc">{</span>n<span class="sc">}</span><span class="ss">  x_n=</span><span class="sc">{</span>x<span class="sc">:.3f}</span><span class="ss">  f(x_n)=</span><span class="sc">{</span>f(x)<span class="sc">:.3f}</span><span class="ss">  f'(x_n)=</span><span class="sc">{</span>fprime(x)<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb29-11"><a aria-hidden="true" href="#cb29-11" tabindex="-1"></a>    x <span class="op">=</span> x <span class="op">-</span> eta <span class="op">*</span> fprime(x)</span>
+<span id="cb29-12"><a aria-hidden="true" href="#cb29-12" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"n=4  x_n=</span><span class="sc">{</span>x<span class="sc">:.3f}</span><span class="ss">  (converging toward the true minimum at x=3)"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n=0  x_n=0.000  f(x_n)=9.000  f'(x_n)=-6.000
+n=1  x_n=1.800  f(x_n)=1.440  f'(x_n)=-2.400
+n=2  x_n=2.520  f(x_n)=0.230  f'(x_n)=-0.960
+n=3  x_n=2.808  f(x_n)=0.037  f'(x_n)=-0.384
+n=4  x_n=2.923  (converging toward the true minimum at x=3)</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="optional-integrals">
+<h2 class="anchored" data-anchor-id="optional-integrals">Optional: integrals</h2>
+<p>Integrating <span class="math inline">\(f'(x) = 2(x-3)\)</span> recovers <span class="math inline">\(f(x) = (x-3)^2\)</span> up to a constant, and the practice problem <span class="math inline">\(f(x) = 4x^3\)</span>.</p>
+<div class="cell" data-execution_count="16" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.388185Z","iopub.status.busy":"2026-09-28T14:00:08.388062Z","iopub.status.idle":"2026-09-28T14:00:08.422968Z","shell.execute_reply":"2026-09-28T14:00:08.422293Z"}}' id="cc7c1161">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a aria-hidden="true" href="#cb31-1" tabindex="-1"></a>fprime_expr <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (x_sym <span class="op">-</span> <span class="dv">3</span>)</span>
+<span id="cb31-2"><a aria-hidden="true" href="#cb31-2" tabindex="-1"></a>F <span class="op">=</span> sp.integrate(fprime_expr, x_sym)</span>
+<span id="cb31-3"><a aria-hidden="true" href="#cb31-3" tabindex="-1"></a>f_expr <span class="op">=</span> (x_sym <span class="op">-</span> <span class="dv">3</span>)<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb31-4"><a aria-hidden="true" href="#cb31-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"f'(x)            ="</span>, fprime_expr)</span>
+<span id="cb31-5"><a aria-hidden="true" href="#cb31-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"integral of f'(x) ="</span>, F)</span>
+<span id="cb31-6"><a aria-hidden="true" href="#cb31-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"F(x) - f(x)       ="</span>, sp.simplify(F <span class="op">-</span> f_expr), <span class="st">" (a constant -- integration recovers f(x) up to +C)"</span>)</span>
+<span id="cb31-7"><a aria-hidden="true" href="#cb31-7" tabindex="-1"></a></span>
+<span id="cb31-8"><a aria-hidden="true" href="#cb31-8" tabindex="-1"></a><span class="co"># Practice problem check: f(x) = 4x^3</span></span>
+<span id="cb31-9"><a aria-hidden="true" href="#cb31-9" tabindex="-1"></a>f2 <span class="op">=</span> <span class="dv">4</span> <span class="op">*</span> x_sym<span class="op">**</span><span class="dv">3</span></span>
+<span id="cb31-10"><a aria-hidden="true" href="#cb31-10" tabindex="-1"></a>f2prime <span class="op">=</span> sp.diff(f2, x_sym)</span>
+<span id="cb31-11"><a aria-hidden="true" href="#cb31-11" tabindex="-1"></a>F2 <span class="op">=</span> sp.integrate(f2prime, x_sym)</span>
+<span id="cb31-12"><a aria-hidden="true" href="#cb31-12" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb31-13"><a aria-hidden="true" href="#cb31-13" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"f(x) = 4x^3, f'(x) ="</span>, f2prime, <span class="st">", integral of f'(x) ="</span>, F2)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f'(x)            = 2*x - 6
+integral of f'(x) = x**2 - 6*x
+F(x) - f(x)       = -9  (a constant -- integration recovers f(x) up to +C)
+
+f(x) = 4x^3, f'(x) = 12*x**2 , integral of f'(x) = 4*x**3</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section class="level1" id="part-3-probability-and-statistics">
+<h1>Part 3: Probability and statistics</h1>
+<section class="level2" id="recap-expectation-variance-and-standard-deviation">
+<h2 class="anchored" data-anchor-id="recap-expectation-variance-and-standard-deviation">Recap: expectation, variance and standard deviation</h2>
+<p>For a fair die, and the 68-95-99.7 rule of the normal distribution.</p>
+<div class="cell" data-execution_count="17" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.425269Z","iopub.status.busy":"2026-09-28T14:00:08.425130Z","iopub.status.idle":"2026-09-28T14:00:08.429441Z","shell.execute_reply":"2026-09-28T14:00:08.428792Z"}}' id="f911e37c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a aria-hidden="true" href="#cb33-1" tabindex="-1"></a>outcomes <span class="op">=</span> np.arange(<span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb33-2"><a aria-hidden="true" href="#cb33-2" tabindex="-1"></a>mean <span class="op">=</span> outcomes.mean()</span>
+<span id="cb33-3"><a aria-hidden="true" href="#cb33-3" tabindex="-1"></a>var <span class="op">=</span> ((outcomes <span class="op">-</span> mean) <span class="op">**</span> <span class="dv">2</span>).mean()</span>
+<span id="cb33-4"><a aria-hidden="true" href="#cb33-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"E[X] ="</span>, mean, <span class="st">"  Var(X) ="</span>, <span class="bu">round</span>(var, <span class="dv">3</span>), <span class="st">"(= 35/12)  sigma ="</span>, <span class="bu">round</span>(var <span class="op">**</span> <span class="fl">0.5</span>, <span class="dv">3</span>))</span>
+<span id="cb33-5"><a aria-hidden="true" href="#cb33-5" tabindex="-1"></a></span>
+<span id="cb33-6"><a aria-hidden="true" href="#cb33-6" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]:</span>
+<span id="cb33-7"><a aria-hidden="true" href="#cb33-7" tabindex="-1"></a>    p <span class="op">=</span> stats.norm.cdf(k) <span class="op">-</span> stats.norm.cdf(<span class="op">-</span>k)</span>
+<span id="cb33-8"><a aria-hidden="true" href="#cb33-8" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"fraction of a normal distribution within </span><span class="sc">{</span>k<span class="sc">}</span><span class="ss"> sigma: </span><span class="sc">{</span>p<span class="sc">:.1%}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>E[X] = 3.5   Var(X) = 2.917 (= 35/12)  sigma = 1.708
+fraction of a normal distribution within 1 sigma: 68.3%
+fraction of a normal distribution within 2 sigma: 95.4%
+fraction of a normal distribution within 3 sigma: 99.7%</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="correlation-pearson-and-spearman">
+<h2 class="anchored" data-anchor-id="correlation-pearson-and-spearman">Correlation: Pearson and Spearman</h2>
+<p>The page’s worked example (Pearson against Spearman when one value is extreme), and the U-shaped case where both are zero.</p>
+<div class="cell" data-execution_count="18" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.431378Z","iopub.status.busy":"2026-09-28T14:00:08.431249Z","iopub.status.idle":"2026-09-28T14:00:08.438294Z","shell.execute_reply":"2026-09-28T14:00:08.437610Z"}}' id="5b09a8c9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a aria-hidden="true" href="#cb35-1" tabindex="-1"></a>mrna <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">100</span>]</span>
+<span id="cb35-2"><a aria-hidden="true" href="#cb35-2" tabindex="-1"></a>protein <span class="op">=</span> [<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">10</span>]</span>
+<span id="cb35-3"><a aria-hidden="true" href="#cb35-3" tabindex="-1"></a>r, p_r <span class="op">=</span> stats.pearsonr(mrna, protein)</span>
+<span id="cb35-4"><a aria-hidden="true" href="#cb35-4" tabindex="-1"></a>rho, p_rho <span class="op">=</span> stats.spearmanr(mrna, protein)</span>
+<span id="cb35-5"><a aria-hidden="true" href="#cb35-5" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Pearson r = </span><span class="sc">{</span>r<span class="sc">:.2f}</span><span class="ss">   Spearman rho = </span><span class="sc">{</span>rho<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb35-6"><a aria-hidden="true" href="#cb35-6" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"with 5 instead of 100: Pearson r = </span><span class="sc">{</span>stats<span class="sc">.</span>pearsonr([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], protein)[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb35-7"><a aria-hidden="true" href="#cb35-7" tabindex="-1"></a></span>
+<span id="cb35-8"><a aria-hidden="true" href="#cb35-8" tabindex="-1"></a><span class="co"># Spearman is Pearson on the ranks</span></span>
+<span id="cb35-9"><a aria-hidden="true" href="#cb35-9" tabindex="-1"></a>ranks <span class="op">=</span> stats.rankdata(mrna)</span>
+<span id="cb35-10"><a aria-hidden="true" href="#cb35-10" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"ranks of the mRNA levels:"</span>, ranks, <span class="st">"-&gt; Pearson on ranks ="</span>, <span class="bu">round</span>(stats.pearsonr(ranks, protein)[<span class="dv">0</span>], <span class="dv">2</span>))</span>
+<span id="cb35-11"><a aria-hidden="true" href="#cb35-11" tabindex="-1"></a></span>
+<span id="cb35-12"><a aria-hidden="true" href="#cb35-12" tabindex="-1"></a><span class="co"># A U-shaped relationship: strong, but neither coefficient sees it</span></span>
+<span id="cb35-13"><a aria-hidden="true" href="#cb35-13" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">7</span>)</span>
+<span id="cb35-14"><a aria-hidden="true" href="#cb35-14" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"y = x^2: Pearson r = </span><span class="sc">{</span>stats<span class="sc">.</span>pearsonr(x, x<span class="op">**</span><span class="dv">2</span>)[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="ss">, Spearman rho = </span><span class="sc">{</span>stats<span class="sc">.</span>spearmanr(x, x<span class="op">**</span><span class="dv">2</span>)[<span class="dv">0</span>]<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Pearson r = 0.72   Spearman rho = 1.00
+with 5 instead of 100: Pearson r = 1.00
+ranks of the mRNA levels: [1. 2. 3. 4. 5.] -&gt; Pearson on ranks = 1.0
+y = x^2: Pearson r = 0.00, Spearman rho = 0.00</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="conditional-probability">
+<h2 class="anchored" data-anchor-id="conditional-probability">Conditional probability</h2>
+<p><span class="math inline">\(P(A \mid B) = P(A \text{ and } B)/P(B)\)</span>: restrict to the cases where <span class="math inline">\(B\)</span> holds. Checked exactly and by simulating half a million rolls, then the membrane-protein example, where the direction of conditioning matters.</p>
+<div class="cell" data-execution_count="19" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.440323Z","iopub.status.busy":"2026-09-28T14:00:08.440189Z","iopub.status.idle":"2026-09-28T14:00:08.452267Z","shell.execute_reply":"2026-09-28T14:00:08.451732Z"}}' id="eac5288c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a aria-hidden="true" href="#cb37-1" tabindex="-1"></a>conditioned <span class="op">=</span> outcomes[outcomes <span class="op">&gt;</span> <span class="dv">3</span>]</span>
+<span id="cb37-2"><a aria-hidden="true" href="#cb37-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"P(even | X &gt; 3) exact:     "</span>, np.mean(conditioned <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>), <span class="st">"= 2/3"</span>)</span>
+<span id="cb37-3"><a aria-hidden="true" href="#cb37-3" tabindex="-1"></a></span>
+<span id="cb37-4"><a aria-hidden="true" href="#cb37-4" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb37-5"><a aria-hidden="true" href="#cb37-5" tabindex="-1"></a>rolls <span class="op">=</span> rng.integers(<span class="dv">1</span>, <span class="dv">7</span>, size<span class="op">=</span><span class="dv">500_000</span>)</span>
+<span id="cb37-6"><a aria-hidden="true" href="#cb37-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"P(even | X &gt; 3) simulated: "</span>, <span class="bu">round</span>(np.mean(rolls[rolls <span class="op">&gt;</span> <span class="dv">3</span>] <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>), <span class="dv">4</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(even | X &gt; 3) exact:      0.6666666666666666 = 2/3
+P(even | X &gt; 3) simulated:  0.6658</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="20" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.454647Z","iopub.status.busy":"2026-09-28T14:00:08.454516Z","iopub.status.idle":"2026-09-28T14:00:08.458183Z","shell.execute_reply":"2026-09-28T14:00:08.457497Z"}}' id="8fe92800">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a aria-hidden="true" href="#cb39-1" tabindex="-1"></a><span class="co"># The direction matters: membrane proteins and signal peptides (200 proteins)</span></span>
+<span id="cb39-2"><a aria-hidden="true" href="#cb39-2" tabindex="-1"></a>membrane, sp_in_membrane, sp_in_other, total <span class="op">=</span> <span class="dv">60</span>, <span class="dv">30</span>, <span class="dv">20</span>, <span class="dv">200</span></span>
+<span id="cb39-3"><a aria-hidden="true" href="#cb39-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"P(signal peptide | membrane) ="</span>, sp_in_membrane <span class="op">/</span> membrane)</span>
+<span id="cb39-4"><a aria-hidden="true" href="#cb39-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"P(membrane | signal peptide) ="</span>, sp_in_membrane <span class="op">/</span> (sp_in_membrane <span class="op">+</span> sp_in_other))</span>
+<span id="cb39-5"><a aria-hidden="true" href="#cb39-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"practice problem 1: P(signal peptide | not membrane) ="</span>, <span class="bu">round</span>(sp_in_other <span class="op">/</span> (total <span class="op">-</span> membrane), <span class="dv">3</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(signal peptide | membrane) = 0.5
+P(membrane | signal peptide) = 0.6
+practice problem 1: P(signal peptide | not membrane) = 0.143</code></pre>
+</div>
+</div>
+<section class="level3" id="optional-bayes-rule">
+<h3 class="anchored" data-anchor-id="optional-bayes-rule">Optional: Bayes’ rule</h3>
+<p>The diagnostic test from the page’s optional box, first by Bayes’ rule, then by counting 100,000 people.</p>
+<div class="cell" data-execution_count="21" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.460667Z","iopub.status.busy":"2026-09-28T14:00:08.460534Z","iopub.status.idle":"2026-09-28T14:00:08.463913Z","shell.execute_reply":"2026-09-28T14:00:08.463358Z"}}' id="af0be81c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a aria-hidden="true" href="#cb41-1" tabindex="-1"></a>prevalence, sensitivity, false_positive_rate <span class="op">=</span> <span class="fl">0.01</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span></span>
+<span id="cb41-2"><a aria-hidden="true" href="#cb41-2" tabindex="-1"></a>p_positive <span class="op">=</span> sensitivity <span class="op">*</span> prevalence <span class="op">+</span> false_positive_rate <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> prevalence)</span>
+<span id="cb41-3"><a aria-hidden="true" href="#cb41-3" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Bayes' rule: P(disease | positive) = </span><span class="sc">{</span>sensitivity <span class="op">*</span> prevalence <span class="op">/</span> p_positive<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb41-4"><a aria-hidden="true" href="#cb41-4" tabindex="-1"></a></span>
+<span id="cb41-5"><a aria-hidden="true" href="#cb41-5" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100_000</span></span>
+<span id="cb41-6"><a aria-hidden="true" href="#cb41-6" tabindex="-1"></a>sick, healthy <span class="op">=</span> prevalence <span class="op">*</span> n, (<span class="dv">1</span> <span class="op">-</span> prevalence) <span class="op">*</span> n</span>
+<span id="cb41-7"><a aria-hidden="true" href="#cb41-7" tabindex="-1"></a>true_pos, false_pos <span class="op">=</span> sensitivity <span class="op">*</span> sick, false_positive_rate <span class="op">*</span> healthy</span>
+<span id="cb41-8"><a aria-hidden="true" href="#cb41-8" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"counting:    </span><span class="sc">{</span>true_pos<span class="sc">:.0f}</span><span class="ss"> true positives / </span><span class="sc">{</span>true_pos <span class="op">+</span> false_pos<span class="sc">:.0f}</span><span class="ss"> positives = </span><span class="sc">{</span>true_pos <span class="op">/</span> (true_pos <span class="op">+</span> false_pos)<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bayes' rule: P(disease | positive) = 0.161
+counting:    950 true positives / 5900 positives = 0.161</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section class="level2" id="logs-and-log-odds">
+<h2 class="anchored" data-anchor-id="logs-and-log-odds">Logs and log-odds</h2>
+<p>Products of many probabilities underflow to zero; sums of their logs do not. A log-odds score compares a model with a background, position by position. The same logs give the volcano plot’s <span class="math inline">\(-\log_{10}(p)\)</span>, and the sigmoid turns a log-odds back into a probability.</p>
+<div class="cell" data-execution_count="22" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.466067Z","iopub.status.busy":"2026-09-28T14:00:08.465944Z","iopub.status.idle":"2026-09-28T14:00:08.471013Z","shell.execute_reply":"2026-09-28T14:00:08.470461Z"}}' id="3bf922f7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a aria-hidden="true" href="#cb43-1" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"0.25**1000        ="</span>, <span class="fl">0.25</span> <span class="op">**</span> <span class="dv">1000</span>, <span class="st">" (rounds to zero)"</span>)</span>
+<span id="cb43-2"><a aria-hidden="true" href="#cb43-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"1000*log10(0.25) ="</span>, <span class="bu">round</span>(<span class="dv">1000</span> <span class="op">*</span> math.log10(<span class="fl">0.25</span>), <span class="dv">1</span>))</span>
+<span id="cb43-3"><a aria-hidden="true" href="#cb43-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"log(3) + log(7) ="</span>, <span class="bu">round</span>(math.log(<span class="dv">3</span>) <span class="op">+</span> math.log(<span class="dv">7</span>), <span class="dv">6</span>), <span class="st">"  log(3*7) ="</span>, <span class="bu">round</span>(math.log(<span class="dv">21</span>), <span class="dv">6</span>))</span>
+<span id="cb43-4"><a aria-hidden="true" href="#cb43-4" tabindex="-1"></a></span>
+<span id="cb43-5"><a aria-hidden="true" href="#cb43-5" tabindex="-1"></a><span class="co"># Log-odds of GCGCAT: GC-rich model (G, C 0.35; A, T 0.15) against a uniform background, in bits</span></span>
+<span id="cb43-6"><a aria-hidden="true" href="#cb43-6" tabindex="-1"></a>model <span class="op">=</span> {<span class="st">"G"</span>: <span class="fl">0.35</span>, <span class="st">"C"</span>: <span class="fl">0.35</span>, <span class="st">"A"</span>: <span class="fl">0.15</span>, <span class="st">"T"</span>: <span class="fl">0.15</span>}</span>
+<span id="cb43-7"><a aria-hidden="true" href="#cb43-7" tabindex="-1"></a><span class="kw">def</span> log_odds(seq):</span>
+<span id="cb43-8"><a aria-hidden="true" href="#cb43-8" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(math.log2(model[b] <span class="op">/</span> <span class="fl">0.25</span>) <span class="cf">for</span> b <span class="kw">in</span> seq)</span>
+<span id="cb43-9"><a aria-hidden="true" href="#cb43-9" tabindex="-1"></a>S <span class="op">=</span> log_odds(<span class="st">"GCGCAT"</span>)</span>
+<span id="cb43-10"><a aria-hidden="true" href="#cb43-10" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">S(GCGCAT) = </span><span class="sc">{</span>S<span class="sc">:.2f}</span><span class="ss"> bits -&gt; </span><span class="sc">{</span><span class="dv">2</span> <span class="op">**</span> S<span class="sc">:.2f}</span><span class="ss"> times more likely under the GC-rich model"</span>)</span>
+<span id="cb43-11"><a aria-hidden="true" href="#cb43-11" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"practice problem 3: S(AT) = </span><span class="sc">{</span>log_odds(<span class="st">'AT'</span>)<span class="sc">:.2f}</span><span class="ss"> bits (favours the background)"</span>)</span>
+<span id="cb43-12"><a aria-hidden="true" href="#cb43-12" tabindex="-1"></a></span>
+<span id="cb43-13"><a aria-hidden="true" href="#cb43-13" tabindex="-1"></a><span class="co"># -log10(p) on a volcano plot</span></span>
+<span id="cb43-14"><a aria-hidden="true" href="#cb43-14" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">-log10(0.001) ="</span>, <span class="op">-</span>math.log10(<span class="fl">0.001</span>), <span class="st">"  practice problem 5: -log10(1e-6) ="</span>, <span class="op">-</span>math.log10(<span class="fl">1e-6</span>))</span>
+<span id="cb43-15"><a aria-hidden="true" href="#cb43-15" tabindex="-1"></a></span>
+<span id="cb43-16"><a aria-hidden="true" href="#cb43-16" tabindex="-1"></a><span class="co"># The sigmoid undoes a natural log-odds</span></span>
+<span id="cb43-17"><a aria-hidden="true" href="#cb43-17" tabindex="-1"></a><span class="kw">def</span> sigmoid(z):</span>
+<span id="cb43-18"><a aria-hidden="true" href="#cb43-18" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> math.exp(<span class="op">-</span>z))</span>
+<span id="cb43-19"><a aria-hidden="true" href="#cb43-19" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">sigmoid(ln(0.8 / 0.2)) ="</span>, <span class="bu">round</span>(sigmoid(math.log(<span class="fl">0.8</span> <span class="op">/</span> <span class="fl">0.2</span>)), <span class="dv">6</span>), <span class="st">"(back to p = 0.8)"</span>)</span>
+<span id="cb43-20"><a aria-hidden="true" href="#cb43-20" tabindex="-1"></a><span class="cf">for</span> z <span class="kw">in</span> [<span class="op">-</span><span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">5</span>]:</span>
+<span id="cb43-21"><a aria-hidden="true" href="#cb43-21" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"sigmoid(</span><span class="sc">{</span>z<span class="sc">}</span><span class="ss">) = </span><span class="sc">{</span>sigmoid(z)<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.25**1000        = 0.0  (rounds to zero)
+1000*log10(0.25) = -602.1
+log(3) + log(7) = 3.044522   log(3*7) = 3.044522
+
+S(GCGCAT) = 0.47 bits -&gt; 1.38 times more likely under the GC-rich model
+practice problem 3: S(AT) = -1.47 bits (favours the background)
+
+-log10(0.001) = 3.0   practice problem 5: -log10(1e-6) = 6.0
+
+sigmoid(ln(0.8 / 0.2)) = 0.8 (back to p = 0.8)
+sigmoid(-5) = 0.0067
+sigmoid(0) = 0.5000
+sigmoid(5) = 0.9933</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="likelihood">
+<h2 class="anchored" data-anchor-id="likelihood">Likelihood</h2>
+<p><span class="math inline">\(L(p) = p^7 (1-p)^3\)</span> for a fragment with 7 G/C out of 10 bases, and the maximum-likelihood value of <span class="math inline">\(p\)</span>.</p>
+<div class="cell" data-execution_count="23" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.473476Z","iopub.status.busy":"2026-09-28T14:00:08.473339Z","iopub.status.idle":"2026-09-28T14:00:08.477036Z","shell.execute_reply":"2026-09-28T14:00:08.476424Z"}}' id="87f19541">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a aria-hidden="true" href="#cb45-1" tabindex="-1"></a><span class="co"># 7 G/C out of 10 bases: L(p) = p^7 (1-p)^3</span></span>
+<span id="cb45-2"><a aria-hidden="true" href="#cb45-2" tabindex="-1"></a><span class="kw">def</span> L(p, k<span class="op">=</span><span class="dv">7</span>, n<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb45-3"><a aria-hidden="true" href="#cb45-3" tabindex="-1"></a>    <span class="cf">return</span> p <span class="op">**</span> k <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> p) <span class="op">**</span> (n <span class="op">-</span> k)</span>
+<span id="cb45-4"><a aria-hidden="true" href="#cb45-4" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"L(0.5) = </span><span class="sc">{</span>L(<span class="fl">0.5</span>)<span class="sc">:.5f}</span><span class="ss">   L(0.7) = </span><span class="sc">{</span>L(<span class="fl">0.7</span>)<span class="sc">:.5f}</span><span class="ss">   ratio = </span><span class="sc">{</span>L(<span class="fl">0.7</span>) <span class="op">/</span> L(<span class="fl">0.5</span>)<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb45-5"><a aria-hidden="true" href="#cb45-5" tabindex="-1"></a>grid <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="dv">99</span>)</span>
+<span id="cb45-6"><a aria-hidden="true" href="#cb45-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"p with the highest likelihood:"</span>, grid[np.argmax(L(grid))].<span class="bu">round</span>(<span class="dv">2</span>), <span class="st">"(the observed fraction 7/10)"</span>)</span>
+<span id="cb45-7"><a aria-hidden="true" href="#cb45-7" tabindex="-1"></a></span>
+<span id="cb45-8"><a aria-hidden="true" href="#cb45-8" tabindex="-1"></a><span class="co"># Practice problem 2: 3 G/C out of 4 bases</span></span>
+<span id="cb45-9"><a aria-hidden="true" href="#cb45-9" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"practice problem 2: L(0.5) = </span><span class="sc">{</span>L(<span class="fl">0.5</span>, <span class="dv">3</span>, <span class="dv">4</span>)<span class="sc">:.4f}</span><span class="ss">, L(0.75) = </span><span class="sc">{</span>L(<span class="fl">0.75</span>, <span class="dv">3</span>, <span class="dv">4</span>)<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>L(0.5) = 0.00098   L(0.7) = 0.00222   ratio = 2.28
+p with the highest likelihood: 0.7 (the observed fraction 7/10)
+practice problem 2: L(0.5) = 0.0625, L(0.75) = 0.1055</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="entropy-and-cross-entropy">
+<h2 class="anchored" data-anchor-id="entropy-and-cross-entropy">Entropy and cross-entropy</h2>
+<p>Entropy <span class="math inline">\(H(P) = -\sum P \log_2 P\)</span> for a few alignment columns, and the cross-entropy of the 7-of-10 G/C fragment under models with different <span class="math inline">\(p\)</span>: its minimum is at the maximum-likelihood value, 0.7.</p>
+<div class="cell" data-execution_count="24" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.479183Z","iopub.status.busy":"2026-09-28T14:00:08.479049Z","iopub.status.idle":"2026-09-28T14:00:08.484409Z","shell.execute_reply":"2026-09-28T14:00:08.483613Z"}}' id="2f89b9c9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a aria-hidden="true" href="#cb47-1" tabindex="-1"></a><span class="kw">def</span> entropy(P):</span>
+<span id="cb47-2"><a aria-hidden="true" href="#cb47-2" tabindex="-1"></a>    P <span class="op">=</span> np.asarray(P, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb47-3"><a aria-hidden="true" href="#cb47-3" tabindex="-1"></a>    P <span class="op">=</span> P[P <span class="op">&gt;</span> <span class="dv">0</span>]                      <span class="co"># 0 * log(0) counts as 0</span></span>
+<span id="cb47-4"><a aria-hidden="true" href="#cb47-4" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">float</span>(<span class="op">-</span>(P <span class="op">*</span> np.log2(P)).<span class="bu">sum</span>()) <span class="op">+</span> <span class="fl">0.0</span>   <span class="co"># + 0.0 turns -0.0 into 0.0</span></span>
+<span id="cb47-5"><a aria-hidden="true" href="#cb47-5" tabindex="-1"></a></span>
+<span id="cb47-6"><a aria-hidden="true" href="#cb47-6" tabindex="-1"></a>columns <span class="op">=</span> {</span>
+<span id="cb47-7"><a aria-hidden="true" href="#cb47-7" tabindex="-1"></a>    <span class="st">"fully conserved (A only)"</span>: [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb47-8"><a aria-hidden="true" href="#cb47-8" tabindex="-1"></a>    <span class="st">"A or G, half each"</span>: [<span class="fl">0.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">0</span>],</span>
+<span id="cb47-9"><a aria-hidden="true" href="#cb47-9" tabindex="-1"></a>    <span class="st">"GC-rich model"</span>: [<span class="fl">0.15</span>, <span class="fl">0.35</span>, <span class="fl">0.35</span>, <span class="fl">0.15</span>],</span>
+<span id="cb47-10"><a aria-hidden="true" href="#cb47-10" tabindex="-1"></a>    <span class="st">"all four bases equal"</span>: [<span class="fl">0.25</span>] <span class="op">*</span> <span class="dv">4</span>,</span>
+<span id="cb47-11"><a aria-hidden="true" href="#cb47-11" tabindex="-1"></a>}</span>
+<span id="cb47-12"><a aria-hidden="true" href="#cb47-12" tabindex="-1"></a><span class="cf">for</span> name, P <span class="kw">in</span> columns.items():</span>
+<span id="cb47-13"><a aria-hidden="true" href="#cb47-13" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:26s}</span><span class="ss"> H = </span><span class="sc">{</span>entropy(P)<span class="sc">:.2f}</span><span class="ss"> bits   information content = </span><span class="sc">{</span><span class="dv">2</span> <span class="op">-</span> entropy(P)<span class="sc">:.2f}</span><span class="ss"> bits"</span>)</span>
+<span id="cb47-14"><a aria-hidden="true" href="#cb47-14" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"maximum for proteins: log2(20) = </span><span class="sc">{</span>np<span class="sc">.</span>log2(<span class="dv">20</span>)<span class="sc">:.2f}</span><span class="ss"> bits"</span>)</span>
+<span id="cb47-15"><a aria-hidden="true" href="#cb47-15" tabindex="-1"></a></span>
+<span id="cb47-16"><a aria-hidden="true" href="#cb47-16" tabindex="-1"></a><span class="co"># Practice problem 6: A in 70%, C, G, T in 10% each</span></span>
+<span id="cb47-17"><a aria-hidden="true" href="#cb47-17" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"practice problem 6: H = </span><span class="sc">{</span>entropy([<span class="fl">0.7</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>])<span class="sc">:.2f}</span><span class="ss"> bits, "</span></span>
+<span id="cb47-18"><a aria-hidden="true" href="#cb47-18" tabindex="-1"></a>      <span class="ss">f"information content = </span><span class="sc">{</span><span class="dv">2</span> <span class="op">-</span> entropy([<span class="fl">0.7</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>])<span class="sc">:.2f}</span><span class="ss"> bits"</span>)</span>
+<span id="cb47-19"><a aria-hidden="true" href="#cb47-19" tabindex="-1"></a></span>
+<span id="cb47-20"><a aria-hidden="true" href="#cb47-20" tabindex="-1"></a><span class="co"># Cross-entropy of the observed frequencies (0.7 G/C, 0.3 A/T) under a model with G/C probability p</span></span>
+<span id="cb47-21"><a aria-hidden="true" href="#cb47-21" tabindex="-1"></a><span class="kw">def</span> cross_entropy(p, observed<span class="op">=</span><span class="fl">0.7</span>):</span>
+<span id="cb47-22"><a aria-hidden="true" href="#cb47-22" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>(observed <span class="op">*</span> np.log2(p) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> observed) <span class="op">*</span> np.log2(<span class="dv">1</span> <span class="op">-</span> p))</span>
+<span id="cb47-23"><a aria-hidden="true" href="#cb47-23" tabindex="-1"></a><span class="cf">for</span> p <span class="kw">in</span> (<span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.9</span>):</span>
+<span id="cb47-24"><a aria-hidden="true" href="#cb47-24" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"p = </span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">: cross-entropy = </span><span class="sc">{</span>cross_entropy(p)<span class="sc">:.3f}</span><span class="ss"> bits per base,  "</span></span>
+<span id="cb47-25"><a aria-hidden="true" href="#cb47-25" tabindex="-1"></a>          <span class="ss">f"-log2 L(p) / 10 = </span><span class="sc">{</span><span class="op">-</span>np<span class="sc">.</span>log2(L(p)) <span class="op">/</span> <span class="dv">10</span><span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>fully conserved (A only)   H = 0.00 bits   information content = 2.00 bits
+A or G, half each          H = 1.00 bits   information content = 1.00 bits
+GC-rich model              H = 1.88 bits   information content = 0.12 bits
+all four bases equal       H = 2.00 bits   information content = 0.00 bits
+maximum for proteins: log2(20) = 4.32 bits
+practice problem 6: H = 1.36 bits, information content = 0.64 bits
+p = 0.5: cross-entropy = 1.000 bits per base,  -log2 L(p) / 10 = 1.000
+p = 0.6: cross-entropy = 0.912 bits per base,  -log2 L(p) / 10 = 0.912
+p = 0.7: cross-entropy = 0.881 bits per base,  -log2 L(p) / 10 = 0.881
+p = 0.8: cross-entropy = 0.922 bits per base,  -log2 L(p) / 10 = 0.922
+p = 0.9: cross-entropy = 1.103 bits per base,  -log2 L(p) / 10 = 1.103</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="p-values-with-a-t-test">
+<h2 class="anchored" data-anchor-id="p-values-with-a-t-test">p-values, with a t-test</h2>
+<p>Welch’s t-test (<code>equal_var=False</code>; SciPy’s default is Student’s test, which assumes equal variances) on the page’s control and treatment measurements.</p>
+<div class="cell" data-execution_count="25" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.486523Z","iopub.status.busy":"2026-09-28T14:00:08.486333Z","iopub.status.idle":"2026-09-28T14:00:08.491098Z","shell.execute_reply":"2026-09-28T14:00:08.490429Z"}}' id="75b35e6e">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a aria-hidden="true" href="#cb49-1" tabindex="-1"></a>control <span class="op">=</span> np.array([<span class="fl">5.1</span>, <span class="fl">4.9</span>, <span class="fl">5.3</span>, <span class="fl">5.0</span>])</span>
+<span id="cb49-2"><a aria-hidden="true" href="#cb49-2" tabindex="-1"></a>treatment <span class="op">=</span> np.array([<span class="fl">7.2</span>, <span class="fl">6.8</span>, <span class="fl">7.5</span>, <span class="fl">7.0</span>])</span>
+<span id="cb49-3"><a aria-hidden="true" href="#cb49-3" tabindex="-1"></a>t_stat, p_val <span class="op">=</span> stats.ttest_ind(control, treatment, equal_var<span class="op">=</span><span class="va">False</span>)   <span class="co"># Welch's t-test</span></span>
+<span id="cb49-4"><a aria-hidden="true" href="#cb49-4" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"t = </span><span class="sc">{</span>t_stat<span class="sc">:.1f}</span><span class="ss">, p = </span><span class="sc">{</span>p_val<span class="sc">:.5f}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>t = -11.9, p = 0.00010</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="the-multiple-testing-problem">
+<h2 class="anchored" data-anchor-id="the-multiple-testing-problem">The multiple testing problem</h2>
+<p>100 genes with no real difference, each tested at <span class="math inline">\(p &lt; 0.05\)</span> (practice problem 4 expects about 5 false positives).</p>
+<div class="cell" data-execution_count="26" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.492629Z","iopub.status.busy":"2026-09-28T14:00:08.492504Z","iopub.status.idle":"2026-09-28T14:00:08.567439Z","shell.execute_reply":"2026-09-28T14:00:08.566791Z"}}' id="1935f3ab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a aria-hidden="true" href="#cb51-1" tabindex="-1"></a><span class="co"># Simulate 100 genes with NO real difference at all, test each at p&lt;0.05</span></span>
+<span id="cb51-2"><a aria-hidden="true" href="#cb51-2" tabindex="-1"></a>rng_mt <span class="op">=</span> np.random.default_rng(<span class="dv">1</span>)</span>
+<span id="cb51-3"><a aria-hidden="true" href="#cb51-3" tabindex="-1"></a>n_genes_null <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb51-4"><a aria-hidden="true" href="#cb51-4" tabindex="-1"></a>false_positives <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb51-5"><a aria-hidden="true" href="#cb51-5" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_genes_null):</span>
+<span id="cb51-6"><a aria-hidden="true" href="#cb51-6" tabindex="-1"></a>    g1 <span class="op">=</span> rng_mt.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb51-7"><a aria-hidden="true" href="#cb51-7" tabindex="-1"></a>    g2 <span class="op">=</span> rng_mt.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span><span class="dv">6</span>)  <span class="co"># same distribution -- null hypothesis is exactly true</span></span>
+<span id="cb51-8"><a aria-hidden="true" href="#cb51-8" tabindex="-1"></a>    _, p <span class="op">=</span> stats.ttest_ind(g1, g2, equal_var<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb51-9"><a aria-hidden="true" href="#cb51-9" tabindex="-1"></a>    <span class="cf">if</span> p <span class="op">&lt;</span> <span class="fl">0.05</span>:</span>
+<span id="cb51-10"><a aria-hidden="true" href="#cb51-10" tabindex="-1"></a>        false_positives <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb51-11"><a aria-hidden="true" href="#cb51-11" tabindex="-1"></a></span>
+<span id="cb51-12"><a aria-hidden="true" href="#cb51-12" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"false positives out of </span><span class="sc">{</span>n_genes_null<span class="sc">}</span><span class="ss"> truly-null genes: </span><span class="sc">{</span>false_positives<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb51-13"><a aria-hidden="true" href="#cb51-13" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"expected by chance alone:"</span>, <span class="fl">0.05</span> <span class="op">*</span> n_genes_null)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>false positives out of 100 truly-null genes: 3
+expected by chance alone: 5.0</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="worked-example-rna-seq-differential-expression-and-the-volcano-plot">
+<h2 class="anchored" data-anchor-id="worked-example-rna-seq-differential-expression-and-the-volcano-plot">Worked example: RNA-seq differential expression and the volcano plot</h2>
+<p>2,000 simulated genes, 50 of them truly differentially expressed: the naive <span class="math inline">\(p &lt; 0.05\)</span> threshold, then the Benjamini-Hochberg procedure at an FDR of 5%, then the volcano plot (this cell also draws the page’s figure).</p>
+<div class="cell" data-execution_count="27" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:08.569917Z","iopub.status.busy":"2026-09-28T14:00:08.569766Z","iopub.status.idle":"2026-09-28T14:00:09.973615Z","shell.execute_reply":"2026-09-28T14:00:09.972852Z"}}' id="9faee816">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a aria-hidden="true" href="#cb53-1" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb53-2"><a aria-hidden="true" href="#cb53-2" tabindex="-1"></a></span>
+<span id="cb53-3"><a aria-hidden="true" href="#cb53-3" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb53-4"><a aria-hidden="true" href="#cb53-4" tabindex="-1"></a>n_genes <span class="op">=</span> <span class="dv">2000</span></span>
+<span id="cb53-5"><a aria-hidden="true" href="#cb53-5" tabindex="-1"></a>n_de <span class="op">=</span> <span class="dv">50</span>          <span class="co"># truly differentially expressed genes</span></span>
+<span id="cb53-6"><a aria-hidden="true" href="#cb53-6" tabindex="-1"></a>n_per_group <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb53-7"><a aria-hidden="true" href="#cb53-7" tabindex="-1"></a></span>
+<span id="cb53-8"><a aria-hidden="true" href="#cb53-8" tabindex="-1"></a>baseline <span class="op">=</span> rng.normal(<span class="dv">8</span>, <span class="fl">1.5</span>, size<span class="op">=</span>n_genes)          <span class="co"># baseline expression (log2 scale)</span></span>
+<span id="cb53-9"><a aria-hidden="true" href="#cb53-9" tabindex="-1"></a>true_lfc <span class="op">=</span> np.zeros(n_genes)</span>
+<span id="cb53-10"><a aria-hidden="true" href="#cb53-10" tabindex="-1"></a>de_idx <span class="op">=</span> rng.choice(n_genes, size<span class="op">=</span>n_de, replace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb53-11"><a aria-hidden="true" href="#cb53-11" tabindex="-1"></a>true_lfc[de_idx] <span class="op">=</span> rng.choice([<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>], size<span class="op">=</span>n_de) <span class="op">*</span> rng.uniform(<span class="fl">1.5</span>, <span class="fl">3.0</span>, size<span class="op">=</span>n_de)</span>
+<span id="cb53-12"><a aria-hidden="true" href="#cb53-12" tabindex="-1"></a></span>
+<span id="cb53-13"><a aria-hidden="true" href="#cb53-13" tabindex="-1"></a>pvals <span class="op">=</span> np.zeros(n_genes)</span>
+<span id="cb53-14"><a aria-hidden="true" href="#cb53-14" tabindex="-1"></a>obs_lfc <span class="op">=</span> np.zeros(n_genes)</span>
+<span id="cb53-15"><a aria-hidden="true" href="#cb53-15" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_genes):</span>
+<span id="cb53-16"><a aria-hidden="true" href="#cb53-16" tabindex="-1"></a>    ctrl <span class="op">=</span> rng.normal(baseline[i], <span class="fl">0.5</span>, size<span class="op">=</span>n_per_group)</span>
+<span id="cb53-17"><a aria-hidden="true" href="#cb53-17" tabindex="-1"></a>    treat <span class="op">=</span> rng.normal(baseline[i] <span class="op">+</span> true_lfc[i], <span class="fl">0.5</span>, size<span class="op">=</span>n_per_group)</span>
+<span id="cb53-18"><a aria-hidden="true" href="#cb53-18" tabindex="-1"></a>    _, p <span class="op">=</span> stats.ttest_ind(ctrl, treat, equal_var<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb53-19"><a aria-hidden="true" href="#cb53-19" tabindex="-1"></a>    pvals[i] <span class="op">=</span> p</span>
+<span id="cb53-20"><a aria-hidden="true" href="#cb53-20" tabindex="-1"></a>    obs_lfc[i] <span class="op">=</span> treat.mean() <span class="op">-</span> ctrl.mean()</span>
+<span id="cb53-21"><a aria-hidden="true" href="#cb53-21" tabindex="-1"></a></span>
+<span id="cb53-22"><a aria-hidden="true" href="#cb53-22" tabindex="-1"></a>naive_sig <span class="op">=</span> pvals <span class="op">&lt;</span> <span class="fl">0.05</span></span>
+<span id="cb53-23"><a aria-hidden="true" href="#cb53-23" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"naive p&lt;0.05 'significant' genes:"</span>, naive_sig.<span class="bu">sum</span>())</span>
+<span id="cb53-24"><a aria-hidden="true" href="#cb53-24" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  of those, false positives (truly null):"</span>, (naive_sig <span class="op">&amp;</span> (true_lfc <span class="op">==</span> <span class="dv">0</span>)).<span class="bu">sum</span>())</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>naive p&lt;0.05 'significant' genes: 135
+  of those, false positives (truly null): 85</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="28" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:09.975726Z","iopub.status.busy":"2026-09-28T14:00:09.975574Z","iopub.status.idle":"2026-09-28T14:00:09.980169Z","shell.execute_reply":"2026-09-28T14:00:09.979525Z"}}' id="92d194d8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a aria-hidden="true" href="#cb55-1" tabindex="-1"></a><span class="co"># Benjamini-Hochberg FDR correction</span></span>
+<span id="cb55-2"><a aria-hidden="true" href="#cb55-2" tabindex="-1"></a>order <span class="op">=</span> np.argsort(pvals)</span>
+<span id="cb55-3"><a aria-hidden="true" href="#cb55-3" tabindex="-1"></a>ranked <span class="op">=</span> pvals[order]</span>
+<span id="cb55-4"><a aria-hidden="true" href="#cb55-4" tabindex="-1"></a>m <span class="op">=</span> n_genes</span>
+<span id="cb55-5"><a aria-hidden="true" href="#cb55-5" tabindex="-1"></a>qvals_sorted <span class="op">=</span> ranked <span class="op">*</span> m <span class="op">/</span> (np.arange(<span class="dv">1</span>, m <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb55-6"><a aria-hidden="true" href="#cb55-6" tabindex="-1"></a>qvals_sorted <span class="op">=</span> np.minimum.accumulate(qvals_sorted[::<span class="op">-</span><span class="dv">1</span>])[::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb55-7"><a aria-hidden="true" href="#cb55-7" tabindex="-1"></a>qvals <span class="op">=</span> np.empty(m)</span>
+<span id="cb55-8"><a aria-hidden="true" href="#cb55-8" tabindex="-1"></a>qvals[order] <span class="op">=</span> qvals_sorted</span>
+<span id="cb55-9"><a aria-hidden="true" href="#cb55-9" tabindex="-1"></a></span>
+<span id="cb55-10"><a aria-hidden="true" href="#cb55-10" tabindex="-1"></a>sig_fdr <span class="op">=</span> qvals <span class="op">&lt;</span> <span class="fl">0.05</span></span>
+<span id="cb55-11"><a aria-hidden="true" href="#cb55-11" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"BH-FDR&lt;0.05 significant genes:"</span>, sig_fdr.<span class="bu">sum</span>())</span>
+<span id="cb55-12"><a aria-hidden="true" href="#cb55-12" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  true positives:"</span>, (sig_fdr <span class="op">&amp;</span> (true_lfc <span class="op">!=</span> <span class="dv">0</span>)).<span class="bu">sum</span>(), <span class="st">"/ "</span>, n_de, <span class="st">"real DE genes"</span>)</span>
+<span id="cb55-13"><a aria-hidden="true" href="#cb55-13" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  false positives:"</span>, (sig_fdr <span class="op">&amp;</span> (true_lfc <span class="op">==</span> <span class="dv">0</span>)).<span class="bu">sum</span>())</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>BH-FDR&lt;0.05 significant genes: 44
+  true positives: 44 /  50 real DE genes
+  false positives: 0</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="29" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-28T14:00:09.982439Z","iopub.status.busy":"2026-09-28T14:00:09.982307Z","iopub.status.idle":"2026-09-28T14:00:10.240575Z","shell.execute_reply":"2026-09-28T14:00:10.239760Z"}}' id="8003df46">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a aria-hidden="true" href="#cb57-1" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb57-2"><a aria-hidden="true" href="#cb57-2" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">5.5</span>))</span>
+<span id="cb57-3"><a aria-hidden="true" href="#cb57-3" tabindex="-1"></a>ax.scatter(obs_lfc[<span class="op">~</span>sig_fdr], <span class="op">-</span>np.log10(pvals[<span class="op">~</span>sig_fdr]), s<span class="op">=</span><span class="dv">10</span>, color<span class="op">=</span><span class="st">"#b8bec8"</span>, label<span class="op">=</span><span class="st">"not significant (FDR &gt;= 0.05)"</span>)</span>
+<span id="cb57-4"><a aria-hidden="true" href="#cb57-4" tabindex="-1"></a>ax.scatter(obs_lfc[sig_fdr], <span class="op">-</span>np.log10(pvals[sig_fdr]), s<span class="op">=</span><span class="dv">14</span>, color<span class="op">=</span><span class="st">"#c14e3a"</span>, label<span class="op">=</span><span class="st">"significant (FDR &lt; 0.05)"</span>)</span>
+<span id="cb57-5"><a aria-hidden="true" href="#cb57-5" tabindex="-1"></a>ax.set_xlabel(<span class="st">"log2 fold change (treatment - control)"</span>)</span>
+<span id="cb57-6"><a aria-hidden="true" href="#cb57-6" tabindex="-1"></a>ax.set_ylabel(<span class="st">"-log10(p-value)"</span>)</span>
+<span id="cb57-7"><a aria-hidden="true" href="#cb57-7" tabindex="-1"></a>ax.set_title(<span class="st">"Volcano plot: 2000 simulated genes, 50 truly differentially expressed"</span>)</span>
+<span id="cb57-8"><a aria-hidden="true" href="#cb57-8" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb57-9"><a aria-hidden="true" href="#cb57-9" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"#888"</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>, linestyle<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb57-10"><a aria-hidden="true" href="#cb57-10" tabindex="-1"></a><span class="cf">for</span> spine <span class="kw">in</span> [<span class="st">"top"</span>, <span class="st">"right"</span>]:</span>
+<span id="cb57-11"><a aria-hidden="true" href="#cb57-11" tabindex="-1"></a>    ax.spines[spine].set_visible(<span class="va">False</span>)</span>
+<span id="cb57-12"><a aria-hidden="true" href="#cb57-12" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb57-13"><a aria-hidden="true" href="#cb57-13" tabindex="-1"></a><span class="cf">if</span> os.path.isdir(<span class="st">'../figs'</span>):</span>
+<span id="cb57-14"><a aria-hidden="true" href="#cb57-14" tabindex="-1"></a>    fig.savefig(<span class="st">'../figs/session01-volcano-plot.png'</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>)</span>
+<span id="cb57-15"><a aria-hidden="true" href="#cb57-15" tabindex="-1"></a>plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session01-math-in-code_files/figure-html/cell-30-output-1.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+<p>All numbers match the Session 1 page. The simulated ones (the die rolls, the 100 null genes) vary a little from run to run with a different random seed; the simulated RNA-seq data are fixed by <code>default_rng(0)</code>, so the volcano-plot counts are the same every time.</p>
+</section>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="Session 1: Math Prerequisites" class="pagination-link" href="../session01.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="Session 2: Working like a computational biologist in Python" class="pagination-link" href="../session02.html">
+<span class="nav-page-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

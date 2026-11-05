@@ -1,0 +1,72 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 6 Lab: PyMOL, Structure Comparison, and Domain Classification</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 6 Lab: PyMOL, Structure Comparison, and Domain Classification</h1>
+<p class='meta'>Preview without answers, from <code>labs/session06-pymol-structure.text2qti.md</code> (last change 2c399a07 2026-10-24). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='https://course.bioinfo.se/notebooks/session06-lab.ipynb' download>download session06-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>A hands-on PyMOL tutorial on three real structures (an HIV Env/antibody complex, a chitinase with real bound metals, and human neuroglobin), plus a TM-align comparison, a Foldseek search of the whole PDB and a structural-domain lookup. Everything runs in the lab notebook, notebooks/session06-lab.ipynb, in VS Code on a Colab machine: the notebook installs PyMOL as a Python library, so you type PyMOL commands inside cmd.do(&ldquo;&hellip;&rdquo;) and see the result with snapshot(). Nothing needs to be installed on your own computer. See the book page&rsquo;s &ldquo;Looking at structures: PyMOL&rdquo; section for the representations (cartoon/sticks/spheres) this lab uses.</p>
+<div class='text'><h2>Section A -- loading a real structure and looking at it</h2><p>Run parts 1 and 2 of the lab notebook. They fetch a real cryo-EM structure, <code>7LXM</code> &ndash; a real HIV envelope glycoprotein trimer in complex with a real broadly neutralizing antibody, PGT122 (<code>cmd.do("fetch 7LXM, type=pdb, async=0")</code>; the <code>type=pdb</code> matters here &ndash; PyMOL&rsquo;s default mmCIF fetch assigns extra chain letters to individual sugars/waters, which would give a much larger, misleading chain count than the real polymer-chain count below).</p>
+<p>The notebook colours the structure by secondary structure (<code>color grey60, 7LXM</code> then <code>color red, 7LXM and ss H</code>, <code>color yellow, 7LXM and ss S</code>, <code>color blue, 7LXM and ss L+''</code>) in PyMOL&rsquo;s cartoon representation, then by chain (<code>util.cbc</code>) instead. Look at both pictures, and read the COMPND lines PyMOL prints when it fetches the entry.</p></div>
+<div class='q'><div class='qhead'>Question 1 · choose one · 1 point</div><p>What kind of real biological assembly is 7LXM?</p>
+<ul><li><p>A monomeric protein</p></li><li><p>An antibody-antigen complex</p></li><li><p>A tetrahedral viral capsid</p></li><li><p>A single dimeric protein with no antibody present</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 2 · number · 1 point</div><p>Using <code>cmd.get_chains("7LXM and polymer.protein")</code> (real protein chains only), how many protein chains does 7LXM have in total?</p>
+</div>
+<div class='q'><div class='qhead'>Question 3 · number · 1 point</div><p>Several of those 12 chains share the exact same sequence &ndash; how many genuinely <em>unique</em> protein sequences are actually present?</p>
+</div>
+<div class='q'><div class='qhead'>Question 4 · choose all that apply · 1 point</div><p>Which secondary structure motifs does <code>cmd.dss</code> (PyMOL&rsquo;s own secondary-structure assignment) find present in 7LXM? Check all that apply &ndash; verify this for real rather than assuming from the &ldquo;mostly antibody&rdquo; framing above.</p>
+<ul><li><p>Alpha helices</p></li><li><p>Beta sheets</p></li><li><p>Loops/coil</p></li></ul>
+</div>
+<div class='text'><h2>Section B -- extracting chains into separate objects</h2><p>Part 3 of the notebook colours the whole structure grey again (<code>color grey60, 7LXM</code>), then extracts chains H, N, and P into three separate PyMOL objects (<code>create obj_H, 7LXM and chain H</code>, and similarly for N and P) &ndash; these are the three copies of one component, one per protomer of the trimer.</p></div>
+<div class='text'><h2>Section C -- structural alignment: do two chains share a fold?</h2><p><code>cealign</code> structurally aligns two objects and reports a real RMSD &ndash; the same measure the Session 6 book page&rsquo;s &ldquo;Comparing proteins in 3D&rdquo; part introduces. The notebook aligns two of the three chains from Section B against each other and draws them on top of each other:</p>
+<pre><code>result = cmd.cealign(&quot;obj_H&quot;, &quot;obj_N&quot;)
+print(result[&quot;RMSD&quot;], result[&quot;alignment_length&quot;])
+</code></pre></div>
+<div class='q'><div class='qhead'>Question 5 · number · 1 point</div><p>What real RMSD (in Angstrom) does <code>cealign</code> report between chain H and chain N?</p>
+</div>
+<div class='q'><div class='qhead'>Question 6 · choose one · 0.5 points</div><p>Given that real RMSD, do chains H and N share the same fold?</p>
+<ul><li><p>No &ndash; an RMSD this large means completely different folds</p></li><li><p>Yes &ndash; a sub-1-Angstrom RMSD over 100+ aligned residues means an essentially identical structure</p></li><li><p>It&rsquo;s impossible to tell from RMSD alone</p></li><li><p>They can&rsquo;t be compared because they have different sequences</p></li></ul>
+</div>
+<div class='text'><h2>Section D -- a real structure with bound metals and an inhibitor</h2><p>Part 4 of the notebook fetches a different real structure, <code>8C6Z</code> &ndash; a real bacterial chitinase in complex with real bound metal ions and a real small-molecule inhibitor. It selects all charged residues (<code>select charged, resn ASP+GLU+LYS+ARG+HIS</code>), shows them as red sticks (<code>show sticks, charged</code>, <code>color red, charged</code>), and lists the bound ions (<code>inorganic</code>).</p></div>
+<div class='q'><div class='qhead'>Question 7 · short answer · 1 point</div><p>Two kinds of metal ion are bound to this structure. One is cadmium; what is the other?</p>
+</div>
+<div class='q'><div class='qhead'>Question 8 · choose one · 1 point</div><p>The notebook then lists and zooms in on the residues within 3 Å of the metal ions (<code>show sticks, byres (all within 3 of inorganic)</code>). Which side chains surround them, and why?</p>
+<ul><li><p>Leucine and valine, because metal ions are hydrophobic</p></li><li><p>Mainly negatively charged side chains (aspartate and glutamate, plus one cysteine), whose oxygen (and sulfur) atoms coordinate the positively charged metal ions, together with water molecules</p></li><li><p>Lysine and arginine, because positive side chains attract positive ions</p></li><li><p>No side chains at all; the ions float in solvent</p></li></ul>
+</div>
+<div class='text'><h2>Optional tip (not part of the quiz) -- viewing a structure directly in VS Code</h2><p>PyMOL is this course&rsquo;s main structure tool, but sometimes you just want a quick look without writing any code. Install the real <strong>Protein Viewer</strong> extension (<code>ArianJamasb.protein-viewer</code> on the VS Code Marketplace, built on Mol* &ndash; the same viewer RCSB and PDBe use on their own websites): open VS Code&rsquo;s Extensions panel (Ctrl/Cmd+Shift+X), search &ldquo;Protein Viewer&rdquo;, install it. Then open the Command Palette (Ctrl/Cmd+Shift+P), run &ldquo;Start Protein Viewer&rdquo;, and enter a real PDB accession &ndash; try <code>8C6Z</code> from Section D.</p></div>
+<div class='text'><h2>Section E -- TM-align and a Foldseek search</h2><p>Run parts 5 and 6 of the lab notebook. Part 5 uses TM-align (through the <code>tmtools</code> package) to compare <code>1OJ6</code> (human neuroglobin, real X-ray structure, chain A) with three real structures: its own real AlphaFold DB prediction (same protein, two independent methods), <code>2HHB</code> (a related but different real globin, this course&rsquo;s own running example), and <code>1EMA</code> (a real, structurally unrelated fold, GFP). It is the three-tier comparison of the book page&rsquo;s &ldquo;Comparing proteins in 3D&rdquo; part: same protein (experimental vs. predicted), same fold (a different globin), unrelated fold. Today AlphaFold DB simply supplies a structure to compare; Session 12 asks how that prediction is made and which parts of it to trust. Part 6 then sends neuroglobin to the Foldseek web server (through its API) and searches every structure in the PDB.</p></div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>Which of the three real comparisons gives 1OJ6 the <em>highest</em> TM-score?</p>
+<ul><li><p>Its own real AlphaFold DB prediction (same protein, predicted vs. experimental)</p></li><li><p>2HHB (a related but different globin)</p></li><li><p>1EMA (GFP, an unrelated fold)</p></li><li><p>All three give essentially the same TM-score</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 10 · number · 1 point</div><p>What TM-score does the notebook report between 1OJ6 and haemoglobin&rsquo;s beta chain (2HHB chain B)?</p>
+</div>
+<div class='q'><div class='qhead'>Question 11 · choose one · 1 point</div><p>Neuroglobin and haemoglobin share only about 20-25% sequence identity, yet their TM-score is about 0.8. How can that be?</p>
+<ul><li><p>Structure is more conserved than sequence: many substitutions accumulate during evolution without changing the fold, as long as the core packing and key positions are preserved</p></li><li><p>TM-align ignores the coordinates and compares the sequences</p></li><li><p>20-25% identity is enough to guarantee identical structures</p></li><li><p>The two proteins are the same gene in different species</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 12 · choose one · 1 point</div><p>Neuroglobin&rsquo;s experimental structure and its AlphaFold DB prediction have a TM-score of about 0.97. What does this support?</p>
+<ul><li><p>For this protein, the predicted fold is essentially the experimental one; it does not show that every AlphaFold model is this accurate, or that the protein has only one conformational state</p></li><li><p>AlphaFold is always correct, so experimental structures are no longer needed</p></li><li><p>AlphaFold copied the PDB entry, so the comparison tells us nothing</p></li><li><p>A TM-score of 0.98 means the two models have exactly the same coordinates</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 13 · choose one · 1 point</div><p>What can a structure search (Foldseek, DALI) reveal that a sequence search (BLAST) may miss?</p>
+<ul><li><p>Remote relationships where the fold is conserved but sequence similarity has faded below what a sequence search can detect</p></li><li><p>The exact function of every protein, which sequence never tells you</p></li><li><p>Nothing; structure searches are only faster versions of sequence searches</p></li><li><p>Mutations in the sequence that BLAST cannot see</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 14 · choose one · 1 point</div><p>In the Foldseek search of the PDB (part 6), the first hits are neuroglobins from human and mouse. What comes after them in the list?</p>
+<ul><li><p>Other globins (cytoglobins, myoglobins, haemoglobins) with only about 15-30% sequence identity to neuroglobin, but still highly significant E-values</p></li><li><p>Unrelated proteins with random folds and insignificant E-values</p></li><li><p>Only more neuroglobins, down to the end of the list</p></li><li><p>Proteins with more than 90% sequence identity but a different fold</p></li></ul>
+</div>
+<div class='text'><h2>Section F -- real structural domain classification</h2><p>Sessions 3/5 classified protein domains by <em>sequence</em> (InterPro/Pfam). The Session 6 book page&rsquo;s &ldquo;Structural domains&rdquo; section covers four real databases that classify by actual 3D shape instead &ndash; SCOP, CATH, ECOD, TED. Part 7 of the notebook looks up <code>1OJ6</code> in CATH through PDBe&rsquo;s API (<code>https://www.ebi.ac.uk/pdbe/api/mappings/cath/1oj6</code>, the same kind of live API lookup Sessions 3/5/7 already use elsewhere in this course).</p></div>
+<div class='q'><div class='qhead'>Question 15 · short answer · 1 point</div><p>According to that real CATH lookup, what CATH <strong>Homology</strong> (the most specific level shown) is 1OJ6&rsquo;s domain classified under?</p>
+</div>
+<div class='text'><h2>Last step -- the feedback survey</h2><p>Before the due date, fill in this lab&rsquo;s feedback survey, &ldquo;Session 6 Lab: feedback&rdquo;, in the same Canvas module. It is anonymous (Canvas records that you filled it in, not what you wrote), and the lab counts as done on time for the bonus points only when both this quiz and the survey are in. It asks for concrete suggestions: what was too long, what background was missing, errors, unclear instructions. Errors and suggestions can also be sent at any time with the <a href="https://bioinfo.se/internal/kb8029-feedback/">feedback form</a>.</p></div>
+</main></body></html>

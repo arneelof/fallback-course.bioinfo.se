@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>11  Session 11: Sequences, Language Models and SignalP – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./notebooks/session11-rnns-lstm-gru-in-code.html" rel="next"/>
+<link href="./notebooks/session10-cnns-in-code.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./session11.html"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#learning-goals" href="#learning-goals" id="toc-learning-goals"><span class="header-section-number">11.1</span> Learning goals</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s11-rnn" href="#sec-s11-rnn" id="toc-sec-s11-rnn"><span class="header-section-number">11.2</span> How can a model remember sequence context?</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#a-hidden-state-carried-along-the-sequence" href="#a-hidden-state-carried-along-the-sequence" id="toc-a-hidden-state-carried-along-the-sequence"><span class="header-section-number">11.2.1</span> A hidden state carried along the sequence</a></li>
+<li><a class="nav-link" data-scroll-target="#lstm-an-additive-memory-path" href="#lstm-an-additive-memory-path" id="toc-lstm-an-additive-memory-path"><span class="header-section-number">11.2.2</span> LSTM: an additive memory path</a></li>
+<li><a class="nav-link" data-scroll-target="#case-study-which-residues-belong-to-a-signal-peptide" href="#case-study-which-residues-belong-to-a-signal-peptide" id="toc-case-study-which-residues-belong-to-a-signal-peptide"><span class="header-section-number">11.2.3</span> Case study: which residues belong to a signal peptide?</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s11-lm" href="#sec-s11-lm" id="toc-sec-s11-lm"><span class="header-section-number">11.3</span> Can we learn from sequences without labels?</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#what-a-language-model-is" href="#what-a-language-model-is" id="toc-what-a-language-model-is"><span class="header-section-number">11.3.1</span> What a language model is</a></li>
+<li><a class="nav-link" data-scroll-target="#attention-from-scratch" href="#attention-from-scratch" id="toc-attention-from-scratch"><span class="header-section-number">11.3.2</span> Attention, from scratch</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s11-transformer" href="#sec-s11-transformer" id="toc-sec-s11-transformer"><span class="header-section-number">11.3.3</span> The Transformer: attention plus four tricks</a></li>
+<li><a class="nav-link" data-scroll-target="#what-actually-happened" href="#what-actually-happened" id="toc-what-actually-happened"><span class="header-section-number">11.3.4</span> What actually happened</a></li>
+<li><a class="nav-link" data-scroll-target="#protein-language-models" href="#protein-language-models" id="toc-protein-language-models"><span class="header-section-number">11.3.5</span> Protein language models</a></li>
+<li><a class="nav-link" data-scroll-target="#same-residue-different-context-contextual-embeddings" href="#same-residue-different-context-contextual-embeddings" id="toc-same-residue-different-context-contextual-embeddings"><span class="header-section-number">11.3.6</span> Same residue, different context: contextual embeddings</a></li>
+<li><a class="nav-link" data-scroll-target="#foundation-models-pretrain-once-reuse-everywhere" href="#foundation-models-pretrain-once-reuse-everywhere" id="toc-foundation-models-pretrain-once-reuse-everywhere"><span class="header-section-number">11.3.7</span> Foundation models: pretrain once, reuse everywhere</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s11-signalp" href="#sec-s11-signalp" id="toc-sec-s11-signalp"><span class="header-section-number">11.4</span> Pretraining changes biological prediction</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#signalp-thirty-years-in-three-steps" href="#signalp-thirty-years-in-three-steps" id="toc-signalp-thirty-years-in-three-steps"><span class="header-section-number">11.4.1</span> SignalP: thirty years in three steps</a></li>
+<li><a class="nav-link" data-scroll-target="#reproducing-the-idea-at-classroom-scale" href="#reproducing-the-idea-at-classroom-scale" id="toc-reproducing-the-idea-at-classroom-scale"><span class="header-section-number">11.4.2</span> Reproducing the idea at classroom scale</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#check-your-understanding" href="#check-your-understanding" id="toc-check-your-understanding"><span class="header-section-number">11.5</span> Check your understanding</a></li>
+<li><a class="nav-link" data-scroll-target="#the-course-notebook" href="#the-course-notebook" id="toc-the-course-notebook"><span class="header-section-number">11.6</span> The course notebook</a></li>
+<li><a class="nav-link" data-scroll-target="#the-lab" href="#the-lab" id="toc-the-lab"><span class="header-section-number">11.7</span> The lab</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#submitting-this-lab" href="#submitting-this-lab" id="toc-submitting-this-lab"><span class="header-section-number">11.7.1</span> Submitting this lab</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#whats-next" href="#whats-next" id="toc-whats-next"><span class="header-section-number">11.8</span> What’s next</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Sources for this page:</strong> d2l.ai, <em>Dive into Deep Learning</em>, <a href="https://d2l.ai/chapter_recurrent-neural-networks/index.html">Recurrent Neural Networks</a>, <a href="https://d2l.ai/chapter_recurrent-modern/index.html">Modern Recurrent Neural Networks</a> and <a href="https://d2l.ai/chapter_attention-mechanisms-and-transformers/index.html">Attention Mechanisms and Transformers</a> — CC BY-SA 4.0. The history of SignalP follows Nielsen, Teufel, Brunak &amp; von Heijne (2024), <a href="https://doi.org/10.1007/978-1-0716-4007-4_17">“SignalP: The Evolution of a Web Server”</a>, <em>Methods Mol Biol</em> 2836:331-367, a history written by the SignalP authors themselves (copyrighted; its findings are described and cited here, and its figures are not reproduced). Every other historical number is taken from the primary paper, cited where it is used. Data: 4,910 reviewed UniProt entries (CC BY 4.0), a copy of which is kept in the course repository; the pretrained ESM-2 model (Lin et al. 2023) via <code>fair-esm</code>. 3Blue1Brown’s videos on language models, Transformers and attention are embedded as further watching. The recurrent-network and attention material follows ideas from Magnus Ekman’s <em>Learning Deep Learning</em> (ch. 9-12 slide decks and notebooks), a copyrighted, not openly licensed textbook, credited here as an internal source and not linked. Every number from our own code was read back from the notebook’s output.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Notebook:</strong> <a href="notebooks/session11-rnns-lstm-gru-in-code.html" target="_blank">Session 11 — Sequences, language models and SignalP, in code</a> — the code behind this page. <a download="" href="./notebooks/session11-rnns-lstm-gru-in-code.html">Download it</a> to run it yourself.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Attention
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<blockquote class="blockquote">
+<p>“Attention is all you need.” — every Transformer, and every teacher during a lecture.</p>
+</blockquote>
+</div>
+</div>
+<section class="level2" data-number="11.1" id="learning-goals">
+<h2 class="anchored" data-anchor-id="learning-goals" data-number="11.1"><span class="header-section-number">11.1</span> Learning goals</h2>
+<p>By the end of this session you should be able to:</p>
+<ul>
+<li>explain how a recurrent network carries context along a sequence, why its gradients can vanish or explode, and what the LSTM’s additive memory path changes;</li>
+<li>explain, for residue-level signal-peptide annotation, why a bidirectional LSTM beats a forward-only one, and when a bidirectional model is impossible;</li>
+<li>explain what a language model learns without labels, the difference between masked (BERT-style) and next-token (GPT-style) models, and how attention lets every position consult every other;</li>
+<li>explain what a <strong>contextual embedding</strong> is, and why the same amino acid gets different vectors in different proteins;</li>
+<li>explain, from the classroom version of SignalP 6.0’s idea, why pretrained protein-language-model embeddings help most when labelled proteins are scarce.</li>
+</ul>
+<p>The whole session answers two questions:</p>
+<ol type="1">
+<li><strong>How can a model use context from the rest of a biological sequence?</strong></li>
+<li><strong>How can we learn useful biological representations when labels are scarce but unlabelled sequences are abundant?</strong></li>
+</ol>
+<p>Session 10’s CNNs share local detectors and widen their receptive field with depth. But what if residue 10 needs information from residue 200? There are three ways to bring in such context, and this session covers the last two:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-context">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-context.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-context-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.1: Three ways to use sequence context. A CNN unit sees only its receptive field, which grows with depth. An RNN carries a hidden state along the sequence, so context must pass through every step in between. Attention lets every position consult every other directly, with learned weights.
+</figcaption>
+</figure>
+</div>
+</section>
+<section class="level2" data-number="11.2" id="sec-s11-rnn">
+<h2 class="anchored" data-anchor-id="sec-s11-rnn" data-number="11.2"><span class="header-section-number">11.2</span> How can a model remember sequence context?</h2>
+<section class="level3" data-number="11.2.1" id="a-hidden-state-carried-along-the-sequence">
+<h3 class="anchored" data-anchor-id="a-hidden-state-carried-along-the-sequence" data-number="11.2.1"><span class="header-section-number">11.2.1</span> A hidden state carried along the sequence</h3>
+<p>The first way to carry context is to remember it. A <strong>recurrent neural network (RNN)</strong> reads a sequence one position at a time and keeps a <strong>hidden state</strong>, a vector that summarises what it has read so far. At every position it updates this memory from the current residue and the old memory, <strong>new memory = function(current residue, old memory)</strong>, and it uses the same weights at every position:</p>
+<p><span class="math display">\[
+h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h)
+\]</span></p>
+<p>In the notebook, each residue <span class="math inline">\(x_t\)</span> enters as a learned <strong>embedding</strong> of 24 numbers (<code>nn.Embedding</code>, a trainable vector per amino acid instead of a one-hot vector), and the hidden state <span class="math inline">\(h_t\)</span> has 48 numbers. <span class="math inline">\(W_{xh}\)</span> is therefore 48 × 24 and <span class="math inline">\(W_{hh}\)</span> is 48 × 48, whatever the length of the protein, so one network handles sequences of any length.</p>
+<section class="level4" data-number="11.2.1.1" id="why-gradients-vanish-or-explode-through-time">
+<h4 class="anchored" data-anchor-id="why-gradients-vanish-or-explode-through-time" data-number="11.2.1.1"><span class="header-section-number">11.2.1.1</span> Why gradients vanish or explode through time</h4>
+<p>Carrying context through many steps has a cost during training. Training an RNN means backpropagating through every step it took (<strong>backpropagation through time</strong>). The gradient that reaches an early position is a product of many factors, one per step, each involving the recurrent weights and the derivative of the activation. If their effective size is repeatedly below 1, the product tends to vanish, and if it is above 1, the product can explode. This is Session 9’s vanishing-gradient problem again, now along the sequence instead of through the layers. A single repeated factor shows the scale of the effect:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-vanishing-exploding">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-vanishing-exploding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-vanishing-exploding.png" style="width:80.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-vanishing-exploding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.2: Repeated multiplication by a fixed factor over many recurrent steps. At 0.8 the signal shrinks to about <span class="math inline">\(1.5\times10^{-6}\)</span> after 60 steps; at 1.2 it grows to about <span class="math inline">\(5.6\times10^4\)</span>.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section class="level3" data-number="11.2.2" id="lstm-an-additive-memory-path">
+<h3 class="anchored" data-anchor-id="lstm-an-additive-memory-path" data-number="11.2.2"><span class="header-section-number">11.2.2</span> LSTM: an additive memory path</h3>
+<p>The <strong>Long Short-Term Memory</strong> network (Hochreiter &amp; Schmidhuber, 1997, <a href="https://doi.org/10.1162/neco.1997.9.8.1735"><em>Neural Computation</em> 9:1735</a>) was designed to solve this problem. It adds a separate memory, the <strong>cell state</strong>, which is updated by <em>adding</em> to it rather than by recomputing it. Small sigmoid <strong>gates</strong> decide what to keep, what to add and what to expose. Because the memory is carried forward by addition, the error signal can flow back over many steps without shrinking at every one, as long as the forget gates stay close to 1 (it still shrinks where they close). This mitigates the vanishing gradient; it does not abolish it. LSTMs therefore make much longer dependencies trainable than a simple RNN can, although how long in practice depends on the task. The notebook writes the gate equations out and checks them against PyTorch’s <code>nn.LSTMCell</code>. A <strong>GRU</strong> is a later, simpler gated recurrent network, with fewer gates and no separate cell state.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-lstm-gru">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-lstm-gru-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-lstm-gru.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-lstm-gru-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.3: One LSTM cell and one GRU cell. Blue boxes are sigmoid gates, with outputs between 0 and 1; green boxes compute a new candidate value with tanh; × and + act element by element. In the LSTM (left), the cell state <span class="math inline">\(c\)</span> (orange) is changed only by the forget gate’s multiplication and the addition of new content, which is the additive memory path. The GRU (right) has no separate cell state: its update gate <span class="math inline">\(z\)</span> mixes the old hidden state with a new candidate, and its reset gate <span class="math inline">\(r\)</span> decides how much of the old state the candidate sees.
+</figcaption>
+</figure>
+</div>
+<p>An LSTM that reads from left to right still knows only what came <em>before</em> each position. A <strong>bidirectional LSTM</strong> (Schuster &amp; Paliwal, 1997) removes this limitation. It runs one LSTM from left to right and another from right to left, and it combines them at every position, so each position also sees what comes <em>after</em> it.</p>
+</section>
+<section class="level3" data-number="11.2.3" id="case-study-which-residues-belong-to-a-signal-peptide">
+<h3 class="anchored" data-anchor-id="case-study-which-residues-belong-to-a-signal-peptide" data-number="11.2.3"><span class="header-section-number">11.2.3</span> Case study: which residues belong to a signal peptide?</h3>
+<p>A good test case for these models is the signal peptide. <strong>Signal peptides</strong> are short N-terminal sequences that send a protein into the secretory pathway, a discovery for which Günter Blobel received the <a href="https://www.nobelprize.org/prizes/medicine/1999/summary/">1999 Nobel Prize</a>. They have three regions: a positively charged <strong>n-region</strong>, a hydrophobic <strong>h-region</strong>, and a polar <strong>c-region</strong> that ends at the cleavage site. Our dataset has 4,910 reviewed UniProt proteins from eukaryotes and bacteria, in three groups:</p>
+<ul>
+<li>1,936 proteins with an <strong>experimentally supported</strong> signal peptide (ECO:0000269). Many UniProt signal peptides are predicted by SignalP itself, and training on those would teach a model to imitate SignalP.</li>
+<li>1,988 cytoplasmic or nuclear proteins.</li>
+<li>986 transmembrane proteins. These are <em>hard</em> negatives, because a transmembrane helix is also a hydrophobic stretch.</li>
+</ul>
+<p>The regions show up when the experimentally supported signal peptides are aligned on their cleavage site:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-sp-logo">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-sp-logo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-sp-logo.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-sp-logo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.4: Sequence logos of the experimentally supported signal peptides in our dataset, aligned on the cleavage site (dashed line). Each stack shows how conserved a position is (in bits); letters are coloured by property: hydrophobic dark grey, small (A, G, S) green, positive blue, negative red, other polar purple. Leucines dominate the hydrophobic h-region, and small residues at −3 and −1 mark the cleavage site (the “−3, −1 rule”). The positively charged n-region (K, R) is clearest in bacteria, where the signal peptides are longer. The two logos have different y-scales.
+</figcaption>
+</figure>
+</div>
+<p>The split is homology-aware (Session 8). The proteins fall into 3,205 MMseqs2 clusters at 30% identity, which are divided into 3,432 training, 737 validation and 741 test proteins. Each of the first 70 residues is labelled as signal peptide or not:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s11-models">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s11-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 11.1: Per-residue signal-peptide labelling on the test set.
+</figcaption>
+<div aria-describedby="tbl-s11-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Sliding window (15 residues) + linear classifier</th>
+<th>Simple RNN</th>
+<th>LSTM</th>
+<th><strong>Bidirectional LSTM</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Weights</td>
+<td>—</td>
+<td>4,105</td>
+<td>14,761</td>
+<td>29,017</td>
+</tr>
+<tr class="even">
+<td>MCC</td>
+<td>0.539</td>
+<td>0.620</td>
+<td>0.631</td>
+<td><strong>0.820</strong></td>
+</tr>
+<tr class="odd">
+<td>AUPR</td>
+<td>0.681</td>
+<td>0.770</td>
+<td>0.767</td>
+<td><strong>0.920</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-model-comparison">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-model-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-model-comparison.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-model-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.5: Residue-level comparison of the four models on the homology-aware test set: summary metrics (left) and precision-recall curves (right).
+</figcaption>
+</figure>
+</div>
+<p><strong>Why does reading both directions help so much?</strong> Think of residue 3, in the n-region. When a forward LSTM labels it, it has seen only “M-x-x”, and nothing yet of the hydrophobic h-region that identifies a signal peptide. Whether residue 3 belongs to a signal peptide is decided by what comes <em>after</em> it. The first discussion problem measures this effect. The forward LSTM mislabels 76% of the first five residues of signal peptides, and the bidirectional one only 12%. Near the cleavage site, in contrast, both err about equally often (0.20 and 0.23). The forward model also labels the N-terminus of many proteins without a signal peptide as part of one, because it cannot yet see that no h-region follows.</p>
+<p>SignalP 5.0 (2019) was built from these parts. It is a deep network with a bidirectional LSTM and, on top, a <strong>conditional random field</strong> (CRF). The CRF is a structured output layer that favours biologically plausible label sequences, for example a signal peptide that starts at residue 1 and does not stop and restart.</p>
+<section class="level4" data-number="11.2.3.1" id="further-reading">
+<h4 class="anchored" data-anchor-id="further-reading" data-number="11.2.3.1"><span class="header-section-number">11.2.3.1</span> Further reading</h4>
+<ul>
+<li>d2l.ai, <a href="https://d2l.ai/chapter_recurrent-modern/index.html">Modern Recurrent Neural Networks</a> (LSTM, GRU, bidirectional RNNs)</li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">Long short-term memory</a></li>
+</ul>
+</section>
+</section>
+</section>
+<section class="level2" data-number="11.3" id="sec-s11-lm">
+<h2 class="anchored" data-anchor-id="sec-s11-lm" data-number="11.3"><span class="header-section-number">11.3</span> Can we learn from sequences without labels?</h2>
+<p>So far every model has needed labels, such as residues marked as signal peptide by experiment. Labels are expensive, but sequence databases hold hundreds of millions of unlabelled proteins (Session 3). Can a model learn useful biology from the sequences alone?</p>
+<section class="level3" data-number="11.3.1" id="what-a-language-model-is">
+<h3 class="anchored" data-anchor-id="what-a-language-model-is" data-number="11.3.1"><span class="header-section-number">11.3.1</span> What a language model is</h3>
+<p>You have almost certainly used a language model already: the word suggestions on a phone keyboard, and <strong>ChatGPT</strong>. Both rest on one simple task, <strong>given the text so far, predict what comes next</strong>. After “The mitochondrion is the powerhouse of the”, a good model puts most of its probability on “cell”, a little on “eukaryotic”, and almost none on “bicycle”.</p>
+<p>A <strong>language model</strong> is a model that does this: for any sequence of <strong>tokens</strong> (words, pieces of words, or for proteins amino acids), it gives a probability for every token that could come next. It is called a language model because it models which sequences are likely in a language, and which are not.</p>
+<p><strong>How ChatGPT writes.</strong> GPT stands for <strong>Generative Pre-trained Transformer</strong>: <em>generative</em> because it can produce text, <em>pre-trained</em> because it first learns from a huge amount of unlabelled text, and <em>Transformer</em> after the architecture explained below (<a class="quarto-xref" href="#sec-s11-transformer"><span>Section 11.3.3</span></a>). To write an answer, the model predicts a probability for every possible next token, picks one of the likely ones, adds it to the text, and repeats, one token at a time. Everything ChatGPT writes is produced this way. ChatGPT itself (OpenAI, November 2022) is a GPT model that, after pretraining on text from the internet and books, was further trained on example conversations and on human ratings of its answers, so that it follows instructions and answers like an assistant instead of simply continuing the text. Its predecessor GPT-3 (2020) already had 175 billion weights, trained on about 300 billion tokens.</p>
+<p><strong>Why predicting the next token teaches so much.</strong> The task sounds trivial, but to do it well a model has to learn a great deal. To continue “The capital of Sweden is”, it must know a fact. To continue a sentence in correct grammar, it must know the grammar. To continue an argument, it must follow the argument. None of this is taught directly: it is whatever helps the prediction. The same holds for proteins. To predict a hidden residue in a signal peptide, a model has to learn that the middle of a signal peptide is hydrophobic; to predict a residue in the core of a fold, it has to learn which residues pack against each other.</p>
+<p><strong>No labels needed.</strong> The training data provide their own answers, because the next token is simply the next token in the text. Training of this kind is called <strong>self-supervised</strong>: the training signal is a prediction task, as in supervised learning (Session 8), but the labels come from the sequences themselves, so any amount of unlabelled text, or any number of protein sequences, can be used.</p>
+<p>Language models come in two kinds:</p>
+<ul>
+<li><strong>autoregressive</strong> (GPT-style) models predict the <em>next</em> token from the previous ones;</li>
+<li><strong>masked</strong> (BERT-style) models, including protein models such as ESM-2, hide some tokens and predict them from the context on <em>both</em> sides.</li>
+</ul>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-lm">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-lm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-lm.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-lm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.6: The two kinds of language model, here reading the start of a signal peptide. An autoregressive model (left) sees only the tokens to the left and predicts the next one; a masked model (right) predicts hidden tokens from both sides. The output is a probability for every amino acid; the numbers shown are illustrative.
+</figcaption>
+</figure>
+</div>
+<p>To predict well, a model must learn what tends to go with what. These learned regularities are stored in its internal vectors (<strong>embeddings</strong>), and they turn out to be useful for many other tasks. The rest of this session uses that idea on proteins (<a class="quarto-xref" href="#tbl-s11-text-protein">Table <span>11.2</span></a>).</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s11-text-protein">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s11-text-protein-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 11.2: Language models of text and of proteins.
+</figcaption>
+<div aria-describedby="tbl-s11-text-protein-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%"/>
+<col style="width: 37%"/>
+<col style="width: 37%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Language models of text</th>
+<th>Protein language models</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Token</td>
+<td>a word or piece of a word</td>
+<td>an amino acid</td>
+</tr>
+<tr class="even">
+<td>Vocabulary</td>
+<td>tens of thousands of tokens</td>
+<td>20 amino acids (and a few special tokens)</td>
+</tr>
+<tr class="odd">
+<td>Training data</td>
+<td>text from the internet and books</td>
+<td>protein sequences from UniProt (Session 3)</td>
+</tr>
+<tr class="even">
+<td>Training task</td>
+<td>GPT: the next token; BERT: masked tokens</td>
+<td>mostly masked residues (ESM-2, ProtBERT)</td>
+</tr>
+<tr class="odd">
+<td>What it learns without being told</td>
+<td>grammar, facts, style</td>
+<td>biochemistry, structure, evolutionary constraints</td>
+</tr>
+<tr class="even">
+<td>Example</td>
+<td>GPT, ChatGPT, BERT</td>
+<td>ESM-2, ProtBERT (used by SignalP 6.0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><strong>A tiny one, in the notebook.</strong> How good a language model is can be measured in bits per token, the surprise of Session 1 averaged over test data. Guessing uniformly among 20 amino acids costs <span class="math inline">\(\log_2 20 = 4.322\)</span> bits per residue. Knowing only how common each amino acid is brings this down to 4.164 bits. An LSTM trained to predict the next residue reaches 4.071 bits on the test proteins, only a little better. Large models get much further, with far more data and a better architecture.</p>
+<section class="level4" data-number="11.3.1.1" id="further-watching">
+<h4 class="anchored" data-anchor-id="further-watching" data-number="11.3.1.1"><span class="header-section-number">11.3.1.1</span> Further watching</h4>
+<p><a href="https://www.youtube.com/watch?v=LPZh9BOjkQs"><em>Large Language Models explained briefly</em></a> (3Blue1Brown): a short overview of what a language model is and how it is trained:</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin-bottom:1em;">
+<iframe allowfullscreen="" src="https://www.youtube.com/embed/LPZh9BOjkQs" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" title="Large Language Models explained briefly, 3Blue1Brown"></iframe>
+</div>
+</section>
+</section>
+<section class="level3" data-number="11.3.2" id="attention-from-scratch">
+<h3 class="anchored" data-anchor-id="attention-from-scratch" data-number="11.3.2"><span class="header-section-number">11.3.2</span> Attention, from scratch</h3>
+<p>The better architecture is built on attention. For every position, <strong>self-attention</strong> asks: <em>which other positions should I take information from?</em> For residue <em>i</em> it:</p>
+<ol type="1">
+<li>compares residue <em>i</em> with every residue <em>j</em>;</li>
+<li>gives each <em>j</em> a relevance score;</li>
+<li>normalises the scores so that they sum to 1 (softmax);</li>
+<li>updates residue <em>i</em> with a weighted average of what the other residues contribute.</li>
+</ol>
+<p>To do this, each residue’s vector is turned into three vectors by learned linear maps: a <strong>query</strong> (what am I looking for?), a <strong>key</strong> (what do I contain?) and a <strong>value</strong> (what do I pass on?). The score of <em>j</em> for <em>i</em> is the match between the query of <em>i</em> and the key of <em>j</em>. In matrix form, for all positions at once:</p>
+<p><span class="math display">\[
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V
+\]</span></p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-attention-heatmap">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-attention-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-attention-heatmap.png" style="width:55.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-attention-heatmap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.7: Self-attention weights for a six-token toy sentence with random (untrained) projections. Each row, one query, is a probability distribution over all positions.
+</figcaption>
+</figure>
+</div>
+<p>Unlike an RNN, attention connects any two positions in one step, however far apart they are, and it computes all positions at once. Two cautions apply. First, a high attention weight means that residue <em>j</em> contributes strongly when residue <em>i</em> is updated. It does not prove a 3D contact, and it is not by itself a biological explanation (the second discussion problem tests how much structural signal attention maps actually carry). Second, attention by itself has no idea of <em>order</em>, so “ACDE” and “EDCA” give the same set of outputs, just shuffled. The Transformer adds the order back.</p>
+<section class="level4" data-number="11.3.2.1" id="further-watching-1">
+<h4 class="anchored" data-anchor-id="further-watching-1" data-number="11.3.2.1"><span class="header-section-number">11.3.2.1</span> Further watching</h4>
+<p><a href="https://www.youtube.com/watch?v=eMlx5fFNoYc"><em>Attention in transformers, step-by-step</em></a> (3Blue1Brown, Deep Learning ch. 6): queries, keys, values, multiple heads and the causal mask, animated:</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin-bottom:1em;">
+<iframe allowfullscreen="" src="https://www.youtube.com/embed/eMlx5fFNoYc" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" title="Attention in transformers, step-by-step, 3Blue1Brown"></iframe>
+</div>
+<p>Going further: <a href="https://www.youtube.com/watch?v=9-Jl0dxWQs8"><em>How might LLMs store facts</em></a> (3Blue1Brown, Deep Learning ch. 7), about the feed-forward layers inside a Transformer.</p>
+</section>
+</section>
+<section class="level3" data-number="11.3.3" id="sec-s11-transformer">
+<h3 class="anchored" data-anchor-id="sec-s11-transformer" data-number="11.3.3"><span class="header-section-number">11.3.3</span> The Transformer: attention plus four tricks</h3>
+<p>Attention alone is not yet a complete model. A <strong>Transformer</strong> (Vaswani et al. 2017) is a stack of identical <strong>blocks</strong>. Each block takes one vector per token and returns one vector per token of the same size, so blocks can be stacked as deep as the budget allows.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-transformer-block">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-transformer-block-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-transformer-block.png" style="width:95.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-transformer-block-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.8: A Transformer. Left: tokens become vectors, pass through N identical blocks, and come out as one vector per token, from which the model predicts tokens. Right: one block. This is the original (2017) arrangement; many newer models, ESM-2 among them, apply the layer normalisation before each step instead of after it.
+</figcaption>
+</figure>
+</div>
+<p>Besides self-attention, a block uses four tricks, most of which you have met before:</p>
+<ul>
+<li><strong>Several heads.</strong> Several attentions run side by side (20 in ESM-2 35M), and each is free to follow a different relationship.</li>
+<li><strong>A feed-forward network</strong> (Session 7’s MLP) is applied to every token on its own. Attention moves information <em>between</em> tokens, and the feed-forward network processes it <em>within</em> each token.</li>
+<li><strong>Residual connections and layer normalisation.</strong> Each step adds its output to its input (Session 10’s ResNet idea), so gradients survive dozens of blocks.</li>
+<li><strong>Position encoding.</strong> Information about the position of each token is added before or inside the attention. Without it, “ACDE” and “EDCA” would look the same, and a protein model would not know which residue comes first.</li>
+</ul>
+<p>The notebook’s ESM-2 has 12 blocks and 480 numbers per residue (33.5 million weights), while the largest ESM-2 has 48 blocks and 15 billion weights.</p>
+<p><strong>BERT vs. GPT is one mask</strong>, and it is the same distinction as between a forward and a bidirectional LSTM. A BERT-style encoder lets every position attend to every other position and learns by filling in masked tokens. This is fine when the whole sequence is known, as in annotation. A GPT-style decoder masks out the <em>future</em>, so each position sees only earlier ones and learns by predicting the next token. This is what lets it generate sequences:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-causal-mask">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-causal-mask-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-causal-mask.png" style="width:45.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-causal-mask-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.9: Causal (GPT-style) attention: each token can only attend to itself and earlier tokens.
+</figcaption>
+</figure>
+</div>
+<p>Protein language models such as ESM-2 are encoders, trained BERT-style, so every residue sees the whole sequence.</p>
+<section class="level4" data-number="11.3.3.1" id="further-watching-2">
+<h4 class="anchored" data-anchor-id="further-watching-2" data-number="11.3.3.1"><span class="header-section-number">11.3.3.1</span> Further watching</h4>
+<p><a href="https://www.youtube.com/watch?v=wjZofJX0v4M"><em>Transformers, the tech behind LLMs</em></a> (3Blue1Brown, Deep Learning ch. 5): how a GPT-style model turns tokens into vectors and predicts the next token:</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin-bottom:1em;">
+<iframe allowfullscreen="" src="https://www.youtube.com/embed/wjZofJX0v4M" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" title="Transformers, the tech behind LLMs, 3Blue1Brown"></iframe>
+</div>
+</section>
+</section>
+<section class="level3" data-number="11.3.4" id="what-actually-happened">
+<h3 class="anchored" data-anchor-id="what-actually-happened" data-number="11.3.4"><span class="header-section-number">11.3.4</span> What actually happened</h3>
+<p>These pieces arrived in a particular order. Language models started by counting which word follows which (n-grams) and then moved to recurrent networks and LSTMs that learned word vectors. <strong>Attention</strong> (Bahdanau, Cho &amp; Bengio 2014, <a href="https://arxiv.org/abs/1409.0473">arXiv:1409.0473</a>) was first added to recurrent translation models. The <strong>Transformer</strong> (Vaswani et al. 2017, <a href="https://arxiv.org/abs/1706.03762">arXiv:1706.03762</a>) then kept only the attention and could process all positions in parallel. This made <strong>large-scale pretraining</strong> practical: a model is trained once on huge amounts of unlabelled text and then adapted to many tasks. The two branches are <strong>GPT</strong> (Radford et al. 2018, <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf">paper</a>; next-token, causal) and <strong>BERT</strong> (Devlin et al. 2018, <a href="https://arxiv.org/abs/1810.04805">arXiv:1810.04805</a>; masked, bidirectional). Scaled up, the GPT branch became today’s large language models.</p>
+</section>
+<section class="level3" data-number="11.3.5" id="protein-language-models">
+<h3 class="anchored" data-anchor-id="protein-language-models" data-number="11.3.5"><span class="header-section-number">11.3.5</span> Protein language models</h3>
+<p>The same recipe works for proteins. There are hundreds of millions of unlabelled sequences, and a model that learns to fill in missing residues has to learn something about structure, function and evolution. Protein language models developed in three steps:</p>
+<ul>
+<li><strong>An early precursor.</strong> SignalP’s authors note that the network program their group used before SignalP could erase the central residue of a window and predict it. This was “presumably … the first machine learning language model” in biological sequence analysis (Nielsen et al. 2024, <a href="https://doi.org/10.1007/978-1-0716-4007-4_17"><em>Methods Mol. Biol.</em> 2836:331</a>).</li>
+<li><strong>Recurrent protein language models</strong> (2019), such as UniRep and SeqVec, learned embeddings from tens of millions of unlabelled sequences.</li>
+<li><strong>Transformer protein language models</strong> (2021 onwards) then took over. They include <strong>ProtBERT</strong> (Elnaggar et al. 2022, <a href="https://pubmed.ncbi.nlm.nih.gov/34232869/"><em>IEEE TPAMI</em> 44:7112</a>), the model inside SignalP 6.0, and the <strong>ESM</strong> family. This session uses <strong>ESM-2</strong> (Lin et al. 2023, <a href="https://pubmed.ncbi.nlm.nih.gov/36927031/"><em>Science</em> 379:1123</a>; 8 million to 15 billion weights, masked language modelling). The attention maps of these models turned out to contain information about residue contacts, although they were never trained on structures (Rao et al. 2021, <a href="https://openreview.net/forum?id=fylclEqgvgd">ICLR</a>). The largest ESM-2 models even predict 3D structure from a single sequence (ESMFold), which is the bridge to Session 12.</li>
+</ul>
+<p><strong>The model knows what a signal peptide looks like.</strong> In the notebook, ESM-2 (35M parameters) is given a real secreted protein in which residue 11, inside the hydrophobic h-region, is masked. It predicts leucine with probability 0.41, followed by A, V and G, and the true residue is indeed L. At the same position in a cytoplasmic protein, in contrast, its guesses are spread out, with no residue above 0.11. Nobody told the model about signal peptides.</p>
+</section>
+<section class="level3" data-number="11.3.6" id="same-residue-different-context-contextual-embeddings">
+<h3 class="anchored" data-anchor-id="same-residue-different-context-contextual-embeddings" data-number="11.3.6"><span class="header-section-number">11.3.6</span> Same residue, different context: contextual embeddings</h3>
+<p>In a one-hot encoding (Sessions 7-10), every leucine is the same vector, wherever it occurs. (You have met one learned representation before: in Session 6, Foldseek turned the 3D environment of each residue into a letter of a learned 3Di alphabet.) A protein language model instead computes the vector of each residue from the whole sequence around it. This is a <strong>contextual embedding</strong>, and with it a leucine in a signal peptide and a leucine in a cytoplasmic enzyme get different vectors. To see this, the notebook collects the ESM-2 vectors of 2,924 leucines from the first 70 residues of 450 proteins, counting only the leucines inside the signal peptide in the secreted group:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-contextual-leucine">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-contextual-leucine-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-contextual-leucine.png" style="width:65.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-contextual-leucine-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.10: PCA of the ESM-2 vectors of leucines in signal peptides (orange), in cytoplasmic or nuclear proteins (blue) and in transmembrane proteins (green). In a one-hot encoding all of them would be a single point.
+</figcaption>
+</figure>
+</div>
+<p>In one-hot encoding, every pair of these leucines has cosine similarity 1. In ESM-2, leucines inside signal peptides have a mean cosine similarity of 0.745 with each other, but only 0.633 with leucines in cytoplasmic proteins, so the vector carries information about the surroundings of the residue. This is what a classifier on top of a protein language model gets to work with, and it is probably the single most important idea of this part.</p>
+</section>
+<section class="level3" data-number="11.3.7" id="foundation-models-pretrain-once-reuse-everywhere">
+<h3 class="anchored" data-anchor-id="foundation-models-pretrain-once-reuse-everywhere" data-number="11.3.7"><span class="header-section-number">11.3.7</span> Foundation models: pretrain once, reuse everywhere</h3>
+<p>ESM-2 is a <strong>foundation model</strong> (Bommasani et al. 2021, <a href="https://arxiv.org/abs/2108.07258">arXiv:2108.07258</a>). Such a model is trained once on huge unlabelled data and then reused for many tasks, in three steps:</p>
+<ol type="1">
+<li><strong>Pretrain</strong> on everything available, with no labels (UniRef for proteins, the internet for text, billions of photos for images).</li>
+<li><strong>Represent</strong> each new example by the model’s embedding.</li>
+<li><strong>Adapt</strong> with a small amount of labelled data, either by training a small model on top of the frozen embeddings or by fine-tuning the whole network a little.</li>
+</ol>
+<p>You have met this recipe three times: DINOv2 on histology tiles (Session 10), ESM-2 here, and SignalP 6.0 below, which is ProtBERT plus a small model on top. A foundation model helps most when labelled data are scarce, but it does not remove the need for an honest split.</p>
+<section class="level4" data-number="11.3.7.1" id="further-reading-1">
+<h4 class="anchored" data-anchor-id="further-reading-1" data-number="11.3.7.1"><span class="header-section-number">11.3.7.1</span> Further reading</h4>
+<ul>
+<li>d2l.ai, <a href="https://d2l.ai/chapter_attention-mechanisms-and-transformers/index.html">Attention Mechanisms and Transformers</a></li>
+<li>Vaswani et al. (2017), <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+<li>Devlin et al. (2018), <a href="https://arxiv.org/abs/1810.04805">BERT</a></li>
+<li>Lin et al. (2023), <a href="https://pubmed.ncbi.nlm.nih.gov/36927031/">Evolutionary-scale prediction of atomic-level protein structure with a language model</a></li>
+</ul>
+</section>
+</section>
+</section>
+<section class="level2" data-number="11.4" id="sec-s11-signalp">
+<h2 class="anchored" data-anchor-id="sec-s11-signalp" data-number="11.4"><span class="header-section-number">11.4</span> Pretraining changes biological prediction</h2>
+<section class="level3" data-number="11.4.1" id="signalp-thirty-years-in-three-steps">
+<h3 class="anchored" data-anchor-id="signalp-thirty-years-in-three-steps" data-number="11.4.1"><span class="header-section-number">11.4.1</span> SignalP: thirty years in three steps</h3>
+<p>SignalP has been online since 1995, is one of the most used tools in bioinformatics, and runs through this whole course. Its history shows each of the model types we have met:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s11-signalp">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s11-signalp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 11.3: SignalP versions and the models behind them.
+</figcaption>
+<div aria-describedby="tbl-s11-signalp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%"/>
+<col style="width: 50%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Versions</th>
+<th>Model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SignalP 1-4 (1997-2011)</td>
+<td>feed-forward networks on sliding windows (Session 7), combined with hidden Markov models (Session 5) in versions 2-3</td>
+</tr>
+<tr class="even">
+<td>SignalP 5.0 (2019)</td>
+<td>a deep recurrent network: bidirectional LSTM + CRF (above)</td>
+</tr>
+<tr class="odd">
+<td>SignalP 6.0 (2022)</td>
+<td>the pretrained protein language model <strong>ProtBERT</strong> + CRF</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>(Nielsen et al., <a href="https://pubmed.ncbi.nlm.nih.gov/9051728/"><em>Protein Eng</em> 10:1</a>; Almagro Armenteros et al., <a href="https://pubmed.ncbi.nlm.nih.gov/30778233/"><em>Nat Biotechnol</em> 37:420</a>; Teufel et al., <a href="https://pubmed.ncbi.nlm.nih.gov/34980915/"><em>Nat Biotechnol</em> 40:1023</a>; history by the authors themselves in Nielsen et al. 2024, <a href="https://doi.org/10.1007/978-1-0716-4007-4_17"><em>Methods Mol. Biol.</em> 2836:331</a>.)</p>
+<p><strong>What changed when a representation pretrained on huge unlabelled protein collections became available?</strong> The SignalP 6.0 paper reports four changes:</p>
+<ul>
+<li><strong>Few-shot learning.</strong> Two signal-peptide types had almost no training data (36 and 113 sequences). With ProtBERT, both became predictable for the first time, which “confirms the importance of LMs for low-data problems”.</li>
+<li><strong>Better generalisation.</strong> The two versions were equal on close homologs of the training data, but “at sequence identities lower than 60%, SignalP 6.0 outperforms SignalP 5.0”.</li>
+<li><strong>No organism input needed.</strong> The language model infers the taxonomic context from the sequence itself, so SignalP 6.0 also works on metagenomic proteins of unknown origin.</li>
+<li><strong>Homology partitioning, again.</strong> For SignalP 6.0, the authors found that their earlier partitioning had left similar sequences on both sides. They built a new tool (GraphPart; Teufel et al. 2023, <a href="https://pubmed.ncbi.nlm.nih.gov/37850036/"><em>NAR Genom Bioinform</em> 5:lqad088</a>), and even with it they could not get below 30% identity between folds. This is Session 8’s lesson, learned the hard way.</li>
+</ul>
+</section>
+<section class="level3" data-number="11.4.2" id="reproducing-the-idea-at-classroom-scale">
+<h3 class="anchored" data-anchor-id="reproducing-the-idea-at-classroom-scale" data-number="11.4.2"><span class="header-section-number">11.4.2</span> Reproducing the idea at classroom scale</h3>
+<p>Can we see the same effects ourselves? We use a simpler task, <em>does this protein have a signal peptide?</em>, on the same 4,910 proteins and their first 70 residues. We compare three classifiers:</p>
+<ul>
+<li>one-hot encoding with logistic regression;</li>
+<li>one-hot encoding with a small 1D CNN (Session 10);</li>
+<li>logistic regression on the <strong>frozen ESM-2 embedding</strong> (35M parameters, a stand-in for the larger ProtBERT), with the residue vectors averaged into 480 numbers.</li>
+</ul>
+<p><strong>On the homology-aware test set</strong> (741 proteins, used once):</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s11-classifiers">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s11-classifiers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 11.4: Classifiers on the homology-aware test set (741 proteins).
+</figcaption>
+<div aria-describedby="tbl-s11-classifiers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%"/>
+<col style="width: 23%"/>
+<col style="width: 23%"/>
+<col style="width: 23%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>One-hot + logistic regression</th>
+<th>One-hot + 1D CNN</th>
+<th><strong>ESM-2 embedding + logistic regression</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MCC</td>
+<td>0.745</td>
+<td>0.825</td>
+<td><strong>0.955</strong></td>
+</tr>
+<tr class="even">
+<td>Accuracy</td>
+<td>0.879</td>
+<td>0.916</td>
+<td><strong>0.978</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><strong>Few-shot.</strong> To mimic scarce labels, we train on random subsets of the training proteins:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-fewshot">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-fewshot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-fewshot.png" style="width:75.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-fewshot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.11: Test MCC against the number of labelled training proteins (log scale). With 20 proteins, the ESM-2 classifier reaches MCC 0.762; the one-hot models are near zero (0.045 and 0.122).
+</figcaption>
+</figure>
+</div>
+<p>With only 50 labelled proteins, the ESM-2 classifier (MCC 0.907) already beats both one-hot models trained on all 4,169 (0.745 and 0.845). This is the central result of the session: <strong>pretraining transfers information learned from millions of unlabelled sequences into a task where labelled examples are scarce.</strong> The language model has already learned most of what distinguishes a signal peptide, and the labels only need to point at it.</p>
+<p><strong>Generalisation.</strong> SignalP 6.0’s authors compared performance on test proteins at different identities to the training set. To see the whole range of identities, we use a plain random 80/20 split and measure the identity of each test protein to its most similar training protein with MMseqs2. This is a diagnostic that shows why random splits can be deceptively easy, not an argument for using them. The homology-aware result above remains the honest estimate for new protein families (Session 8).</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session11-identity-bins">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session11-identity-bins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session11-identity-bins.png" style="width:75.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session11-identity-bins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11.12: Test MCC in bins of identity to the most similar training protein. Proteins with no detectable homolog (37% of the test set) fall in the lowest bin.
+</figcaption>
+</figure>
+</div>
+<p>Close homologs (&gt;90% identity) are predicted perfectly by all three classifiers. Without a close homolog (&lt;30%), however, the one-hot classifiers drop to MCC 0.681 and 0.773, while the ESM-2 classifier stays at 0.960. This is the same pattern that SignalP 6.0’s authors found. (Our task is easier than SignalP’s, and our model is smaller and not fine-tuned. ESM-2 has seen these sequences during pretraining, but never their labels, which is also true of ProtBERT inside SignalP 6.0.)</p>
+<section class="level4" data-number="11.4.2.1" id="further-reading-2">
+<h4 class="anchored" data-anchor-id="further-reading-2" data-number="11.4.2.1"><span class="header-section-number">11.4.2.1</span> Further reading</h4>
+<ul>
+<li>Teufel et al. (2022), <a href="https://pubmed.ncbi.nlm.nih.gov/34980915/">SignalP 6.0 predicts all five types of signal peptides using protein language models</a> (open access)</li>
+<li>Teufel et al. (2023), <a href="https://pubmed.ncbi.nlm.nih.gov/37850036/">GraphPart: homology partitioning for biological sequence analysis</a></li>
+<li>SignalP 6.0 <a href="https://services.healthtech.dtu.dk/services/SignalP-6.0/">web server</a></li>
+</ul>
+</section>
+</section>
+</section>
+<section class="level2" data-number="11.5" id="check-your-understanding">
+<h2 class="anchored" data-anchor-id="check-your-understanding" data-number="11.5"><span class="header-section-number">11.5</span> Check your understanding</h2>
+<div id="session11-quiz"></div>
+<script>
+renderQuiz("session11-quiz", [
+  {
+    question: "Why does a bidirectional LSTM label signal-peptide residues so much better (MCC 0.820) than a forward-only LSTM (0.631)?",
+    choices: [
+      "Whether an N-terminal residue belongs to a signal peptide is decided by the hydrophobic h-region that comes after it, which a forward-only network has not yet seen",
+      "Bidirectional networks have no vanishing-gradient problem at all",
+      "It was trained on twice as many proteins",
+      "Signal peptides are read from the C-terminus by the cell"
+    ],
+    correctIndex: 0,
+    explanation: "The forward LSTM mislabels 76% of the first five signal-peptide residues, the bidirectional one 12%: at residue 3 the forward network has seen almost nothing. Near the cleavage site both are about equally good."
+  },
+  {
+    question: "Why does the dataset keep only signal peptides with experimental evidence (ECO:0000269)?",
+    choices: [
+      "Many UniProt signal peptides are predicted, often by SignalP itself; training on them would teach the model to imitate SignalP rather than biology",
+      "Experimental annotations are always longer",
+      "UniProt removes predicted features from downloads",
+      "It makes the dataset larger"
+    ],
+    correctIndex: 0,
+    explanation: "Circular training data inflate apparent performance, a relative of Session 8's leakage problem."
+  },
+  {
+    question: "What is the essential difference between a BERT-style and a GPT-style Transformer language model?",
+    choices: [
+      "BERT fills in masked tokens using context on both sides; GPT predicts the next token and may only attend to earlier positions (causal mask)",
+      "BERT uses recurrence, GPT uses attention",
+      "GPT has no attention layers",
+      "BERT is only for proteins, GPT only for text"
+    ],
+    correctIndex: 0,
+    explanation: "The architecture is almost the same; the training objective and one mask differ. ESM-2 and ProtBERT are BERT-style."
+  },
+  {
+    question: "In self-attention, what does softmax(QK^T / sqrt(d_k)) compute?",
+    choices: [
+      "For each position (query), a probability distribution over all positions (keys), used to average their values",
+      "The next token in the sequence",
+      "The gradient of the loss",
+      "A fixed position-independent weight matrix"
+    ],
+    correctIndex: 0,
+    explanation: "Each row of the attention matrix sums to one: how much each other position contributes to this one."
+  },
+  {
+    question: "With only 20 labelled proteins, logistic regression on frozen ESM-2 embeddings reaches MCC 0.762 while one-hot models stay near zero. Why?",
+    choices: [
+      "Pretraining on millions of unlabelled sequences already taught the model what signal peptides look like; the few labels only have to point at it",
+      "ESM-2 was trained on SignalP's labels",
+      "One-hot encoding cannot represent signal peptides",
+      "20 proteins are enough for any model"
+    ],
+    correctIndex: 0,
+    explanation: "This is the few-shot effect that let SignalP 6.0 predict Tat/SPII (36 known examples) and Sec/SPIII (113) for the first time."
+  },
+  {
+    question: "SignalP 6.0 outperformed a retrained SignalP 5.0 mainly for test proteins below 60% identity to the training set, and we see the same pattern. What does this say?",
+    choices: [
+      "Pretrained representations help most where there is no close homolog to copy from, which is where a predictor is most needed",
+      "Language models are worse on close homologs",
+      "Homology partitioning is unnecessary with language models",
+      "Identity to the training set does not matter"
+    ],
+    correctIndex: 0,
+    explanation: "On close homologs everything works; the difference appears on novel proteins."
+  },
+  {
+    question: "Why did the SignalP authors say that their SignalP 5.0 homology partitioning with CD-HIT 'was actually not valid'?",
+    choices: [
+      "Assigning CD-HIT clusters to folds only bounds identity to cluster centres; other pairs across folds stayed well above the 20% cutoff",
+      "CD-HIT cannot read protein sequences",
+      "They used too many folds",
+      "The clusters were too small to train on"
+    ],
+    correctIndex: 0,
+    explanation: "GraphPart, built for SignalP 6.0, removes sequences until no cross-fold pair is too similar (they had to settle for 30%)."
+  },
+  {
+    question: "Attention lets every token take information from every other token. What does a Transformer block add, and why?",
+    choices: [
+      "Several heads, a feed-forward network for each token, residual connections with layer normalisation so that gradients survive dozens of blocks, and a position encoding because attention alone ignores order",
+      "A recurrent hidden state that is passed from token to token",
+      "Convolution filters that slide along the sequence",
+      "Nothing: a Transformer is a single attention layer"
+    ],
+    correctIndex: 0,
+    explanation: "Attention moves information between tokens; the feed-forward network processes it within each token; residual connections (ResNet's idea) and layer normalisation keep deep stacks trainable; the position encoding tells the model where each token is."
+  },
+  {
+    question: "Why are ESM-2, DINOv2 and the ProtBERT inside SignalP 6.0 called foundation models?",
+    choices: [
+      "They are pretrained once, without labels, on huge data, and then reused for many tasks through their embeddings plus a small model trained on a few labels",
+      "They were trained on labelled data for exactly the task they are used for",
+      "They are the first layer of every neural network",
+      "They can only be used for the data set they were trained on"
+    ],
+    correctIndex: 0,
+    explanation: "Pretrain, represent, adapt: SignalP 6.0 is ProtBERT embeddings plus a small model, and the session's notebook shows that such embeddings help most when labelled data are scarce."
+  },
+  {
+    question: "In one-hot encoding every leucine is the same vector. Why do two leucines get different ESM-2 vectors?",
+    choices: [
+      "ESM-2 computes each residue's vector from the whole sequence around it (a contextual embedding), so a leucine in a signal peptide and one in a cytoplasmic protein are represented differently",
+      "ESM-2 adds random noise to every residue",
+      "ESM-2 uses a different vocabulary for every protein",
+      "The two leucines are different amino acids in ESM-2's alphabet"
+    ],
+    correctIndex: 0,
+    explanation: "In the notebook, leucines inside signal peptides have mean cosine similarity 0.745 with each other but 0.633 with leucines in cytoplasmic proteins; in one-hot encoding all pairs are 1."
+  },
+  {
+    question: "An attention head gives a high weight from residue 12 to residue 87. What can you conclude?",
+    choices: [
+      "Residue 87 contributes strongly when residue 12's vector is updated in that head; it does not by itself prove a 3D contact or explain the biology",
+      "Residues 12 and 87 are in contact in the folded structure",
+      "Residue 87 is the most important residue of the protein",
+      "Residue 12 has been mutated"
+    ],
+    correctIndex: 0,
+    explanation: "Attention weights describe how information flows inside the model. They can correlate with contacts (the second discussion problem measures how well), but they are not a measurement of structure."
+  }
+]);
+</script>
+</section>
+<section class="level2" data-number="11.6" id="the-course-notebook">
+<h2 class="anchored" data-anchor-id="the-course-notebook" data-number="11.6"><span class="header-section-number">11.6</span> The course notebook</h2>
+<p><code>notebooks/session11-rnns-lstm-gru-in-code.ipynb</code> computes every number on this page:</p>
+<ol type="1">
+<li>Vanishing and exploding gradients through time, an LSTM cell written out by hand, and residue labelling with a sliding window, a simple RNN, an LSTM and a bidirectional LSTM on the homology-aware split.</li>
+<li>A next-residue LSTM language model, self-attention and the causal mask from scratch, ESM-2 filling in a masked residue, and the contextual embeddings of leucine.</li>
+<li>One-hot vs. frozen ESM-2 embeddings: the homology-aware test, the few-shot curve, performance vs. identity, and the PCA.</li>
+</ol>
+<p>The dataset is loaded from the course repository. On Colab, run <code>!pip install fair-esm</code> first. Everything runs on a CPU in a few minutes. Open the notebook in <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session11-rnns-lstm-gru-in-code.ipynb">Google Colab</a>.</p>
+</section>
+<section class="level2" data-number="11.7" id="the-lab">
+<h2 class="anchored" data-anchor-id="the-lab" data-number="11.7"><span class="header-section-number">11.7</span> The lab</h2>
+<p><strong>Full lab:</strong> the lab is adapted from the previous course’s “Neural Networks” labs and rebuilt in PyTorch on biological data. Work through <a download="" href="https://course.bioinfo.se/notebooks/session11-lab.ipynb"><code>notebooks/session11-lab.ipynb</code></a>, replacing every <code>todo(...)</code> call with your own code:</p>
+<ol type="1">
+<li>label signal-peptide residues with a feed-forward sliding window of 1, 11 and 41 residues, and see how the window size matters;</li>
+<li>build a forward and a bidirectional LSTM tagger for the same task, and explain why reading the sequence in both directions helps;</li>
+<li>compute ESM-2 embeddings and cosine similarities for two myoglobins and an unrelated membrane transporter;</li>
+<li>embed eleven PDB proteins, plot them with PCA, cluster them, and check the clusters against their Pfam families.</li>
+</ol>
+<p>An optional extra at the end of the notebook, not part of the quiz, lets you write one step of a simple RNN by hand and check it against <code>nn.RNN</code>.</p>
+<section class="level3" data-number="11.7.1" id="submitting-this-lab">
+<h3 class="anchored" data-anchor-id="submitting-this-lab" data-number="11.7.1"><span class="header-section-number">11.7.1</span> Submitting this lab</h3>
+<p>This lab is administered through Canvas, not through this book. See the course’s Canvas page for the current quiz, the deadline and how to submit.</p>
+</section>
+</section>
+<section class="level2" data-number="11.8" id="whats-next">
+<h2 class="anchored" data-anchor-id="whats-next" data-number="11.8"><span class="header-section-number">11.8</span> What’s next</h2>
+<p>This session has shown three ways to use context. A CNN widens local context layer by layer, an RNN carries context step by step, and attention lets any position use any other directly. It has also shown two ways to learn a representation. A supervised model learns it from task labels, while a protein language model learns it first, from millions of unlabelled sequences, so that a few labels go a long way.</p>
+<p>Session 12 is about <strong>AlphaFold</strong> and its relatives. They use attention over multiple sequence alignments and over residue pairs to predict 3D structure, and protein language models such as ESM-2 can do the same from a single sequence. Along the way, Session 10’s contact maps become distances, and then coordinates.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="10 Session 10: CNNs, from ImageNet to Biology" class="pagination-link" href="./session10.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="12 Session 12: AlphaFold and Generative Models of Protein Structure" class="pagination-link" href="./session12.html">
+<span class="nav-page-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

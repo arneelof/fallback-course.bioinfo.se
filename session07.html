@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>7  Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./notebooks/session07-gradient-descent-xor.html" rel="next"/>
+<link href="./notebooks/session06-protein-structure-in-code.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./session07.html"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#learning-goals" href="#learning-goals" id="toc-learning-goals"><span class="header-section-number">7.1</span> Learning goals</a></li>
+<li><a class="nav-link" data-scroll-target="#two-pictures-to-keep-in-mind" href="#two-pictures-to-keep-in-mind" id="toc-two-pictures-to-keep-in-mind"><span class="header-section-number">7.2</span> Two pictures to keep in mind</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-weighted-sum" href="#sec-s07-weighted-sum" id="toc-sec-s07-weighted-sum"><span class="header-section-number">7.3</span> A profile score and a perceptron: the same weighted sum</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading" href="#further-reading" id="toc-further-reading"><span class="header-section-number">7.3.1</span> Further reading</a></li>
+<li><a class="nav-link" data-scroll-target="#further-watching" href="#further-watching" id="toc-further-watching"><span class="header-section-number">7.3.2</span> Further watching</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-learning" href="#sec-s07-learning" id="toc-sec-s07-learning"><span class="header-section-number">7.4</span> Learning the weights from examples</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-1" href="#further-reading-1" id="toc-further-reading-1"><span class="header-section-number">7.4.1</span> Further reading</a></li>
+<li><a class="nav-link" data-scroll-target="#further-watching-1" href="#further-watching-1" id="toc-further-watching-1"><span class="header-section-number">7.4.2</span> Further watching</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-represent" href="#sec-s07-represent" id="toc-sec-s07-represent"><span class="header-section-number">7.5</span> What one weighted sum can represent</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-xor" href="#sec-s07-xor" id="toc-sec-s07-xor"><span class="header-section-number">7.6</span> What one weighted sum can never represent: XOR</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#further-reading-2" href="#further-reading-2" id="toc-further-reading-2"><span class="header-section-number">7.6.1</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-hidden" href="#sec-s07-hidden" id="toc-sec-s07-hidden"><span class="header-section-number">7.7</span> Why a hidden layer helps</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#the-activation-must-be-nonlinear" href="#the-activation-must-be-nonlinear" id="toc-the-activation-must-be-nonlinear"><span class="header-section-number">7.7.1</span> The activation must be nonlinear</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-analogues" href="#sec-s07-analogues" id="toc-sec-s07-analogues"><span class="header-section-number">7.8</span> Biological analogues</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#interactions-between-positions-bulyk-et-al." href="#interactions-between-positions-bulyk-et-al." id="toc-interactions-between-positions-bulyk-et-al."><span class="header-section-number">7.8.1</span> Interactions between positions: Bulyk et al.</a></li>
+<li><a class="nav-link" data-scroll-target="#secondary-structure-prediction-phd" href="#secondary-structure-prediction-phd" id="toc-secondary-structure-prediction-phd"><span class="header-section-number">7.8.2</span> Secondary structure prediction: PHD</a></li>
+<li><a class="nav-link" data-scroll-target="#further-reading-3" href="#further-reading-3" id="toc-further-reading-3"><span class="header-section-number">7.8.3</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s07-representation" href="#sec-s07-representation" id="toc-sec-s07-representation"><span class="header-section-number">7.9</span> Representation matters as much as the model</a></li>
+<li><a class="nav-link" data-scroll-target="#summary-the-two-pictures-again" href="#summary-the-two-pictures-again" id="toc-summary-the-two-pictures-again"><span class="header-section-number">7.10</span> Summary: the two pictures again</a></li>
+<li><a class="nav-link" data-scroll-target="#check-your-understanding" href="#check-your-understanding" id="toc-check-your-understanding"><span class="header-section-number">7.11</span> Check your understanding</a></li>
+<li><a class="nav-link" data-scroll-target="#the-course-notebook" href="#the-course-notebook" id="toc-the-course-notebook"><span class="header-section-number">7.12</span> The course notebook</a></li>
+<li><a class="nav-link" data-scroll-target="#the-lab" href="#the-lab" id="toc-the-lab"><span class="header-section-number">7.13</span> The lab</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#submitting-this-lab" href="#submitting-this-lab" id="toc-submitting-this-lab"><span class="header-section-number">7.13.1</span> Submitting this lab</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#whats-next" href="#whats-next" id="toc-whats-next"><span class="header-section-number">7.14</span> What’s next</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Sources for this page:</strong> d2l.ai, <em>Dive into Deep Learning</em>, <a href="https://d2l.ai/chapter_linear-regression/index.html">Linear Neural Networks for Regression</a> — CC BY-SA 4.0; Wikipedia, <a href="https://en.wikipedia.org/wiki/Perceptron">Perceptron</a>, <a href="https://en.wikipedia.org/wiki/Perceptrons_(book)"><em>Perceptrons</em> (book)</a>, <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient descent</a>, <a href="https://en.wikipedia.org/wiki/Linear_separability">Linear separability</a>, <a href="https://en.wikipedia.org/wiki/AI_winter">AI winter</a>, <a href="https://en.wikipedia.org/wiki/Backpropagation">Backpropagation</a>, <a href="https://en.wikipedia.org/wiki/Protein_secondary_structure">Protein secondary structure</a>, <a href="https://en.wikipedia.org/wiki/Alpha_helix">Alpha helix</a>, <a href="https://en.wikipedia.org/wiki/Beta_sheet">Beta sheet</a>, and <a href="https://en.wikipedia.org/wiki/Protein_structure_prediction">Protein structure prediction</a> — CC BY-SA 4.0; Bulyk, Johnson &amp; Church (2002), <em>Nucleic Acids Research</em> 30(5):1255-1261, <a href="https://pubmed.ncbi.nlm.nih.gov/11861919/">PubMed</a>; Chou &amp; Fasman (1974), <em>Biochemistry</em> 13(2):222-245, <a href="https://pubmed.ncbi.nlm.nih.gov/4358940/">PubMed</a>; Garnier, Osguthorpe &amp; Robson (1978), <em>Journal of Molecular Biology</em> 120(1):97-120, <a href="https://pubmed.ncbi.nlm.nih.gov/642007/">PubMed</a>; Rost &amp; Sander (1993), “Prediction of protein secondary structure at better than 70% accuracy,” <em>Journal of Molecular Biology</em> 232:584-599. The brain/perceptron figure is Rosenblatt, F., “The Design of an Intelligent Automaton,” <em>Research Reviews</em>, Office of Naval Research, October 1958, pp. 5-13 — public domain (US federal government work), via <a href="https://commons.wikimedia.org/wiki/File:Organization_of_a_biological_brain_and_a_perceptron.png">Wikimedia Commons</a>. The real secondary-structure counts for <em>HBB</em> below were fetched live from EBI’s <a href="https://www.ebi.ac.uk/pdbe/api/doc/">PDBe API</a> — CC BY 4.0 — see the notebook. The by-hand AND/OR/NAND perceptron weights, the closed-form vs. iterative linear-regression comparison, and the “solve XOR by engineering a feature” example below are mined for ideas from Magnus Ekman’s <em>Learning Deep Learning</em> (slide decks <code>Chapter-1</code>, <code>Chapter-2</code>, <code>Appendix-A</code> in <code>slides/</code>) — a copyrighted, not openly-licensed textbook (the very one this course rebuild is replacing), credited here as an internal source the way Petras Kundrotas’s own lecture decks are on other days, not linked as further reading. Every number below was independently recomputed and verified in code, not transcribed. Text below is written from scratch, not copied, following these ideas.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Notebook:</strong> <a href="notebooks/session07-gradient-descent-xor.html" target="_blank">Session 7 — Linear models, gradient descent, and the XOR problem</a> — the code behind this page. <a download="" href="./notebooks/session07-gradient-descent-xor.html">Download it</a> to run it yourself.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>A fast learner
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<blockquote class="blockquote">
+<p><strong>Interviewer</strong>: What’s your biggest strength?</p>
+<p><em>Me</em>: I’m a fast learner</p>
+<p><strong>Interviewer</strong>: What’s <span class="math inline">\(11*11\)</span></p>
+<p><em>Me</em>: 65</p>
+<p><strong>Interviewer</strong>: Not even close. It’s 121</p>
+<p><em>Me</em>: It’s 121</p>
+</blockquote>
+</div>
+</div>
+<p>Session 6 gave us structural properties that we would like to predict from sequence, with secondary structure first among them. This session starts building the mathematical machinery for doing that.</p>
+<section class="level2" data-number="7.1" id="learning-goals">
+<h2 class="anchored" data-anchor-id="learning-goals" data-number="7.1"><span class="header-section-number">7.1</span> Learning goals</h2>
+<p>By the end of this session you should be able to:</p>
+<ul>
+<li>explain that a profile score and a perceptron share the same mathematical core, a weighted sum (dot product), and how they differ;</li>
+<li>explain how a model’s weights can be <em>learned</em> from labelled examples by gradient descent, rather than derived from alignment statistics;</li>
+<li>explain, with a real biological example, why some patterns cannot be captured by any linear model, and why a hidden layer only helps if its activation function is nonlinear;</li>
+<li>describe how Rost &amp; Sander’s PHD method (1993) combined profile input from multiple alignments with a neural network to predict secondary structure better than earlier methods;</li>
+<li>explain why a more powerful model cannot compensate for an input representation that lacks the relevant information.</li>
+</ul>
+</section>
+<section class="level2" data-number="7.2" id="two-pictures-to-keep-in-mind">
+<h2 class="anchored" data-anchor-id="two-pictures-to-keep-in-mind" data-number="7.2"><span class="header-section-number">7.2</span> Two pictures to keep in mind</h2>
+<p>This session uses many names: profile score (PSSM), perceptron, linear and logistic regression, sigmoid, tanh, hidden layer, multilayer perceptron and PHD. Behind them there are only two pictures, and together these two pictures explain the whole idea of the lecture.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-two-diagrams">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-two-diagrams-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-two-diagrams.png" style="width:95.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-two-diagrams-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.1: Top: one weighted sum followed by an activation. A PSSM score, a perceptron and logistic regression are all this picture, and all of them draw one straight boundary. Bottom: a hidden layer of weighted sums with a nonlinear activation, followed by one more weighted sum. This is a multilayer perceptron (MLP), such as PHD, and it can combine several boundaries.
+</figcaption>
+</figure>
+</div>
+<p>Keep them in mind as you read. The goal of the session is to understand what changes between the two pictures, and why that change makes XOR possible.</p>
+</section>
+<section class="level2" data-number="7.3" id="sec-s07-weighted-sum">
+<h2 class="anchored" data-anchor-id="sec-s07-weighted-sum" data-number="7.3"><span class="header-section-number">7.3</span> A profile score and a perceptron: the same weighted sum</h2>
+<p><strong>You actually already know the central computation of a neural network.</strong> Session 5 introduced the profile score, which checks how well a sequence matches a known family. It multiplies each position’s observed value by a position-specific weight and adds up the results. In Session 1’s terms, this is a dot product, something you learned on the first day. A <strong>perceptron</strong> has exactly the same mathematical core, because it also computes a weighted sum <span class="math inline">\(z\)</span>:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + \dots + w_n x_n + b
+\]</span></p>
+<p>The extra term <span class="math inline">\(b\)</span>, a <strong>bias</strong>, shifts the whole sum by a constant amount, so that the model’s decision threshold can sit somewhere other than zero. The PSSM and the perceptron share this weighted sum, but they differ in what they do with it. A PSSM reports the sum itself as a <em>score</em>. A perceptron instead passes the sum through an <strong>activation function</strong>, originally a threshold (output 1 if <span class="math inline">\(z &gt; 0\)</span>, else 0), to make a <em>classification</em>. Keeping the two terms apart helps later on. “Profile score” means a linear score, and “perceptron” means a (thresholded) classifier that adds an activation function to the same weighted sum.</p>
+<p><strong>Where the name comes from.</strong> Frank Rosenblatt introduced the perceptron in 1958, first as a simulation on an IBM 704 computer, and the Mark I Perceptron machine followed in 1960. He modelled it on a simplified neuron. Each synapse weights its input, the cell sums the weighted inputs, and the cell fires once the sum crosses a threshold. The weights <span class="math inline">\(w_i\)</span> therefore stand for connection strengths, and <span class="math inline">\(b\)</span> for how easily the cell fires. His own diagram set the circuit of the brain next to the perceptron built to mirror it:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-rosenblatt-brain-perceptron">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-rosenblatt-brain-perceptron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-rosenblatt-brain-perceptron.png" style="width:75.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-rosenblatt-brain-perceptron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.2: Rosenblatt’s own 1958 diagram: a biological brain’s circuit (top) next to the perceptron he built to mirror it (bottom) — retina/sensory input, an association layer, and motor/response output on both sides. Public domain (US federal government work) — Rosenblatt, F., “The Design of an Intelligent Automaton,” <em>Research Reviews</em>, Office of Naval Research, October 1958, pp. 5-13.
+</figcaption>
+</figure>
+</div>
+<p>Geometrically, <span class="math inline">\(z = 0\)</span> is a line in two dimensions (a plane, or hyperplane, in higher dimensions), and this line is the model’s <strong>decision boundary</strong>. On one side of it the output is 1, and on the other side it is 0.</p>
+<p>Solving <span class="math inline">\(w_1 x_1 + w_2 x_2 + b = 0\)</span> for <span class="math inline">\(x_2\)</span> gives <span class="math inline">\(x_2 = -\frac{w_1}{w_2} x_1 - \frac{b}{w_2}\)</span>. This is the familiar <span class="math inline">\(y = mx + c\)</span> form of a line, with the bias <span class="math inline">\(b\)</span> playing the role of the intercept <span class="math inline">\(c\)</span> (scaled by <span class="math inline">\(-1/w_2\)</span>). Changing <span class="math inline">\(b\)</span> therefore slides the whole line sideways without changing its slope. The intercept <span class="math inline">\(b_0\)</span> plays the same role in ordinary linear regression, as the next section shows.</p>
+<section class="level3" data-number="7.3.1" id="further-reading">
+<h3 class="anchored" data-anchor-id="further-reading" data-number="7.3.1"><span class="header-section-number">7.3.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Perceptron">Perceptron</a> — other activation functions and the original biological motivation, beyond the general-purpose version above</li>
+</ul>
+</section>
+<section class="level3" data-number="7.3.2" id="further-watching">
+<h3 class="anchored" data-anchor-id="further-watching" data-number="7.3.2"><span class="header-section-number">7.3.2</span> Further watching</h3>
+<p><a href="https://www.youtube.com/watch?v=aircAruvnKk"><em>But what is a neural network?</em></a> (3Blue1Brown, Deep Learning ch. 1), animating what a weighted sum + activation is doing:</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin-bottom:1em;">
+<iframe allowfullscreen="" src="https://www.youtube.com/embed/aircAruvnKk" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" title="But what is a neural network?, 3Blue1Brown"></iframe>
+</div>
+</section>
+</section>
+<section class="level2" data-number="7.4" id="sec-s07-learning">
+<h2 class="anchored" data-anchor-id="sec-s07-learning" data-number="7.4"><span class="header-section-number">7.4</span> Learning the weights from examples</h2>
+<p>So far the weights have simply been given. A profile’s weights come from counting: we look at a multiple alignment, count how often each residue appears at each position, and turn those counts into log-odds scores. This works well when we already have a trustworthy alignment to count from. As Session 5 showed, small alignments need some extra tricks (pseudocounts), but that is still counting, only with some modifications.</p>
+<p>The alternative to <strong>counting</strong>, and the one the rest of this course builds on, is to <strong>learn</strong> the weights directly from labelled examples with an optimisation method, normally gradient descent as described in Session 1. We often start with arbitrary (random) weights and measure how wrong the model’s current predictions are with a <em>loss function</em>. We then compute the gradient of that loss with respect to each weight, and nudge every weight a small step in the direction that reduces the loss. This is repeated many times. No alignment and no hand-counting are needed, only examples and many small corrections. This is the foundation of all machine learning: we do not tell the computer what to do, but let it <strong>learn</strong> what to do.</p>
+<p>In this session’s lab, the code works directly with raw tensors and automatic differentiation (Session 2). It deliberately avoids the higher-level <code>nn.Module</code> and training-loop tools that Session 8 introduces, because the point here is to see every step of the mechanics rather than to use a convenient shortcut around them.</p>
+<p><strong>Worked example.</strong> Take a perceptron with one input and no bias yet (<span class="math inline">\(z = wx\)</span>), an initial weight <span class="math inline">\(w_0 = 0\)</span>, a training example <span class="math inline">\((x, y) = (2, 6)\)</span>, a squared-error loss <span class="math inline">\(L(w) = (wx - y)^2\)</span>, and a learning rate <span class="math inline">\(\eta = 0.05\)</span>. Session 1’s chain rule gives</p>
+<p><span class="math display">\[
+\frac{dL}{dw} = 2(wx - y) \cdot x
+\]</span></p>
+<p>The table shows the first iterations of gradient descent, <span class="math inline">\(w_{n+1} = w_n - \eta \, dL/dw\)</span>:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-gradient-descent">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-gradient-descent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.1: The first iterations of gradient descent with learning rate <span class="math inline">\(\eta = 0.05\)</span>.
+</figcaption>
+<div aria-describedby="tbl-s07-gradient-descent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(n\)</span></th>
+<th><span class="math inline">\(w_n\)</span></th>
+<th>prediction <span class="math inline">\(w_n x\)</span></th>
+<th><span class="math inline">\(dL/dw\)</span></th>
+<th><span class="math inline">\(w_{n+1} = w_n - 0.05 \, dL/dw\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.00</td>
+<td>0.00</td>
+<td><span class="math inline">\(2(0-6)(2) = -24.0\)</span></td>
+<td>0.00 − 0.05 × (−24.0) = 1.20</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1.20</td>
+<td>2.40</td>
+<td><span class="math inline">\(2(2.4-6)(2) = -14.4\)</span></td>
+<td>1.20 − 0.05 × (−14.4) = 1.92</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>1.92</td>
+<td>3.84</td>
+<td><span class="math inline">\(2(3.84-6)(2) = -8.64\)</span></td>
+<td>1.92 − 0.05 × (−8.64) = 2.35</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-gradient-descent">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-gradient-descent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-gradient-descent.png" style="width:75.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-gradient-descent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.3: The same iterations drawn on the loss curve <span class="math inline">\(L(w) = (2w-6)^2\)</span>. Each arrow is one update <span class="math inline">\(w_{n+1} = w_n - 0.05\,dL/dw\)</span>: every step goes downhill, and the steps shrink as <span class="math inline">\(w\)</span> approaches 3 (star), where the prediction matches the target and the loss is 0.
+</figcaption>
+</figure>
+</div>
+<p>The weight converges towards <span class="math inline">\(w = 3\)</span> (<a class="quarto-xref" href="#fig-session07-gradient-descent">Figure <span>7.3</span></a>), where the prediction <span class="math inline">\(wx = 3 \times 2 = 6\)</span> would exactly match the target. Just as in Session 1’s one-variable example, the size of each correction (<span class="math inline">\(dL/dw\)</span>) shrinks by itself as the prediction gets closer, so <span class="math inline">\(\eta\)</span> needs no manual adjustment. This holds only as long as the learning rate is not too large. With an excessive learning rate, gradient descent overshoots the minimum and can oscillate or diverge (Session 1’s second discussion problem).</p>
+<p><strong>Deriving vs. learning, on the simplest possible model.</strong> Ordinary linear regression, which fits a line <span class="math inline">\(\hat y = b_0 + b_1 x\)</span> to data, has a direct numerical solution. It therefore makes a useful check, because gradient descent should reach the same optimum iteratively. Take five noisy points roughly following <span class="math inline">\(y \approx 2x\)</span>, with <span class="math inline">\(x = (1,2,3,4,5)\)</span> and <span class="math inline">\(y = (2.1, 3.9, 6.2, 7.8, 10.1)\)</span>. A least-squares solver gives <span class="math inline">\(b_0 = 0.05\)</span> and <span class="math inline">\(b_1 = 1.99\)</span> in one step, and gradient descent (learning rate <span class="math inline">\(\eta = 0.01\)</span>, thousands of small steps) converges to the same <span class="math inline">\(b_0 = 0.050\)</span> and <span class="math inline">\(b_1 = 1.990\)</span>.</p>
+<p>This mirrors the contrast between Session 5’s PSSM, whose weights are <em>derived</em> directly from alignment counts, and this session’s gradient descent, whose weights are <em>learned</em> iteratively. Gradient descent is what the rest of the course uses, because most models, including a perceptron with its classification loss, have no direct solution.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout" class="callout-header d-flex align-content-center collapsed" data-bs-target=".callout-3-contents" data-bs-toggle="collapse">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: the formula
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div class="callout-3-contents callout-collapse collapse" id="callout-3">
+<div class="callout-body-container callout-body">
+<p>The least-squares solution can be written with the <strong>normal equations</strong>. We stack the inputs into a matrix <span class="math inline">\(X\)</span>, with a column of 1s for <span class="math inline">\(b_0\)</span> next to the <span class="math inline">\(x\)</span> values. Then</p>
+<p><span class="math display">\[
+\hat{\beta} = (X^\top X)^{-1} X^\top \mathbf{y}
+\]</span></p>
+<p>This formula is a way to <em>write</em> the solution, not a way to compute it, because numerical libraries (<code>np.linalg.lstsq</code>, scikit-learn) use more stable methods than inverting <span class="math inline">\(X^\top X\)</span>. Moreover, when the columns of <span class="math inline">\(X\)</span> are exactly linearly dependent, <span class="math inline">\(X^\top X\)</span> cannot be inverted at all. This session’s lab comes close to that case. The 20 amino-acid fractions of a protein sum to 1 (for 54 of its 55 proteins, since one contains unknown residues), so together with the intercept column they are almost exactly linearly dependent. A least-squares solver still finds a best fit, but the individual weights are poorly determined.</p>
+</div>
+</div>
+</div>
+<section class="level3" data-number="7.4.1" id="further-reading-1">
+<h3 class="anchored" data-anchor-id="further-reading-1" data-number="7.4.1"><span class="header-section-number">7.4.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient descent</a> — variants (stochastic gradient descent, momentum, Adam) are introduced in Session 9, where we train real networks</li>
+</ul>
+</section>
+<section class="level3" data-number="7.4.2" id="further-watching-1">
+<h3 class="anchored" data-anchor-id="further-watching-1" data-number="7.4.2"><span class="header-section-number">7.4.2</span> Further watching</h3>
+<p><a href="https://www.youtube.com/watch?v=IHZwWFHWa-w"><em>Gradient descent, how neural networks learn</em></a> (3Blue1Brown, Deep Learning ch. 2):</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin-bottom:1em;">
+<iframe allowfullscreen="" src="https://www.youtube.com/embed/IHZwWFHWa-w" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" title="Gradient descent, how neural networks learn, 3Blue1Brown"></iframe>
+</div>
+</section>
+</section>
+<section class="level2" data-number="7.5" id="sec-s07-represent">
+<h2 class="anchored" data-anchor-id="sec-s07-represent" data-number="7.5"><span class="header-section-number">7.5</span> What one weighted sum can represent</h2>
+<p>Before asking what a perceptron cannot do, it helps to see what it can do.</p>
+<p>A perceptron first computes a weighted sum of its inputs, <span class="math inline">\(z = w_1 x_1 + w_2 x_2 + b\)</span>, which is any real number. To turn that number into a decision, it passes <span class="math inline">\(z\)</span> through an <strong>activation function</strong>. The simplest one is the <strong>step function</strong>:</p>
+<p><span class="math display">\[
+\text{step}(z) = \begin{cases} 1 &amp; \text{if } z &gt; 0 \\ 0 &amp; \text{otherwise} \end{cases}
+\]</span></p>
+<p>The step function answers yes or no, and nothing in between. The weighted sum says how strongly the evidence points one way, and the step throws that strength away and keeps only the sign. This is why a perceptron draws a straight boundary: <span class="math inline">\(z &gt; 0\)</span> on one side, <span class="math inline">\(z \le 0\)</span> on the other, and the line <span class="math inline">\(z = 0\)</span> between them. We use the step function here because it makes the logic gates below exact and easy to check by hand. It has one fatal flaw, which Session 8 returns to: its slope is zero everywhere it is defined, so gradient descent gets no signal from it and cannot train a network through it. Every activation used later in the course — sigmoid, tanh, ReLU — is a smoothed version of this same idea.</p>
+<p>With a step activation, a single perceptron can implement basic logic gates directly. No training is required, only weights chosen by hand:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-gates">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-gates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.2: Perceptron weights, chosen by hand, that implement three logic gates.
+</figcaption>
+<div aria-describedby="tbl-s07-gates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Gate</th>
+<th><span class="math inline">\(w_1\)</span></th>
+<th><span class="math inline">\(w_2\)</span></th>
+<th><span class="math inline">\(b\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AND</td>
+<td>1</td>
+<td>1</td>
+<td>−1.5</td>
+</tr>
+<tr class="even">
+<td>OR</td>
+<td>1</td>
+<td>1</td>
+<td>−0.5</td>
+</tr>
+<tr class="odd">
+<td>NAND</td>
+<td>−1</td>
+<td>−1</td>
+<td>1.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Take AND as an example. At <span class="math inline">\((1,1)\)</span>, <span class="math inline">\(z = 1+1-1.5 = 0.5 &gt; 0 \to 1\)</span>, and at every other corner <span class="math inline">\(z \le -0.5 \to 0\)</span>, which is exactly the truth table of AND. (NAND is AND with both weights and the bias negated, which flips every output.) In the notebook, all three gates check out exactly against their truth tables.</p>
+<p>Each gate is one straight decision boundary through the square of four inputs, with the “1” corners on one side and the “0” corners on the other. For AND, only <span class="math inline">\((1,1)\)</span> lies on the positive side of the line <span class="math inline">\(x_1 + x_2 = 1.5\)</span>. The second discussion problem asks you to find weights for OR yourself.</p>
+<p>This is easiest to see if we draw the four inputs as dots on a plane and the decision boundary <span class="math inline">\(z = 0\)</span> as a line between them. The step activation then simply asks on which side of the line a dot lies:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-gates">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-gates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-gates.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-gates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.4: The three gates of the table, one panel each. Filled circles are inputs where the perceptron outputs 1, open circles where it outputs 0; the value of <span class="math inline">\(z\)</span> is written under each corner. The green line is the decision boundary <span class="math inline">\(z = 0\)</span>; on the shaded side <span class="math inline">\(z &gt; 0\)</span>. For AND the line cuts off one corner, for OR it cuts off the opposite corner, and NAND is AND with the sides swapped.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>In the course notebook
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="./notebooks/session07-gradient-descent-xor.html#what-one-weighted-sum-can-do">Section 3 of the course notebook</a> (<a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session07-gradient-descent-xor.ipynb">open in Colab</a>) computes <span class="math inline">\(z\)</span> and the output for all four corners of all three gates with exactly these weights, and draws this figure.</p>
+</div>
+</div>
+</section>
+<section class="level2" data-number="7.6" id="sec-s07-xor">
+<h2 class="anchored" data-anchor-id="sec-s07-xor" data-number="7.6"><span class="header-section-number">7.6</span> What one weighted sum can never represent: XOR</h2>
+<p>A model built purely from weighted sums has a real limitation, because there is a whole class of patterns it can never represent, however its weights are chosen. The classic illustration is the <strong>XOR problem</strong>. XOR is a function of two binary inputs that outputs <code>1</code> when its inputs <em>differ</em> and <code>0</code> when they are the <em>same</em>.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-xor">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-xor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.3: The XOR function.
+</figcaption>
+<div aria-describedby="tbl-s07-xor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th>XOR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><strong>Before reading on, try it:</strong> find weights <span class="math inline">\(w_1, w_2, b\)</span> that reproduce this table with one perceptron. You will not succeed. The two “1” outputs sit on opposite corners of the input square, and no straight line can put both of them on one side while leaving both “0” outputs on the other. <a href="./notebooks/session07-gradient-descent-xor.html#what-it-can-never-do-xor">Section 4 of the notebook</a> tries 226,981 combinations of <span class="math inline">\(w_1\)</span>, <span class="math inline">\(w_2\)</span> and <span class="math inline">\(b\)</span> (every value from −3 to 3 in steps of 0.1). About 5,000 of them reproduce AND, 9,500 OR and 4,500 NAND, but not one reproduces XOR.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-xor-boundary">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-xor-boundary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-xor-boundary.png" style="width:95.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-xor-boundary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.5: A linear model trained on XOR (left) settles on predicting 0.5 everywhere. Every straight-line boundary it could draw leaves at least one point on the wrong side, so gradient descent settles for the least-wrong compromise. A hidden-layer model on the same data (right) combines two linear boundaries into a non-linear one that separates all four points correctly. Both panels show the notebook’s own trained models, not illustrative sketches.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout" class="callout-header d-flex align-content-center collapsed" data-bs-target=".callout-5-contents" data-bs-toggle="collapse">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: the algebraic proof
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div class="callout-5-contents callout-collapse collapse" id="callout-5">
+<div class="callout-body-container callout-body">
+<p>The geometric argument can be turned into a short proof. A perceptron with a sign-style activation outputs 1 when <span class="math inline">\(z = w_1 x_1 + w_2 x_2 + b &gt; 0\)</span> and 0 otherwise. Reproducing the XOR table therefore requires all four of the following inequalities:</p>
+<p><span class="math display">\[
+b \le 0, \qquad w_1 + b &gt; 0, \qquad w_2 + b &gt; 0, \qquad w_1 + w_2 + b \le 0
+\]</span></p>
+<p>The first and last inequalities come from the two “0” rows, and the middle two from the “1” rows. Adding the second and third inequalities gives <span class="math inline">\(w_1 + w_2 + 2b &gt; 0\)</span>, that is, <span class="math inline">\(w_1 + w_2 + b &gt; -b \ge 0\)</span> (using <span class="math inline">\(b \le 0\)</span> from the first inequality). The fourth inequality, however, says directly that <span class="math inline">\(w_1 + w_2 + b \le 0\)</span>. No values of <span class="math inline">\(w_1\)</span>, <span class="math inline">\(w_2\)</span> and <span class="math inline">\(b\)</span> can satisfy both at once, so no such weights exist. This is the same fact that the geometric picture showed, derived without drawing anything.</p>
+</div>
+</div>
+</div>
+<section class="level3" data-number="7.6.1" id="further-reading-2">
+<h3 class="anchored" data-anchor-id="further-reading-2" data-number="7.6.1"><span class="header-section-number">7.6.1</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Linear_separability">Linear separability</a> — generalises the geometric argument above beyond the two-input case shown here</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="7.7" id="sec-s07-hidden">
+<h2 class="anchored" data-anchor-id="sec-s07-hidden" data-number="7.7"><span class="header-section-number">7.7</span> Why a hidden layer helps</h2>
+<p>One perceptron draws one line, but XOR needs two. Combining perceptrons therefore goes further than any single one can. If <strong>OR</strong> and <strong>NAND</strong> are computed separately from the same two inputs and then fed as the two inputs to an <strong>AND</strong> perceptron, the result reproduces <strong>XOR</strong> exactly:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-xor-from-gates">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-xor-from-gates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.4: XOR built from OR, NAND and AND.
+</figcaption>
+<div aria-describedby="tbl-s07-xor-from-gates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th>OR</th>
+<th>NAND</th>
+<th>AND(OR, NAND)</th>
+<th>XOR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Drawn as a network, this is a <strong>two-layer perceptron</strong>, with two inputs, a hidden layer of two units and one output unit. Every arrow carries a weight, and every unit adds its bias and applies the step activation:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-network">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-network.png" style="width:80.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.6: The hand-built two-layer perceptron for XOR. The hidden unit <span class="math inline">\(h_1\)</span> computes OR (weights <span class="math inline">\(+1, +1\)</span>, bias <span class="math inline">\(-0.5\)</span>), <span class="math inline">\(h_2\)</span> computes NAND (weights <span class="math inline">\(-1, -1\)</span>, bias <span class="math inline">\(+1.5\)</span>), and the output unit <span class="math inline">\(y\)</span> computes AND of the two hidden outputs (weights <span class="math inline">\(+1, +1\)</span>, bias <span class="math inline">\(-1.5\)</span>).
+</figcaption>
+</figure>
+</div>
+<p><strong>Step by step.</strong> For each input, we first compute the two hidden units, and then the output unit from their outputs:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-xor-network">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-xor-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.5: The two-layer perceptron for XOR, computed step by step.
+</figcaption>
+<div aria-describedby="tbl-s07-xor-network-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+<col style="width: 12%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th><span class="math inline">\(z_{h_1} = x_1 + x_2 - 0.5\)</span></th>
+<th><span class="math inline">\(h_1\)</span></th>
+<th><span class="math inline">\(z_{h_2} = -x_1 - x_2 + 1.5\)</span></th>
+<th><span class="math inline">\(h_2\)</span></th>
+<th><span class="math inline">\(z_y = h_1 + h_2 - 1.5\)</span></th>
+<th><span class="math inline">\(y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>−0.5</td>
+<td>0</td>
+<td>+1.5</td>
+<td>1</td>
+<td>−0.5</td>
+<td><strong>0</strong></td>
+</tr>
+<tr class="even">
+<td>0</td>
+<td>1</td>
+<td>+0.5</td>
+<td>1</td>
+<td>+0.5</td>
+<td>1</td>
+<td>+0.5</td>
+<td><strong>1</strong></td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>0</td>
+<td>+0.5</td>
+<td>1</td>
+<td>+0.5</td>
+<td>1</td>
+<td>+0.5</td>
+<td><strong>1</strong></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>+1.5</td>
+<td>1</td>
+<td>−0.5</td>
+<td>0</td>
+<td>−0.5</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The last column is XOR. Take <span class="math inline">\((1,1)\)</span> as an example. Both inputs are on, so the OR unit fires (<span class="math inline">\(z = 1.5\)</span>), but the NAND unit does not (<span class="math inline">\(z = -0.5\)</span>). The output unit then sees <span class="math inline">\(h_1 + h_2 = 1\)</span>, and since <span class="math inline">\(1 - 1.5 &lt; 0\)</span>, <span class="math inline">\(y = 0\)</span>. Only the two mixed inputs switch on <em>both</em> hidden units, and only then does the AND unit fire.</p>
+<p>The same calculation can be written in matrix form for all four inputs at once, with the inputs as the rows of <span class="math inline">\(X\)</span> and one column of <span class="math inline">\(W_1\)</span> per hidden unit:</p>
+<p><span class="math display">\[
+H = \text{step}(X W_1 + \mathbf{b}_1), \qquad
+W_1 = \begin{pmatrix} 1 &amp; -1 \\ 1 &amp; -1 \end{pmatrix}, \quad
+\mathbf{b}_1 = (-0.5,\ 1.5)
+\]</span></p>
+<p><span class="math display">\[
+\mathbf{y} = \text{step}(H W_2 + b_2), \qquad
+W_2 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \quad b_2 = -1.5
+\]</span></p>
+<p><a href="./notebooks/session07-gradient-descent-xor.html#why-a-hidden-layer-helps">Section 5 of the notebook</a> does exactly this in PyTorch and prints every intermediate value, and the result is the table above.</p>
+<p>The two perceptrons computing OR and NAND form a <strong>hidden layer</strong>, and the third perceptron, which combines their outputs, gives the model’s final output. The notebook’s hidden-layer network has the same shape (two hidden units feeding one output unit), but it finds its weights by gradient descent rather than by hand. Seeing both, an exact hand-built solution here and a learned approximate one later, makes clear that gradient descent is not discovering some exotic new trick. It finds weights for a structure that could, in principle, be written down directly.</p>
+<section class="level3" data-number="7.7.1" id="the-activation-must-be-nonlinear">
+<h3 class="anchored" data-anchor-id="the-activation-must-be-nonlinear" data-number="7.7.1"><span class="header-section-number">7.7.1</span> The activation must be nonlinear</h3>
+<p>The construction above works only because each unit applies a <strong>nonlinear</strong> activation (here a step) before its output is passed on. Without one, stacking layers gains nothing. To see why, we take the equations above and simply leave the step out, keeping the same convention of one input per row: the hidden layer is <span class="math inline">\(H = X W_1 + \mathbf{b}_1\)</span> and the output is <span class="math inline">\(\mathbf{z} = H W_2 + b_2\)</span>. Then</p>
+<p><span class="math display">\[
+\mathbf{z} = (X W_1 + \mathbf{b}_1) W_2 + b_2 = X\,(W_1 W_2) + (\mathbf{b}_1 W_2 + b_2)
+\]</span></p>
+<p>which is again a single weighted sum of the inputs, with one matrix <span class="math inline">\(W_1 W_2\)</span> and one bias. Any number of linear layers therefore collapses into one linear layer, and one linear layer cannot solve XOR. A nonlinear activation between the layers (a step, sigmoid, tanh or ReLU) is what lets the hidden units bend the decision boundary. The notebook shows this directly. The same two-hidden-unit network, trained on XOR with the activation removed, gets stuck at 0.5 for every input, just like the plain linear model.</p>
+<p><strong>Keeping track of shapes.</strong> The table follows the shapes in the notebook’s network for XOR, with the four input rows stacked into one matrix (Session 1’s shape rules):</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-shapes">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-shapes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.6: The shapes of the matrices in the notebook’s network for XOR.
+</figcaption>
+<div aria-describedby="tbl-s07-shapes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Shape</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>inputs <span class="math inline">\(X\)</span></td>
+<td><span class="math inline">\((4, 2)\)</span></td>
+<td>four examples, two inputs each</td>
+</tr>
+<tr class="even">
+<td>weights <span class="math inline">\(W_1\)</span></td>
+<td><span class="math inline">\((2, 2)\)</span></td>
+<td>two inputs → two hidden units</td>
+</tr>
+<tr class="odd">
+<td>hidden layer <span class="math inline">\(h = \tanh(X W_1 + \mathbf{b}_1)\)</span></td>
+<td><span class="math inline">\((4, 2)\)</span></td>
+<td>two hidden values per example</td>
+</tr>
+<tr class="even">
+<td>weights <span class="math inline">\(W_2\)</span></td>
+<td><span class="math inline">\((2, 1)\)</span></td>
+<td>two hidden units → one output</td>
+</tr>
+<tr class="odd">
+<td>output <span class="math inline">\(y = \sigma(h W_2 + b_2)\)</span></td>
+<td><span class="math inline">\((4, 1)\)</span></td>
+<td>one prediction per example</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>If you can follow these shapes, the training loop in the notebook is simply this table written in code.</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>A short history
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Minsky and Papert’s book <em>Perceptrons</em> (1969) proved rigorously that single-layer perceptrons cannot solve problems like XOR. It is widely credited with contributing to a drop in neural-network research in the 1970s, the first “AI winter”. Multi-layer networks were known to be more powerful, but training them became practical only with <strong>backpropagation</strong> (popularised by Rumelhart, Hinton &amp; Williams in 1986), which applies Session 1’s chain rule through the hidden layers. Session 9 covers it.</p>
+</div>
+</div>
+</section>
+</section>
+<section class="level2" data-number="7.8" id="sec-s07-analogues">
+<h2 class="anchored" data-anchor-id="sec-s07-analogues" data-number="7.8"><span class="header-section-number">7.8</span> Biological analogues</h2>
+<section class="level3" data-number="7.8.1" id="interactions-between-positions-bulyk-et-al.">
+<h3 class="anchored" data-anchor-id="interactions-between-positions-bulyk-et-al." data-number="7.8.1"><span class="header-section-number">7.8.1</span> Interactions between positions: Bulyk et al.</h3>
+<p>XOR is not just a toy puzzle about logic gates, because the same structure shows up in real sequence motifs. Bulyk, Johnson &amp; Church (2002) used protein-binding microarrays to measure how the binding affinity of a zinc-finger transcription factor depended on the nucleotides at different positions of its binding site. They found that the positions do <strong>not</strong> contribute independently, since the effect of the nucleotide at one position depends on what is at another position. This directly violates the assumption behind a profile score, namely that the contribution of each position can simply be added to the others. They measured the zinc-finger protein Zif268 (mouse Egr1) and mutants of it binding to all 64 possible central triplets of its site, and concluded that neither a consensus sequence nor a position weight matrix describes the protein’s true specificity.</p>
+<p>To see why this kind of dependency is an XOR-shaped problem, consider a deliberately simplified, illustrative version. It is not the actual data from the paper, which involve more positions and continuous binding affinities, but it has the same qualitative shape. Suppose a two-position motif binds strongly only when the two positions belong to <strong>different</strong> purine/pyrimidine classes (one purine, R = A or G, and one pyrimidine, Y = C or T), and weakly when they belong to the <strong>same</strong> class:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s07-binding">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s07-binding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 7.7: Binding strength depending on the purine/pyrimidine classes of two positions.
+</figcaption>
+<div aria-describedby="tbl-s07-binding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Position 1</th>
+<th>Position 2</th>
+<th>Binding</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Y</td>
+<td>Y</td>
+<td>weak</td>
+</tr>
+<tr class="even">
+<td>Y</td>
+<td>R</td>
+<td>strong</td>
+</tr>
+<tr class="odd">
+<td>R</td>
+<td>Y</td>
+<td>strong</td>
+</tr>
+<tr class="even">
+<td>R</td>
+<td>R</td>
+<td>weak</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-bulyk">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-bulyk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-bulyk.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-bulyk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.7: The toy motif in three steps. (a) The data: all 16 two-position sites, eight binding strongly (one purine and one pyrimidine) and eight weakly (two of the same class). (b) The sequence logo of the eight strong sites, drawn as frequencies: each base occurs in 2 of the 8 at both positions, exactly as often as in random sequence, so each position carries 0 bits of information and the logo would be flat in bits. (c) Yet the <em>pair</em> of positions decides binding completely. A logo or a profile, which describes each position on its own, cannot show this; a hidden layer can learn it. Drawn by tools/builders/make_session07_figures.py.
+</figcaption>
+</figure>
+</div>
+<p>If we relabel “weak” as 0 and “strong” as 1, this is the XOR table above. Neither position predicts binding on its own (<a class="quarto-xref" href="#fig-session07-bulyk">Figure <span>7.7</span></a> b), and only their combination does (<a class="quarto-xref" href="#fig-session07-bulyk">Figure <span>7.7</span></a> c). This is exactly what no profile score, and no single perceptron, can represent. A hidden layer with a nonlinear activation (<a class="quarto-xref" href="#sec-s07-hidden"><span>Section 7.7</span></a>), in contrast, can represent such an interaction.</p>
+<p><strong>A different fix: change the input.</strong> A hidden layer is not the only way to solve XOR. For 0/1-valued <span class="math inline">\(x_1, x_2\)</span>, it happens that</p>
+<p><span class="math display">\[
+\text{XOR}(x_1, x_2) = x_1 + x_2 - 2\,x_1 x_2
+\]</span></p>
+<p>holds exactly (check all four rows: <span class="math inline">\((0,0) \to 0\)</span>, <span class="math inline">\((0,1) \to 1\)</span>, <span class="math inline">\((1,0) \to 1\)</span>, <span class="math inline">\((1,1) \to 1+1-2 = 0\)</span>). The right-hand side is <em>linear</em> in three inputs: <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span>, and the hand-engineered feature <span class="math inline">\(x_1 x_2\)</span>. Adding this one extra, human-chosen feature therefore turns an unsolvable problem into an exactly solvable linear regression, with weights <span class="math inline">\((1, 1, -2)\)</span> and bias <span class="math inline">\(0\)</span>. This is a real, older alternative to a hidden layer, and it works. It only works, however, if someone has noticed in advance that <span class="math inline">\(x_1 x_2\)</span> is the interaction that matters. For Bulyk et al.’s real binding-site data, or for the secondary-structure problem below, nobody knows the useful interaction terms in advance. The advantage of a hidden layer is that it <em>learns</em> useful nonlinear features like this from data, instead of requiring someone to engineer them. The engineered feature also makes a point of its own. Changing the <em>input representation</em>, not the model, turned an impossible problem into an easy one (<a class="quarto-xref" href="#sec-s07-representation"><span>Section 7.9</span></a>).</p>
+</section>
+<section class="level3" data-number="7.8.2" id="secondary-structure-prediction-phd">
+<h3 class="anchored" data-anchor-id="secondary-structure-prediction-phd" data-number="7.8.2"><span class="header-section-number">7.8.2</span> Secondary structure prediction: PHD</h3>
+<p>Bulyk et al.’s zinc-finger microarrays make the XOR-shaped limitation concrete on a small, hand-built example. Secondary structure prediction, a much larger real problem, illustrates the same general limitation of additive, position-by-position scores. It also shows how better input and a more flexible model moved past that limitation. (XOR itself is not a historical explanation of the plateau described below, but a clean example of the kind of limitation involved.)</p>
+<p><strong>What secondary structure is.</strong> A protein’s <em>secondary structure</em> is the local, repeating shape into which its backbone folds, short of the full 3D fold (its <em>tertiary</em> structure), as Session 6 showed in PyMOL. Two patterns dominate. The <strong>alpha helix</strong> is a right-handed coil held together by hydrogen bonds between backbone atoms four residues apart. The <strong>beta sheet</strong> is made of extended strands lying alongside each other and hydrogen-bonded edge to edge. Everything else is usually called <strong>coil</strong> (or loop/turn). Predicting secondary structure therefore means labelling every residue in a sequence with one of these three classes. This is a per-residue classification problem rather than a single yes/no like XOR, but it is built from the same kind of position-by-position scoring that this course has used throughout.</p>
+<p><strong>Before neural networks.</strong> The first methods, Chou &amp; Fasman (1974) and GOR (1978), predate neural networks by decades. Both build each residue’s score mostly by adding up contributions from single residues, and they reached roughly 50-65% three-state accuracy. The optional box below explains how they work and is useful background for the capstone project. The rest of this section explains why adding up residues from a single sequence is not enough.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout" class="callout-header d-flex align-content-center collapsed" data-bs-target=".callout-7-contents" data-bs-toggle="collapse">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Signal peptides: a weight matrix, then a network
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div class="callout-7-contents callout-collapse collapse" id="callout-7">
+<div class="callout-body-container callout-body">
+<p>Session 4 described the sequence motif of signal peptides: a positively charged n-region, a hydrophobic h-region, and small residues at positions −3 and −1 of the cleavage site. The history of predicting them runs through this session’s two pictures (Nielsen, Tsirigos, Brunak &amp; von Heijne 2019, <a href="https://doi.org/10.1007/s10930-019-09838-3"><em>Protein J.</em> 38:200</a>, told by four of the people who made it).</p>
+<p><strong>Picture one: a weight matrix.</strong> Von Heijne’s 1986 method (<a href="https://doi.org/10.1093/nar/14.11.4683"><em>Nucleic Acids Res.</em> 14:4683</a>) is a position weight matrix with a log-odds weight for every amino acid at positions −13 to +2 around the cleavage site. It slides along the first 40 residues of a protein, adds up one weight per position, and puts the cleavage site where the sum is highest. The highest sum also served to tell signal peptides from other sequences. This is one weighted sum, the top picture, and like every profile score it treats each position independently.</p>
+<p><strong>Picture two: networks with a hidden layer.</strong> SignalP 1.0 (Nielsen et al. 1997, <a href="https://doi.org/10.1093/protein/10.1.1"><em>Protein Eng.</em> 10:1</a>) replaced the matrix with feed-forward networks on sliding windows, as PHD does for secondary structure (above). One network scores whether each position lies inside a signal peptide (the S-score), a second recognises the cleavage site itself (the C-score), and the two are combined to place the cut. With a hidden layer, a network can learn combinations, for example that a good cleavage site needs a hydrophobic stretch upstream of it. A sum of independent position scores cannot represent such a combination.</p>
+<p>The same history also holds a warning. A network can learn combinations that are not real. The first networks for signal peptides were trained on a few dozen sequences, and one of them was built to classify every training protein correctly. It then did poorly on new proteins. Session 8 is about this problem, overfitting.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout" class="callout-header d-flex align-content-center collapsed" data-bs-target=".callout-8-contents" data-bs-toggle="collapse">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: Chou-Fasman, GOR and the accuracy curve
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div class="callout-8-contents callout-collapse collapse" id="callout-8">
+<div class="callout-body-container callout-body">
+<p><em>This is useful background for the <a href="./capstone.html">capstone project</a>, where you build your own secondary-structure predictor. Chou-Fasman and GOR are simple baselines to compare it with.</em></p>
+<p>The first real attempts predate neural networks by decades. <strong>Chou &amp; Fasman (1974)</strong> derived empirical propensities for helix, sheet and turn from the (then small) set of known structures. Alanine, glutamate, leucine and methionine, for example, are strong helix-formers, while proline and glycine are helix-breakers. The method combined these propensities with rules. It first finds short <em>nucleation</em> regions of high-propensity residues and then <em>extends</em> them along the chain until breakers stop them. It is therefore a propensity- and rule-based method, not a simple one-residue-at-a-time classifier, and it reached roughly <strong>50-60%</strong> three-state accuracy. <strong>Garnier, Osguthorpe &amp; Robson (1978)</strong>, the <strong>GOR</strong> method, scored each residue with an information-theoretic sum of contributions from a whole <em>window</em> of neighbours. It reached roughly <strong>65%</strong> and was better at helices than at sheets. Neither method is literally a perceptron, but both build their score mostly by adding up per-residue contributions, and this is where the limitation lies.</p>
+<p>GOR in particular is a linear model in the sense of Sections <a class="quarto-xref" href="#sec-s07-weighted-sum"><span>7.3</span></a>–<a class="quarto-xref" href="#sec-s07-represent"><span>7.5</span></a>. To label a residue, it looks at a window of 17 residues centred on it. For each offset in the window, it looks up in a table how much the amino acid at that offset favours helix, strand or coil, and it adds up these values. Each state thus gets a score, and the largest score wins. This amounts to three position-specific scoring matrices, one per state, read off the same window. GOR is therefore three weighted sums, with one straight boundary between each pair of states.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-gor">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-gor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-gor.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-gor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.8: GOR as a linear model. For the middle residue of a 17-residue window (here from HBB), every residue in the window contributes a value to the helix, strand and coil scores, depending on its amino acid and its offset from the middle. The contributions are added, and the state with the largest total is predicted. The bar heights are illustrative; GOR estimated its tables from the protein structures known at the time (originally for four states, with turns separate).
+</figcaption>
+</figure>
+</div>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-ss-accuracy-history">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-ss-accuracy-history-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-ss-accuracy-history.png" style="width:75.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-ss-accuracy-history-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.9: Fifty years of secondary-structure prediction, coloured by the input each method reads. Methods that read one sequence (Chou-Fasman’s propensities and rules, GOR’s window score, Qian &amp; Sejnowski’s network) stay below 65%. A profile of an alignment brought PHD above 70%, PSI-BLAST profiles from much larger databases brought PSIPRED to about 77%, and deep networks reach 82-85%, today also from a protein language model instead of an alignment. The shaded band is the practical ceiling, set by how much different structures and assignment programs disagree. Approximate published figures; the methods were tested on different benchmark sets. Drawn by tools/builders/make_session07_figures.py.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p><strong>Why a single sequence is not enough.</strong> A window of neighbours is still only local information, and local sequence does not determine local structure. Kabsch &amp; Sander (1984) searched the 62 protein structures then known and found identical five-residue stretches that were part of a helix in one protein and of a strand in another. With today’s PDB, the effect extends to stretches of ten residues. These <strong>chameleon sequences</strong> (Li et al. 2015, ChSeq database) adopt different secondary structures depending on the protein around them.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-chameleon">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-chameleon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-chameleon.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-chameleon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.10: The same ten residues, QGTAVVVSAA, in two unrelated proteins: part of a long helix in a malate oxidoreductase from <em>Thermotoga maritima</em> (PDB 1VL6) and a strand followed by coil in a human antibody heavy chain (PDB 4JB9). Positions are counted along each chain’s sequence (1VL6: 164-183, 4JB9: 118-137); in the PDB files’ own numbering these are residues 152-171 of 1VL6 and, in antibody numbering, 100F-119 of 4JB9. The secondary structure of each residue is taken from the PDB entries (via PDBe). No method that sees only this window can label both correctly. Example from Li et al. (2015).
+</figcaption>
+</figure>
+</div>
+<p>Even a better model did not overcome this. Qian &amp; Sejnowski (1988, <em>J Mol Biol</em> 202:865) trained a network with a hidden layer on windows of single sequences and reached <strong>64.3%</strong>. They concluded that “no method based solely on local information in the protein sequence is likely to produce significantly better results for non-homologous proteins”. The limit was the information in the input, not only the model.</p>
+<p><strong>Turning a sequence into numbers: one-hot encoding.</strong> Before a network can read a sequence, the sequence has to be turned into numbers, because a network computes weighted sums. The obvious idea, numbering the amino acids A = 1, C = 2, D = 3, …, does not work. It tells the model that C lies between A and D, and that Y (20) is twenty times “more” than A, which means nothing biologically. Instead, each residue becomes <strong>20 numbers</strong>, all 0 except for a single 1 in the column of that amino acid:</p>
+<p><span class="math display">\[
+\text{A} \to (1, 0, 0, \dots, 0), \qquad \text{C} \to (0, 1, 0, \dots, 0), \qquad \dots, \qquad \text{Y} \to (0, 0, \dots, 0, 1)
+\]</span></p>
+<p>Every amino acid is then equally different from every other, and the network learns its own weight for each amino acid at each position. A window of 13 residues becomes <span class="math inline">\(13 \times 20 = 260\)</span> input numbers. This is how Qian &amp; Sejnowski’s network read single sequences, and it is also the encoding of the localisation data in Session 8 (150 residues, 3000 numbers). For DNA, the same idea gives 4 numbers per base.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-onehot">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-onehot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-onehot.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-onehot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.11: The same 13-residue window around His63 in two encodings. Left: one-hot encoding of human HBB, one 1 per position. Right: the profile of the window, the residue frequencies at the aligned positions of the 73 globins in the Pfam seed alignment (Session 4). His63 (orange) is His in most globins; other positions vary much more. A profile column is the average of the one-hot vectors of the aligned sequences. Drawn by tools/builders/make_session07_figures.py.
+</figcaption>
+</figure>
+</div>
+<p>One-hot encoding is not the only choice. A residue can also be described by a few <strong>physicochemical properties</strong> (hydrophobicity, charge, size), which is compact and lets similar residues look similar. It can be described by its row of a <strong>substitution matrix</strong> such as BLOSUM62 (Session 4), or, as PHD does below, by a <strong>profile</strong> of its homologs. Later in the course, the network learns the representation itself. An <strong>embedding layer</strong> (<code>nn.Embedding</code> in PyTorch, used by the recurrent networks of Session 11) gives each amino acid a short vector of trainable numbers. This is exactly a linear layer applied to the one-hot vector, since multiplying a one-hot vector by a weight matrix simply picks out one row. Protein language models (Session 11) go one step further and give each residue a vector that also depends on its context in the sequence.</p>
+<p><strong>What changed with PHD: <em>the use of evolutionary information</em>.</strong> The key innovation of Rost &amp; Sander’s <strong>PHD</strong> (1993) was its input. In their words, “a new key aspect is the use of evolutionary information in the form of multiple sequence alignments that are used as input in place of single sequences.” For each position of the window, the network sees a <em>profile</em> (Session 5) instead of a one-hot vector, that is, the frequencies of the 20 amino acids at that position among the protein’s homologs (the right panel of the figure above). This helps because homologs can retain similar structures even when their sequences have diverged substantially. A common expression is that <em>structure is more conserved than sequence</em>, and Illergård, Ardell &amp; Elofsson (2009) quantified it: the structural cores of proteins evolve three to ten times more slowly than their sequences. Where a chameleon stretch sits in a helix, its homologs tend to vary it in the ways that helices tolerate, and where it sits in a strand, in the ways that strands tolerate. The profile can therefore show a difference that the single sequence hides. This family information alone added “six to eight percentage points”, and the full method reached <strong>70.8%</strong> three-state accuracy. Profile-based predictors also label chameleon sequences better than single-sequence ones (Li et al. 2015).</p>
+<p>PHD combined this input with networks at <strong>three levels</strong>:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-phd">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-phd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-phd.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-phd-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.12: PHD’s design. Level 1, a sequence-to-structure network with one hidden layer, reads a window of 13 residues, each described by its 20 profile frequencies from the multiple alignment, and outputs helix (H), strand (E) and loop (L) values for the middle residue. Level 2, a structure-to-structure network, reads the level-1 outputs for a window of 17 residues and learns that helices and strands come in segments of plausible lengths. Level 3, a jury, averages several such networks trained in different ways. PHD also reports how reliable each residue’s prediction is. The alignment and profile shown are schematic.
+</figcaption>
+</figure>
+</div>
+<p>Each level is a network of the kind described in <a class="quarto-xref" href="#sec-s07-hidden"><span>Section 7.7</span></a>, only larger: weighted sums, a nonlinear activation, and more weighted sums. The lesson therefore combines both halves of this session. A better representation of the input (profiles) and a model flexible enough to use it (networks with hidden layers) together achieved what additive scores on single sequences could not. Session 9 returns to PHD once you can train such networks yourself.</p>
+<p><strong>After PHD: better profiles, then better models.</strong> The next big step came from the input again, not the model. <strong>PSIPRED</strong> (Jones 1999) used a network much like PHD’s, but built each profile with <strong>PSI-BLAST</strong> (Session 5) against much larger sequence databases. More and more distant homologs gave more informative profiles, and the accuracy rose to about <strong>76-77%</strong>, as measured by cross-validation in McGuffin, Bryson &amp; Jones (2000). Since then, larger databases and deeper networks (convolutional and recurrent networks, Sessions 10 and 11) have brought the best methods to about <strong>82-85%</strong> (Yang et al. 2018). Methods such as NetSurfP-3.0 now replace the alignment with a protein language model (Session 11) and reach about the same accuracy much faster. The remaining gap will never close completely. Different structures of the same protein, and different programs that assign secondary structure from coordinates, disagree on some residues, mostly at the ends of helices and strands, so the practical ceiling is about <strong>88-90%</strong>.</p>
+<p><strong>What a per-residue predictor has to do: <em>HBB</em>.</strong> To see what such a predictor must produce, take beta-globin (<em>HBB</em>), this course’s running example. In the crystal structure of human haemoglobin (PDB entry <code>2HHB</code>), every residue of its chain has a label, either helix (H) or coil (C), and there are no strands.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-hbb-structure">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-hbb-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-hbb-structure.png" style="width:60.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-hbb-structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.13: <em>HBB</em> (chain B of PDB 2HHB): helices in blue, coil in grey. The haem (red, iron in orange) sits in a pocket between helices; His63 (upper, blue sticks) and His92 (lower) are the distal and proximal histidines that Session 4’s globin logo showed to be conserved. The orange helix is the 13-residue window around His63 in the next figure. Rendered with PyMOL by tools/builders/make_session07_hbb_structure.py.
+</figcaption>
+</figure>
+</div>
+<p>A secondary-structure predictor has to produce that whole string from the sequence. PHD-style methods label one residue at a time, from a <em>window</em> of its neighbours:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-hbb-two-views">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-hbb-two-views-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-hbb-two-views.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-hbb-two-views-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.14: Two views of the same protein. Top: HBB’s sequence with the secondary structure of each residue in 2HHB (blue = helix, grey = coil), and the 13-residue window a PHD-style predictor reads to label His63. Bottom: the same protein as 20 amino-acid fractions, the input of today’s lab, and its single target, the helix fraction. Secondary structure from EBI’s PDBe API, drawn by tools/builders/make_session07_hbb_views.py.
+</figcaption>
+</figure>
+</div>
+<p>The top view keeps what matters for the label: which residues are neighbours, in what order, and where helices start and stop (five of HBB’s helices begin at a proline). A single sequence in that window gave Qian and Sejnowski their 64%, and PHD replaced each position of the window by a profile of its homologs (Session 5). The bottom view is what this session’s lab uses. <em>HBB</em> becomes 20 numbers, and the question becomes “what fraction is helix?” (0.80, 117 of its 146 residues). Everything in the top view that is not a count has been thrown away. Keep both views in mind for the lab.</p>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Can you do better?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>PHD reached about 71% in 1993, PSIPRED about 77% in 1999 with PSI-BLAST profiles, and today’s deep networks with profiles or protein language models about 82-85%. In the <a href="./capstone.html">capstone project</a> you build your own secondary-structure predictor with the tools of this course. Which input will you give it (a single sequence, a profile, an embedding), which model will you use, and how will you know that it really predicts proteins it has never seen?</p>
+</div>
+</div>
+</section>
+<section class="level3" data-number="7.8.3" id="further-reading-3">
+<h3 class="anchored" data-anchor-id="further-reading-3" data-number="7.8.3"><span class="header-section-number">7.8.3</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Protein_secondary_structure">Protein secondary structure</a>, <a href="https://en.wikipedia.org/wiki/Alpha_helix">Alpha helix</a>, <a href="https://en.wikipedia.org/wiki/Beta_sheet">Beta sheet</a>, and <a href="https://en.wikipedia.org/wiki/Protein_structure_prediction">Protein structure prediction</a> — the accuracy figures above</li>
+<li>Chou &amp; Fasman (1974), “Prediction of protein conformation,” <em>Biochemistry</em> 13(2):222-245 — <a href="https://pubmed.ncbi.nlm.nih.gov/4358940/">PubMed</a></li>
+<li>Garnier, Osguthorpe &amp; Robson (1978), “Analysis of the accuracy and implications of simple methods for predicting the secondary structure of globular proteins,” <em>Journal of Molecular Biology</em> 120(1):97-120 — <a href="https://pubmed.ncbi.nlm.nih.gov/642007/">PubMed</a></li>
+<li>Rost &amp; Sander (1993), <em>Journal of Molecular Biology</em> 232:584-599 — the original PHD paper</li>
+<li>Jones (1999), “Protein secondary structure prediction based on position-specific scoring matrices,” <em>Journal of Molecular Biology</em> 292(2):195-202 — PSIPRED, <a href="https://doi.org/10.1006/jmbi.1999.3091">doi:10.1006/jmbi.1999.3091</a>; McGuffin, Bryson &amp; Jones (2000), “The PSIPRED protein structure prediction server,” <em>Bioinformatics</em> 16(4):404-405 — <a href="https://doi.org/10.1093/bioinformatics/16.4.404">doi:10.1093/bioinformatics/16.4.404</a></li>
+<li>Yang, Gao, Wang, Heffernan, Hanson, Paliwal &amp; Zhou (2018), “Sixty-five years of the long march in protein secondary structure prediction: the final stretch?” <em>Briefings in Bioinformatics</em> 19(3):482-494 — <a href="https://doi.org/10.1093/bib/bbw129">doi:10.1093/bib/bbw129</a>, a review of the whole history</li>
+<li>Høie et al. (2022), “NetSurfP-3.0: accurate and fast prediction of protein structural features by protein language models and deep learning,” <em>Nucleic Acids Research</em> 50(W1):W510-W515 — <a href="https://doi.org/10.1093/nar/gkac439">doi:10.1093/nar/gkac439</a></li>
+<li>Illergård, Ardell &amp; Elofsson (2009), “Structure is three to ten times more conserved than sequence — a study of structural response in protein cores,” <em>Proteins</em> 77(3):499-508 — <a href="https://doi.org/10.1002/prot.22458">doi:10.1002/prot.22458</a></li>
+<li>Li, Kinch, Karplus &amp; Grishin (2015), “ChSeq: A database of chameleon sequences,” <em>Protein Science</em> 24(7):1075-1086 — <a href="https://doi.org/10.1002/pro.2689">doi:10.1002/pro.2689</a></li>
+<li>Kabsch &amp; Sander (1984), “On the use of sequence homologies to predict protein structure: identical pentapeptides can have completely different conformations,” <em>PNAS</em> 81(4):1075-1078 — <a href="https://doi.org/10.1073/pnas.81.4.1075">doi:10.1073/pnas.81.4.1075</a></li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="7.9" id="sec-s07-representation">
+<h2 class="anchored" data-anchor-id="sec-s07-representation" data-number="7.9"><span class="header-section-number">7.9</span> Representation matters as much as the model</h2>
+<p>Three examples on this page make the same point, namely that the input representation limits what any model can learn:</p>
+<ul>
+<li><strong>XOR</strong> becomes a linear problem once the input includes the feature <span class="math inline">\(x_1 x_2\)</span>.</li>
+<li><strong>Secondary structure prediction</strong> plateaued with single sequences, whatever the method, and improved when the input became a profile of homologous sequences.</li>
+<li><strong>This session’s lab</strong> predicts a protein’s helix fraction from its 20 amino-acid frequencies. A linear model and a neural network come out essentially tied. Before you read the lab’s explanation, it asks you what information the 20 numbers have thrown away that a per-residue prediction would need. Try to answer it yourself.</li>
+</ul>
+<p>A more powerful model cannot recover information that is not in its input. What a model can learn is therefore set by how the data are represented, at least as much as by the model’s capacity. This is one of the central lessons of modern deep learning, and Sessions 10 and 11 build models (convolutional networks, language models) that <em>learn</em> their own representations of sequences, including order and local context.</p>
+</section>
+<section class="level2" data-number="7.10" id="summary-the-two-pictures-again">
+<h2 class="anchored" data-anchor-id="summary-the-two-pictures-again" data-number="7.10"><span class="header-section-number">7.10</span> Summary: the two pictures again</h2>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session07-two-diagrams-2">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session07-two-diagrams-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session07-two-diagrams.png" style="width:95.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session07-two-diagrams-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7.15: The same two pictures as at the start of the page. Everything in this session is one of them.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Top:</strong> one weighted sum, then an activation. A PSSM reports the sum as a score, a perceptron thresholds it, and logistic regression passes it through a sigmoid. The weights can be learned from examples by gradient descent (<a class="quarto-xref" href="#sec-s07-learning"><span>Section 7.4</span></a>). Whatever the weights, the model draws one straight boundary, so it can represent AND, OR and NAND, but never XOR (Sections <a class="quarto-xref" href="#sec-s07-represent"><span>7.5</span></a>–<a class="quarto-xref" href="#sec-s07-xor"><span>7.6</span></a>).</li>
+<li><strong>Bottom:</strong> a hidden layer of weighted sums with a nonlinear activation, then one more weighted sum. Each hidden unit draws its own boundary, and the output combines them, so XOR becomes possible (<a class="quarto-xref" href="#sec-s07-hidden"><span>Section 7.7</span></a>). Remove the nonlinear activation and the two layers collapse back into the top picture.</li>
+<li><strong>Either picture</strong> can only use the information in its input (Sections <a class="quarto-xref" href="#sec-s07-analogues"><span>7.8</span></a>–<a class="quarto-xref" href="#sec-s07-representation"><span>7.9</span></a>).</li>
+</ul>
+<p>If you can explain what changes between the two pictures, and why that change allows XOR, you have understood this session. You do not need to be able to write the PyTorch training loop from memory.</p>
+</section>
+<section class="level2" data-number="7.11" id="check-your-understanding">
+<h2 class="anchored" data-anchor-id="check-your-understanding" data-number="7.11"><span class="header-section-number">7.11</span> Check your understanding</h2>
+<p>The questions below give immediate feedback and cover the sections above. They are in the same style as the course’s live in-class peer-instruction quizzes, and the full question bank is in <code>quizzes/session07.md</code> in the repository.</p>
+<div id="session07-quiz"></div>
+<script>
+renderQuiz("session07-quiz", [
+  {
+    question: "In a perceptron's weighted sum z = w&#8321;x&#8321; + ... + w&#8345;x&#8345; + b, what does the bias term b let the model do?",
+    choices: [
+      "Let the decision threshold sit somewhere other than zero, instead of being forced through the origin",
+      "Scale the learning rate up or down during training",
+      "Act as the activation function itself",
+      "Set a hard upper limit on how large z can get"
+    ],
+    correctIndex: 0,
+    explanation: "Without a bias, the decision boundary is forced through the origin no matter how the other weights are chosen."
+  },
+  {
+    question: "A perceptron has one input, no bias (z = wx), an initial weight w&#8320; = 0, a training example (x, y) = (3, 9), a squared-error loss L(w) = (wx - y)&sup2;, and a learning rate &eta; = 0.02. Using dL/dw = 2(wx - y)x, what is w&#8321; after one gradient descent step?",
+    choices: ["1.08", "0.54", "-1.08", "9.0"],
+    correctIndex: 0,
+    explanation: "At w=0: dL/dw = 2(0-9)(3) = -54, so w&#8321; = 0 - 0.02&times;(-54) = 1.08."
+  },
+  {
+    question: "Geometrically, why can no single perceptron represent the XOR function?",
+    choices: [
+      "XOR's two \"1\" outputs sit on opposite corners of the input square, and no single straight line can separate both of them from both \"0\" outputs",
+      "XOR requires three or more inputs to even be defined",
+      "A perceptron's sign activation function can only ever output positive numbers",
+      "XOR's inputs and outputs are not integers"
+    ],
+    correctIndex: 0,
+    explanation: "This is why XOR is called not linearly separable."
+  },
+  {
+    question: "Bulyk, Johnson &amp; Church's protein-binding microarray study found something about a zinc-finger transcription factor's binding site that directly violates the assumption behind a simple profile/perceptron score. What was it?",
+    choices: [
+      "Binding-site positions do not contribute independently &mdash; the effect of one position's identity depends on what's at another position",
+      "Transcription factors never bind DNA in a sequence-specific way",
+      "All positions in a binding site contribute exactly equally to binding",
+      "Binding affinity is unrelated to the nucleotide sequence"
+    ],
+    correctIndex: 0,
+    explanation: "A profile/perceptron score assumes each position's contribution simply adds to the others &mdash; this finding is the XOR-shaped exception to that assumption."
+  },
+  {
+    question: "A network has a hidden layer, but no activation function: h = W1 x + b1, then z = W2 h + b2. Can it solve XOR?",
+    choices: [
+      "No: W2(W1 x + b1) + b2 = (W2 W1) x + (W2 b1 + b2) is again a single linear function of x",
+      "Yes: any hidden layer is enough to solve XOR",
+      "Yes, if the hidden layer has at least 100 units",
+      "Only if trained for long enough"
+    ],
+    correctIndex: 0,
+    explanation: "Linear layers collapse into one linear layer. A nonlinear activation (step, sigmoid, tanh, ReLU) between the layers is what lets a hidden layer bend the decision boundary."
+  },
+  {
+    question: "What later development made it practical to train multi-layer networks, resolving the XOR limitation Minsky and Papert identified?",
+    choices: [
+      "Backpropagation &mdash; an efficient way to apply the chain rule through a network with hidden layers",
+      "A new activation function that only single perceptrons could use",
+      "Increasing the bias term to a very large fixed value",
+      "Removing the sign function from the perceptron entirely"
+    ],
+    correctIndex: 0,
+    explanation: "Backpropagation, popularised by Rumelhart, Hinton &amp; Williams in 1986, is Session 1's chain rule applied through a network with hidden layers."
+  },
+  {
+    question: "Methods that predicted secondary structure from single sequences, including an early neural network (Qian &amp; Sejnowski 1988, 64.3%), stayed around 60-65% three-state accuracy. What did Rost &amp; Sander's PHD method (1993) change to reach about 71%?",
+    choices: [
+      "Profile input (a multiple-alignment-derived representation, not a single sequence) together with a neural network that has a hidden layer",
+      "A much larger single-sequence database, with no change to the linear scoring model",
+      "Removing the bias term from the perceptron entirely",
+      "Switching from BLOSUM62 to PAM250 as the scoring matrix"
+    ],
+    correctIndex: 0,
+    explanation: "The family information from multiple alignments added six to eight percentage points (Rost &amp; Sander's abstract). Qian &amp; Sejnowski had already concluded that local information from a single sequence limits any method: the input mattered as much as the model."
+  },
+  {
+    question: "The Session 7 lab describes HBB by its amino-acid composition (20 numbers) and predicts its helix fraction, 0.80. What can such a model never tell you?",
+    choices: [
+      "Which residues are in helices, and where each helix starts and stops",
+      "Whether HBB is mostly helical",
+      "How many alanines HBB contains",
+      "Anything at all about HBB"
+    ],
+    correctIndex: 0,
+    explanation: "Composition keeps only counts, so it can predict an overall fraction but not the per-residue labels. A per-residue predictor such as PHD reads a window of neighbours around each residue instead."
+  },
+  {
+    question: "A single perceptron can implement AND, OR, and NAND by hand-chosen weights. What does combining an OR perceptron and a NAND perceptron, then feeding both outputs into an AND perceptron, compute?",
+    choices: [
+      "XOR, exactly — this is a hand-built version of the same hidden-layer shape used later in the notebook",
+      "AND, since the final perceptron is an AND gate",
+      "Nothing meaningful; the outputs of OR and NAND cannot be combined",
+      "NOR"
+    ],
+    correctIndex: 0,
+    explanation: "AND(OR(x&#8321;,x&#8322;), NAND(x&#8321;,x&#8322;)) reproduces XOR's truth table exactly on all four input pairs."
+  },
+  {
+    question: "Adding the engineered feature x&#8321;x&#8322; alongside x&#8321; and x&#8322; lets an ordinary linear model solve XOR exactly, using weights (1, 1, -2) and bias 0. What's the real limitation of this fix compared to a hidden layer?",
+    choices: [
+      "A person has to notice in advance which interaction feature (like x&#8321;x&#8322;) to engineer, whereas a hidden layer learns useful features like this directly from data",
+      "It doesn't actually reproduce XOR's truth table",
+      "It only works for inputs other than 0 and 1",
+      "It requires more training data than a hidden layer does"
+    ],
+    correctIndex: 0,
+    explanation: "The linear-algebra is exact once you've chosen x&#8321;x&#8322; as a feature -- the catch is knowing to choose it, which for real data (Bulyk et al.'s binding sites, secondary structure) nobody knows in advance."
+  },
+  {
+    question: "The OR perceptron has w = (1, 1) and b = -0.5. In the plane of the inputs, what is its decision boundary, and which corners lie on the side where the output is 1?",
+    choices: [
+      "The line x&#8321; + x&#8322; = 0.5; the corners (0,1), (1,0) and (1,1)",
+      "The line x&#8321; + x&#8322; = 1.5; only the corner (1,1)",
+      "The line x&#8321; = x&#8322;; the corners (0,0) and (1,1)",
+      "There is no boundary: a perceptron outputs a score, not a class"
+    ],
+    correctIndex: 0,
+    explanation: "The boundary is z = 0, i.e. x&#8321; + x&#8322; - 0.5 = 0. Only (0,0) gives z &lt; 0; the other three corners give z &gt; 0 and output 1."
+  },
+  {
+    question: "The ten residues QGTAVVVSAA form a helix in a malate oxidoreductase and a strand in an antibody. What does this tell you about secondary-structure prediction?",
+    choices: [
+      "A window of local sequence alone cannot always determine the structure; information from outside the window, such as the protein family, is needed",
+      "The structures in the PDB must be wrong for one of the two proteins",
+      "Ten residues are too short to form any secondary structure",
+      "Helices and strands are interchangeable"
+    ],
+    correctIndex: 0,
+    explanation: "These are 'chameleon sequences' (Kabsch &amp; Sander 1984; Li et al. 2015). Profile-based predictors, which see the family, handle them better than single-sequence ones."
+  },
+  {
+    question: "What was the key innovation of Rost &amp; Sander's PHD method (1993)?",
+    choices: [
+      "Its input: a profile from a multiple alignment of homologs instead of a single sequence",
+      "It was the first neural network ever used for secondary structure",
+      "It used a much deeper network than anyone before",
+      "It predicted the full 3D structure instead of secondary structure"
+    ],
+    correctIndex: 0,
+    explanation: "In Rost &amp; Sander's words, 'a new key aspect is the use of evolutionary information in the form of multiple sequence alignments'. That alone added six to eight percentage points. (Qian &amp; Sejnowski had used a neural network on single sequences in 1988.)"
+  }
+]);
+</script>
+</section>
+<section class="level2" data-number="7.12" id="the-course-notebook">
+<h2 class="anchored" data-anchor-id="the-course-notebook" data-number="7.12"><span class="header-section-number">7.12</span> The course notebook</h2>
+<p>The course notebook for this session (<code>notebooks/session07-gradient-descent-xor.ipynb</code>) follows the order of this page. It opens by comparing a least-squares solver with gradient descent on the same tiny dataset, and confirms that they agree. Hand-chosen weights then implement AND, OR and NAND (checked against their truth tables), and gradient descent learns AND by itself. The same model trained on XOR visibly fails. Combining the OR and NAND perceptrons with AND solves XOR exactly, and a small network with one hidden layer then learns it, with the shape of every tensor printed and a plot showing why. The same network with its activation removed fails like the linear model, and a single engineered input, <span class="math inline">\(x_1 x_2\)</span>, makes XOR linear without changing the model. The notebook closes by fetching <em>HBB</em>’s per-residue secondary structure live from EBI’s PDBe API and printing the two views of the protein from the figure above: the labels with a 13-residue window, and the 20 composition numbers. The version below is a static, read-only copy. Open it in <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session07-gradient-descent-xor.ipynb">Google Colab</a> via the badge at the top of the notebook page to edit and run it yourself.</p>
+</section>
+<section class="level2" data-number="7.13" id="the-lab">
+<h2 class="anchored" data-anchor-id="the-lab" data-number="7.13"><span class="header-section-number">7.13</span> The lab</h2>
+<p><strong>A teaser, not a full treatment.</strong> Session 8 covers train/validation/test splitting and evaluation properly, and Session 9 covers regularisation and architecture choices, so neither is anticipated here. In the lab you assemble a real dataset, the amino-acid composition of 55 real proteins, fetched live from EBI’s PDBe API, against their real alpha-helix fraction. You then fit linear regression and a small from-scratch multilayer perceptron on the same data and compare their error on held-out proteins. The two come out essentially tied on this small split, and the lab asks why a more flexible model does not help here. You first answer that question yourself (what has a composition vector thrown away?), and a scrambled-sequence demonstration then shows the answer, which links back to the windows and profiles that PHD used. (A cached copy of the dataset is used if the live fetch fails.) <a download="" href="https://course.bioinfo.se/notebooks/session07-lab.ipynb"><code>notebooks/session07-lab.ipynb</code></a> has the real pipeline, end to end.</p>
+<section class="level3" data-number="7.13.1" id="submitting-this-lab">
+<h3 class="anchored" data-anchor-id="submitting-this-lab" data-number="7.13.1"><span class="header-section-number">7.13.1</span> Submitting this lab</h3>
+<p>This lab is administered through Canvas, not through this book. See the course’s Canvas page for the current quiz, the deadline and how to submit.</p>
+</section>
+</section>
+<section class="level2" data-number="7.14" id="whats-next">
+<h2 class="anchored" data-anchor-id="whats-next" data-number="7.14"><span class="header-section-number">7.14</span> What’s next</h2>
+<p>Session 8 moves from a single yes/no output (this session’s XOR problem) to multi-class prediction. It also asks the question that matters in practice: how do we know whether a model has learned anything useful? To answer it, Session 8 uses a real multi-class biological problem, subcellular localisation. Session 9 then trains networks properly, and shows why training sometimes fails.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="6 Session 6: Protein Structure" class="pagination-link" href="./session06.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="8 Session 8: Machine Learning Foundations &amp; Practical PyTorch" class="pagination-link" href="./session08.html">
+<span class="nav-page-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

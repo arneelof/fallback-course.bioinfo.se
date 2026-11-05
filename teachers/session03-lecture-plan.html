@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Session 3 — Lecturer Timetable — KB8029</title>
+  <style>
+    body { font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+      max-width: 1080px; margin: 2.5em auto; padding: 0 1.25em; color: #1b1f2a; line-height: 1.55; }
+    h1 { font-size: 1.8em; line-height: 1.25; margin-bottom: 0.25em; }
+    h2 { font-size: 1.3em; margin-top: 1.8em; }
+    h3 { font-size: 1.1em; margin-top: 1.5em; }
+    .subtitle { color: #666; margin-top: 0; }
+    a { color: #2e86ab; text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 0.8em 0 1.25em; }
+    table.timetable { min-width: 760px; }
+    caption { text-align: left; font-weight: 600; margin-bottom: 0.5em; }
+    th, td { padding: 0.65em 0.8em; border-bottom: 1px solid #e0e3e8; text-align: left; vertical-align: top; }
+    thead th { background: #f3f4f6; }
+    .clock, .minutes { white-space: nowrap; }
+    .break { background: #f8f9fb; color: #555; }
+    li { margin: 0.35em 0; }
+    @media print { body { max-width: none; margin: 0; font-size: 10pt; }
+      .table-wrap { overflow: visible; } table.timetable { min-width: 0; }
+      h2, h3 { break-after: avoid; } tr { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <nav aria-label="Teacher resources"><a href="index.html#session03">Back to Session 3 teacher resources</a></nav>
+  <h1>Session 3: lecturer’s timetable</h1>
+  <p class="subtitle">Biological Databases · KB8029 · Suggested three-hour lecture plan</p>
+  <p>The lecture has three 50-minute blocks and two 15-minute breaks, corresponding to the three
+    <a href="../session03.html#learning-goals">learning goals in the student reading</a>.
+    Use guided demonstrations with pauses for questions. The final block protects about 10 minutes for
+    questions submitted during preparation and 5–10 minutes for a short live quiz.</p>
+  <p>The live quiz provides the conceptual checks previously planned as classroom activities.
+    Allow explanations and questions to take the time the class needs. The
+    <a href="../session03.html#lab-practice">optional lab practice</a> provides time for independent
+    record mapping, evidence investigation, sequence retrieval and documentation.</p>
+
+  <h2>Learning goals by block</h2>
+  <div class="table-wrap">
+    <table>
+      <caption>Where each goal is introduced and applied</caption>
+      <thead><tr><th scope="col">Block</th><th scope="col">Main learning goal</th><th scope="col">Application</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1. Databases, records and evidence</th><td><strong>Goal 1:</strong> choose databases, connect biological record levels through identifiers and cross-references, and assess evidence for individual claims.</td><td>A guided HBB record walkthrough and the INSDC example, followed by selected checks of linked records, RNA notation, expression and evidence in the final live quiz.</td></tr>
+        <tr><th scope="row">2. Database access and retrieval</th><td><strong>Goal 2:</strong> compare access routes and retrieve genomic, transcript and protein sequences through a genome browser, documenting the selected records.</td><td>Demonstrate HBB in UCSC and compare Ensembl. Use the optional integrated-access quiz question when relevant; practise retrieval and documentation in the lab.</td></tr>
+        <tr><th scope="row">3. Literature, questions and quiz</th><td><strong>Goal 3:</strong> use database searches and AI-assisted discovery to find literature and verify references and claims.</td><td>Use PubMed as a worked example, demonstrate an AI-assisted search and check a source together. Preparation questions may revisit all three goals.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Detailed timetable</h2>
+  <p>These example clock times assume a 09:00 start. Shift them together if the lecture starts at another time.
+    The teaching periods include pauses, repeated demonstrations and questions as needed.</p>
+  <div class="table-wrap">
+    <table class="timetable">
+      <caption>180 minutes in total, including breaks</caption>
+      <thead><tr><th scope="col">Time</th><th scope="col">Block</th><th scope="col">Teaching or discussion</th><th scope="col">Minutes</th><th scope="col">Goals</th></tr></thead>
+      <tbody>
+        <tr data-block="1" data-start="09:00" data-end="09:05" data-minutes="5"><td class="clock">09:00–09:05</td><td>1</td><td><strong>Opening.</strong> Introduce the three goals and the HBB example.</td><td class="minutes">5</td><td>1</td></tr>
+        <tr data-block="1" data-start="09:05" data-end="09:50" data-minutes="45"><td class="clock">09:05–09:50</td><td>1</td><td><strong>Databases, records and evidence.</strong> Explain database choice, biological levels, identifiers, versions and evidence through a paced HBB walkthrough. Pause for questions and revisit unfamiliar records.</td><td class="minutes">45</td><td>1</td></tr>
+        <tr class="break" data-block="break" data-start="09:50" data-end="10:05" data-minutes="15"><td class="clock">09:50–10:05</td><td colspan="2">Break</td><td class="minutes">15</td><td></td></tr>
+        <tr data-block="2" data-start="10:05" data-end="10:55" data-minutes="50"><td class="clock">10:05–10:55</td><td>2</td><td><strong>Access routes and guided retrieval.</strong> Compare command-line/programmatic access, database-specific pages and genome browsers. Demonstrate HBB genomic, transcript and protein retrieval within UCSC, with a brief Ensembl comparison. Explain the output headers and retrieval log, allowing time for questions and repeated steps.</td><td class="minutes">50</td><td>2; apply 1</td></tr>
+        <tr class="break" data-block="break" data-start="10:55" data-end="11:10" data-minutes="15"><td class="clock">10:55–11:10</td><td colspan="2">Break</td><td class="minutes">15</td><td></td></tr>
+        <tr data-block="3" data-start="11:10" data-end="11:40" data-minutes="30"><td class="clock">11:10–11:40</td><td>3</td><td><strong>Literature demonstration and discussion.</strong> Compare search routes, demonstrate a PubMed query and AI-assisted discovery, and check one suggested reference and claim together.</td><td class="minutes">30</td><td>3</td></tr>
+        <tr data-block="3" data-start="11:40" data-end="11:50" data-minutes="10"><td class="clock">11:40–11:50</td><td>3</td><td><strong>Preparation questions.</strong> Address recurring questions submitted before the lecture, including questions about earlier blocks.</td><td class="minutes">10</td><td>1–3 as needed</td></tr>
+        <tr data-block="3" data-start="11:50" data-end="12:00" data-minutes="10"><td class="clock">11:50–12:00</td><td>3</td><td><strong>Live quiz.</strong> Allow 5–10 minutes for joining, five questions selected from the eight-question source and brief explanations. Use any remaining time for clarification or the lab handover.</td><td class="minutes">10 reserved</td><td>1–2; optional discussion of 3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Teaching notes</h2>
+  <h3>Block 1: databases, records and evidence</h3>
+  <p>The existing lecture’s slides 3–32 supply the main material. Organise progressive browser screenshots
+    around the decisions students make. Keep the resource catalogue brief enough to explain the HBB records
+    slowly and pause for questions.</p>
+  <p>Use slides 5–7 as one sequence: slide 5 introduces INSDC cooperation; slide 6 shows different interfaces
+    to shared records, linked record types and submission through one appropriate partner; slide 7 shows why
+    archives and access routes can change. Explain the roles of project/study, sample, sequencing-read and
+    assembly records. An assembly is a reconstructed sequence deposited by researchers, rather than something
+    the archive automatically makes from a sample submission. These roles describe an investigation and its
+    data processing, while DNA, RNA and protein describe biological levels.</p>
+  <p>Use the Trace Archive example to teach recovery from an obsolete link: retain the accession, consult
+    current provider guidance and check the retrieved record’s identity and metadata. Students do not need to
+    memorise retirement dates or lists of former archive names. Daily exchange does not guarantee immediate
+    website availability, and the same submitted record at several partner sites is not independent evidence.</p>
+  <p>Show how human <em>HBB</em>, NCBI Gene <code>3043</code>, RefSeq transcript <code>NM_000518.5</code>,
+    protein <code>NP_000509.1</code> and UniProt <code>P68871</code> are connected. Explain what each identifier
+    represents and what a sequence version specifies. For one biological claim, display its evidence or linked
+    reference. Explain that curation can evaluate both experimental and predicted information.</p>
+  <p>Use slides 8–12 to connect biological levels. The DNA pictures are different scales of the same
+    genomic material. RNA records describe transcript sequences, non-coding RNAs and expression measurements.
+    Protein resources connect sequences with structure, domains, interactions, abundance and location.
+    The named databases illustrate these categories without forming an exhaustive list.</p>
+  <p>For the revised data-level slides, select live-quiz questions 1, 3, 6, 7 and 8: shared archival records,
+    claim-level evidence, linked transcript records, RNA sequence notation and expression measurements.
+    Questions 2, 4 and 5 remain alternatives for identifiers, integrated access and changing archive routes.
+    These checks require no database searching or API calls during the quiz. Independent record mapping,
+    retrieval choices and evidence investigation belong in lab practice, where students can work at their
+    own pace.</p>
+
+  <h3>Block 2: three access routes and sequence retrieval</h3>
+  <p>Use the existing slides 33–65 as a basis for the demonstration, comparing the routes for the same target:</p>
+  <ol>
+    <li><strong>Command-line or programmatic access:</strong> a tool or program queries a particular database, often through an API, and can automate repeated retrieval.</li>
+    <li><strong>Database-specific web pages:</strong> interactive searching and inspection of that database’s records.</li>
+    <li><strong>Genome browsers:</strong> one web interface integrating genomic, transcript and protein information, so these levels can be accessed without separately searching each level’s database website.</li>
+  </ol>
+  <p>Genome browsers are themselves web interfaces. Their value here is that they bring several biological
+    levels together while retaining the gene and selected transcript as the common context.</p>
+  <p>Use human <em>HBB</em> on GRCh38/hg38 in UCSC, then compare the same target briefly in Ensembl.
+    Search UCSC for <code>HBB</code>. The gene identifiers are NCBI Gene
+    <a href="https://www.ncbi.nlm.nih.gov/gene/3043">3043</a> and Ensembl
+    <a href="https://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000244734">ENSG00000244734</a>.</p>
+  <p>For the selected coding transcript, use RefSeq <code>NM_000518.5</code> / <code>NP_000509.1</code>
+    or the corresponding Ensembl pair <code>ENST00000335295.4</code> / <code>ENSP00000333994.3</code>.
+    Show the annotation source and record versions actually retrieved. HBB is on the minus strand, so explain
+    the orientation chosen for genomic output.</p>
+  <p>Demonstrate a genomic sequence spanning the selected transcript, the full spliced transcript/cDNA and
+    its encoded protein. Explain the output headers and document organism, assembly, annotation source,
+    genomic interval and orientation, transcript/protein versions and sequence types in a retrieval log.
+    Show a prepared API request and response when comparing access routes.</p>
+  <p>Question 4 is available as an alternative live-quiz check of integrated access. Students carry out
+    the downloads and produce their own retrieval log during lab practice.</p>
+
+  <h3>Block 3: literature, submitted questions and live quiz</h3>
+  <p>Use the first 30 minutes for guided literature discovery, drawing on selected examples from the existing
+    slides 66–79. PubMed is the worked example for constructing and checking a query.</p>
+  <ol>
+    <li data-literature-minutes="5"><strong>5 minutes:</strong> frame a biological question, compare search routes and distinguish a citation from access to full text.</li>
+    <li data-literature-minutes="12"><strong>12 minutes:</strong> construct and refine a PubMed query, inspect Search Details and follow a full-text link.</li>
+    <li data-literature-minutes="8"><strong>8 minutes:</strong> show a prepared AI-assisted search suggesting terms or papers, and compare it with the database search.</li>
+    <li data-literature-minutes="5"><strong>5 minutes:</strong> check one suggested reference and one supporting passage or result together, with time for questions.</li>
+  </ol>
+  <p>Use the role of HBB variants in sickle-cell disease as the shared PubMed and AI question.
+    Distinguish establishing a paper’s identity from checking whether it supports a claimed finding.
+    Show the prepared output and source so students can follow the example without an AI account.</p>
+  <p>Group duplicate preparation questions beforehand and reserve about 10 minutes for the recurring themes.</p>
+
+  <h2 id="live-quiz">Short final live quiz</h2>
+  <p><a href="live-quiz/session03.md">Download the eight-question source</a> for import into
+    <a href="https://quiz.bioinfo.se/teacher">the quiz teacher dashboard</a>. Choose five questions before
+    class and leave the others unopened. For the revised data-level slides, use <strong>1, 3, 6, 7 and 8</strong>,
+    with the shared HBB archival-record question first. Each question uses <code>mode: once</code>:
+    one vote followed by the result and a brief explanation.</p>
+  <p>The source title is <strong>Session 3: Biological Databases (short lecture quiz)</strong>.
+    If a quiz with that title has already been used, import a newly titled revision so its recorded
+    responses are retained. These local edits do not update the running quiz service.</p>
+  <p>Keep university sign-in for the course’s attendance policy. Project aggregate results, invite voluntary
+    questions and avoid selecting a named student to explain an answer. Correctness is never graded.
+    Allow thinking time and avoid competitive scoring. An anonymous session would not create attendance records.</p>
+  <div class="table-wrap">
+    <table>
+      <caption>Eight available conceptual checks: select five, using the recommended set for slides 8–12</caption>
+      <thead><tr><th scope="col">Question</th><th scope="col">Selection</th><th scope="col">Goal</th><th scope="col">Answer and explanation</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1. What does the same HBB accession and sequence at NCBI and ENA represent?</th><td>Recommended</td><td>1</td><td>Two access routes to one shared archival record. INSDC partners exchange public records under shared accessions; agreement between their interfaces does not provide independent experimental support for the annotation.</td></tr>
+        <tr><th scope="row">2. Which identifier includes the HBB mRNA sequence version?</th><td>Alternative</td><td>1</td><td><code>NM_000518.5</code>. The gene symbol and Gene ID identify the gene; <code>NP_000509.1</code> is a protein record.</td></tr>
+        <tr><th scope="row">3. How should a claim in a reviewed UniProt entry be assessed?</th><td>Recommended</td><td>1</td><td>Inspect that claim’s evidence and references. Reviewed status describes curation; it does not establish experimental support for every claim.</td></tr>
+        <tr><th scope="row">4. What does a genome browser offer for the HBB retrieval task?</th><td>Alternative</td><td>2</td><td>Connected genomic, transcript and encoded-protein views within one resource. Organism, assembly and transcript choice still matter.</td></tr>
+        <tr><th scope="row">5. What should you do when an old Trace Archive link fails?</th><td>Alternative</td><td>1; apply 2</td><td>Keep the accession, consult current provider guidance and verify the record’s metadata. A retired interface does not by itself establish that the underlying data have been deleted; another website showing the same accession is not a separate experiment.</td></tr>
+        <tr><th scope="row">6. How can two transcript records be connected to the same gene?</th><td>Recommended</td><td>1</td><td>Check their linked gene identifier within the same database, organism and annotation release. Different transcript identifiers can link to one gene. A shared identifier prefix or equal sequence length does not establish that connection.</td></tr>
+        <tr><th scope="row">7. Why can a non-coding RNA record use T instead of U?</th><td>Recommended</td><td>1</td><td>The DNA alphabet can represent an RNA sequence, including a non-coding RNA. This notation alone does not establish that a physical cDNA sample was made or that the sequence is genomic DNA.</td></tr>
+        <tr><th scope="row">8. What is needed to estimate HBB RNA abundance in a blood sample?</th><td>Recommended</td><td>1</td><td>Expression measurements from the relevant sample or condition. A sequence record identifies a sequence; it does not establish how much of that RNA occurs in a particular sample. Reopening the same sequence through another archive adds no abundance measurement.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Optional oral prompt for goal 3, if time remains:</strong> “An AI tool cites a real paper with a
+    valid DOI. What must you check before using its claimed finding?” Expected response: open the paper and
+    check the passage or result supporting the claim. A valid reference alone does not establish that support.</p>
+  <p>Keep the quiz within 5–10 minutes by asking the selected five questions, including joining and brief
+    explanations. The three alternatives are substitutions, not extra rounds. If discussion needs longer,
+    take remaining questions into the lab handover.</p>
+
+  <h2>Lab practice</h2>
+  <p>The <a href="../session03.html#lab-practice">student lab-practice guidance</a> contains the full HBB
+    record/evidence and retrieval tasks. These are optional, ungraded practice at the students’ own pace.
+    The programmatic notebook demonstrates bounded examples from supplied identifiers and prepared outputs.
+    Students run and interpret these examples before choosing and checking records independently in the lab
+    and assembling their own dossier. The notebook’s <a href="../notebooks/session03-databases-in-code.html#insdc-two-interfaces">one-record,
+    two-interface exercise</a> compares the submitted HBB mRNA record <code>V00497.1</code> through NCBI and
+    ENA; it does not treat the RefSeq transcript as a mirrored INSDC submission. The graded Canvas lab retains
+    its own requirements: a reproducible human HBB record log followed by the myoglobin (MB) transfer dossier,
+    including record types, one followed cross-reference, retrieval dates and evidence.</p>
+
+  <h2>Before the lecture</h2>
+  <ul>
+    <li>Review preparation questions and group recurring themes.</li>
+    <li>Prepare the HBB record walkthrough, sequence outputs and retrieval log, with saved examples available for the demonstration.</li>
+    <li>Check HBB links and prepare the short command-line/API example.</li>
+    <li>Check the current Trace Archive access guidance and prepare a saved record example, so the demonstration does not depend on following an obsolete link in class.</li>
+    <li>Prepare an AI-assisted literature example with its tool, prompt and date, a checked reference and the relevant supporting passage.</li>
+    <li>Preview the eight-question source and select five questions (recommended: 1, 3, 6, 7 and 8). Keep question 1 first, check sign-in and joining, and allow 5–10 minutes for the session.</li>
+  </ul>
+  <p><a href="index.html#session03">Return to the Session 3 resources</a> or
+    <a href="../session03.html#learning-goals">read the three learning goals</a>.</p>
+</body>
+</html>

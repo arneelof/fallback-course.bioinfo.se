@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KB8029 — Teacher Resources</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  body { font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+         max-width: 780px; margin: 2.5em auto; padding: 0 1.25em; color: #1b1f2a; }
+  h1 { font-size: 1.5em; margin-bottom: 0.1em; }
+  .subtitle { color: #666; margin-top: 0; margin-bottom: 1.75em; }
+  .warning { background: #fbece8; border-radius: 8px; padding: 0.9em 1.1em;
+             font-size: 0.92em; margin-bottom: 2em; }
+  section { border: 1px solid #e0e3e8; border-radius: 10px; padding: 1.1em 1.4em;
+            margin-bottom: 1.25em; }
+  section h2 { margin-top: 0; font-size: 1.15em; }
+  .row { display: flex; gap: 0.6em; align-items: baseline; margin: 0.35em 0; flex-wrap: wrap; }
+  .label { font-weight: 600; min-width: 9em; color: #444; }
+  a { color: #2e86ab; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .missing { color: #999; font-style: italic; }
+  code { background: #f3f4f6; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
+  table.ta { border-collapse: collapse; font-size: 0.9em; width: 100%; }
+  table.ta th, table.ta td { text-align: left; padding: 0.35em 0.6em; border-bottom: 1px solid #e0e3e8; vertical-align: top; }
+</style>
+</head>
+<body>
+
+<h1>KB8029 — Teacher Resources</h1>
+<p class="subtitle">Slide decks, discussion notebooks, and quiz banks — not linked from the book itself.</p>
+
+<div class="warning">
+  <strong>This page is unlisted, not access-controlled.</strong> Anyone with
+  this exact URL can view or download everything on it, including quiz
+  answer keys. Don't link to it from anywhere public (including the book's
+  own navigation), and don't post the URL anywhere students might see it.
+</div>
+
+<section>
+  <h2>Timeline until the course starts (22 February 2027)</h2>
+  <table class="ta">
+    <tr><th>Date</th><th>What</th><th>Who</th></tr>
+    <tr><td><strong>25 October</strong></td><td>Decide the schedule and the exact dates of everything (exam, Q&amp;As, oral presentations) in <code>tools/canvas/schedule.csv</code>. Urgent: we are being asked to unbook the rooms Air and Fire.</td><td>Arne</td></tr>
+    <tr><td><strong>1 November</strong></td><td>"Finalise" the first version of Sessions 0-2 and 7-12: lectures, slides, quizzes and labs.</td><td>Arne</td></tr>
+    <tr><td><strong>15 November</strong></td><td>"Finalise" the first version of Sessions 3-6, the same way.</td><td>Petras</td></tr>
+    <tr><td><strong>17-18 November</strong></td><td>Merge Sessions 3-6 into the main branch and deploy, so that everyone works on the same text. Session 3 has been rewritten, so this takes a day or more.</td><td>Arne</td></tr>
+    <tr><td><strong>30 November</strong></td><td>The TA with main responsibility for each session gives feedback on its course material (lab and lecture), including the <a href="#dry-run">lab dry run</a>. One date for everyone, because Sessions 3-6 arrive two weeks late. Sessions 0-2 and 7-12 are ready now, so start on those whenever you like; Labs 3-6 after 18 November. Send the notes by email: Arne for Labs 2 and 7-12, Petras and Arne for Labs 3-6.</td><td>Matteo (Labs 2, 12), Marko (3, 4), Sarah (5, 6), Vsevolod (7, 9), Ines (8, 10, 11)</td></tr>
+    <tr><td><strong>4 December</strong></td><td>Update Sessions 0-2 and 7-12 after the TA feedback.</td><td>Arne</td></tr>
+    <tr><td><strong>11 December</strong></td><td>Update Sessions 3-6 after the TA feedback.</td><td>Petras</td></tr>
+    <tr><td><strong>11 December</strong></td><td>Final check of consistency. A Friday: several TAs are away from 13 December, so this is the last day everyone is here.</td><td>Everyone</td></tr>
+    <tr><td><strong>15 December</strong></td><td>Merge the December updates to Sessions 3-6 into the main branch and deploy.</td><td>Arne</td></tr>
+    <tr><td><strong>18 December</strong></td><td>Final checks, and everything is published on Canvas, including the final schedule.</td><td>Arne</td></tr>
+    <tr><td><strong>1 February 2027</strong></td><td>Decide who examines which students at the oral presentations of the capstone code on 22 and 24 March, and in which of the two rooms each of you sits. The rooms are booked (Madrid + London on 22 March, Earth + Water on 24 March), so what is left is the division between you. Enter it in <code>tools/canvas/schedule.csv</code> yourselves (see <a href="#git">Editing the course files</a>). Moved here from 1 December: the students pick their own slot, so that the ones who want the Easter break can take 22 March, and nothing about that needs the division to be settled in the autumn.</td><td>Matteo, Marko, Sarah, Vsevolod, Ines</td></tr>
+  </table>
+  <div class="row">Which TA is responsible for which session is in the TA workload table below.</div>
+</section>
+
+<!-- book/deploy.sh replaces the next line with the lab dry-run instructions (tools/canvas/lab_dry_run.py) -->
+<section id="dry-run">
+  <h2>Lab dry run (by 30 November)</h2>
+  <p>Before the course starts, each lab's responsible TA works through it exactly as a student would, to find what
+    breaks, what is unclear and how long it really takes. This is the most important check left: the labs have so
+    far only been run by us, on warm machines with everything already downloaded.</p>
+  <p>Labs 2 and 7-12 are ready now, so start on those whenever you like. Labs 3-6 are Petras's and are final on
+    15 November, on the site from 18 November; please start those after that. The deadline is
+    <strong>30 November</strong> for all of them.</p>
+  <div style="overflow-x:auto"><table class="ta">
+    <tr><th>Lab</th><th>Responsible TA</th><th>Notebook</th><th>Questions</th></tr>
+    <tr><td>Lab 2</td><td>Matteo Tadiello</td><td><a href="https://course.bioinfo.se/open.html?nb=session02-lab.ipynb">session02-lab.ipynb</a></td><td><a href="labs/session02.html">quiz preview</a></td></tr>
+    <tr><td>Lab 3</td><td>Marko Ludaic</td><td>notebook with Biopython and the databases&#x27; APIs (session03-lab.ipynb, not written yet)</td><td><a href="labs/session03.html">quiz preview</a></td></tr>
+    <tr><td>Lab 4</td><td>Marko Ludaic</td><td><a href="https://course.bioinfo.se/open.html?nb=session04-lab.ipynb">session04-lab.ipynb</a></td><td><a href="labs/session04.html">quiz preview</a></td></tr>
+    <tr><td>Lab 5</td><td>Sarah Narrowe Danielsson</td><td><a href="https://course.bioinfo.se/open.html?nb=session05-lab.ipynb">session05-lab.ipynb</a></td><td><a href="labs/session05.html">quiz preview</a></td></tr>
+    <tr><td>Lab 6</td><td>Sarah Narrowe Danielsson</td><td><a href="https://course.bioinfo.se/open.html?nb=session06-lab.ipynb">session06-lab.ipynb</a></td><td><a href="labs/session06.html">quiz preview</a></td></tr>
+    <tr><td>Lab 7</td><td>Vsevolod Viliuga</td><td><a href="https://course.bioinfo.se/open.html?nb=session07-lab.ipynb">session07-lab.ipynb</a></td><td><a href="labs/session07.html">quiz preview</a></td></tr>
+    <tr><td>Lab 8 (run twice)</td><td>Ines Cunha</td><td><a href="https://course.bioinfo.se/open.html?nb=session08-lab.ipynb">session08-lab.ipynb</a></td><td><a href="labs/session08.html">quiz preview</a></td></tr>
+    <tr><td>Lab 9 (run twice)</td><td>Vsevolod Viliuga</td><td><a href="https://course.bioinfo.se/open.html?nb=session09-lab.ipynb">session09-lab.ipynb</a></td><td><a href="labs/session09.html">quiz preview</a></td></tr>
+    <tr><td>Lab 10 (run twice)</td><td>Ines Cunha</td><td><a href="https://course.bioinfo.se/open.html?nb=session10-lab.ipynb">session10-lab.ipynb</a></td><td><a href="labs/session10.html">quiz preview</a></td></tr>
+    <tr><td>Lab 11 (run twice)</td><td>Ines Cunha</td><td><a href="https://course.bioinfo.se/open.html?nb=session11-lab.ipynb">session11-lab.ipynb</a></td><td><a href="labs/session11.html">quiz preview</a></td></tr>
+    <tr><td>Lab 12</td><td>Matteo Tadiello</td><td><a href="https://course.bioinfo.se/open.html?nb=session12-lab.ipynb">session12-lab.ipynb</a></td><td><a href="labs/session12.html">quiz preview</a></td></tr>
+  </table></div>
+  <p>The responsible TA is the first TA of the lab in the schedule (see the TA workload table below). If you have
+    time, run a second lab as well: two runs of the same lab tell us more than one.</p>
+  <h3 style="font-size:1em">How to run it</h3>
+  <ol>
+    <li><strong>Start clean, the students' way.</strong> Open the notebook from the link above, which is the link the
+      students get: it opens in VS Code and runs on a Colab machine through the Google Colab extension (see the
+      <a href="https://course.bioinfo.se/setup.html">Setup</a> page; following it is part of the test for Lab 2).
+      Connect to a new Colab runtime, with the runtime type a student would use (CPU unless the notebook says GPU),
+      and do not reuse files from an earlier run.</li>
+    <li><strong>Work as a student.</strong> Read the instructions, fill in every <code>todo(...)</code> yourself and
+      answer the questions in the quiz preview from your own output. Do not look at a solution first.</li>
+    <li><strong>Time it.</strong> Write down the clock time when you start, when you start each part (A, B, C, ...)
+      and when you finish. Include the time spent reading and thinking, not only the time the cells run.</li>
+    <li><strong>Note what goes wrong.</strong> Every cell that fails (with the first line of the error), every cell
+      that takes more than about two minutes, and every web service that is slow or down (NCBI, EBI, UniProt,
+      PDB, Foldseek, the AlphaFold Server, ...).</li>
+    <li><strong>Write down your numbers.</strong> For every question with a numerical or exact answer, the value your
+      run gave. We compare them with the answer keys, so you do not need the keys. For Labs 8-11, which train
+      models, do a second run in a new runtime and write down both values: that shows whether the quiz
+      tolerances are wide enough.</li>
+    <li><strong>Note what was unclear</strong> in the instructions or the questions, and anything that took much longer
+      than it should have.</li>
+  </ol>
+  <h3 style="font-size:1em">How to report it</h3>
+  <p>Email the notes to <a href="mailto:arne@bioinfo.se">arne@bioinfo.se</a> (and to Petras for Labs 3-6). A plain list in the mail
+    is enough; we sort it out from there.</p>
+  <p>If you would rather keep it structured, fill in your lab's row in <code>tools/canvas/dry-run.csv</code> in the
+    course repository, which already has one
+    row per lab with its responsible TA (see <a href="#git">Editing the course files</a> below). The columns are: lab,
+    your name, date, runtime type, minutes per part, total minutes, failed or slow cells, services that were slow or
+    down, your numbers, the numbers of a second run, what was unclear, other comments. A second run of a lab by another
+    TA goes on a new line. If git does not work for you, fill in the template
+    <a href="dry-run-template.csv">dry-run-template.csv</a> and email it to <a href="mailto:arne@bioinfo.se">arne@bioinfo.se</a>.
+    The same deadline holds for your feedback on the session's lecture.</p>
+</section>
+
+<section id="qa">
+  <h2>The Q&amp;A sessions</h2>
+  <p>Each Q&amp;A (10 March, Sessions 1-6, Petras; 19 March, Sessions 7-12, Arne) is a practice exam with
+    immediate feedback, not a repeat of the lectures: recall gives more than rereading. Nothing is collected or graded.</p>
+  <table class="ta">
+    <tr><th>Minutes</th><th>What</th></tr>
+    <tr><td>3</td><td>Start: the logged-in check-in (attendance: it makes up for a missed lecture), why we do it this way, then the anonymous poll's question round</td></tr>
+    <tr><td>7</td><td>Brain dump, books closed, on the topics in the marking guide</td></tr>
+    <tr><td>37</td><td>Practice exam: 4 questions, on paper, with the exam's aids</td></tr>
+    <tr><td>15</td><td>Break</td></tr>
+    <tr><td>20</td><td>Marking in pairs with the marking guide; TAs circulate and note the common mistakes</td></tr>
+    <tr><td>30</td><td>Anonymous poll, then the teacher goes through what the room got wrong and the posted questions</td></tr>
+    <tr><td>8</td><td>Each student writes down their two weakest topics; close</td></tr>
+  </table>
+  <div class="row"><span class="label">Run sheet</span><a href="qa/README.md">README.md</a> (timing, what to print, the TAs' brief)</div>
+  <div class="row"><span class="label">Q&amp;A 1</span><a href="qa/qa1-practice-exam.md">practice exam</a> · <a href="qa/qa1-marking-guide.md">marking guide</a> · <a href="live-quiz/qa1-checkin.md">check-in</a> · <a href="live-quiz/qa1.md">anonymous poll</a> (draft: Petras reviews)</div>
+  <div class="row"><span class="label">Q&amp;A 2</span><a href="qa/qa2-practice-exam.md">practice exam</a> · <a href="qa/qa2-marking-guide.md">marking guide</a> · <a href="live-quiz/qa2-checkin.md">check-in</a> · <a href="live-quiz/qa2.md">anonymous poll</a> (draft: Arne reviews)</div>
+  <div class="row">Keep the practice exams off Canvas and the course site until after the Q&amp;A. Start the poll with <em>Run anonymously</em> on the quiz dashboard.</div>
+</section>
+
+<section id="git">
+  <h2>Editing the course files</h2>
+  <p>The TAs edit two files in the course repository
+    <a href="https://github.com/arneelof/BioinfoCourse">github.com/arneelof/BioinfoCourse</a> (private: ask Arne if you
+    cannot open it) directly: <code>tools/canvas/dry-run.csv</code> for the lab dry runs and
+    <code>tools/canvas/schedule.csv</code> for the room bookings.</p>
+  <ol>
+    <li><strong>The simplest way is GitHub's web editor:</strong> open the file on GitHub, click the pencil
+      (<em>Edit this file</em>), make the change, and click <em>Commit changes</em> on <code>main</code> with a short
+      message such as "Lab 5 dry run" or "Room for the orals on 24 March". With a clone, <code>git pull</code> first,
+      then commit only the file you changed and push.</li>
+    <li><strong>Room bookings:</strong> in <code>schedule.csv</code>, find the event's line (the ones still to book
+      say <code>To be booked</code> in the room column), replace <code>To be booked</code> by the room's name, and
+      correct the start and end time if the booking differs. If an event needs two rooms or two slots, copy the line
+      and change the copy. Leave the other columns and lines as they are.</li>
+    <li><strong>CSV rules:</strong> one line per entry, columns separated by commas; a field that contains a comma
+      must be in double quotes; several names in one field are separated by <code>;</code>; names are written exactly
+      as in <code>tools/canvas/people.csv</code>; dates as 2027-03-24 and times as 13:00.</li>
+  </ol>
+  <p>The site is not updated automatically: Arne checks the changes and deploys them, and the Canvas schedule, the
+    course calendar and the TA workload table are rebuilt from <code>schedule.csv</code>.</p>
+</section>
+
+<section>
+  <h2>Lab previews</h2>
+  <div class="row"><span class="label">All labs</span><a href="labs/index.html">labs/index.html</a> (every Canvas lab quiz, rendered from <code>labs/*.text2qti.md</code> at each deploy, without answers: check here before importing into Canvas)</div>
+</section>
+
+<!-- book/deploy.sh replaces the next line with the TA workload table (tools/canvas/ta_workload.py) -->
+<section>
+  <h2>TA workload</h2>
+  <p>Computed from <code>tools/canvas/schedule.csv</code> at each deploy (2026-11-05). The first TA listed
+    for a lab is responsible for it. Scheduled hours only: preparing a lab and answering quiz questions come on top.</p>
+  <div style="overflow-x:auto"><table class="ta">
+    <tr><th>TA</th><th>Responsible for</th><th>Also at</th><th>Labs and help</th><th>Oral presentations</th><th>Total</th></tr>
+    <tr><td>Ines Cunha</td><td>Session 1 material (no lab), Lab 8, Lab 10, Lab 11</td><td>Lab 7, Lab 9, Q&amp;A Sessions 7-12, capstone code and report</td><td>17 h</td><td>12 h</td><td>29 h</td></tr>
+    <tr><td>Vsevolod Viliuga</td><td>Lab 7, Lab 9</td><td>Lab 2, Lab 8, Lab 11, Q&amp;A Sessions 7-12, capstone code and report</td><td>17 h</td><td>12 h</td><td>29 h</td></tr>
+    <tr><td>Sarah Narrowe Danielsson</td><td>Lab 5, Lab 6</td><td>Q&amp;A Sessions 1-6, Lab 10, capstone help, Lab 12, capstone code and report</td><td>17 h</td><td>12 h</td><td>29 h</td></tr>
+    <tr><td>Marko Ludaic</td><td>Lab 3, Lab 4</td><td>Lab 5, Lab 6, capstone introduction, Q&amp;A Sessions 1-6, capstone code and report</td><td>15 h</td><td>12 h</td><td>27 h</td></tr>
+    <tr><td>Matteo Tadiello</td><td>Session 1 material (no lab), Lab 2, Lab 12</td><td>Lab 3, Lab 4, capstone code and report</td><td>12 h</td><td>12 h</td><td>24 h</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2>Live in-class quizzes (MentiMeter-style)</h2>
+  <div class="row"><span class="label">Teacher dashboard</span><a href="https://quiz.bioinfo.se">quiz.bioinfo.se</a></div>
+  <div class="row"><span class="label">Log in as</span><code>arne-teacher</code> (mock login — type this exact name, no password)</div>
+  <p style="margin:0.6em 0 0; font-size:0.92em; color:#555;">
+    There's no fixed student link — starting a session for a quiz from the
+    dashboard generates a fresh join code/QR each time, meant to be
+    projected live in class. See <code>live-quiz/README.md</code> in the
+    repo for the full run-through. Per-day question banks below.
+  </p>
+</section>
+
+<section>
+  <h2>Session 0 — Introduction to the Course</h2>
+  <div class="row"><span class="label">Slides</span><a href="slides/session00.pptx">session00.pptx</a> &middot; <a href="slides/session00.pdf">session00.pdf</a> (fill in this year's dates, rooms and TAs on the "This year" slide before presenting)</div>
+</section>
+
+<section>
+  <h2>Session 1 — Math Prerequisites</h2>
+  <div class="row"><span class="label">Slides</span><a href="slides/session01.pptx">session01.pptx</a> &middot; <a href="slides/session01.pdf">session01.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session01-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session01-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session01-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session01.md">session01.md</a></div>
+  <div class="row"><span class="label">Live quiz content</span><a href="live-quiz/session01.md">session01.md</a> (5 questions, already imported — run pre at the start of class, post at the end)</div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session01-video-part1">Block 1</a> (18 min) &middot;
+    <a href="../watch.html?v=session01-video-part2">Block 2</a> (14 min) &middot;
+    <a href="../watch.html?v=session01-video-part3">Block 3</a> (24 min).
+    The mathematical session, and the hardest to follow by ear: worth watching with
+    the course page open. Not shown to students yet.
+  </div>
+</section>
+
+<section>
+  <h2>Session 2 — Working like a computational biologist in Python</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session02.html">session02.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session02.pptx">session02.pptx</a> &middot; <a href="slides/session02.pdf">session02.pdf</a></div>
+  <div class="row"><span class="label">Live coding</span><a href="slides/session02-live-coding.py">session02-live-coding.py</a> (instructor script: six globins, three planted mistakes; the full walk-through is also in the speaker notes)</div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session02-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session02-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session02-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session02.md">session02.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session02-video-part1">Block 1</a> (19 min) &middot;
+    <a href="../watch.html?v=session02-video-part2">Block 2</a> (13 min) &middot;
+    <a href="../watch.html?v=session02-video-part3">Block 3</a> (13 min).
+    Block 2 is the live coding, which the narration describes rather than performs.
+    Not shown to students yet.
+  </div>
+</section>
+
+<section id="session03">
+  <h2>Session 3 — Biological Databases</h2>
+  <div class="row"><span class="label">Lecture plan</span><a href="session03-lecture-plan.html">Detailed timetable and teaching notes</a></div>
+  <div class="row"><span class="label">Live quiz</span><a href="live-quiz/session03.md">Short lecture question bank</a> (choose five single-round questions; see the lecture plan for the recommended selection)</div>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session03.html">session03.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session03.pptx">session03.pptx</a> &middot; <a href="slides/session03.pdf">session03.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session03-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session03-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session03-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session03.md">session03.md</a></div>
+</section>
+
+<section>
+  <h2>Session 4 — Sequence Alignment</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session04.html">session04.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session04.pptx">session04.pptx</a> &middot; <a href="slides/session04.pdf">session04.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session04-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session04-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session04-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session04.md">session04.md</a></div>
+</section>
+
+<section>
+  <h2>Session 5 — Advanced Database Search & Profile Methods</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session05.html">session05.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session05.pptx">session05.pptx</a> &middot; <a href="slides/session05.pdf">session05.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session05-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session05-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session05-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session05.md">session05.md</a></div>
+</section>
+
+<section>
+  <h2>Session 6 — Protein Structure</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session06.html">session06.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session06.pptx">session06.pptx</a> &middot; <a href="slides/session06.pdf">session06.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session06-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session06-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session06-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session06.md">session06.md</a></div>
+</section>
+
+<section>
+  <h2>Session 7 — Linear Models, Gradient Descent, XOR & Secondary Structure Prediction</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session07.html">session07.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session07.pptx">session07.pptx</a> &middot; <a href="slides/session07.pdf">session07.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session07-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session07-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session07-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session07.md">session07.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session07-video-part1">Block 1</a> (23 min) &middot;
+    <a href="../watch.html?v=session07-video-part2">Block 2</a> (17 min) &middot;
+    <a href="../watch.html?v=session07-video-part3">Block 3</a> (27 min).
+    Not shown to students yet.
+  </div>
+</section>
+
+<section>
+  <h2>Session 8 — Machine Learning Foundations & Practical PyTorch</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session08.html">session08.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session08.pptx">session08.pptx</a> &middot; <a href="slides/session08.pdf">session08.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session08-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session08-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session08-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session08.md">session08.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session08-video-part1">Block 1</a> (21 min) &middot;
+    <a href="../watch.html?v=session08-video-part2">Block 2</a> (24 min) &middot;
+    <a href="../watch.html?v=session08-video-part3">Block 3</a> (15 min).
+    Not shown to students yet.
+  </div>
+</section>
+
+<section>
+  <h2>Session 9 — Backpropagation, Training, and Regularization</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session09.html">session09.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session09.pptx">session09.pptx</a> &middot; <a href="slides/session09.pdf">session09.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session09-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session09-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session09-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session09.md">session09.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session09-video-part1">Block 1</a> (18 min) &middot;
+    <a href="../watch.html?v=session09-video-part2">Block 2</a> (19 min) &middot;
+    <a href="../watch.html?v=session09-video-part3">Block 3</a> (20 min).
+    Not shown to students yet.
+  </div>
+</section>
+
+<section>
+  <h2>Session 10 — CNNs, Classic & Modern</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session10.html">session10.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session10.pptx">session10.pptx</a> &middot; <a href="slides/session10.pdf">session10.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session10-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session10-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session10-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session10.md">session10.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session10-video-part1">Block 1</a> (28 min) &middot;
+    <a href="../watch.html?v=session10-video-part2">Block 2</a> (19 min) &middot;
+    <a href="../watch.html?v=session10-video-part3">Block 3</a> (26 min).
+    Not shown to students yet.
+    Inês reviewed the first version on 2026-11-02: too fast to follow, and basic concepts
+    unexplained. This one is the full lecture, about seventy-five minutes, split at the blocks.
+    The podcast is dropped — she thought it one study material too many.
+  </div>
+  <div class="row"><span class="label">The same, in Arne's voice</span>
+    The identical lecture on the identical slides, spoken by a clone of Arne's voice
+    (Chatterbox) instead of the course's open-source voice (Kokoro):
+    <a href="../watch.html?v=session10-video-part1-arne">Block 1</a> &middot;
+    <a href="../watch.html?v=session10-video-part2-arne">Block 2</a> &middot;
+    <a href="../watch.html?v=session10-video-part3-arne">Block 3</a>.
+    Sarah wrote on 2026-11-03 that students may find an AI voice-over strange, which a
+    cloned voice answers only in part: it is the lecturer's own voice, but it is less clear
+    than Kokoro, and it is still synthetic. Listen to a few minutes of each and say which
+    should be the course's.
+  </div>
+</section>
+
+<section>
+  <h2>Session 11 — Sequences, Language Models &amp; SignalP</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session11.html">session11.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session11.pptx">session11.pptx</a> &middot; <a href="slides/session11.pdf">session11.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session11-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session11-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session11-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session11.md">session11.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session11-video-part1">Block 1</a> (21 min) &middot;
+    <a href="../watch.html?v=session11-video-part2">Block 2</a> (22 min) &middot;
+    <a href="../watch.html?v=session11-video-part3">Block 3</a> (14 min).
+    Not shown to students yet.
+  </div>
+</section>
+
+<section>
+  <h2>Session 12 — AlphaFold &amp; Generative Models</h2>
+  <div class="row"><span class="label">Lab preview</span><a href="labs/session12.html">session12.html</a> (the Canvas lab quiz as it is in the repository: questions and introduction, no answers)</div>
+  <div class="row"><span class="label">Slides</span><a href="slides/session12.pptx">session12.pptx</a> &middot; <a href="slides/session12.pdf">session12.pdf</a></div>
+  <div class="row"><span class="label">Discussion notebooks</span>
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session12-discussion-1.ipynb">1</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session12-discussion-2.ipynb">2</a> ·
+    <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session12-discussion-3.ipynb">3</a>
+  </div>
+  <div class="row"><span class="label">Quiz bank</span><a href="quizzes/session12.md">session12.md</a></div>
+  <div class="row"><span class="label">Lecture video (pilot)</span>
+    One video per block, with captions:
+    <a href="../watch.html?v=session12-video-part1">Block 1</a> (20 min) &middot;
+    <a href="../watch.html?v=session12-video-part2">Block 2</a> (19 min) &middot;
+    <a href="../watch.html?v=session12-video-part3">Block 3</a> (23 min).
+    Not shown to students yet.
+  </div>
+</section>
+
+
+<p style="color:#999; font-size:0.85em; margin-top:2em;">
+  Generated at deploy time from <code>slides/</code> and <code>quizzes/</code>
+  in the <code>BioinfoCourse</code> repo — edit
+  <code>book/teachers/index.html</code> and the file lists in
+  <code>book/deploy.sh</code>, not this page directly.
+</p>
+
+</body>
+</html>

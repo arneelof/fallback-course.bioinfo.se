@@ -1,0 +1,1016 @@
+1
+00:00:00,000 --> 00:00:01,475
+Block three.
+
+2
+00:00:01,475 --> 00:00:06,025
+Convolutional networks on images, from the clinic to the whole cell.
+
+3
+00:00:06,025 --> 00:00:14,550
+On the page, this block is the sections "What assumptions does a CNN build in?" and "Beyond sequences: a contact map is an image".
+
+4
+00:00:14,550 --> 00:00:20,050
+In Block two the data was sequence, which is one-dimensional and rather abstract.
+
+5
+00:00:20,050 --> 00:00:27,500
+Here the data is pictures, which is what convolutional networks were invented for, and where their assumption fits best.
+
+6
+00:00:27,500 --> 00:00:41,175
+We will do four things: finish the architecture story with ResNet, show that more weights are not better, work through what you do when you have almost no labelled data, and then measure the thing convolution does not give you, which is rotation.
+
+7
+00:00:41,175 --> 00:00:48,050
+And at the end we will go from classifying a tile of tissue to the ambition of modelling an entire human cell.
+
+8
+00:00:48,650 --> 00:00:51,425
+First, the loose end from Block one.
+
+9
+00:00:51,425 --> 00:00:57,550
+After AlexNet, people went deeper: VGG with nineteen layers, GoogLeNet with twenty-two.
+
+10
+00:00:57,550 --> 00:01:00,300
+And then going deeper stopped working.
+
+11
+00:01:00,300 --> 00:01:03,325
+Now, the obvious guess is overfitting.
+
+12
+00:01:03,325 --> 00:01:10,425
+A deeper network has more capacity, so perhaps it memorises the training data and does worse on new data.
+
+13
+00:01:10,425 --> 00:01:16,425
+That is the normal failure, and you have seen it in Session nine and again in Block two of this session.
+
+14
+00:01:16,425 --> 00:01:21,300
+But that is not what happened, and this is the detail I want you to notice.
+
+15
+00:01:21,300 --> 00:01:25,400
+The deeper plain networks had a higher error on the training data.
+
+16
+00:01:25,400 --> 00:01:27,075
+On training.
+
+17
+00:01:27,075 --> 00:01:33,775
+Overfitting means you do well on training and badly on test; it cannot explain doing badly on training.
+
+18
+00:01:33,775 --> 00:01:37,150
+So whatever was wrong, it was not overfitting.
+
+19
+00:01:37,150 --> 00:01:50,300
+The second guess is vanishing gradients: the learning signal, travelling back from the output through many layers, gets multiplied by small numbers at every step until it is effectively zero, and the early layers stop learning.
+
+20
+00:01:50,300 --> 00:01:55,625
+That is a real phenomenon, and it is why batch normalisation was invented.
+
+21
+00:01:55,625 --> 00:02:00,650
+But He and colleagues checked, by actually measuring the gradients, and they were healthy.
+
+22
+00:02:00,650 --> 00:02:02,900
+So it was not that either.
+
+23
+00:02:02,900 --> 00:02:06,200
+What was left is almost philosophically annoying.
+
+24
+00:02:06,200 --> 00:02:09,600
+The deeper network was simply harder to optimise.
+
+25
+00:02:09,600 --> 00:02:23,550
+And you can prove a good solution exists: take a fifty-six-layer network, copy the weights of a working thirty-four-layer network into its first thirty-four layers, and make the remaining twenty-two layers do nothing, just pass their input through.
+
+26
+00:02:23,550 --> 00:02:27,150
+That network is exactly as good as the shallower one.
+
+27
+00:02:27,150 --> 00:02:31,250
+So a solution at least as good must exist in the weight space.
+
+28
+00:02:31,250 --> 00:02:34,325
+Gradient descent just could not find it.
+
+29
+00:02:34,325 --> 00:02:37,450
+ResNet's answer is simple to state.
+
+30
+00:02:37,450 --> 00:02:46,150
+Each block learns a correction to its input, and returns x plus F of x: the input, plus whatever the block decided to add to it.
+
+31
+00:02:46,150 --> 00:02:49,275
+Look at what that does to the difficult case.
+
+32
+00:02:49,275 --> 00:03:00,500
+If a block has nothing useful to contribute, it no longer has to learn the identity function, which turns out to be hard; it only has to push F of x towards zero, which is easy.
+
+33
+00:03:00,500 --> 00:03:04,825
+Doing nothing became the default rather than something to be learned.
+
+34
+00:03:04,825 --> 00:03:08,700
+And there is a second benefit, which is about the gradient.
+
+35
+00:03:08,700 --> 00:03:14,400
+The plus-x gives the learning signal a path straight back, skipping the block's own derivatives.
+
+36
+00:03:14,400 --> 00:03:20,075
+So however deep you stack, there is always a short route from the error back to the early layers.
+
+37
+00:03:20,075 --> 00:03:27,050
+With a hundred and fifty-two layers, ResNet reached a top-five error of three point six per cent in twenty fifteen.
+
+38
+00:03:27,050 --> 00:03:32,625
+For comparison, a trained human annotator on that task is around five per cent.
+
+39
+00:03:32,625 --> 00:03:40,025
+I will add the caveat the page adds: three point six was an ensemble of several networks voting, not a single model.
+
+40
+00:03:40,025 --> 00:03:51,950
+In the lab, you can see the same effect in miniature: a three-block ResNet with eleven thousand nine hundred and sixty-eight weights beats a three-block VGG network with eight thousand seven hundred and twenty.
+
+41
+00:03:51,950 --> 00:03:57,650
+The challenge itself ended in twenty seventeen, because the task was considered solved.
+
+42
+00:03:57,650 --> 00:04:08,250
+But residual connections did not go anywhere: they are in essentially every deep network since, including the Transformers of Session eleven and AlphaFold in Session twelve.
+
+43
+00:04:08,850 --> 00:04:14,350
+Now the experiment from your own lab, which makes the session's central claim concrete.
+
+44
+00:04:14,350 --> 00:04:18,175
+Four models, trained on the same BloodMNIST images.
+
+45
+00:04:18,175 --> 00:04:26,825
+These are photographs of single blood cells taken down a microscope, in eight classes, shrunk to twenty-eight by twenty-eight colour pixels.
+
+46
+00:04:26,825 --> 00:04:36,625
+Telling those cell types apart is a real clinical task: a differential count is part of a routine blood test, and automated microscopes already do it.
+
+47
+00:04:36,625 --> 00:04:41,500
+The best dense network has one hidden layer of a hundred and twenty-eight units.
+
+48
+00:04:41,500 --> 00:04:45,575
+Three hundred and two thousand two hundred and sixteen weights.
+
+49
+00:04:45,575 --> 00:04:50,000
+It reaches a validation accuracy of nought point seven nine three.
+
+50
+00:04:50,000 --> 00:04:54,175
+The small convolutional network has two convolution blocks.
+
+51
+00:04:54,175 --> 00:04:57,725
+Seventeen thousand six hundred and forty weights.
+
+52
+00:04:57,725 --> 00:05:00,800
+It reaches nought point eight eight seven.
+
+53
+00:05:00,800 --> 00:05:05,600
+Seventeen times fewer weights, and about nine percentage points better.
+
+54
+00:05:05,600 --> 00:05:06,425
+Why?
+
+55
+00:05:06,425 --> 00:05:13,125
+For the same reason as the protein network in Block two, and it is worth saying in plain words one more time.
+
+56
+00:05:13,125 --> 00:05:22,150
+The dense network has to discover from the data that nearby pixels belong together, and that a detector which works in one place should also work in another.
+
+57
+00:05:22,150 --> 00:05:27,875
+Those are facts about images, and it has to learn them from examples, spending weights on it.
+
+58
+00:05:27,875 --> 00:05:33,300
+The convolutional network does not have to learn them, because they are built into its shape.
+
+59
+00:05:33,300 --> 00:05:37,725
+It can spend all its capacity on what the cells actually look like.
+
+60
+00:05:37,725 --> 00:05:41,625
+This is Session nine's lesson, seen from the other side.
+
+61
+00:05:41,625 --> 00:05:48,525
+In Session nine you learned that more weights do not help, and that you control capacity with regularisation.
+
+62
+00:05:48,525 --> 00:05:56,150
+Here you learn the positive version: the right assumptions do help, and they are worth more than a large number of free parameters.
+
+63
+00:05:56,750 --> 00:06:02,750
+Now a harder and more realistic situation, which is the one you will actually meet in biology.
+
+64
+00:06:02,750 --> 00:06:14,900
+These are histology tiles: slides of colorectal cancer tissue, stained with haematoxylin and eosin, which is the standard pink-and-purple stain, photographed and cut into small square tiles.
+
+65
+00:06:14,900 --> 00:06:20,975
+Each tile is labelled with one of nine tissue types, and the slide shows one example of each.
+
+66
+00:06:20,975 --> 00:06:30,375
+There is tumour epithelium, normal mucosa, cancer-associated stroma, smooth muscle, lymphocytes, debris, adipose tissue, mucus, and background.
+
+67
+00:06:30,375 --> 00:06:35,125
+Two questions before we go on, and these are worth pausing the video for.
+
+68
+00:06:35,125 --> 00:06:41,075
+First: if you were a pathologist, what would you actually look at to tell stroma from smooth muscle?
+
+69
+00:06:41,075 --> 00:06:44,850
+They are both pink and fibrous at low magnification.
+
+70
+00:06:44,850 --> 00:06:47,750
+Think about what the difference would have to be.
+
+71
+00:06:47,750 --> 00:06:57,675
+Second, and this is the one that matters methodologically: the notebook trains on tiles from eighty-six slides, and validates on tiles from the same eighty-six slides.
+
+72
+00:06:57,675 --> 00:07:00,350
+Why might that be too easy a test?
+
+73
+00:07:00,350 --> 00:07:10,900
+The set-up for the experiment is this: we pretend we only have forty labelled tiles per class for training, and forty for validation, all from those same eighty-six slides.
+
+74
+00:07:10,900 --> 00:07:16,475
+And then we test on a hundred tiles per class from fifty completely different patients.
+
+75
+00:07:16,475 --> 00:07:21,525
+Forty per class is a realistic amount of labelled data in biology.
+
+76
+00:07:21,525 --> 00:07:26,300
+One point two million labelled images, as ImageNet had, is not.
+
+77
+00:07:26,900 --> 00:07:31,250
+Here are the results, and there are three separate lessons in this table.
+
+78
+00:07:31,250 --> 00:07:41,000
+Training the small convolutional network from scratch: two hundred and forty-two thousand six hundred and ninety-seven weights, three hundred and sixty training tiles.
+
+79
+00:07:41,000 --> 00:07:48,050
+Validation accuracy nought point eight six one, test accuracy on the new patients nought point seven four five.
+
+80
+00:07:48,050 --> 00:07:52,200
+Lesson one: with that little data, the model is unstable.
+
+81
+00:07:52,200 --> 00:08:02,350
+Running it again with a different random seed, and changing nothing else, gives test accuracies anywhere from nought point seven two one to nought point seven eight six.
+
+82
+00:08:02,350 --> 00:08:06,125
+The seed alone moves it more than six percentage points.
+
+83
+00:08:06,125 --> 00:08:14,250
+So if you ever read a paper comparing two methods where the difference is two points and there is one run of each, you now know what to ask.
+
+84
+00:08:14,250 --> 00:08:26,150
+Lesson two: adding data augmentation, which we come to in a moment, moves the test accuracy to nought point seven nine two, with a range of nought point seven six nine to nought point eight two one.
+
+85
+00:08:26,150 --> 00:08:29,675
+Better on average, but not in every single seed.
+
+86
+00:08:29,675 --> 00:08:33,625
+Lesson three, and this is the big one: transfer learning.
+
+87
+00:08:33,625 --> 00:08:46,900
+Take ResNet-18, a network trained on ImageNet's photographs of everyday objects, freeze it, meaning keep all of its learned weights fixed and refuse to change them, and train only a new final layer on your tiles.
+
+88
+00:08:46,900 --> 00:08:49,750
+That reaches nought point seven eight.
+
+89
+00:08:49,750 --> 00:08:55,900
+And take DINOv2, a much larger network, freeze that, and you reach nought point eight three two.
+
+90
+00:08:55,900 --> 00:08:59,775
+Now look at one more thing, which runs across every row.
+
+91
+00:08:59,775 --> 00:09:04,650
+Every single model scores clearly higher on validation than on test.
+
+92
+00:09:04,650 --> 00:09:10,725
+Nought point eight six one against nought point seven four five, and so on down the table.
+
+93
+00:09:10,725 --> 00:09:13,000
+That is not bad luck.
+
+94
+00:09:13,000 --> 00:09:21,600
+The validation tiles come from the same slides as the training tiles, which means the same patients, the same staining run, the same scanner.
+
+95
+00:09:21,600 --> 00:09:25,375
+The model can recognise the slide rather than the tissue.
+
+96
+00:09:25,375 --> 00:09:36,300
+This is Session eight's homology trap wearing a different hat: there, two proteins related by evolution sat on both sides of the split; here, two tiles from the same patient do.
+
+97
+00:09:36,300 --> 00:09:39,850
+The rule that comes out of this is simple and general.
+
+98
+00:09:39,850 --> 00:09:47,925
+When your examples come in groups, proteins in families, tiles in patients, cells in experiments, the honest split is by group.
+
+99
+00:09:48,525 --> 00:09:57,725
+I want to dwell on the transfer learning result, because it is surprising if you think about it properly, and it is the single most useful technique in this session.
+
+100
+00:09:57,725 --> 00:10:01,125
+ResNet-18 was trained on photographs.
+
+101
+00:10:01,125 --> 00:10:03,875
+Cats, cars, mushrooms, boats.
+
+102
+00:10:03,875 --> 00:10:07,475
+It has never seen a piece of human tissue in its life.
+
+103
+00:10:07,475 --> 00:10:11,475
+We froze it, so it learned nothing about tissue from us either.
+
+104
+00:10:11,475 --> 00:10:17,075
+All we trained was one new final layer on top of the features it already produces.
+
+105
+00:10:17,075 --> 00:10:23,250
+And it matches a convolutional network trained from scratch on the actual tissue with augmentation.
+
+106
+00:10:23,250 --> 00:10:27,900
+DINOv2 does better still, and it is stranger in two ways.
+
+107
+00:10:27,900 --> 00:10:37,550
+The first is that DINOv2 is not even a convolutional network: it is a Vision Transformer, the architecture of Session eleven applied to image patches.
+
+108
+00:10:37,550 --> 00:10:40,225
+The second is how it was trained.
+
+109
+00:10:40,225 --> 00:10:50,875
+DINOv2 was trained on a hundred and forty-two million images with no labels at all, by a method called self-supervised learning: nobody told it what was in any picture.
+
+110
+00:10:50,875 --> 00:10:54,875
+And its features are the best of all on tissue it has never seen.
+
+111
+00:10:54,875 --> 00:10:56,875
+Why does this work?
+
+112
+00:10:56,875 --> 00:11:01,475
+Because the early and middle layers of a vision network do not learn cats.
+
+113
+00:11:01,475 --> 00:11:07,475
+They learn edges, textures, gradients, repeated structures, the shapes that boundaries make.
+
+114
+00:11:07,475 --> 00:11:12,500
+Those are properties of images in general, and a tissue section is an image.
+
+115
+00:11:12,500 --> 00:11:19,250
+The cat-specific part lives in the last layer or two, which is exactly the part we throw away and replace.
+
+116
+00:11:19,250 --> 00:11:23,750
+Reusable models like this have a name: foundation models.
+
+117
+00:11:23,750 --> 00:11:27,175
+And the recipe generalises beyond images.
+
+118
+00:11:27,175 --> 00:11:39,150
+Session eleven shows you the same thing for proteins, where a model trained on hundreds of millions of sequences, with no labels, produces representations that work for tasks it was never trained on.
+
+119
+00:11:39,150 --> 00:11:46,300
+The practical advice is simply this: if you have a few hundred labelled examples, do not train a network from scratch.
+
+120
+00:11:46,300 --> 00:11:49,775
+Start from one that someone else trained on millions.
+
+121
+00:11:50,375 --> 00:11:56,725
+When a model is wrong, the interesting question is not how often, but which things it confuses with which.
+
+122
+00:11:56,725 --> 00:12:01,625
+That is what a confusion matrix is for, and it is worth reading properly.
+
+123
+00:12:01,625 --> 00:12:09,450
+The worst class here is cancer-associated stroma: only nought point five zero of stroma tiles are classified correctly.
+
+124
+00:12:09,450 --> 00:12:11,425
+Where do the rest go?
+
+125
+00:12:11,425 --> 00:12:15,425
+Most often to smooth muscle, at nought point three seven.
+
+126
+00:12:15,425 --> 00:12:21,850
+And the confusion runs the other way too: smooth muscle is called stroma nought point two six of the time.
+
+127
+00:12:21,850 --> 00:12:28,300
+The second confusion is normal mucosa being called tumour epithelium, at nought point one five.
+
+128
+00:12:28,300 --> 00:12:33,850
+Now, here is why those two pairs are worth your attention rather than being a defect to shrug at.
+
+129
+00:12:33,850 --> 00:12:37,650
+Both are genuinely hard for human pathologists too.
+
+130
+00:12:37,650 --> 00:12:48,550
+Cancer-associated stroma and smooth muscle are both fibrous, pink, elongated tissue, and distinguishing them often needs context beyond a small tile, or extra stains.
+
+131
+00:12:48,550 --> 00:12:54,950
+Normal mucosa and tumour epithelium sit on a continuum, which is what cancer progression is.
+
+132
+00:12:54,950 --> 00:13:01,350
+So the model's errors are not random: they are concentrated exactly where the biology is ambiguous.
+
+133
+00:13:01,350 --> 00:13:06,700
+That is a good sign about the model, and it is also the right way to report results.
+
+134
+00:13:06,700 --> 00:13:12,025
+An overall accuracy of nought point eight three tells a clinician almost nothing.
+
+135
+00:13:12,025 --> 00:13:20,600
+Saying that it confuses stroma with smooth muscle half the time, and that this is a known hard distinction, tells them what they can use it for.
+
+136
+00:13:21,200 --> 00:13:24,850
+Now the thing a convolutional network does not give you.
+
+137
+00:13:24,850 --> 00:13:37,825
+Data augmentation means making extra training examples by altering the ones you have, shifting, rotating, mirroring, changing the brightness and colour slightly, and telling the network the label has not changed.
+
+138
+00:13:37,825 --> 00:13:42,575
+In every epoch the network sees a slightly different copy of each image.
+
+139
+00:13:42,575 --> 00:13:46,625
+People often describe it as a way of making more data.
+
+140
+00:13:46,625 --> 00:13:49,400
+That is true but it misses the point.
+
+141
+00:13:49,400 --> 00:13:55,325
+The real description is this: augmentation is how you tell the network what should not matter.
+
+142
+00:13:55,325 --> 00:14:01,375
+And which transformations should not matter is a statement about the biology, not about the network.
+
+143
+00:14:01,375 --> 00:14:04,850
+A tissue section on a glass slide has no up.
+
+144
+00:14:04,850 --> 00:14:09,325
+The pathologist put it on the slide in whatever orientation it landed.
+
+145
+00:14:09,325 --> 00:14:16,600
+So rotating it by ninety degrees, or mirroring it, produces an image that is just as valid, with the same label.
+
+146
+00:14:16,600 --> 00:14:24,650
+Small colour shifts imitate the real differences in staining between laboratories and between days, which your model will certainly meet.
+
+147
+00:14:24,650 --> 00:14:30,675
+So for histology: rotations, flips and colour jitter are all correct augmentations.
+
+148
+00:14:30,675 --> 00:14:36,025
+Now the counter-example, to show that this is a real decision and not a default.
+
+149
+00:14:36,025 --> 00:14:40,800
+A handwritten six rotated by a hundred and eighty degrees is a nine.
+
+150
+00:14:40,800 --> 00:14:49,600
+If you augment a digit classifier with rotations, you are actively teaching it that sixes and nines are the same thing, and you will make it worse.
+
+151
+00:14:49,600 --> 00:14:53,725
+There is no general answer to which augmentations are right.
+
+152
+00:14:53,725 --> 00:14:56,625
+You have to know what your data means.
+
+153
+00:14:57,225 --> 00:15:02,700
+And now we measure it, which is the part I like, because it turns an argument into a number.
+
+154
+00:15:02,700 --> 00:15:05,075
+The experiment is simple.
+
+155
+00:15:05,075 --> 00:15:12,975
+Take the nine hundred test tiles, apply a transformation to each one, and count how often the model's predicted class changes.
+
+156
+00:15:12,975 --> 00:15:19,450
+A truly invariant classifier would change none of them: it would be the same tissue, so the same answer.
+
+157
+00:15:19,450 --> 00:15:21,775
+Without augmentation.
+
+158
+00:15:21,775 --> 00:15:27,275
+Shift the tile by eight pixels: the answer changes for five per cent of tiles.
+
+159
+00:15:27,275 --> 00:15:32,475
+Five per cent, for a shift of eight pixels, is the architecture earning its keep.
+
+160
+00:15:32,475 --> 00:15:36,625
+That is Block one's equivariance plus pooling, doing its job.
+
+161
+00:15:36,625 --> 00:15:42,350
+Now rotate by ninety degrees: the answer changes for eighteen per cent of tiles.
+
+162
+00:15:42,350 --> 00:15:45,025
+Mirror it: seventeen per cent.
+
+163
+00:15:45,025 --> 00:15:50,575
+Nearly one tile in five gets a different diagnosis because someone turned the slide.
+
+164
+00:15:50,575 --> 00:15:53,625
+Nothing in convolution handles that.
+
+165
+00:15:53,625 --> 00:15:56,225
+Nothing in pooling handles it.
+
+166
+00:15:56,225 --> 00:15:59,625
+The architecture gives you shifts and only shifts.
+
+167
+00:15:59,625 --> 00:16:09,200
+Train the same network with rotated and mirrored copies, and those numbers roughly halve: the rotation figure falls to nine per cent, the mirror figure to seven.
+
+168
+00:16:09,200 --> 00:16:14,325
+So the network has learned from data a symmetry that its architecture could not give it.
+
+169
+00:16:14,325 --> 00:16:16,925
+Not perfectly, but much better.
+
+170
+00:16:16,925 --> 00:16:18,650
+Two footnotes.
+
+171
+00:16:18,650 --> 00:16:29,700
+The pretrained networks are not rotation-invariant either, and for a reason worth knowing: their training photographs are almost all upright, because people take photographs the right way up.
+
+172
+00:16:29,700 --> 00:16:34,975
+So they have learned that up exists, which is true of photographs and false of tissue.
+
+173
+00:16:34,975 --> 00:16:47,900
+And this is why real pathology pipelines always augment with all four rotations and both flips, and why people went to the trouble of designing rotation-equivariant convolutional networks specifically for pathology.
+
+174
+00:16:48,500 --> 00:16:54,050
+The same experiment on the blood cells from your lab makes the shape of the problem visible.
+
+175
+00:16:54,050 --> 00:17:02,425
+Here, instead of just ninety degrees, the cells are rotated by every angle, and we plot accuracy against the angle of rotation.
+
+176
+00:17:02,425 --> 00:17:06,050
+Without augmentation, the curve sags in the middle.
+
+177
+00:17:06,050 --> 00:17:09,450
+The worst performance is at forty-five degrees.
+
+178
+00:17:09,450 --> 00:17:21,500
+That makes sense if you think about what the network has: at ninety degrees, at least the image grid lines up with itself again, but at forty-five nothing does, and the network has never seen anything like it.
+
+179
+00:17:21,500 --> 00:17:26,050
+With augmentation, the curve is essentially flat across all angles.
+
+180
+00:17:26,050 --> 00:17:29,825
+The network has learned that orientation does not matter.
+
+181
+00:17:29,825 --> 00:17:39,150
+And notice one more detail, which is honest and worth pointing out: with augmentation, the accuracy on upright cells is slightly lower than it was without.
+
+182
+00:17:39,150 --> 00:17:46,750
+You spent some capacity on being orientation-independent, and that capacity is no longer available for the upright case.
+
+183
+00:17:46,750 --> 00:17:53,225
+That is a trade, and it is almost always the right one here, because real cells arrive at every angle.
+
+184
+00:17:53,225 --> 00:17:56,100
+But it is a trade, not a free lunch.
+
+185
+00:17:56,700 --> 00:18:02,650
+Now the last idea of the session, and it is the one that connects this session to the two that follow.
+
+186
+00:18:02,650 --> 00:18:06,750
+Convolution is not only for photographs and sequences.
+
+187
+00:18:06,750 --> 00:18:15,650
+Some biological data is an image even though it does not look like one, and the most important example is the contact map of a protein.
+
+188
+00:18:15,650 --> 00:18:21,500
+Start from what a structure is: a list of coordinates in three dimensions, one per atom.
+
+189
+00:18:21,500 --> 00:18:27,350
+A contact map throws almost all of that away and keeps one thing: which residues touch.
+
+190
+00:18:27,350 --> 00:18:37,500
+For a protein of L residues, it is an L by L grid, and the pixel at row i, column j is black if residues i and j are close in space, white if not.
+
+191
+00:18:37,500 --> 00:18:50,225
+Close needs a definition, and the usual one is that their C-beta atoms, the first carbon of the side chain, are within eight ångström of each other, which is roughly the distance at which two side chains can touch.
+
+192
+00:18:50,225 --> 00:18:56,250
+Three things follow directly from that definition, and you can see all three on the map on this slide.
+
+193
+00:18:56,250 --> 00:18:58,200
+It is symmetric.
+
+194
+00:18:58,200 --> 00:19:04,850
+If i touches j then j touches i, so every contact appears twice, mirrored across the diagonal.
+
+195
+00:19:04,850 --> 00:19:12,075
+The diagonal is always black, because every residue is close to itself and to its immediate neighbours in the chain.
+
+196
+00:19:12,075 --> 00:19:16,025
+And the contacts far from the diagonal are the interesting ones.
+
+197
+00:19:16,025 --> 00:19:22,725
+Those join residues that are far apart along the sequence but brought close together by the way the chain folds.
+
+198
+00:19:22,725 --> 00:19:25,475
+They are what makes a fold a fold.
+
+199
+00:19:25,475 --> 00:19:32,425
+Look at the four coloured pairs on the slide, matched between the three-dimensional structure on the left and the map on the right.
+
+200
+00:19:32,425 --> 00:19:38,250
+This is beta-globin, the beta chain of haemoglobin, a hundred and forty-six residues.
+
+201
+00:19:38,250 --> 00:19:49,725
+The green pair is within a single helix, so it sits right next to the diagonal: in a helix, residue i touches residue i plus three and i plus four, which are its neighbours on the next turn.
+
+202
+00:19:49,725 --> 00:19:53,950
+That is why helices show up as a thick band along the diagonal.
+
+203
+00:19:53,950 --> 00:20:03,675
+The blue, orange and purple pairs are on different helices that are packed against each other, so they sit far from the diagonal, in short stripes where two helices meet.
+
+204
+00:20:03,675 --> 00:20:14,025
+Beta-globin has a hundred and ninety-seven contacts between residues at least six apart in sequence, of which a hundred and fifty are long-range, at least twenty-four apart.
+
+205
+00:20:14,025 --> 00:20:18,075
+Now, why am I showing you this in a session about convolution?
+
+206
+00:20:18,075 --> 00:20:20,575
+Because of the word patterns.
+
+207
+00:20:20,575 --> 00:20:22,900
+Helices make bands.
+
+208
+00:20:22,900 --> 00:20:27,775
+Pairs of beta strands make lines, running along or across the diagonal.
+
+209
+00:20:27,775 --> 00:20:35,800
+Those are local patterns in a two-dimensional grid, which is exactly and precisely what a two-dimensional convolution is good at.
+
+210
+00:20:35,800 --> 00:20:45,225
+One more property, which connects back to Block one: a contact map does not change when you rotate or move the protein, because it only records distances.
+
+211
+00:20:45,225 --> 00:20:52,450
+It is invariant to rotation and translation by construction, which is a very convenient thing to hand a network.
+
+212
+00:20:53,050 --> 00:20:58,225
+And once a protein is an image, you can do to it everything this session has taught.
+
+213
+00:20:58,225 --> 00:21:10,275
+This graph shows the best contact predictor at each CASP, which is the community experiment where structure-prediction methods are tested blind on structures that have been solved but not yet published.
+
+214
+00:21:10,275 --> 00:21:13,250
+Look at what happens in twenty sixteen.
+
+215
+00:21:13,250 --> 00:21:23,075
+That is when deep residual convolutional networks arrived, predicting the whole contact map at once as an image, rather than scoring residue pairs one at a time.
+
+216
+00:21:23,075 --> 00:21:29,250
+Accuracy went to forty-seven per cent, and by twenty eighteen it had passed seventy per cent.
+
+217
+00:21:29,250 --> 00:21:39,125
+Notice the word residual: this is ResNet from the start of this block, doing real work in structural biology three years after it won a photograph competition.
+
+218
+00:21:39,125 --> 00:21:43,350
+That road leads directly to Session twelve and AlphaFold.
+
+219
+00:21:43,350 --> 00:21:51,725
+The step from predicting contacts to predicting structures, and the step from convolution to attention, are what Session twelve is about.
+
+220
+00:21:52,325 --> 00:21:55,575
+Two slides to finish, both close to home.
+
+221
+00:21:55,575 --> 00:22:01,325
+This was a competition, run on Kaggle by Emma Lundberg's group here at SciLifeLab.
+
+222
+00:22:01,325 --> 00:22:12,400
+The data is from the Human Protein Atlas: microscope images of human cells where a particular protein has been stained, and the task is to say which parts of the cell the protein is in.
+
+223
+00:22:12,400 --> 00:22:21,150
+Thirty-one thousand and seventy-two training images, eleven thousand seven hundred and two test images, twenty-eight possible locations.
+
+224
+00:22:21,150 --> 00:22:30,825
+And notice that this is the same biological question as our protein network in Block two, asked of a different kind of data: where in the cell is this protein?
+
+225
+00:22:30,825 --> 00:22:33,800
+There, from the amino acid sequence.
+
+226
+00:22:33,800 --> 00:22:35,825
+Here, from a picture.
+
+227
+00:22:35,825 --> 00:22:39,950
+The difficulties are exactly the ones this session has been about.
+
+228
+00:22:39,950 --> 00:22:45,275
+The classes are extremely unbalanced: some compartments are common, some are rare.
+
+229
+00:22:45,275 --> 00:22:51,425
+And an image can have several labels at once, because a protein can genuinely be in two places.
+
+230
+00:22:51,425 --> 00:23:01,275
+The winning team's F1 score, averaged over the twenty-eight classes, was nought point five nine three, against nought point four seven for the previous best method.
+
+231
+00:23:01,275 --> 00:23:04,625
+That is a twenty-six per cent improvement.
+
+232
+00:23:04,625 --> 00:23:14,800
+And then the honest part: expert human annotators still did better, with a precision of nought point seven four and a recall of nought point six nine on similar data.
+
+233
+00:23:14,800 --> 00:23:17,325
+This is not a solved problem.
+
+234
+00:23:17,325 --> 00:23:20,575
+It is a problem where the machines became useful.
+
+235
+00:23:21,175 --> 00:23:26,475
+Finally, where this is going, and it is being built a few kilometres from this lecture.
+
+236
+00:23:26,475 --> 00:23:36,775
+Alpha Cell is SciLifeLab and KTH's effort to create predictive models that explain how human cells function, how they adapt, and how they change in disease.
+
+237
+00:23:36,775 --> 00:23:45,000
+It is led by Jan Ellenberg and Mathias Uhlén, with thirty-six and a half million dollars from the Knut and Alice Wallenberg Foundation.
+
+238
+00:23:45,000 --> 00:23:59,300
+The first phase builds on data that already exists, in the Human Protein Atlas: more than ten million manually annotated bioimages, and single-cell gene expression profiles across eighty-one cell types from thirty-one human tissues.
+
+239
+00:23:59,300 --> 00:24:04,900
+Which is to say, it starts from the same images as the competition on the previous slide.
+
+240
+00:24:04,900 --> 00:24:15,975
+Later phases add three-dimensional microscopy at molecular resolution, live-cell time series, an integrated four-dimensional predictive model, and then applications.
+
+241
+00:24:15,975 --> 00:24:19,025
+I show you this because of where it starts.
+
+242
+00:24:19,025 --> 00:24:26,700
+It starts from image models of exactly the kind you have met today, and from the step from classifying a tile to modelling a cell.
+
+243
+00:24:26,700 --> 00:24:33,050
+That step is not obviously possible, and it is being attempted now, with the techniques in this lecture.
+
+244
+00:24:33,050 --> 00:24:39,200
+As always with recent work: this is an ambition and a research programme, not a finished result.
+
+245
+00:24:39,200 --> 00:24:41,650
+Treat the claims as claims.
+
+246
+00:24:42,250 --> 00:24:44,375
+That is Session ten.
+
+247
+00:24:44,375 --> 00:24:58,975
+To summarise in one sentence, the one from the first slide: a convolutional layer assumes that nearby inputs belong together and reuses the same small detector everywhere, and that assumption is worth more than a hundred thousand extra weights.
+
+248
+00:24:58,975 --> 00:25:06,450
+And the price of it, which we found in Block two: the network stops knowing where things were, unless you arrange for it to keep that.
+
+249
+00:25:06,450 --> 00:25:09,500
+Session eleven is where we arrange it.
+
+250
+00:25:09,500 --> 00:25:17,800
+Models that read a sequence in order and relate distant positions: recurrent networks, LSTMs, attention and the Transformer.
+
+251
+00:25:17,800 --> 00:25:30,900
+And SignalP, which follows that entire history, from a small feed-forward network in nineteen ninety-five to a protein language model in twenty twenty-two, on exactly the signal peptides our filters found today.
+
+252
+00:25:30,900 --> 00:25:39,675
+The Session ten page has all of this written out, and its "Check your understanding" section at the end is the fastest way to find out whether it stuck.
+
+253
+00:25:39,675 --> 00:25:43,725
+The course notebook is linked in the box under the page's title.
+
+254
+00:25:43,725 --> 00:25:45,350
+See you there.
+

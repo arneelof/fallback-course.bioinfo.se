@@ -1,0 +1,58 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 12 Lab: AlphaFold in Practice</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 12 Lab: AlphaFold in Practice</h1>
+<p class='meta'>Preview without answers, from <code>labs/session12-alphafold.text2qti.md</code> (last change 75d192e1 2026-11-02). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='https://course.bioinfo.se/notebooks/session12-lab.ipynb' download>download session12-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>Run your group&rsquo;s &ldquo;region&rdquo; target on the AlphaFold Server, read AlphaFold DB models, and score your own predictions with session12-lab.ipynb (link below). Adapted from the previous course&rsquo;s AlphaFold2 lab and the 2026 AlphaFold3 Server exercise.</p>
+<div class='text'><h2>The notebook and the tools</h2><p>This lab uses three web tools, the <a href="https://alphafoldserver.com">AlphaFold Server</a> (AlphaFold3; free, 20 jobs per day and account), the <a href="https://alphafold.ebi.ac.uk">AlphaFold Protein Structure Database</a> and PyMOL, plus a helper notebook: <a href="https://course.bioinfo.se/notebooks/session12-lab.ipynb">session12-lab.ipynb</a> — download it and open it in VS Code; see the <a href="https://course.bioinfo.se/setup.html">Setup</a> page.</p>
+<p>Every <code>todo("...")</code> call in the notebook marks code for you to write: replace the whole call with your own code. A cell you have not filled in yet stops with <code>NotImplementedError: TODO in this cell: ...</code>. Start Part A first and submit your AlphaFold Server job(s) early: a job takes a few minutes, and you can work on Part B while it runs.</p></div>
+<div class='text'><h2>Part A: your AlphaFold Server job</h2><p>Each group runs one target, one per region of the lecture&rsquo;s framework: Region I Ephrin-A5 : EphB2 (1SHW), Region II Izumo1 : Juno (5F4E), Region III antibody : antigen (8TQ7), Region IV p53 transactivation peptide : MDM2 (1YCR). Part A of the notebook fetches the sequences from the PDB and prints them ready to paste. Add one Protein entity per distinct sequence, copies = 1.</p></div>
+<div class='text'><h2>Part B: reading AlphaFold DB models</h2><p>The AlphaFold DB model&rsquo;s B-factor column holds pLDDT (0-100): above 90 very high confidence, 70-90 confident, 50-70 low, below 50 very low (often disorder or flexibility, but also too little information or simply model uncertainty). Answers below refer to the current models (model version 6 in September 2026). If the database has been updated since, use your own notebook&rsquo;s output.</p></div>
+<div class='q'><div class='qhead'>Question 1 · choose one · 1 point</div><p>Which of these AlphaFold DB models has the largest share of residues with very low confidence (pLDDT below 50)?</p>
+<ul><li><p>A8MVM7</p></li><li><p>Q96NG5</p></li><li><p>Q8IYP9</p></li><li><p>Q8W3K0</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 2 · choose all that apply · 1 point</div><p>A region of an AlphaFold DB model has pLDDT below 50. Which conclusions are justified? (Select all that apply.)</p>
+<ul><li><p>AlphaFold is not confident about the structure of that region</p></li><li><p>Intrinsic disorder is one common reason, but too few homologs, several conformations or an uncertain domain orientation can also cause it</p></li><li><p>The region has been shown experimentally to be disordered</p></li><li><p>The whole model should be discarded</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 3 · number · 1 point</div><p>The notebook superimposes the AlphaFold DB model of mouse Ephrin-A5 (UniProt O08543) on chain A of the crystal structure 1SHW with TM-align. What TM-score does it report (normalised by the crystal chain)?</p>
+</div>
+<div class='text'><h2>Part C: your AlphaFold3 prediction</h2><p>Download your job&rsquo;s results zip from the AlphaFold Server and load it in Part C of the notebook, which prints pTM, ipTM and chain-pair ipTM, plots the PAE heatmap and runs ipSAE (Dunbrack, 2025) on the top-ranked model.</p></div>
+<div class='q'><div class='qhead'>Question 4 · essay · 2 points</div><p>Report, for your target: the region and PDB ID, and for the top-ranked model its pTM, ipTM, the chain-pair ipTM values and the ipSAE printed by the notebook.</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · choose one · 1 point</div><p>In the PAE heatmap of a complex, what does a light (high-error) off-diagonal block between chains A and B mean, even when each chain&rsquo;s own diagonal block is dark?</p>
+<ul><li><p>Both chains are disordered</p></li><li><p>Each chain&rsquo;s fold is confident, but their relative position (the interface) is not</p></li><li><p>The two chains are identical</p></li><li><p>The model has steric clashes</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 6 · choose one · 1 point</div><p>One real AlphaFold3 Server prediction of a two-chain complex had ipTM 0.41 but ipSAE 0.00. What does ipSAE = 0 tell you?</p>
+<ul><li><p>ipSAE failed to run</p></li><li><p>No residue pair between the two chains has a predicted aligned error below the cutoff (10 Å): there is no confidently placed interface at all</p></li><li><p>The two chains are covalently linked</p></li><li><p>The prediction is certainly correct, because pTM was higher than ipTM</p></li></ul>
+</div>
+<div class='text'><h2>Part D: the four regions</h2><p>Pool the class&rsquo;s results in Part D and compare the regions.</p></div>
+<div class='q'><div class='qhead'>Question 7 · choose one · 1 point</div><p>Region II: a high ipTM for Izumo1 : Juno says that the interface AlphaFold generated is self-consistent and plausible. Does it also show that AlphaFold considered, and ruled out, the other sperm proteins that could bind the same face of Izumo1?</p>
+<ul><li><p>Yes: AlphaFold compares all possible partners internally</p></li><li><p>No: AlphaFold only models the chains you give it, so identifying the right partner needs additional information (other predictions, experiments)</p></li><li><p>Yes, if ipSAE is also high</p></li><li><p>No, because ipTM is meaningless for heterodimers</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 8 · choose one · 1 point</div><p>Region IV: p53&rsquo;s transactivation domain is disordered on its own and folds into a helix when bound to MDM2 (1YCR). If AlphaFold3 predicts this complex with high confidence, which is the most careful interpretation?</p>
+<ul><li><p>The model has learned the general physics of disorder-to-order coupled folding</p></li><li><p>It may also have memorised the complex: 1YCR has been in every training set for decades. A held-out test with similar complexes solved after the training cutoff is needed to tell the two apart</p></li><li><p>High confidence proves the peptide is disordered</p></li><li><p>AlphaFold3 cannot model peptides</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>Region I (Ephrin-A5 : EphB2) and Region III (antibody : antigen) may give similar ipTM values. Why should you not trust them equally?</p>
+<ul><li><p>How well confidence tracks true accuracy differs between problem classes: it is reliable where co-evolution constrains the interface (Region I) and much less so for antibody-antigen interfaces, which have no co-evolutionary signal (Region III)</p></li><li><p>ipTM values from different runs cannot be compared at all</p></li><li><p>Antibodies are always predicted correctly</p></li><li><p>Region I targets are always easier to run on the server</p></li></ul>
+</div>
+<div class='text'><h2>Hand in</h2><p>Upload your images and your notebook.</p></div>
+<div class='q'><div class='qhead'>Question 10 · file upload · 2 points</div><p>In PyMOL, superimpose the top-ranked model of your target on its crystal structure (from the PDB), colour the model and the crystal structure differently, and upload a PNG image (white background, 300 dpi). In one sentence, say whether the interface matches.</p>
+</div>
+<div class='q'><div class='qhead'>Question 11 · file upload · 2 points</div><p>Upload your completed notebook, with all outputs (File → Download → .ipynb in Colab).</p>
+</div>
+<div class='text'><h2>Last step -- the feedback survey</h2><p>Before the due date, fill in this lab&rsquo;s feedback survey, &ldquo;Session 12 Lab: feedback&rdquo;, in the same Canvas module. It is anonymous (Canvas records that you filled it in, not what you wrote), and the lab counts as done on time for the bonus points only when both this quiz and the survey are in. It asks for concrete suggestions: what was too long, what background was missing, errors, unclear instructions. Errors and suggestions can also be sent at any time with the <a href="https://bioinfo.se/internal/kb8029-feedback/">feedback form</a>.</p></div>
+</main></body></html>

@@ -1,0 +1,64 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 2 Lab: Working Like a Computational Biologist</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 2 Lab: Working Like a Computational Biologist</h1>
+<p class='meta'>Preview without answers, from <code>labs/session02-working-in-python.text2qti.md</code> (last change 75d192e1 2026-11-02). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='https://course.bioinfo.se/notebooks/session02-lab.ipynb' download>download session02-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>Work through the session02-lab.ipynb notebook (link and instructions below), replacing every todo(&hellip;) call, adapting the Part B code and solving the open Part C challenge, then answer these questions using your own notebook&rsquo;s actual output.</p>
+<div class='text'><h2>The notebook</h2><p>This quiz is about one notebook, <strong>session02-lab.ipynb</strong>: not the teaching notebook linked from the Session 2 book page, but a separate one built for this lab. Download it here: <a href="https://course.bioinfo.se/notebooks/session02-lab.ipynb">session02-lab.ipynb</a> and open it in VS Code on your own computer. If it needs a GPU, choose <strong>Select Kernel → Colab</strong> in VS Code; see the <a href="https://course.bioinfo.se/setup.html">Setup</a> page.</p>
+<p>The notebook has three parts with decreasing help: <strong>Part A</strong> (fill in single lines), <strong>Part B</strong> (change working code to answer new questions, and fix a cell with three bugs) and <strong>Part C</strong> (one open challenge, a twelve-globin analysis; three more challenges follow as optional extras that are not part of the quiz). If time is short, take the core path first: Part A and B2 (fix three bugs), whose questions are worth more than half the points; then B1, B3 and Part C. In Part A, every <code>todo("...")</code> call marks code for you to write: replace the whole <code>todo(...)</code> call with your code. Until you do, the cell stops with <code>NotImplementedError: TODO in this cell: ...</code>, which says what is missing. That is expected. The written questions at the end are graded by hand. Work through the cells in order, top to bottom; the section numbers below (A1, B2, &hellip;) are the notebook&rsquo;s own.</p></div>
+<div class='q'><div class='qhead'>Question 1 · number · 1 point</div><p>Section A1: what is the median of the <code>lfcSE</code> column (the standard error of each log2 fold change), rounded to 3 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 2 · choose one · 1 point</div><p>Section A1: the largest adjusted p-value (<code>padj</code>) in the file is about 0.5. What does that tell you about the file?</p>
+<ul><li><p>Half of all mouse genes changed significantly</p></li><li><p>It suggests that the file is not all genes but a filtered list, since adjusted p-values for all tested genes usually reach close to 1 (to be sure, check how the file was produced)</p></li><li><p>The adjusted p-values were computed incorrectly</p></li><li><p>Nothing: the largest adjusted p-value carries no information</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 3 · number · 1 point</div><p>Section A2: how many genes have an adjusted p-value below 0.01?</p>
+</div>
+<div class='q'><div class='qhead'>Question 4 · number · 1 point</div><p>Section A3: what Spearman correlation did you get between <code>baseMean</code> and <code>lfcSE</code>, rounded to 2 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · choose one · 1 point</div><p>Section A3: the Pearson correlation on the raw <code>baseMean</code> is only about -0.08, while Spearman&rsquo;s is about -0.80. Which explanation fits your plot?</p>
+<ul><li><p>The relationship is strong but not linear on the raw scale: a few extremely highly expressed genes dominate Pearson&rsquo;s r, while Spearman uses only ranks</p></li><li><p>Spearman&rsquo;s correlation is always larger than Pearson&rsquo;s</p></li><li><p>The two tests measure unrelated quantities, so they cannot be compared</p></li><li><p>The Pearson result is right and the plot is misleading</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 6 · short answer · 1 point</div><p>Section A4: what protein sequence did translating the mystery fragment produce?</p>
+</div>
+<div class='q'><div class='qhead'>Question 7 · short answer · 1 point</div><p>Section A5: which human gene is the mystery fragment from?</p>
+</div>
+<div class='q'><div class='qhead'>Question 8 · number · 1 point</div><p>Section A6: what is the coding fraction of cytoglobin (<code>cygb.coding_fraction()</code>), rounded to 3 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>Section A6: <code>coding_fraction(self)</code> takes no argument besides <code>self</code>, yet <code>cygb.coding_fraction()</code> knows which mRNA to use. Why?</p>
+<ul><li><p><code>self</code> is the object the method was called on, <code>cygb</code>, so <code>self.cds</code> and <code>self.mrna_length()</code> are cytoglobin&rsquo;s own data, stored by <code>__init__</code></p></li><li><p>Python looks up the last record fetched from NCBI</p></li><li><p><code>self</code> is the class <code>Transcript</code>, which remembers the last object created</p></li><li><p>The method reads the global variable <code>record</code></p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 10 · short answer · 1 point</div><p>Section B1: among the genes with an adjusted p-value below 0.01, which gene went down the most (most negative log2 fold change)?</p>
+</div>
+<div class='q'><div class='qhead'>Question 11 · number · 1 point</div><p>Section B2: after fixing all three bugs, what is the length-weighted GC fraction of the three fragments, rounded to 3 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 12 · choose one · 1 point</div><p>Section B2: which bug let the cell run without an error but gave a wrong answer?</p>
+<ul><li><p><code>from Bio.SeqUtils import GC</code></p></li><li><p><code>weights = lengths * 2</code>, which repeats the list instead of doubling each length</p></li><li><p><code>df["log2FoldChange"]</code></p></li><li><p><code>gc_values = [GC(f) for f in fragments]</code></p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 13 · short answer · 1 point</div><p>Section B3: which of the six new globins has the longest untranslated region?</p>
+</div>
+<div class='q'><div class='qhead'>Question 14 · number · 1 point</div><p>Section C: what is the Pearson correlation between mRNA length and protein length over all twelve globins, rounded to 2 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 15 · number · 1 point</div><p>Section C: what is the same correlation without the point you identified in your plot (the gene with the longest protein), rounded to 2 decimal places?</p>
+</div>
+<div class='q'><div class='qhead'>Question 16 · short answer · 1 point</div><p>Section C: which of the twelve globins has the highest coding fraction (the largest fraction of its mRNA that is coding sequence)?</p>
+</div>
+<div class='q'><div class='qhead'>Question 17 · essay · 2 points</div><p>Section C: paste your two or three sentences explaining what your plot shows about the relationship between mRNA length and protein length, and why.</p>
+</div>
+<div class='q'><div class='qhead'>Question 18 · essay · 2 points</div><p>Section C: before removing anything, which point stood out in your scatter plot, and why did you choose it to investigate? Would you exclude it from the analysis? Explain, comparing the results with and without it.</p>
+</div>
+<div class='text'><h2>Last step -- the feedback survey</h2><p>Before the due date, fill in this lab&rsquo;s feedback survey, &ldquo;Session 2 Lab: feedback&rdquo;, in the same Canvas module. It is anonymous (Canvas records that you filled it in, not what you wrote), and the lab counts as done on time for the bonus points only when both this quiz and the survey are in. It asks for concrete suggestions: what was too long, what background was missing, errors, unclear instructions. Errors and suggestions can also be sent at any time with the <a href="https://bioinfo.se/internal/kb8029-feedback/">feedback form</a>.</p></div>
+</main></body></html>

@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>References – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./capstone.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">References</a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#the-open-sources-this-book-is-built-on" href="#the-open-sources-this-book-is-built-on" id="toc-the-open-sources-this-book-is-built-on">The open sources this book is built on</a></li>
+<li><a class="nav-link" data-scroll-target="#papers-and-books" href="#papers-and-books" id="toc-papers-and-books">Papers and books</a></li>
+<li><a class="nav-link" data-scroll-target="#databases-datasets-and-software" href="#databases-datasets-and-software" id="toc-databases-datasets-and-software">Databases, datasets and software</a></li>
+<li><a class="nav-link" data-scroll-target="#further-reading-and-watching-by-session" href="#further-reading-and-watching-by-session" id="toc-further-reading-and-watching-by-session">Further reading and watching, by session</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#welcome" href="#welcome" id="toc-welcome">Welcome</a></li>
+<li><a class="nav-link" data-scroll-target="#setup" href="#setup" id="toc-setup">Setup</a></li>
+<li><a class="nav-link" data-scroll-target="#session-1" href="#session-1" id="toc-session-1">Session 1</a></li>
+<li><a class="nav-link" data-scroll-target="#session-2" href="#session-2" id="toc-session-2">Session 2</a></li>
+<li><a class="nav-link" data-scroll-target="#session-3" href="#session-3" id="toc-session-3">Session 3</a></li>
+<li><a class="nav-link" data-scroll-target="#session-4" href="#session-4" id="toc-session-4">Session 4</a></li>
+<li><a class="nav-link" data-scroll-target="#session-5" href="#session-5" id="toc-session-5">Session 5</a></li>
+<li><a class="nav-link" data-scroll-target="#session-6" href="#session-6" id="toc-session-6">Session 6</a></li>
+<li><a class="nav-link" data-scroll-target="#session-7" href="#session-7" id="toc-session-7">Session 7</a></li>
+<li><a class="nav-link" data-scroll-target="#session-8" href="#session-8" id="toc-session-8">Session 8</a></li>
+<li><a class="nav-link" data-scroll-target="#session-9" href="#session-9" id="toc-session-9">Session 9</a></li>
+<li><a class="nav-link" data-scroll-target="#session-10" href="#session-10" id="toc-session-10">Session 10</a></li>
+<li><a class="nav-link" data-scroll-target="#session-11" href="#session-11" id="toc-session-11">Session 11</a></li>
+<li><a class="nav-link" data-scroll-target="#session-12" href="#session-12" id="toc-session-12">Session 12</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#what-isnt-reused-and-why" href="#what-isnt-reused-and-why" id="toc-what-isnt-reused-and-why">What isn’t reused, and why</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title">References</h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<p>Every page of this book names its sources where it uses them. This chapter collects them in one place: first the open textbooks and resources the book is built on, then all papers and books cited on any page (checked against PubMed or CrossRef), then databases, datasets and software, and finally the further reading and watching suggested for each session. “Cited in” links back to the pages that use each source.</p>
+<section class="level2" id="the-open-sources-this-book-is-built-on">
+<h2 class="anchored" data-anchor-id="the-open-sources-this-book-is-built-on">The open sources this book is built on</h2>
+<p>This book draws its narrative content from fully open sources, supplemented by original writing. None of the sources below restrict commercial use. Every page names which of them it used.</p>
+<ul>
+<li><strong>Dive into Deep Learning.</strong> Zhang, A., Lipton, Z. C., Li, M., &amp; Smola, A. J. <a class="uri" href="https://d2l.ai">https://d2l.ai</a>. <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Primary source for every machine-learning session. Adapted material from this source is, per that license, shared here under the same terms.</li>
+<li><strong>Wikipedia.</strong> <a class="uri" href="https://en.wikipedia.org">https://en.wikipedia.org</a>. <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Conceptual and algorithmic depth for the bioinformatics sessions, and occasional historical notes elsewhere. Never assigned as reading directly, but synthesized into this book’s own bounded pages (see the Welcome page for why).</li>
+<li><strong>EMBL-EBI Training.</strong> <a class="uri" href="https://www.ebi.ac.uk/training/">https://www.ebi.ac.uk/training/</a>. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The practical, tool-use layer for databases and sequence alignment.</li>
+<li><strong>bibook.</strong> Käll, L. <a class="uri" href="https://github.com/statisticalbiotechnology/bibook">https://github.com/statisticalbiotechnology/bibook</a>. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Notebook code implementing classical bioinformatics algorithms (pairwise alignment, MSA, and more), adapted with attribution.</li>
+<li><strong>NCBI Bookshelf.</strong> <a class="uri" href="https://www.ncbi.nlm.nih.gov/books/">https://www.ncbi.nlm.nih.gov/books/</a>. Public domain (US government work). The BLAST algorithm and database practicalities, including the BLAST® Help manual.</li>
+<li><strong>RCSB PDB-101.</strong> <a class="uri" href="https://pdb101.rcsb.org/">https://pdb101.rcsb.org/</a>. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> (the PDB-101 educational tier; general rcsb.org article text is separately copyrighted and is not used here).</li>
+<li><strong>A Byte of Python.</strong> Swaroop, C. H. <a class="uri" href="https://python.swaroopch.com/">https://python.swaroopch.com/</a>. <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Python fundamentals and object-oriented programming.</li>
+</ul>
+</section>
+<section class="level2" id="papers-and-books">
+<h2 class="anchored" data-anchor-id="papers-and-books">Papers and books</h2>
+<ul>
+<li>Abramson J, Adler J, Dunger J, et al. (2024). Accurate structure prediction of biomolecular interactions with AlphaFold 3. Nature 630:493-500. <a href="https://doi.org/10.1038/s41586-024-07487-w">doi:10.1038/s41586-024-07487-w</a>. PMID:38718835. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Alipanahi B, Delong A, Weirauch MT et al. (2015). Predicting the sequence specificities of DNA- and RNA-binding proteins by deep learning. Nat Biotechnol 33:831-8. <a href="https://doi.org/10.1038/nbt.3300">doi:10.1038/nbt.3300</a>. PMID:26213851. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Alley EC, Khimulya G, Biswas S et al. (2019). Unified rational protein engineering with sequence-based deep representation learning. Nat Methods 16:1315-1322. <a href="https://doi.org/10.1038/s41592-019-0598-1">doi:10.1038/s41592-019-0598-1</a>. PMID:31636460. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Almagro Armenteros JJ, Sønderby CK, Sønderby SK et al. (2017). DeepLoc: prediction of protein subcellular localization using deep learning. Bioinformatics 33:3387-3395. <a href="https://doi.org/10.1093/bioinformatics/btx431">doi:10.1093/bioinformatics/btx431</a>. PMID:29036616. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Almagro Armenteros JJ, Tsirigos KD, Sønderby CK et al. (2019). SignalP 5.0 improves signal peptide predictions using deep neural networks. Nat Biotechnol 37:420-423. <a href="https://doi.org/10.1038/s41587-019-0036-z">doi:10.1038/s41587-019-0036-z</a>. PMID:30778233. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Altschul SF, Gish W, Miller W, et al. (1990). Basic local alignment search tool. J Mol Biol 215(3):403-410. <a href="https://doi.org/10.1016/S0022-2836(05)80360-2">doi:10.1016/S0022-2836(05)80360-2</a>. PMID 2231712. <em>Cited in:</em> <a href="./setup.html">Setup</a>, <a href="./session05.html">Session 5</a>.</li>
+<li>Altschul SF, Madden TL, Schäffer AA, et al. (1997). Gapped BLAST and PSI-BLAST: a new generation of protein database search programs. Nucleic Acids Res 25(17):3389-3402. <a href="https://doi.org/10.1093/nar/25.17.3389">doi:10.1093/nar/25.17.3389</a>. PMID 9254694. <em>Cited in:</em> <a href="./session05.html">Session 5</a>.</li>
+<li>Anfinsen CB (1973). Principles that Govern the Folding of Protein Chains. Science 181:223-230. <a href="https://doi.org/10.1126/science.181.4096.223">doi:10.1126/science.181.4096.223</a>. PMID:4124164. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Baek M, DiMaio F, Anishchenko I et al. (2021). Accurate prediction of protein structures and interactions using a three-track neural network. Science 373:871-876. <a href="https://doi.org/10.1126/science.abj8754">doi:10.1126/science.abj8754</a>. PMID:34282049. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Bahdanau D, Cho K, Bengio Y (2014). Neural Machine Translation by Jointly Learning to Align and Translate. arXiv:1409.0473 (ICLR 2015). <a href="https://doi.org/10.48550/arXiv.1409.0473">doi:10.48550/arXiv.1409.0473</a>. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Baldwin J, Chothia C (1979). Haemoglobin: the structural changes related to ligand binding and its allosteric mechanism. J Mol Biol 129:175-220. <a href="https://doi.org/10.1016/0022-2836(79)90277-8">doi:10.1016/0022-2836(79)90277-8</a>. PMID:39173. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Basu S, Wallner B (2016). DockQ: A Quality Measure for Protein-Protein Docking Models. PLoS One 11:e0161879. <a href="https://doi.org/10.1371/journal.pone.0161879">doi:10.1371/journal.pone.0161879</a>. PMID:27560519. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Becares N, Gage MC, Voisin M, et al. (2019). Impaired LXRα phosphorylation attenuates progression of fatty liver disease. Cell Reports 26(4):984-995.e6. <a href="https://doi.org/10.1016/j.celrep.2018.12.094">doi:10.1016/j.celrep.2018.12.094</a>. PMID:30673619. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session02.html">Session 2</a>.</li>
+<li>Benjamini Y, Hochberg Y (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society Series B 57(1):289-300. <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x">doi:10.1111/j.2517-6161.1995.tb02031.x</a>. <em>Cited in:</em> <a href="./session01.html">Session 1</a>.</li>
+<li>Bommasani R, Hudson DA, Adeli E, et al. (2021). On the Opportunities and Risks of Foundation Models. arXiv:2108.07258. <a class="uri" href="https://arxiv.org/abs/2108.07258">https://arxiv.org/abs/2108.07258</a> <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Bryant P, Pozzati G, Elofsson A (2022). Improved prediction of protein-protein interactions using AlphaFold2. Nat Commun 13:1265. <a href="https://doi.org/10.1038/s41467-022-28865-w">doi:10.1038/s41467-022-28865-w</a>. PMID:35273146. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Bulyk ML, Johnson PLF, Church GM (2002). Nucleotides of transcription factor binding sites exert interdependent effects on the binding affinities of transcription factors. Nucleic Acids Research 30(5):1255-1261. <a href="https://doi.org/10.1093/nar/30.5.1255">doi:10.1093/nar/30.5.1255</a>. PMID:11861919. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session07.html">Session 7</a>.</li>
+<li>Candido S, Hayes T, Derry A et al. (2026). Language Modeling Materializes a World Model of Protein Biology. bioRxiv, 2026.06.03.729735. <a href="https://doi.org/10.64898/2026.06.03.729735">doi:10.64898/2026.06.03.729735</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Chen R, Li L, Weng Z (2003). ZDOCK: An initial‐stage protein‐docking algorithm. Proteins 52:80-87. <a href="https://doi.org/10.1002/prot.10389">doi:10.1002/prot.10389</a>. PMID:12784371. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Cheng H, Schaeffer RD, Liao Y, et al. (2014). ECOD: an evolutionary classification of protein domains. PLoS Comput Biol 10:e1003926. <a href="https://doi.org/10.1371/journal.pcbi.1003926">doi:10.1371/journal.pcbi.1003926</a>. PMID:25474468. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Chou PY, Fasman GD (1974). Prediction of protein conformation. Biochemistry 13(2):222-245. <a href="https://doi.org/10.1021/bi00699a002">doi:10.1021/bi00699a002</a>. PMID 4358940. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Dauparas J, Anishchenko I, Bennett N, et al. (2022). Robust deep learning-based protein sequence design using ProteinMPNN. Science 378(6615):49-56. <a href="https://doi.org/10.1126/science.add2187">doi:10.1126/science.add2187</a>. PMID:36108050. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Dayhoff MO, Schwartz RM, Orcutt BC (1978). A model of evolutionary change in proteins. In: Dayhoff MO (ed.), Atlas of Protein Sequence and Structure, Vol. 5, Suppl. 3, pp. 345-352. National Biomedical Research Foundation, Washington DC. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>Devlin J, Chang M-W, Lee K et al. (2018). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. arXiv:1810.04805 (NAACL 2019). <a href="https://doi.org/10.48550/arXiv.1810.04805">doi:10.48550/arXiv.1810.04805</a>. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Dill KA, MacCallum JL (2012). The Protein-Folding Problem, 50 Years On. Science 338:1042-1046. <a href="https://doi.org/10.1126/science.1219021">doi:10.1126/science.1219021</a>. PMID:23180855. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Dominguez C, Boelens R, Bonvin AMJJ (2003). HADDOCK: A Protein−Protein Docking Approach Based on Biochemical or Biophysical Information. J Am Chem Soc 125:1731-1737. <a href="https://doi.org/10.1021/ja026939x">doi:10.1021/ja026939x</a>. PMID:12580598. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Dosovitskiy A, Beyer L, Kolesnikov A et al. (2021). An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale. ICLR 2021. arXiv:2010.11929. <a class="uri" href="https://arxiv.org/abs/2010.11929">https://arxiv.org/abs/2010.11929</a> <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Dunbrack RL (2025). Rēs ipSAE loquuntur: What’s wrong with AlphaFold’s ipTM score and how to fix it. bioRxiv, 2025.02.10.637595. <a href="https://doi.org/10.1101/2025.02.10.637595">doi:10.1101/2025.02.10.637595</a>. PMID:39990437. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Ekeberg M, Lövkvist C, Lan Y et al. (2013). Improved contact prediction in proteins: Using pseudolikelihoods to infer Potts models. Phys Rev E 87:012707. <a href="https://doi.org/10.1103/physreve.87.012707">doi:10.1103/physreve.87.012707</a>. PMID:23410359. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Ekman M (2021). Learning Deep Learning: Theory and Practice of Neural Networks, Computer Vision, Natural Language Processing, and Transformers Using TensorFlow. Addison-Wesley. ISBN 978-0-13-747035-8. <a class="uri" href="https://www.informit.com/store/learning-deep-learning-theory-and-practice-of-neural-9780137470358">https://www.informit.com/store/learning-deep-learning-theory-and-practice-of-neural-9780137470358</a> <em>Cited in:</em> <a href="./index.html">Welcome</a>, <a href="./session07.html">Session 7</a>, <a href="./session08.html">Session 8</a>, <a href="./session09.html">Session 9</a>.</li>
+<li>Elnaggar A, Heinzinger M, Dallago C et al. (2022). ProtTrans: Toward Understanding the Language of Life Through Self-Supervised Learning. IEEE Trans Pattern Anal Mach Intell 44:7112-7127. <a href="https://doi.org/10.1109/TPAMI.2021.3095381">doi:10.1109/TPAMI.2021.3095381</a>. PMID:34232869. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Elofsson A (2026). AlphaFold3 at CASP16. Proteins 94:154-166. <a href="https://doi.org/10.1002/prot.70044">doi:10.1002/prot.70044</a>. PMID:40851426. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Elofsson A, Ben-Tal N (2026). What will be the future of computational biology for macromolecules in the era of AI?. PLoS Comput Biol 22:e1014467. <a href="https://doi.org/10.1371/journal.pcbi.1014467">doi:10.1371/journal.pcbi.1014467</a>. PMID:42418429. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Elofsson A, Han L, Bianchi E et al. (2024). Deep learning insights into the architecture of the mammalian egg-sperm fusion synapse. eLife 13:RP93131. <a href="https://doi.org/10.7554/elife.93131">doi:10.7554/elife.93131</a>. PMID:38666763. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Esteva A, Kuprel B, Novoa RA et al. (2017). Dermatologist-level classification of skin cancer with deep neural networks. Nature 542:115-118. <a href="https://doi.org/10.1038/nature21056">doi:10.1038/nature21056</a>. PMID:28117445. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Evans R, O’Neill M, Pritzel A et al. (2021). Protein complex prediction with AlphaFold-Multimer. bioRxiv, 2021.10.04.463034. <a href="https://doi.org/10.1101/2021.10.04.463034">doi:10.1101/2021.10.04.463034</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Fermi G, Perutz MF, Shaanan B, et al. (1984). The crystal structure of human deoxyhaemoglobin at 1.74 Å resolution. Journal of Molecular Biology 175(2):159-174. <a href="https://doi.org/10.1016/0022-2836(84)90472-8">doi:10.1016/0022-2836(84)90472-8</a>. PMID:6726807. <em>Cited in:</em> <a href="./session03.html">Session 3</a>, <a href="./session10.html">Session 10</a>.</li>
+<li>Fromm S, Ludaic M, Elofsson A (2026). Evaluating deep learning based structure prediction methods on antibody–antigen complexes. Bioinformatics 42:btag136. <a href="https://doi.org/10.1093/bioinformatics/btag136">doi:10.1093/bioinformatics/btag136</a>. PMID:41863324. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Garnier J, Osguthorpe DJ, Robson B (1978). Analysis of the accuracy and implications of simple methods for predicting the secondary structure of globular proteins. J Mol Biol 120(1):97-120. <a href="https://doi.org/10.1016/0022-2836(78)90297-8">doi:10.1016/0022-2836(78)90297-8</a>. PMID 642007. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Goedhart J, Luijsterburg MS (2020). VolcaNoseR is a web app for creating, exploring, labeling and sharing volcano plots. Scientific Reports 10:20560. <a href="https://doi.org/10.1038/s41598-020-76603-3">doi:10.1038/s41598-020-76603-3</a>. PMID:33239692. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Göbel U, Sander C, Schneider R et al. (1994). Correlated mutations and residue contacts in proteins. Proteins 18:309-317. <a href="https://doi.org/10.1002/prot.340180402">doi:10.1002/prot.340180402</a>. PMID:8208723. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>He K, Zhang X, Ren S et al. (2016). Deep Residual Learning for Image Recognition. Proc IEEE Conf Computer Vision and Pattern Recognition (CVPR) 2016, 770-778. <a href="https://doi.org/10.1109/cvpr.2016.90">doi:10.1109/cvpr.2016.90</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Heinzinger M, Elnaggar A, Wang Y et al. (2019). Modeling aspects of the language of life through transfer-learning protein sequences. BMC Bioinformatics 20:723. <a href="https://doi.org/10.1186/s12859-019-3220-8">doi:10.1186/s12859-019-3220-8</a>. PMID:31847804. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Henikoff S, Henikoff JG (1992). Amino acid substitution matrices from protein blocks. Proc Natl Acad Sci USA 89(22):10915-10919. <a href="https://doi.org/10.1073/pnas.89.22.10915">doi:10.1073/pnas.89.22.10915</a>. PMID 1438297. <em>Cited in:</em> <a href="./session04.html">Session 4</a>, <a href="./session05.html">Session 5</a>.</li>
+<li>Ho J, Jain A, Abbeel P (2020). Denoising Diffusion Probabilistic Models. arXiv:2006.11239 (NeurIPS 33, 2020). <a href="https://doi.org/10.48550/arXiv.2006.11239">doi:10.48550/arXiv.2006.11239</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Hochreiter S, Schmidhuber J (1997). Long Short-Term Memory. Neural Computation 9:1735-1780. <a href="https://doi.org/10.1162/neco.1997.9.8.1735">doi:10.1162/neco.1997.9.8.1735</a>. PMID:9377276. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Holm L, Sander C (1993). Protein structure comparison by alignment of distance matrices. J Mol Biol 233:123-138. <a href="https://doi.org/10.1006/jmbi.1993.1489">doi:10.1006/jmbi.1993.1489</a>. PMID:8377180. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Hopf TA, Ingraham JB, Poelwijk FJ, et al. (2017). Mutation effects predicted from sequence co-variation. Nat Biotechnol 35(2):128-135. <a href="https://doi.org/10.1038/nbt.3769">doi:10.1038/nbt.3769</a>. PMID 28092658. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Hopf TA, Schärfe CPI, Rodrigues JPGLM et al. (2014). Sequence co-evolution gives 3D contacts and structures of protein complexes. eLife 3:e03430. <a href="https://doi.org/10.7554/elife.03430">doi:10.7554/elife.03430</a>. PMID:25255213. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Illergård K, Ardell DH, Elofsson A (2009). Structure is three to ten times more conserved than sequence–a study of structural response in protein cores. Proteins 77(3):499-508. <a href="https://doi.org/10.1002/prot.22458">doi:10.1002/prot.22458</a>. PMID 19507241. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Ioffe S, Szegedy C (2015). Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift. Proceedings of the 32nd International Conference on Machine Learning (ICML), PMLR 37:448-456. arXiv:1502.03167. <a class="uri" href="https://arxiv.org/abs/1502.03167">https://arxiv.org/abs/1502.03167</a> <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>Isomorphic Labs Team (2026). Accurate predictions of novel biomolecular interactions with IsoDDE. Technical report, Zenodo. <a href="https://doi.org/10.5281/zenodo.19699685">doi:10.5281/zenodo.19699685</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Janin J, Henrick K, Moult J et al. (2003). CAPRI: A Critical Assessment of PRedicted Interactions. Proteins 52:2-9. <a href="https://doi.org/10.1002/prot.10381">doi:10.1002/prot.10381</a>. PMID:12784359. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Jumper J, Evans R, Pritzel A, et al. (2021). Highly accurate protein structure prediction with AlphaFold. Nature 596:583-589. <a href="https://doi.org/10.1038/s41586-021-03819-2">doi:10.1038/s41586-021-03819-2</a>. PMID:34265844. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Kabsch W, Sander C (1984). On the use of sequence homologies to predict protein structure: identical pentapeptides can have completely different conformations. Proc Natl Acad Sci USA 81(4):1075-1078. <a href="https://doi.org/10.1073/pnas.81.4.1075">doi:10.1073/pnas.81.4.1075</a>. PMID 6422466. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Karlin S, Altschul SF (1990). Methods for assessing the statistical significance of molecular sequence features by using general scoring schemes. Proc Natl Acad Sci USA 87(6):2264-2268. <a href="https://doi.org/10.1073/pnas.87.6.2264">doi:10.1073/pnas.87.6.2264</a>. PMID 2315319. <em>Cited in:</em> <a href="./session05.html">Session 5</a>.</li>
+<li>Katchalski-Katzir E, Shariv I, Eisenstein M et al. (1992). Molecular surface recognition: determination of geometric fit between proteins and their ligands by correlation techniques. Proc Natl Acad Sci USA 89:2195-2199. <a href="https://doi.org/10.1073/pnas.89.6.2195">doi:10.1073/pnas.89.6.2195</a>. PMID:1549581. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Kather JN, Krisam J, Charoentong P, et al. (2019). Predicting survival from colorectal cancer histology slides using deep learning: A retrospective multicenter study. PLoS Med 16:e1002730. <a href="https://doi.org/10.1371/journal.pmed.1002730">doi:10.1371/journal.pmed.1002730</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Kelley DR, Snoek J, Rinn JL (2016). Basset: learning the regulatory code of the accessible genome with deep convolutional neural networks. Genome Res 26:990-9. <a href="https://doi.org/10.1101/gr.200535.115">doi:10.1101/gr.200535.115</a>. PMID:27197224. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Kingma DP, Ba J (2015). Adam: A Method for Stochastic Optimization. 3rd International Conference on Learning Representations (ICLR). arXiv:1412.6980. <a class="uri" href="https://arxiv.org/abs/1412.6980">https://arxiv.org/abs/1412.6980</a> <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>Korf I, Yandell M, Bedell J (2003). BLAST. O’Reilly Media, Sebastopol CA. ISBN 978-0-596-00299-2. <a class="uri" href="https://www.oreilly.com/library/view/blast/0596002998/">https://www.oreilly.com/library/view/blast/0596002998/</a> <em>Cited in:</em> <a href="./session05.html">Session 5</a>.</li>
+<li>Krishna R, Wang J, Ahern W et al. (2024). Generalized biomolecular modeling and design with RoseTTAFold All-Atom. Science 384:eadl2528. <a href="https://doi.org/10.1126/science.adl2528">doi:10.1126/science.adl2528</a>. PMID:38452047. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Krizhevsky A, Sutskever I, Hinton GE (2012). ImageNet classification with deep convolutional neural networks. Advances in Neural Information Processing Systems 25:1097-1105. (Journal version: Commun ACM 60:84-90, 2017, <a href="https://doi.org/10.1145/3065386.">doi:10.1145/3065386.)</a>) <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Kundrotas PJ, Zhu Z, Janin J et al. (2012). Templates are available to model nearly all complexes of structurally characterized proteins. Proc Natl Acad Sci USA 109:9438-9441. <a href="https://doi.org/10.1073/pnas.1200678109">doi:10.1073/pnas.1200678109</a>. PMID:22645367. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Kyte J, Doolittle RF (1982). A simple method for displaying the hydropathic character of a protein. J Mol Biol 157:105-132. <a href="https://doi.org/10.1016/0022-2836(82)90515-0">doi:10.1016/0022-2836(82)90515-0</a>. PMID:7108955. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Lau AM, Bordin N, Kandathil SM, et al. (2024). Exploring structural diversity across the protein universe with The Encyclopedia of Domains. Science 386:eadq4946. <a href="https://doi.org/10.1126/science.adq4946">doi:10.1126/science.adq4946</a>. PMID:39480926. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>LeCun Y, Boser B, Denker JS et al. (1989). Backpropagation Applied to Handwritten Zip Code Recognition. Neural Computation 1:541-551. <a href="https://doi.org/10.1162/neco.1989.1.4.541">doi:10.1162/neco.1989.1.4.541</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Lensink MF, Brysbaert G, Nadzirin N et al. (2019). Blind prediction of homo‐ and hetero‐protein complexes: The CASP13‐CAPRI experiment. Proteins 87:1200-1221. <a href="https://doi.org/10.1002/prot.25838">doi:10.1002/prot.25838</a>. PMID:31612567. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Levinthal C (1969). How to fold graciously. In: Debrunner P, Tsibris JCM, Münck E (eds), Mössbauer Spectroscopy in Biological Systems: Proceedings of a meeting held at Allerton House, Monticello, Illinois. University of Illinois Press, pp. 22-24. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Li W, Kinch LN, Karplus PA, Grishin NV (2015). ChSeq: a database of chameleon sequences. Protein Sci 24(7):1075-1086. <a href="https://doi.org/10.1002/pro.2689">doi:10.1002/pro.2689</a>. PMID 25970262. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Lin Z, Akin H, Rao R et al. (2023). Evolutionary-scale prediction of atomic-level protein structure with a language model. Science 379:1123-1130. <a href="https://doi.org/10.1126/science.ade2574">doi:10.1126/science.ade2574</a>. PMID:36927031. <em>Cited in:</em> <a href="./session11.html">Session 11</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Lipman Y, Chen RTQ, Ben-Hamu H et al. (2022). Flow Matching for Generative Modeling. arXiv:2210.02747 (ICLR 2023). <a href="https://doi.org/10.48550/arXiv.2210.02747">doi:10.48550/arXiv.2210.02747</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Ludaic M, Elofsson A (2026). Limits of deep-learning-based RNA prediction methods. Nucleic Acids Res 54:gkag813. <a href="https://doi.org/10.1093/nar/gkag813">doi:10.1093/nar/gkag813</a>. PMID:42635124. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Marks DS, Colwell LJ, Sheridan R et al. (2011). Protein 3D Structure Computed from Evolutionary Sequence Variation. PLoS One 6:e28766. <a href="https://doi.org/10.1371/journal.pone.0028766">doi:10.1371/journal.pone.0028766</a>. PMID:22163331. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Michel M, Hayat S, Skwark MJ et al. (2014). PconsFold: improved contact predictions improve protein models. Bioinformatics 30:i482-i488. <a href="https://doi.org/10.1093/bioinformatics/btu458">doi:10.1093/bioinformatics/btu458</a>. PMID:25161237. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Michel M, Menéndez Hurtado D, Elofsson A (2019). PconsC4: fast, accurate and hassle-free contact predictions. Bioinformatics 35:2677-2679. <a href="https://doi.org/10.1093/bioinformatics/bty1036">doi:10.1093/bioinformatics/bty1036</a>. PMID:30590407. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Michel M, Skwark MJ, Menéndez Hurtado D et al. (2017). Predicting accurate contacts in thousands of Pfam domain families using PconsC3. Bioinformatics 33:2859-2866. <a href="https://doi.org/10.1093/bioinformatics/btx332">doi:10.1093/bioinformatics/btx332</a>. PMID:28535189. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Minsky M, Papert S (1969). Perceptrons: An Introduction to Computational Geometry. MIT Press, Cambridge MA. (Expanded reissue 2017, <a href="https://doi.org/10.7551/mitpress/11301.001.0001.">doi:10.7551/mitpress/11301.001.0001.)</a>) <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Mirabello C, Wallner B (2019). rawMSA: End-to-end Deep Learning using raw Multiple Sequence Alignments. PLoS One 14:e0220182. <a href="https://doi.org/10.1371/journal.pone.0220182">doi:10.1371/journal.pone.0220182</a>. PMID:31415569. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Mirdita M, Schütze K, Moriwaki Y, et al. (2022). ColabFold: making protein folding accessible to all. Nature Methods 19:679-682. <a href="https://doi.org/10.1038/s41592-022-01488-1">doi:10.1038/s41592-022-01488-1</a>. PMID:35637307. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Monastyrskyy B, D’Andrea D, Fidelis K et al. (2014). Evaluation of residue-residue contact prediction in CASP10. Proteins 82 Suppl 2:138-153. <a href="https://doi.org/10.1002/prot.24340">doi:10.1002/prot.24340</a>. PMID:23760879. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Monastyrskyy B, D’Andrea D, Fidelis K et al. (2016). New encouraging developments in contact prediction: Assessment of the CASP11 results. Proteins 84 Suppl 1:131-144. <a href="https://doi.org/10.1002/prot.24943">doi:10.1002/prot.24943</a>. PMID:26474083. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Morcos F, Pagnani A, Lunt B et al. (2011). Direct-coupling analysis of residue coevolution captures native contacts across many protein families. Proc Natl Acad Sci USA 108:E1293-E1301. <a href="https://doi.org/10.1073/pnas.1111471108">doi:10.1073/pnas.1111471108</a>. PMID:22106262. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Moult J, Pedersen JT, Judson R et al. (1995). A large‐scale experiment to assess protein structure prediction methods. Proteins 23:ii-v. <a href="https://doi.org/10.1002/prot.340230303">doi:10.1002/prot.340230303</a>. PMID:8710822. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Murzin AG, Brenner SE, Hubbard T, et al. (1995). SCOP: a structural classification of proteins database for the investigation of sequences and structures. J Mol Biol 247:536-540. <a href="https://doi.org/10.1006/jmbi.1995.0159">doi:10.1006/jmbi.1995.0159</a>. PMID:7723011. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Needleman SB, Wunsch CD (1970). A general method applicable to the search for similarities in the amino acid sequence of two proteins. J Mol Biol 48(3):443-453. <a href="https://doi.org/10.1016/0022-2836(70)90057-4">doi:10.1016/0022-2836(70)90057-4</a>. PMID 5420325. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>Nielsen H, Engelbrecht J, Brunak S et al. (1997). Identification of prokaryotic and eukaryotic signal peptides and prediction of their cleavage sites. Protein Eng 10:1-6. <a href="https://doi.org/10.1093/protein/10.1.1">doi:10.1093/protein/10.1.1</a>. PMID:9051728. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Nielsen H, Teufel F, Brunak S et al. (2024). SignalP: The Evolution of a Web Server. Methods Mol Biol 2836:331-367. <a href="https://doi.org/10.1007/978-1-0716-4007-4_17">doi:10.1007/978-1-0716-4007-4_17</a>. PMID:38995548. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Oquab M, Darcet T, Moutakanni T, et al. (2023). DINOv2: Learning Robust Visual Features without Supervision. arXiv:2304.07193 (Transactions on Machine Learning Research, 2024). <a class="uri" href="https://arxiv.org/abs/2304.07193">https://arxiv.org/abs/2304.07193</a> <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Orengo CA, Michie AD, Jones S, et al. (1997). CATH–a hierarchic classification of protein domain structures. Structure 5:1093-1108. <a href="https://doi.org/10.1016/S0969-2126(97)00260-8">doi:10.1016/S0969-2126(97)00260-8</a>. PMID:9309224. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Ovchinnikov S, Kamisetty H, Baker D (2014). Robust and accurate prediction of residue–residue interactions across protein interfaces using evolutionary information. eLife 3:e02030. <a href="https://doi.org/10.7554/elife.02030">doi:10.7554/elife.02030</a>. PMID:24842992. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Pevsner J (2015). Bioinformatics and Functional Genomics, 3rd edition. Wiley-Blackwell. ISBN 978-1-118-58178-0. <a class="uri" href="https://www.wiley.com/en-us/Bioinformatics+and+Functional+Genomics%2C+3rd+Edition-p-9781118581780">https://www.wiley.com/en-us/Bioinformatics+and+Functional+Genomics%2C+3rd+Edition-p-9781118581780</a> <em>Cited in:</em> <a href="./index.html">Welcome</a>.</li>
+<li>Pozzati G, Zhu W, Bassot C et al. (2022). Limits and potential of combined folding and docking. Bioinformatics 38:954-961. <a href="https://doi.org/10.1093/bioinformatics/btab760">doi:10.1093/bioinformatics/btab760</a>. PMID:34788800. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Qian N, Sejnowski TJ (1988). Predicting the secondary structure of globular proteins using neural network models. J Mol Biol 202(4):865-884. <a href="https://doi.org/10.1016/0022-2836(88)90564-5">doi:10.1016/0022-2836(88)90564-5</a>. PMID 3172241. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Radford A, Narasimhan K, Salimans T, Sutskever I (2018). Improving language understanding by generative pre-training. OpenAI technical report. <a class="uri" href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf">https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf</a> <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Rao R, Meier J, Sercu T, Ovchinnikov S, Rives A (2021). Transformer protein language models are unsupervised structure learners. International Conference on Learning Representations (ICLR 2021). Preprint <a href="https://doi.org/10.1101/2020.12.15.422761">doi:10.1101/2020.12.15.422761</a>. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Rao RM, Liu J, Verkuil R et al. (2021). MSA Transformer. Proceedings of the 38th International Conference on Machine Learning (ICML), PMLR 139:8844-8856. Preprint <a href="https://doi.org/10.1101/2021.02.12.430858">doi:10.1101/2021.02.12.430858</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Ronneberger O, Fischer P, Brox T (2015). U-Net: Convolutional Networks for Biomedical Image Segmentation. MICCAI 2015, Lecture Notes in Computer Science 9351:234-241. <a href="https://doi.org/10.1007/978-3-319-24574-4_28">doi:10.1007/978-3-319-24574-4_28</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Rost B, Sander C (1993). Improved prediction of protein secondary structure by use of sequence profiles and neural networks. Proc Natl Acad Sci USA 90:7558-7562. <a href="https://doi.org/10.1073/pnas.90.16.7558">doi:10.1073/pnas.90.16.7558</a>. PMID:8356056. PMCID:PMC47181. <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>Rost B, Sander C (1993). Prediction of protein secondary structure at better than 70% accuracy. Journal of Molecular Biology 232(2):584-599. <a href="https://doi.org/10.1006/jmbi.1993.1413">doi:10.1006/jmbi.1993.1413</a>. PMID:8345525. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session07.html">Session 7</a>, <a href="./session09.html">Session 9</a>, <a href="./capstone.html">Capstone</a>.</li>
+<li>Ruiz-Serra V, Pontes C, Milanetti E et al. (2021). Assessing the accuracy of contact and distance predictions in CASP14. Proteins 89:1888-1900. <a href="https://doi.org/10.1002/prot.26248">doi:10.1002/prot.26248</a>. PMID:34595772. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Rumelhart DE, Hinton GE, Williams RJ (1986). Learning representations by back-propagating errors. Nature 323(6088):533-536. <a href="https://doi.org/10.1038/323533a0">doi:10.1038/323533a0</a>. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Russakovsky O, Deng J, Su H et al. (2015). ImageNet Large Scale Visual Recognition Challenge. Int J Comput Vis 115:211-252. <a href="https://doi.org/10.1007/s11263-015-0816-y">doi:10.1007/s11263-015-0816-y</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Saitou N, Nei M (1987). The neighbor-joining method: a new method for reconstructing phylogenetic trees. Mol Biol Evol 4:406-425. <a href="https://doi.org/10.1093/oxfordjournals.molbev.a040454">doi:10.1093/oxfordjournals.molbev.a040454</a>. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>Schaarschmidt J, Monastyrskyy B, Kryshtafovych A et al. (2018). Assessment of contact predictions in CASP12: Co-evolution and deep learning coming of age. Proteins 86 Suppl 1:51-66. <a href="https://doi.org/10.1002/prot.25407">doi:10.1002/prot.25407</a>. PMID:29071738. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Schneider TD, Stephens RM (1990). Sequence logos: a new way to display consensus sequences. Nucleic Acids Res 18(20):6097-6100. <a href="https://doi.org/10.1093/nar/18.20.6097">doi:10.1093/nar/18.20.6097</a>. PMID 2172928. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>Schuster M, Paliwal K (1997). Bidirectional recurrent neural networks. IEEE Trans Signal Process 45:2673-2681. <a href="https://doi.org/10.1109/78.650093">doi:10.1109/78.650093</a>. PMID:42670431. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Senior AW, Evans R, Jumper J, et al. (2020). Improved protein structure prediction using potentials from deep learning. Nature 577:706-710. <a href="https://doi.org/10.1038/s41586-019-1923-7">doi:10.1038/s41586-019-1923-7</a>. PMID:31942072. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Shrestha R, Fajardo E, Gil N et al. (2019). Assessing the accuracy of contact predictions in CASP13. Proteins 87:1058-1068. <a href="https://doi.org/10.1002/prot.25819">doi:10.1002/prot.25819</a>. PMID:31587357. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Simons KT, Kooperberg C, Huang E et al. (1997). Assembly of protein tertiary structures from fragments with similar local sequences using simulated annealing and bayesian scoring functions. J Mol Biol 268:209-225. <a href="https://doi.org/10.1006/jmbi.1997.0959">doi:10.1006/jmbi.1997.0959</a>. PMID:9149153. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Simonyan K, Zisserman A (2014). Very Deep Convolutional Networks for Large-Scale Image Recognition. arXiv:1409.1556 (ICLR 2015). <a href="https://doi.org/10.48550/arXiv.1409.1556">doi:10.48550/arXiv.1409.1556</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Skwark MJ, Raimondi D, Michel M et al. (2014). Improved Contact Predictions Using the Recognition of Protein Like Contact Patterns. PLoS Comput Biol 10:e1003889. <a href="https://doi.org/10.1371/journal.pcbi.1003889">doi:10.1371/journal.pcbi.1003889</a>. PMID:25375897. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Smith TF, Waterman MS (1981). Identification of common molecular subsequences. J Mol Biol 147(1):195-197. <a href="https://doi.org/10.1016/0022-2836(81)90087-5">doi:10.1016/0022-2836(81)90087-5</a>. PMID 7265238. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>Sohl-Dickstein J, Weiss EA, Maheswaranathan N et al. (2015). Deep Unsupervised Learning using Nonequilibrium Thermodynamics. arXiv:1503.03585 (ICML 2015, PMLR 37:2256-2265). <a href="https://doi.org/10.48550/arXiv.1503.03585">doi:10.48550/arXiv.1503.03585</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Srivastava N, Hinton G, Krizhevsky A, Sutskever I, Salakhutdinov R (2014). Dropout: A Simple Way to Prevent Neural Networks from Overfitting. J Mach Learn Res 15:1929-1958. <a class="uri" href="https://jmlr.org/papers/v15/srivastava14a.html">https://jmlr.org/papers/v15/srivastava14a.html</a> <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>Steinegger M, Söding J (2017). MMseqs2 enables sensitive protein sequence searching for the analysis of massive data sets. Nature Biotechnology 35(11):1026-1028. <a href="https://doi.org/10.1038/nbt.3988">doi:10.1038/nbt.3988</a>. PMID:29035372. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./setup.html">Setup</a>, <a href="./session05.html">Session 5</a>, <a href="./session08.html">Session 8</a>, <a href="./session11.html">Session 11</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Swaroop CH. A Byte of Python. Online book, CC BY-SA 4.0. <a class="uri" href="https://python.swaroopch.com/">https://python.swaroopch.com/</a> <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Teufel F, Almagro Armenteros JJ, Johansen AR et al. (2022). SignalP 6.0 predicts all five types of signal peptides using protein language models. Nat Biotechnol 40:1023-1025. <a href="https://doi.org/10.1038/s41587-021-01156-3">doi:10.1038/s41587-021-01156-3</a>. PMID:34980915. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Teufel F, Gíslason MH, Almagro Armenteros JJ et al. (2023). GraphPart: homology partitioning for biological sequence analysis. NAR Genom Bioinform 5:lqad088. <a href="https://doi.org/10.1093/nargab/lqad088">doi:10.1093/nargab/lqad088</a>. PMID:37850036. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Tunyasuvunakool K, Adler J, Wu Z et al. (2021). Highly accurate protein structure prediction for the human proteome. Nature 596:590-596. <a href="https://doi.org/10.1038/s41586-021-03828-1">doi:10.1038/s41586-021-03828-1</a>. PMID:34293799. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Vakser IA (1995). Protein docking for low-resolution structures. Protein Eng 8:371-378. <a href="https://doi.org/10.1093/protein/8.4.371">doi:10.1093/protein/8.4.371</a>. PMID:7567922. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>van Kempen M, Kim SS, Tumescheit C, et al. (2024). Fast and accurate protein structure search with Foldseek. Nat Biotechnol 42:243-246. <a href="https://doi.org/10.1038/s41587-023-01773-0">doi:10.1038/s41587-023-01773-0</a>. PMID:37156916. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Vaswani A, Shazeer N, Parmar N et al. (2017). Attention Is All You Need. arXiv:1706.03762 (NIPS 30, 2017). <a href="https://doi.org/10.48550/arXiv.1706.03762">doi:10.48550/arXiv.1706.03762</a>. <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>Veeling BS, Linmans J, Winkens J, Cohen T, Welling M (2018). Rotation Equivariant CNNs for Digital Pathology. MICCAI 2018, Lecture Notes in Computer Science 11071:210-218. <a href="https://doi.org/10.1007/978-3-030-00934-2_24">doi:10.1007/978-3-030-00934-2_24</a>. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>Wang S, Sun S, Li Z et al. (2017). Accurate De Novo Prediction of Protein Contact Map by Ultra-Deep Learning Model. PLoS Comput Biol 13:e1005324. <a href="https://doi.org/10.1371/journal.pcbi.1005324">doi:10.1371/journal.pcbi.1005324</a>. PMID:28056090. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Watson JL, Juergens D, Bennett NR, et al. (2023). De novo design of protein structure and function with RFdiffusion. Nature 620:1089-1100. <a href="https://doi.org/10.1038/s41586-023-06415-8">doi:10.1038/s41586-023-06415-8</a>. PMID:37433327. <em>Cited in:</em> <a href="./schedule.html">Schedule</a>, <a href="./session12.html">Session 12</a>.</li>
+<li>Weigt M, White RA, Szurmant H et al. (2009). Identification of direct residue contacts in protein–protein interaction by message passing. Proc Natl Acad Sci USA 106:67-72. <a href="https://doi.org/10.1073/pnas.0805923106">doi:10.1073/pnas.0805923106</a>. PMID:19116270. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Wu NC, Dai L, Olson CA, Lloyd-Smith JO, Sun R (2016). Adaptation in protein fitness landscapes is facilitated by indirect paths. eLife 5:e16965. <a href="https://doi.org/10.7554/eLife.16965">doi:10.7554/eLife.16965</a>. PMID 27391790. <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>Yang J, Anishchenko I, Park H et al. (2020). Improved protein structure prediction using predicted interresidue orientations. Proc Natl Acad Sci USA 117:1496-1503. <a href="https://doi.org/10.1073/pnas.1914677117">doi:10.1073/pnas.1914677117</a>. PMID:31896580. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ (2023). Dive into Deep Learning. Cambridge University Press (open version at <a class="uri" href="https://d2l.ai">https://d2l.ai</a>; arXiv:2106.11342). <em>Cited in:</em> <a href="./index.html">Welcome</a>, <a href="./session07.html">Session 7</a>.</li>
+<li>Zhang Y, Skolnick J (2005). TM-align: a protein structure alignment algorithm based on the TM-score. Nucleic Acids Res 33:2302-2309. <a href="https://doi.org/10.1093/nar/gki524">doi:10.1093/nar/gki524</a>. PMID:15849316. <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Zhou J, Troyanskaya OG (2015). Predicting effects of noncoding variants with deep learning-based sequence model. Nat Methods 12:931-4. <a href="https://doi.org/10.1038/nmeth.3547">doi:10.1038/nmeth.3547</a>. PMID:26301843. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+</ul>
+</section>
+<section class="level2" id="databases-datasets-and-software">
+<h2 class="anchored" data-anchor-id="databases-datasets-and-software">Databases, datasets and software</h2>
+<ul>
+<li>Abanades B, Wong WK, Boyles F et al. (2023). ImmuneBuilder: Deep-Learning models for predicting the structures of immune proteins. Commun Biol 6:575. <a href="https://doi.org/10.1038/s42003-023-04927-7">doi:10.1038/s42003-023-04927-7</a>. PMID:37248282. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Acevedo A, Merino A, Alférez S, Molina Á, Boldú L, Rodellar J (2020). A dataset of microscopic peripheral blood cell images for development of automatic recognition systems. Data Brief 30:105474. <a href="https://doi.org/10.1016/j.dib.2020.105474">doi:10.1016/j.dib.2020.105474</a>. <em>Cited in:</em> <a href="./session08.html">Session 8</a>.</li>
+<li>AlphaFold Server (Google DeepMind / Isomorphic Labs). <a class="uri" href="https://alphafoldserver.com">https://alphafoldserver.com</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Becares et al. (2019) differential-expression table (S196A vs WT LXRα mouse liver, HFHC diet; Fig. 4C), as shared in the VolcaNoseR repository: Becares-diffgenes_HFHC.csv. <a class="uri" href="https://raw.githubusercontent.com/JoachimGoedhart/VolcaNoseR/master/Becares-diffgenes_HFHC.csv">https://raw.githubusercontent.com/JoachimGoedhart/VolcaNoseR/master/Becares-diffgenes_HFHC.csv</a> <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Biopython: freely available Python tools for computational molecular biology. <a class="uri" href="https://biopython.org/">https://biopython.org/</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>ByteDance AML AI4Science Team, Chen X, Zhang Y et al. (2025). Protenix - Advancing Structure Prediction Through a Comprehensive AlphaFold3 Reproduction. bioRxiv, 2025.01.08.631967. <a href="https://doi.org/10.1101/2025.01.08.631967">doi:10.1101/2025.01.08.631967</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>CATH protein structure classification database. <a class="uri" href="https://www.cathdb.info/">https://www.cathdb.info/</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Chai Discovery, Boitreaud J, Dent J et al. (2024). Chai-1: Decoding the molecular interactions of life. bioRxiv, 2024.10.10.615955. <a href="https://doi.org/10.1101/2024.10.10.615955">doi:10.1101/2024.10.10.615955</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Cock PJA, Antao T, Chang JT, et al. (2009). Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics 25(11):1422-1423. <a href="https://doi.org/10.1093/bioinformatics/btp163">doi:10.1093/bioinformatics/btp163</a>. PMID:19304878. <em>Cited in:</em> <a href="./session02.html">Session 2</a>, <a href="./session04.html">Session 4</a>.</li>
+<li>Complex Portal CPX-2158, Hemoglobin HbA complex. <a class="uri" href="https://www.ebi.ac.uk/complexportal/complex/CPX-2158">https://www.ebi.ac.uk/complexportal/complex/CPX-2158</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>contact-ajmal. OpenDDE (open drug-design engine), GitHub repository, MIT licence (2026). <a class="uri" href="https://github.com/contact-ajmal/opendde">https://github.com/contact-ajmal/opendde</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Dallago C, Mou J, Johnston KE, et al. (2021). FLIP: Benchmark tasks in fitness landscape inference for proteins. bioRxiv. <a href="https://doi.org/10.1101/2021.11.09.467890">doi:10.1101/2021.11.09.467890</a> (GB1 four-site data set). <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>DINOv2 ViT-S/14 weights (facebook/dinov2-small), Apache 2.0, via Hugging Face transformers. <a class="uri" href="https://huggingface.co/facebook/dinov2-small">https://huggingface.co/facebook/dinov2-small</a> <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>DTU Health Tech. SignalP 6.0 web server. <a class="uri" href="https://services.healthtech.dtu.dk/services/SignalP-6.0/">https://services.healthtech.dtu.dk/services/SignalP-6.0/</a> <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>ECOD: Evolutionary Classification of protein Domains database. <a class="uri" href="http://prodata.swmed.edu/ecod/">http://prodata.swmed.edu/ecod/</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Eddy SR (2011). Accelerated profile HMM searches. PLoS Computational Biology 7(10):e1002195. <a href="https://doi.org/10.1371/journal.pcbi.1002195">doi:10.1371/journal.pcbi.1002195</a>. PMID:22039361. <em>Cited in:</em> <a href="./setup.html">Setup</a>.</li>
+<li>Edgar RC (2004). MUSCLE: multiple sequence alignment with high accuracy and high throughput. Nucleic Acids Res 32(5):1792-1797. <a href="https://doi.org/10.1093/nar/gkh340">doi:10.1093/nar/gkh340</a>. PMID 15034147. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>EMBL-EBI. AlphaFold DB. <a class="uri" href="https://alphafold.ebi.ac.uk/">https://alphafold.ebi.ac.uk/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>, <a href="./session06.html">Session 6</a>.</li>
+<li>EMBL-EBI. BioModels. <a class="uri" href="https://www.ebi.ac.uk/biomodels/">https://www.ebi.ac.uk/biomodels/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>EMBL-EBI. Complex Portal. <a class="uri" href="https://www.ebi.ac.uk/complexportal/">https://www.ebi.ac.uk/complexportal/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>EMBL-EBI. EVA. <a class="uri" href="https://www.ebi.ac.uk/eva/">https://www.ebi.ac.uk/eva/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>EMBL-EBI. GWAS Catalog. <a class="uri" href="https://www.ebi.ac.uk/gwas/">https://www.ebi.ac.uk/gwas/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>EMBL-EBI. IntAct. <a class="uri" href="https://www.ebi.ac.uk/intact/">https://www.ebi.ac.uk/intact/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>EMBL-EBI. InterPro. <a class="uri" href="https://www.ebi.ac.uk/interpro/">https://www.ebi.ac.uk/interpro/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>, <a href="./session05.html">Session 5</a>.</li>
+<li>EMBL-EBI. PDBe. <a class="uri" href="https://www.ebi.ac.uk/pdbe/">https://www.ebi.ac.uk/pdbe/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>EMBL-EBI. PRIDE. <a class="uri" href="https://www.ebi.ac.uk/pride/">https://www.ebi.ac.uk/pride/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>ESM Metagenomic Atlas / ESM Atlas API (Meta AI; ESMFold predictions). <a class="uri" href="https://esmatlas.com/">https://esmatlas.com/</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Fermi G, Perutz MF, Shaanan B, Fourme R (1984). PDB entry 2HHB: The crystal structure of human deoxyhaemoglobin at 1.74 A resolution. RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/structure/2HHB">https://www.rcsb.org/structure/2HHB</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Foldseek software (Steinegger lab), GitHub repository and web server. <a class="uri" href="https://github.com/steineggerlab/foldseek">https://github.com/steineggerlab/foldseek</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Foldseek web server. <a class="uri" href="https://search.foldseek.com/search">https://search.foldseek.com/search</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>FunCoup. funcoup.org. <a class="uri" href="https://funcoup.org/">https://funcoup.org/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>GenBank (NCBI nucleotide sequence database). <a class="uri" href="https://www.ncbi.nlm.nih.gov/genbank/">https://www.ncbi.nlm.nih.gov/genbank/</a> <em>Cited in:</em> <a href="./session05.html">Session 5</a>.</li>
+<li>Google Colaboratory (Colab). Google. <a class="uri" href="https://colab.research.google.com/">https://colab.research.google.com/</a> <em>Cited in:</em> <a href="./session00.html">Session 0</a>.</li>
+<li>Harris CR, Millman KJ, van der Walt SJ, et al. (2020). Array programming with NumPy. Nature 585:357-362. <a href="https://doi.org/10.1038/s41586-020-2649-2">doi:10.1038/s41586-020-2649-2</a>. PMID:32939066. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Human reviewed UniProtKB/Swiss-Prot entries with a single annotated subcellular location (5 classes, 700 proteins), compiled for this course. UniProt Consortium, CC BY 4.0. <a class="uri" href="https://www.uniprot.org/">https://www.uniprot.org/</a> <em>Cited in:</em> <a href="./session08.html">Session 8</a>, <a href="./session09.html">Session 9</a>, <a href="./session10.html">Session 10</a>, <a href="./session11.html">Session 11</a>.</li>
+<li>Hunter JD (2007). Matplotlib: a 2D graphics environment. Computing in Science &amp; Engineering 9(3):90-95. <a href="https://doi.org/10.1109/MCSE.2007.55">doi:10.1109/MCSE.2007.55</a>. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>JASPAR matrix MA0162.4 (EGR1, Homo sapiens, ChIP-seq, source ReMap), CC BY 4.0. Rauluseviciute I, Riudavets-Puig R, Blanc-Mathieu R, et al. (2024). JASPAR 2024: 20th anniversary of the open-access database of transcription factor binding profiles. Nucleic Acids Res 52(D1):D174-D182. <a href="https://doi.org/10.1093/nar/gkad1059">doi:10.1093/nar/gkad1059</a>. PMID 37962376. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>Kabsch W, Sander C (1983). Dictionary of protein secondary structure: Pattern recognition of hydrogen‐bonded and geometrical features. Biopolymers 22:2577-2637. <a href="https://doi.org/10.1002/bip.360221211">doi:10.1002/bip.360221211</a>. PMID:6667333. <em>Cited in:</em> <a href="./capstone.html">Capstone</a>.</li>
+<li>Kather JN, Halama N, Marx A (2018). 100,000 histological images of human colorectal cancer and healthy tissue (NCT-CRC-HE-100K and CRC-VAL-HE-7K). Zenodo. <a href="https://doi.org/10.5281/zenodo.1214456">doi:10.5281/zenodo.1214456</a>. CC BY 4.0. <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>KB8029 secondary-structure dataset: 1,200 protein domains (FASTA, DSSP labels, PSSM CSV), dataset.zip (~3 MB), Google Drive. <a class="uri" href="https://drive.google.com/drive/folders/1gnxfXXYysCk4L4FYztzeejPVXJaMnxQw?usp=sharing">https://drive.google.com/drive/folders/1gnxfXXYysCk4L4FYztzeejPVXJaMnxQw?usp=sharing</a> <em>Cited in:</em> <a href="./capstone.html">Capstone</a>.</li>
+<li>Krivák R, Hoksza D (2018). P2Rank: machine learning based tool for rapid and accurate prediction of ligand binding sites from protein structure. J Cheminform 10:39. <a href="https://doi.org/10.1186/s13321-018-0285-8">doi:10.1186/s13321-018-0285-8</a>. PMID:30109435. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Käll L. bibook: Bioinformatics book (GitHub repository, statisticalbiotechnology/bibook), CC BY 4.0. <a class="uri" href="https://github.com/statisticalbiotechnology/bibook">https://github.com/statisticalbiotechnology/bibook</a> <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>Love MI, Huber W, Anders S (2014). Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology 15:550. <a href="https://doi.org/10.1186/s13059-014-0550-8">doi:10.1186/s13059-014-0550-8</a>. PMID:25516281. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Manim: Mathematical Animation Engine (Grant Sanderson / 3Blue1Brown; community edition by the Manim Community). <a class="uri" href="https://www.manim.community/">https://www.manim.community/</a> <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>McKinney W (2010). Data structures for statistical computing in Python. Proceedings of the 9th Python in Science Conference (SciPy 2010), 56-61. <a href="https://doi.org/10.25080/Majora-92bf1922-00a">doi:10.25080/Majora-92bf1922-00a</a>. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Meta AI / FAIR. fair-esm: Evolutionary Scale Modeling (ESM) pretrained protein language models (Python package). <a class="uri" href="https://github.com/facebookresearch/esm">https://github.com/facebookresearch/esm</a> <em>Cited in:</em> <a href="./session11.html">Session 11</a>.</li>
+<li>MMseqs2 software, GitHub repository (Söding/Steinegger labs). <a class="uri" href="https://github.com/soedinglab/MMseqs2">https://github.com/soedinglab/MMseqs2</a> <em>Cited in:</em> <a href="./session08.html">Session 8</a>.</li>
+<li>NCBI RefSeq NM_000518.5, Homo sapiens hemoglobin subunit beta (HBB), mRNA. <a class="uri" href="https://www.ncbi.nlm.nih.gov/nuccore/NM_000518.5">https://www.ncbi.nlm.nih.gov/nuccore/NM_000518.5</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>NCBI. ClinVar. <a class="uri" href="https://www.ncbi.nlm.nih.gov/clinvar/">https://www.ncbi.nlm.nih.gov/clinvar/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>NCI. GDC Data Portal. <a class="uri" href="https://portal.gdc.cancer.gov/">https://portal.gdc.cancer.gov/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>Notredame C, Higgins DG, Heringa J (2000). T-Coffee: a novel method for fast and accurate multiple sequence alignment. J Mol Biol 302(1):205-217. <a href="https://doi.org/10.1006/jmbi.2000.4042">doi:10.1006/jmbi.2000.4042</a>. PMID 10964570. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>OpenFold Consortium. OpenFold3 (preview release). <a class="uri" href="https://github.com/aqlaboratory/openfold-3">https://github.com/aqlaboratory/openfold-3</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Ormo M, Cubitt AB, Kallio K, et al. (1996). PDB entry 1EMA: Green fluorescent protein from Aequorea victoria. RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/structure/1EMA">https://www.rcsb.org/structure/1EMA</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Passaro S, Corso G, Wohlwend J et al. (2025). Boltz-2: Towards Accurate and Efficient Binding Affinity Prediction. bioRxiv, 2025.06.14.659707. <a href="https://doi.org/10.1101/2025.06.14.659707">doi:10.1101/2025.06.14.659707</a>. PMID:40667369. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Paszke A, Gross S, Massa F, et al. (2019). PyTorch: an imperative style, high-performance deep learning library. Advances in Neural Information Processing Systems 32 (NeurIPS 2019); arXiv:1912.01703. <a class="uri" href="https://arxiv.org/abs/1912.01703">https://arxiv.org/abs/1912.01703</a> <em>Cited in:</em> <a href="./session02.html">Session 2</a>, <a href="./session07.html">Session 7</a>.</li>
+<li>PDB entry 1OJ6: human neuroglobin. RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/structure/1OJ6">https://www.rcsb.org/structure/1OJ6</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>PDB entry 1SHW (Ephrin-A5 / EphB2 complex). <a class="uri" href="https://www.rcsb.org/structure/1SHW">https://www.rcsb.org/structure/1SHW</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>PDB entry 1VL6: Crystal structure of NAD-dependent malic enzyme (TM0542) from Thermotoga maritima at 2.61 A resolution (JCSG, released 2004; unpublished). <a class="uri" href="https://www.rcsb.org/structure/1VL6">https://www.rcsb.org/structure/1VL6</a> <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>PDB entry 2HHB: Fermi G, Perutz MF, Shaanan B, Fourme R (1984). The crystal structure of human deoxyhaemoglobin at 1.74 A resolution. J Mol Biol 175(2):159-174. <a href="https://doi.org/10.1016/0022-2836(84)90472-8">doi:10.1016/0022-2836(84)90472-8</a>. PMID 6726807. <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>PDB entry 3CHY: Volz K, Matsumura P (1991). Crystal structure of Escherichia coli CheY refined at 1.7-Å resolution. J Biol Chem 266:15511-15519. <a class="uri" href="https://www.rcsb.org/structure/3CHY">https://www.rcsb.org/structure/3CHY</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>PDB entry 4HHB (human deoxyhaemoglobin): Fermi G, Perutz MF, Shaanan B, Fourme R (1984). J Mol Biol 175:159-174. <a href="https://doi.org/10.1016/0022-2836(84)90472-8">doi:10.1016/0022-2836(84)90472-8</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>PDB entry 4JB9: Crystal structure of antibody VRC06 in complex with HIV-1 gp120 core (2013; primary citation: Delineating antibody recognition in polyclonal sera from patterns of HIV-1 isolate neutralization, Science 2013). <a class="uri" href="https://www.rcsb.org/structure/4JB9">https://www.rcsb.org/structure/4JB9</a> <em>Cited in:</em> <a href="./session07.html">Session 7</a>.</li>
+<li>PDB entry 7LXM: HIV-1 envelope glycoprotein trimer in complex with antibody. RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/structure/7LXM">https://www.rcsb.org/structure/7LXM</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>PDB entry 8C6Z. RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/structure/8C6Z">https://www.rcsb.org/structure/8C6Z</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>PDBe REST API (Protein Data Bank in Europe, EMBL-EBI). <a class="uri" href="https://www.ebi.ac.uk/pdbe/api/doc/">https://www.ebi.ac.uk/pdbe/api/doc/</a> <em>Cited in:</em> <a href="./session07.html">Session 7</a>, <a href="./session08.html">Session 8</a>.</li>
+<li>Pedregosa F, Varoquaux G, Gramfort A, et al. (2011). Scikit-learn: machine learning in Python. Journal of Machine Learning Research 12:2825-2830. <a class="uri" href="https://jmlr.org/papers/v12/pedregosa11a.html">https://jmlr.org/papers/v12/pedregosa11a.html</a> <em>Cited in:</em> <a href="./session02.html">Session 2</a>, <a href="./session07.html">Session 7</a>.</li>
+<li>Pfam family PF00042 (Globin), accessed via InterPro. Pfam: Mistry J, Chuguransky S, Williams L, et al. (2021). Pfam: the protein families database in 2021. Nucleic Acids Res 49(D1):D412-D419. <a href="https://doi.org/10.1093/nar/gkaa913">doi:10.1093/nar/gkaa913</a>. PMID 33125078. <em>Cited in:</em> <a href="./session04.html">Session 4</a>, <a href="./session05.html">Session 5</a>.</li>
+<li>Protein Data Bank entry 2HHB (human deoxyhaemoglobin). <a class="uri" href="https://www.rcsb.org/structure/2HHB">https://www.rcsb.org/structure/2HHB</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>PyMOL Molecular Graphics System. Schrödinger, LLC. <a class="uri" href="https://pymol.org/">https://pymol.org/</a> <em>Cited in:</em> <a href="./setup.html">Setup</a>, <a href="./session00.html">Session 0</a>, <a href="./session06.html">Session 6</a>, <a href="./session07.html">Session 7</a>.</li>
+<li>PyTorch deep-learning framework. <a class="uri" href="https://pytorch.org/">https://pytorch.org/</a> <em>Cited in:</em> <a href="./session08.html">Session 8</a>, <a href="./session09.html">Session 9</a>.</li>
+<li>RCSB PDB. Data API (GraphQL). <a class="uri" href="https://data.rcsb.org/graphql/index.html">https://data.rcsb.org/graphql/index.html</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>RCSB PDB. Search API. <a class="uri" href="https://search.rcsb.org/">https://search.rcsb.org/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/">https://www.rcsb.org/</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>RCSB Protein Data Bank. Berman HM, Westbrook J, Feng Z, et al. (2000). The Protein Data Bank. Nucleic Acids Res 28(1):235-242. <a href="https://doi.org/10.1093/nar/28.1.235">doi:10.1093/nar/28.1.235</a>. PMID 10592235. <em>Cited in:</em> <a href="./session05.html">Session 5</a>.</li>
+<li>RDKit: Open-source cheminformatics. <a class="uri" href="https://www.rdkit.org/">https://www.rdkit.org/</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Reactome. Reactome. <a class="uri" href="https://reactome.org/">https://reactome.org/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>Rfam. RF00005 (tRNA). <a class="uri" href="https://rfam.org/family/RF00005">https://rfam.org/family/RF00005</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>Rosetta Commons. Rosetta software suite. <a class="uri" href="https://rosettacommons.org/">https://rosettacommons.org/</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>SCOP database, hosted at EMBL-EBI PDBe. <a class="uri" href="https://www.ebi.ac.uk/pdbe/scop/">https://www.ebi.ac.uk/pdbe/scop/</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Shaanan B (1983). PDB entry 1HHO: Structure of human oxyhaemoglobin at 2.1 A resolution. RCSB Protein Data Bank. <a class="uri" href="https://www.rcsb.org/structure/1HHO">https://www.rcsb.org/structure/1HHO</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>STRING. string-db.org. <a class="uri" href="https://string-db.org/">https://string-db.org/</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>Tareen A, Kinney JB (2020). Logomaker: beautiful sequence logos in Python. Bioinformatics 36(7):2272-2274. <a href="https://doi.org/10.1093/bioinformatics/btz921">doi:10.1093/bioinformatics/btz921</a>. PMID 31821414. <em>Cited in:</em> <a href="./session04.html">Session 4</a>.</li>
+<li>TED: The Encyclopedia of Domains database. <a class="uri" href="https://ted.cathdb.info/">https://ted.cathdb.info/</a> <em>Cited in:</em> <a href="./session06.html">Session 6</a>.</li>
+<li>Thompson JD, Higgins DG, Gibson TJ (1994). CLUSTAL W: improving the sensitivity of progressive multiple sequence alignment through sequence weighting, position-specific gap penalties and weight matrix choice. Nucleic Acids Res 22(22):4673-4680. <a href="https://doi.org/10.1093/nar/22.22.4673">doi:10.1093/nar/22.22.4673</a>. PMID 7984417. <em>Cited in:</em> <a href="./session04.html">Session 4</a>, <a href="./session05.html">Session 5</a>.</li>
+<li>TorchVision maintainers and contributors. torchvision: PyTorch computer-vision library (ImageNet-pretrained ResNet-18 weights). <a class="uri" href="https://pytorch.org/vision/">https://pytorch.org/vision/</a> <em>Cited in:</em> <a href="./session10.html">Session 10</a>.</li>
+<li>UniProt entry P04637 (human p53) and its AlphaFold DB model. <a class="uri" href="https://alphafold.ebi.ac.uk/entry/P04637">https://alphafold.ebi.ac.uk/entry/P04637</a> <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>UniProtKB entry P68871 (HBB_HUMAN). <a class="uri" href="https://www.uniprot.org/uniprotkb/P68871/entry">https://www.uniprot.org/uniprotkb/P68871/entry</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>, <a href="./session05.html">Session 5</a>.</li>
+<li>Varadi M, Bertoni D, Magana P et al. (2024). AlphaFold Protein Structure Database in 2024: providing structure coverage for over 214 million protein sequences. Nucleic Acids Res 52:D368-D375. <a href="https://doi.org/10.1093/nar/gkad1011">doi:10.1093/nar/gkad1011</a>. PMID:37933859. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Virtanen P, Gommers R, Oliphant TE, et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. Nature Methods 17:261-272. <a href="https://doi.org/10.1038/s41592-019-0686-2">doi:10.1038/s41592-019-0686-2</a>. PMID:32015543. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Visual Studio Code, with the Remote - SSH extension. Microsoft. <a class="uri" href="https://code.visualstudio.com/">https://code.visualstudio.com/</a> <em>Cited in:</em> <a href="./setup.html">Setup</a>.</li>
+<li>VolcaNoseR web app (Goedhart &amp; Luijsterburg). <a class="uri" href="https://huygens.science.uva.nl/VolcaNoseR/">https://huygens.science.uva.nl/VolcaNoseR/</a> <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Waskom ML (2021). seaborn: statistical data visualization. Journal of Open Source Software 6(60):3021. <a href="https://doi.org/10.21105/joss.03021">doi:10.21105/joss.03021</a>. <em>Cited in:</em> <a href="./session02.html">Session 2</a>.</li>
+<li>Wellcome Sanger Institute. COSMIC. <a class="uri" href="https://cancer.sanger.ac.uk/cosmic">https://cancer.sanger.ac.uk/cosmic</a> <em>Cited in:</em> <a href="./session03.html">Session 3</a>.</li>
+<li>Wohlwend J, Corso G, Passaro S et al. (2024). Boltz-1 Democratizing Biomolecular Interaction Modeling. bioRxiv, 2024.11.19.624167. <a href="https://doi.org/10.1101/2024.11.19.624167">doi:10.1101/2024.11.19.624167</a>. PMID:39605745. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Wolberg WH, Mangasarian OL, Street N, Street W (1995). Breast Cancer Wisconsin (Diagnostic) [dataset]. UCI Machine Learning Repository (CC BY 4.0). <a href="https://doi.org/10.24432/C5DW2B">doi:10.24432/C5DW2B</a>. <em>Cited in:</em> <a href="./session09.html">Session 9</a>.</li>
+<li>Yang J, Shi R, Wei D, Liu Z, Zhao L, Ke B, Pfister H, Ni B (2023). MedMNIST v2 - A large-scale lightweight benchmark for 2D and 3D biomedical image classification. Sci Data 10:41. <a href="https://doi.org/10.1038/s41597-022-01721-8">doi:10.1038/s41597-022-01721-8</a>. BloodMNIST subset, CC BY 4.0. <em>Cited in:</em> <a href="./session08.html">Session 8</a>, <a href="./session09.html">Session 9</a>, <a href="./session10.html">Session 10</a>.</li>
+<li>Zdrazil B, Felix E, Hunter F et al. (2024). The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods. Nucleic Acids Res 52:D1180-D1192. <a href="https://doi.org/10.1093/nar/gkad1004">doi:10.1093/nar/gkad1004</a>. PMID:37933841. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+<li>Škrinjar P, Eberhardt J, Tauriello G et al. (2025). Have protein-ligand cofolding methods moved beyond memorisation?. bioRxiv, 2025.02.03.636309. <a href="https://doi.org/10.1101/2025.02.03.636309">doi:10.1101/2025.02.03.636309</a>. <em>Cited in:</em> <a href="./session12.html">Session 12</a>.</li>
+</ul>
+</section>
+<section class="level2" id="further-reading-and-watching-by-session">
+<h2 class="anchored" data-anchor-id="further-reading-and-watching-by-session">Further reading and watching, by session</h2>
+<p>Wikipedia articles, textbook chapters, tutorials and videos suggested on each page.</p>
+<section class="level3" id="welcome">
+<h3 class="anchored" data-anchor-id="welcome">Welcome</h3>
+<ul>
+<li>EMBL-EBI Training. EMBL-EBI Training. <a class="uri" href="https://www.ebi.ac.uk/training/">https://www.ebi.ac.uk/training/</a></li>
+<li>Käll L. bibook. <a class="uri" href="https://github.com/statisticalbiotechnology/bibook">https://github.com/statisticalbiotechnology/bibook</a></li>
+<li>NCBI. NCBI Bookshelf. <a class="uri" href="https://www.ncbi.nlm.nih.gov/books/">https://www.ncbi.nlm.nih.gov/books/</a></li>
+<li>RCSB PDB. RCSB PDB-101. <a class="uri" href="https://pdb101.rcsb.org/">https://pdb101.rcsb.org/</a></li>
+<li>Swaroop CH. A Byte of Python. <a class="uri" href="https://python.swaroopch.com/">https://python.swaroopch.com/</a></li>
+<li>Wikipedia. Wikipedia. <a class="uri" href="https://en.wikipedia.org">https://en.wikipedia.org</a></li>
+</ul>
+</section>
+<section class="level3" id="setup">
+<h3 class="anchored" data-anchor-id="setup">Setup</h3>
+<ul>
+<li>Google Developers Blog (2025). Google Colab is coming to VS Code. <a class="uri" href="https://developers.googleblog.com/google-colab-is-coming-to-vs-code/">https://developers.googleblog.com/google-colab-is-coming-to-vs-code/</a></li>
+<li>Microsoft, VS Code documentation. Remote development tips and tricks. <a class="uri" href="https://code.visualstudio.com/docs/remote/troubleshooting">https://code.visualstudio.com/docs/remote/troubleshooting</a></li>
+<li>Microsoft, VS Code documentation. Remote development using SSH. <a class="uri" href="https://code.visualstudio.com/docs/remote/ssh">https://code.visualstudio.com/docs/remote/ssh</a></li>
+<li>Microsoft. Get started with OpenSSH for Windows. <a class="uri" href="https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse">https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse</a></li>
+</ul>
+</section>
+<section class="level3" id="session-1">
+<h3 class="anchored" data-anchor-id="session-1">Session 1</h3>
+<ul>
+<li>Wikipedia. Bayes’ theorem. <a class="uri" href="https://en.wikipedia.org/wiki/Bayes%27_theorem">https://en.wikipedia.org/wiki/Bayes%27_theorem</a></li>
+<li>Wikipedia. Chain rule. <a class="uri" href="https://en.wikipedia.org/wiki/Chain_rule">https://en.wikipedia.org/wiki/Chain_rule</a></li>
+<li>Wikipedia. Conditional probability. <a class="uri" href="https://en.wikipedia.org/wiki/Conditional_probability">https://en.wikipedia.org/wiki/Conditional_probability</a></li>
+<li>Wikipedia. Cross product. <a class="uri" href="https://en.wikipedia.org/wiki/Cross_product">https://en.wikipedia.org/wiki/Cross_product</a></li>
+<li>Wikipedia. Dot product. <a class="uri" href="https://en.wikipedia.org/wiki/Dot_product">https://en.wikipedia.org/wiki/Dot_product</a></li>
+<li>Wikipedia. Eigenvalues and eigenvectors. <a class="uri" href="https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors">https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors</a></li>
+<li>Wikipedia. Exponential function. <a class="uri" href="https://en.wikipedia.org/wiki/Exponential_function">https://en.wikipedia.org/wiki/Exponential_function</a></li>
+<li>Wikipedia. False discovery rate. <a class="uri" href="https://en.wikipedia.org/wiki/False_discovery_rate">https://en.wikipedia.org/wiki/False_discovery_rate</a></li>
+<li>Wikipedia. Gradient. <a class="uri" href="https://en.wikipedia.org/wiki/Gradient">https://en.wikipedia.org/wiki/Gradient</a></li>
+<li>Wikipedia. Integral. <a class="uri" href="https://en.wikipedia.org/wiki/Integral">https://en.wikipedia.org/wiki/Integral</a></li>
+<li>Wikipedia. Likelihood function. <a class="uri" href="https://en.wikipedia.org/wiki/Likelihood_function">https://en.wikipedia.org/wiki/Likelihood_function</a></li>
+<li>Wikipedia. Log probability. <a class="uri" href="https://en.wikipedia.org/wiki/Log_probability">https://en.wikipedia.org/wiki/Log_probability</a></li>
+<li>Wikipedia. Logarithm. <a class="uri" href="https://en.wikipedia.org/wiki/Logarithm">https://en.wikipedia.org/wiki/Logarithm</a></li>
+<li>Wikipedia. Matrix multiplication. <a class="uri" href="https://en.wikipedia.org/wiki/Matrix_multiplication">https://en.wikipedia.org/wiki/Matrix_multiplication</a></li>
+<li>Wikipedia. Matrix norm. <a class="uri" href="https://en.wikipedia.org/wiki/Matrix_norm">https://en.wikipedia.org/wiki/Matrix_norm</a></li>
+<li>Wikipedia. Multiple comparisons problem. <a class="uri" href="https://en.wikipedia.org/wiki/Multiple_comparisons_problem">https://en.wikipedia.org/wiki/Multiple_comparisons_problem</a></li>
+<li>Wikipedia. Norm (mathematics). <a class="uri" href="https://en.wikipedia.org/wiki/Norm_(mathematics">https://en.wikipedia.org/wiki/Norm_(mathematics</a>) <a class="uri" href="https://en.wikipedia.org/wiki/Norm_(mathematics)">https://en.wikipedia.org/wiki/Norm_(mathematics)</a></li>
+<li>Wikipedia. Normal distribution. <a class="uri" href="https://en.wikipedia.org/wiki/Normal_distribution">https://en.wikipedia.org/wiki/Normal_distribution</a></li>
+<li>Wikipedia. P-value. <a class="uri" href="https://en.wikipedia.org/wiki/P-value">https://en.wikipedia.org/wiki/P-value</a></li>
+<li>Wikipedia. Pearson correlation coefficient. <a class="uri" href="https://en.wikipedia.org/wiki/Pearson_correlation_coefficient">https://en.wikipedia.org/wiki/Pearson_correlation_coefficient</a></li>
+<li>Wikipedia. Principal component analysis. <a class="uri" href="https://en.wikipedia.org/wiki/Principal_component_analysis">https://en.wikipedia.org/wiki/Principal_component_analysis</a></li>
+<li>Wikipedia. Sigmoid function. <a class="uri" href="https://en.wikipedia.org/wiki/Sigmoid_function">https://en.wikipedia.org/wiki/Sigmoid_function</a></li>
+<li>Wikipedia. Spearman’s rank correlation coefficient. <a class="uri" href="https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient">https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient</a></li>
+<li>Wikipedia. Standard deviation. <a class="uri" href="https://en.wikipedia.org/wiki/Standard_deviation">https://en.wikipedia.org/wiki/Standard_deviation</a></li>
+<li>Wikipedia. Student’s t-test. <a class="uri" href="https://en.wikipedia.org/wiki/Student%27s_t-test">https://en.wikipedia.org/wiki/Student%27s_t-test</a></li>
+<li>Wikipedia. Tensor. <a class="uri" href="https://en.wikipedia.org/wiki/Tensor">https://en.wikipedia.org/wiki/Tensor</a></li>
+<li>Wikipedia. Transpose. <a class="uri" href="https://en.wikipedia.org/wiki/Transpose">https://en.wikipedia.org/wiki/Transpose</a></li>
+<li>Wikipedia. Unit vector. <a class="uri" href="https://en.wikipedia.org/wiki/Unit_vector">https://en.wikipedia.org/wiki/Unit_vector</a></li>
+<li>Wikipedia. Variance. <a class="uri" href="https://en.wikipedia.org/wiki/Variance">https://en.wikipedia.org/wiki/Variance</a></li>
+<li>Wikipedia. Volcano plot (statistics). <a class="uri" href="https://en.wikipedia.org/wiki/Volcano_plot_(statistics">https://en.wikipedia.org/wiki/Volcano_plot_(statistics</a>) <a class="uri" href="https://en.wikipedia.org/wiki/Volcano_plot_(statistics)">https://en.wikipedia.org/wiki/Volcano_plot_(statistics)</a></li>
+<li>Wikipedia. Welch’s t-test. <a class="uri" href="https://en.wikipedia.org/wiki/Welch%27s_t-test">https://en.wikipedia.org/wiki/Welch%27s_t-test</a></li>
+<li>Zhang, Lipton, Li &amp; Smola, Dive into Deep Learning (d2l.ai). Calculus. <a class="uri" href="https://d2l.ai/chapter_preliminaries/calculus.html">https://d2l.ai/chapter_preliminaries/calculus.html</a></li>
+<li>Zhang, Lipton, Li &amp; Smola, Dive into Deep Learning (d2l.ai). Linear Algebra. <a class="uri" href="https://d2l.ai/chapter_preliminaries/linear-algebra.html">https://d2l.ai/chapter_preliminaries/linear-algebra.html</a></li>
+<li>Zhang, Lipton, Li &amp; Smola, Dive into Deep Learning (d2l.ai). Preliminaries. <a class="uri" href="https://d2l.ai/chapter_preliminaries/index.html">https://d2l.ai/chapter_preliminaries/index.html</a></li>
+<li>Zhang, Lipton, Li &amp; Smola, Dive into Deep Learning (d2l.ai). Probability and Statistics. <a class="uri" href="https://d2l.ai/chapter_preliminaries/probability.html">https://d2l.ai/chapter_preliminaries/probability.html</a></li>
+<li>Video: 3Blue1Brown, Essence of Calculus, ch. 2. The paradox of the derivative [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=9vKqVkMQHKk">https://www.youtube.com/watch?v=9vKqVkMQHKk</a></li>
+<li>Video: 3Blue1Brown, Essence of Calculus, ch. 3. Derivative formulas through geometry [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=S0_qX4VJhMQ">https://www.youtube.com/watch?v=S0_qX4VJhMQ</a></li>
+<li>Video: 3Blue1Brown, Essence of Calculus, ch. 4. Visualizing the chain rule and product rule [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=YG15m2VwSjA">https://www.youtube.com/watch?v=YG15m2VwSjA</a></li>
+<li>Video: 3Blue1Brown, Essence of Calculus, ch. 8. Integration and the fundamental theorem of calculus [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=rfG8ce4nNh0">https://www.youtube.com/watch?v=rfG8ce4nNh0</a></li>
+<li>Video: 3Blue1Brown, Essence of Calculus, ch. 9. What does area have to do with slope? [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=FnJqaIESC2s">https://www.youtube.com/watch?v=FnJqaIESC2s</a></li>
+<li>Video: 3Blue1Brown, Essence of Linear Algebra, ch. 10. Cross products [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=eu6i7WJeinw">https://www.youtube.com/watch?v=eu6i7WJeinw</a></li>
+<li>Video: 3Blue1Brown, Essence of Linear Algebra, ch. 14. Eigenvectors and eigenvalues [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=PFDu9oVAE-g">https://www.youtube.com/watch?v=PFDu9oVAE-g</a></li>
+<li>Video: 3Blue1Brown, Essence of Linear Algebra, ch. 9. Dot products and duality [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=LyGKycYT2v0">https://www.youtube.com/watch?v=LyGKycYT2v0</a></li>
+<li>Video: 3Blue1Brown. Bayes theorem, the geometry of changing beliefs [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=HZGCoVF3YvM">https://www.youtube.com/watch?v=HZGCoVF3YvM</a></li>
+<li>Video: 3Blue1Brown. Binomial distributions [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=8idr1WZ1A7Q">https://www.youtube.com/watch?v=8idr1WZ1A7Q</a></li>
+<li>Video: 3Blue1Brown. But what is the Central Limit Theorem? [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=zeJD6dqJ5lo">https://www.youtube.com/watch?v=zeJD6dqJ5lo</a></li>
+<li>Video: 3Blue1Brown. Why “probability of 0” does not mean “impossible” [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=ZA4JkHKZM50">https://www.youtube.com/watch?v=ZA4JkHKZM50</a></li>
+<li>Video: Despicable Me (2010). Film, dir. P. Coffin &amp; C. Renaud. Illumination Entertainment / Universal Pictures. <a class="uri" href="https://en.wikipedia.org/wiki/Despicable_Me">https://en.wikipedia.org/wiki/Despicable_Me</a></li>
+<li>Video: StatQuest with Josh Starmer. False Discovery Rates, FDR, clearly explained [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=L3nlGfSyHV0">https://www.youtube.com/watch?v=L3nlGfSyHV0</a></li>
+<li>Video: Steven Bradburn. What Is A P-Value? - Clearly Explained [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=ukcFrzt6cHk">https://www.youtube.com/watch?v=ukcFrzt6cHk</a></li>
+</ul>
+</section>
+<section class="level3" id="session-2">
+<h3 class="anchored" data-anchor-id="session-2">Session 2</h3>
+<ul>
+<li>Video: 3Blue1Brown. How I animate 3Blue1Brown | A Manim demo with Ben Sparks [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=rbu7Zu5X1zI">https://www.youtube.com/watch?v=rbu7Zu5X1zI</a></li>
+<li>Video: Sycamore. Animate Like 3Blue1Brown - No Coding Required (Manim Animation Using A.I.) [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=InHuoGkOb2s">https://www.youtube.com/watch?v=InHuoGkOb2s</a></li>
+</ul>
+</section>
+<section class="level3" id="session-3">
+<h3 class="anchored" data-anchor-id="session-3">Session 3</h3>
+<ul>
+<li>EMBL-EBI Training. The UniProt databases. <a class="uri" href="https://www.ebi.ac.uk/training/online/courses/uniprot-quick-tour/the-uniprot-databases/">https://www.ebi.ac.uk/training/online/courses/uniprot-quick-tour/the-uniprot-databases/</a></li>
+<li>EMBL-EBI Training. What is ENA?. <a class="uri" href="https://www.ebi.ac.uk/training/online/courses/ena-quick-tour/what-is-ena/">https://www.ebi.ac.uk/training/online/courses/ena-quick-tour/what-is-ena/</a></li>
+<li>NCBI. About RefSeq. <a class="uri" href="https://www.ncbi.nlm.nih.gov/refseq/about/">https://www.ncbi.nlm.nih.gov/refseq/about/</a></li>
+<li>NCBI. GenBank overview. <a class="uri" href="https://www.ncbi.nlm.nih.gov/genbank/">https://www.ncbi.nlm.nih.gov/genbank/</a></li>
+<li>NCBI. RefSeq FAQ. <a class="uri" href="https://www.ncbi.nlm.nih.gov/books/NBK50679/">https://www.ncbi.nlm.nih.gov/books/NBK50679/</a></li>
+<li>UniProt help: Protein existence (the five evidence levels used in every UniProtKB entry). CC BY 4.0. <a class="uri" href="https://www.uniprot.org/help/protein_existence">https://www.uniprot.org/help/protein_existence</a></li>
+<li>Wikipedia. Accession number (bioinformatics). <a class="uri" href="https://en.wikipedia.org/wiki/Accession_number_(bioinformatics">https://en.wikipedia.org/wiki/Accession_number_(bioinformatics</a>) <a class="uri" href="https://en.wikipedia.org/wiki/Accession_number_(bioinformatics)">https://en.wikipedia.org/wiki/Accession_number_(bioinformatics)</a></li>
+<li>Wikipedia. Biological database. <a class="uri" href="https://en.wikipedia.org/wiki/Biological_database">https://en.wikipedia.org/wiki/Biological_database</a></li>
+<li>Wikipedia. BioRxiv. <a class="uri" href="https://en.wikipedia.org/wiki/BioRxiv">https://en.wikipedia.org/wiki/BioRxiv</a></li>
+<li>Wikipedia. Boolean search. <a class="uri" href="https://en.wikipedia.org/wiki/Boolean_search">https://en.wikipedia.org/wiki/Boolean_search</a></li>
+<li>Wikipedia. Ensembl genome database project. <a class="uri" href="https://en.wikipedia.org/wiki/Ensembl_genome_database_project">https://en.wikipedia.org/wiki/Ensembl_genome_database_project</a></li>
+<li>Wikipedia. GenBank. <a class="uri" href="https://en.wikipedia.org/wiki/GenBank">https://en.wikipedia.org/wiki/GenBank</a></li>
+<li>Wikipedia. Genome browser. <a class="uri" href="https://en.wikipedia.org/wiki/Genome_browser">https://en.wikipedia.org/wiki/Genome_browser</a></li>
+<li>Wikipedia. International Nucleotide Sequence Database Collaboration. <a class="uri" href="https://en.wikipedia.org/wiki/International_Nucleotide_Sequence_Database_Collaboration">https://en.wikipedia.org/wiki/International_Nucleotide_Sequence_Database_Collaboration</a></li>
+<li>Wikipedia. MEDLINE. <a class="uri" href="https://en.wikipedia.org/wiki/MEDLINE">https://en.wikipedia.org/wiki/MEDLINE</a></li>
+<li>Wikipedia. PubMed Central. <a class="uri" href="https://en.wikipedia.org/wiki/PubMed_Central">https://en.wikipedia.org/wiki/PubMed_Central</a></li>
+<li>Wikipedia. PubMed. <a class="uri" href="https://en.wikipedia.org/wiki/PubMed">https://en.wikipedia.org/wiki/PubMed</a></li>
+<li>Wikipedia. RefSeq. <a class="uri" href="https://en.wikipedia.org/wiki/RefSeq">https://en.wikipedia.org/wiki/RefSeq</a></li>
+<li>Wikipedia. Sequence database. <a class="uri" href="https://en.wikipedia.org/wiki/Sequence_database">https://en.wikipedia.org/wiki/Sequence_database</a></li>
+<li>Wikipedia. UCSC Genome Browser. <a class="uri" href="https://en.wikipedia.org/wiki/UCSC_Genome_Browser">https://en.wikipedia.org/wiki/UCSC_Genome_Browser</a></li>
+<li>Wikipedia. UniProt. <a class="uri" href="https://en.wikipedia.org/wiki/UniProt">https://en.wikipedia.org/wiki/UniProt</a></li>
+<li>Video: Johns Hopkins Welch Medical Library. PubMed Overview [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=1otz5qrUbxo">https://www.youtube.com/watch?v=1otz5qrUbxo</a></li>
+<li>Video: UniProt. Welcome to UniProt [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=OwOJmKmc7VM">https://www.youtube.com/watch?v=OwOJmKmc7VM</a></li>
+</ul>
+</section>
+<section class="level3" id="session-4">
+<h3 class="anchored" data-anchor-id="session-4">Session 4</h3>
+<ul>
+<li>Wikipedia contributors. “BLOSUM”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/BLOSUM">https://en.wikipedia.org/wiki/BLOSUM</a></li>
+<li>Wikipedia contributors. “Dot plot (bioinformatics)”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Dot_plot_(bioinformatics)">https://en.wikipedia.org/wiki/Dot_plot_(bioinformatics)</a></li>
+<li>Wikipedia contributors. “Gap penalty”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Gap_penalty">https://en.wikipedia.org/wiki/Gap_penalty</a></li>
+<li>Wikipedia contributors. “Multiple sequence alignment”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">https://en.wikipedia.org/wiki/Multiple_sequence_alignment</a></li>
+<li>Wikipedia contributors. “Needleman–Wunsch algorithm”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm">https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm</a></li>
+<li>Wikipedia contributors. “Point accepted mutation”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Point_accepted_mutation">https://en.wikipedia.org/wiki/Point_accepted_mutation</a></li>
+<li>Wikipedia contributors. “Sequence homology”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Sequence_homology">https://en.wikipedia.org/wiki/Sequence_homology</a></li>
+<li>Wikipedia contributors. “Sequence logo”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Sequence_logo">https://en.wikipedia.org/wiki/Sequence_logo</a></li>
+<li>Wikipedia contributors. “Smith–Waterman algorithm”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm">https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm</a></li>
+<li>Wikipedia, Extreme value theory. CC BY-SA 4.0. <a class="uri" href="https://en.wikipedia.org/wiki/Extreme_value_theory">https://en.wikipedia.org/wiki/Extreme_value_theory</a></li>
+<li>Wikipedia, Phylogenetic tree; Neighbor joining; UPGMA. CC BY-SA 4.0. <a class="uri" href="https://en.wikipedia.org/wiki/Phylogenetic_tree">https://en.wikipedia.org/wiki/Phylogenetic_tree</a></li>
+</ul>
+</section>
+<section class="level3" id="session-5">
+<h3 class="anchored" data-anchor-id="session-5">Session 5</h3>
+<ul>
+<li>NCBI. BLAST Help (BLAST documentation, NCBI Bookshelf NBK1762). National Center for Biotechnology Information, Bethesda MD. <a class="uri" href="https://www.ncbi.nlm.nih.gov/books/NBK1762/">https://www.ncbi.nlm.nih.gov/books/NBK1762/</a></li>
+<li>Wikipedia contributors. “BLAST (biotechnology)”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/BLAST_(biotechnology)">https://en.wikipedia.org/wiki/BLAST_(biotechnology)</a></li>
+<li>Wikipedia contributors. “E-value”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/E-value">https://en.wikipedia.org/wiki/E-value</a></li>
+<li>Wikipedia contributors. “Hidden Markov model”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Hidden_Markov_model">https://en.wikipedia.org/wiki/Hidden_Markov_model</a></li>
+<li>Wikipedia contributors. “InterPro”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/InterPro">https://en.wikipedia.org/wiki/InterPro</a></li>
+<li>Wikipedia contributors. “Pfam”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Pfam">https://en.wikipedia.org/wiki/Pfam</a></li>
+<li>Wikipedia contributors. “Position weight matrix”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Position_weight_matrix">https://en.wikipedia.org/wiki/Position_weight_matrix</a></li>
+<li>Wikipedia contributors. “Pseudocount”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Pseudocount">https://en.wikipedia.org/wiki/Pseudocount</a></li>
+<li>Wikipedia contributors. “PSI-BLAST”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/PSI-BLAST">https://en.wikipedia.org/wiki/PSI-BLAST</a></li>
+<li>Video: Edwards R. BLAST 2: seed and extend [video]. San Diego State University, YouTube. <a class="uri" href="https://www.youtube.com/watch?v=kAAme1fBanc">https://www.youtube.com/watch?v=kAAme1fBanc</a></li>
+<li>Video: Serrano L. A friendly introduction to Bayes Theorem and Hidden Markov Models [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=kqSzLo9fenk">https://www.youtube.com/watch?v=kqSzLo9fenk</a></li>
+</ul>
+</section>
+<section class="level3" id="session-6">
+<h3 class="anchored" data-anchor-id="session-6">Session 6</h3>
+<ul>
+<li>RCSB Protein Data Bank. PDB-101: educational portal (CC BY 4.0). <a class="uri" href="https://pdb101.rcsb.org/">https://pdb101.rcsb.org/</a></li>
+<li>Wikipedia contributors. Alpha helix. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Alpha_helix">https://en.wikipedia.org/wiki/Alpha_helix</a></li>
+<li>Wikipedia contributors. Anfinsen’s dogma. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Anfinsen%27s_dogma">https://en.wikipedia.org/wiki/Anfinsen%27s_dogma</a></li>
+<li>Wikipedia contributors. Beta sheet. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Beta_sheet">https://en.wikipedia.org/wiki/Beta_sheet</a></li>
+<li>Wikipedia contributors. Homology modeling. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Homology_modeling">https://en.wikipedia.org/wiki/Homology_modeling</a></li>
+<li>Wikipedia contributors. Protein structure. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Protein_structure">https://en.wikipedia.org/wiki/Protein_structure</a></li>
+<li>Wikipedia contributors. Root-mean-square deviation of atomic positions. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Root-mean-square_deviation_of_atomic_positions">https://en.wikipedia.org/wiki/Root-mean-square_deviation_of_atomic_positions</a></li>
+<li>Wikipedia contributors. Template modeling score. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Template_modeling_score">https://en.wikipedia.org/wiki/Template_modeling_score</a></li>
+<li>Wikipedia contributors. Threading (protein sequence). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Threading_(protein_sequence)">https://en.wikipedia.org/wiki/Threading_(protein_sequence)</a></li>
+</ul>
+</section>
+<section class="level3" id="session-7">
+<h3 class="anchored" data-anchor-id="session-7">Session 7</h3>
+<ul>
+<li>Rosenblatt F (1958). The design of an intelligent automaton. Research Reviews, Office of Naval Research, October 1958, pp. 5-13. Figure via Wikimedia Commons (public domain). <a class="uri" href="https://commons.wikimedia.org/wiki/File:Organization_of_a_biological_brain_and_a_perceptron.png">https://commons.wikimedia.org/wiki/File:Organization_of_a_biological_brain_and_a_perceptron.png</a></li>
+<li>Wikipedia contributors. “AI winter”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/AI_winter">https://en.wikipedia.org/wiki/AI_winter</a></li>
+<li>Wikipedia contributors. “Alpha helix”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Alpha_helix">https://en.wikipedia.org/wiki/Alpha_helix</a></li>
+<li>Wikipedia contributors. “Backpropagation”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Backpropagation">https://en.wikipedia.org/wiki/Backpropagation</a></li>
+<li>Wikipedia contributors. “Beta sheet”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Beta_sheet">https://en.wikipedia.org/wiki/Beta_sheet</a></li>
+<li>Wikipedia contributors. “Gradient descent”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Gradient_descent">https://en.wikipedia.org/wiki/Gradient_descent</a></li>
+<li>Wikipedia contributors. “Linear separability”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Linear_separability">https://en.wikipedia.org/wiki/Linear_separability</a></li>
+<li>Wikipedia contributors. “Perceptron”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Perceptron">https://en.wikipedia.org/wiki/Perceptron</a></li>
+<li>Wikipedia contributors. “Perceptrons (book)”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Perceptrons_(book)">https://en.wikipedia.org/wiki/Perceptrons_(book)</a></li>
+<li>Wikipedia contributors. “Protein secondary structure”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Protein_secondary_structure">https://en.wikipedia.org/wiki/Protein_secondary_structure</a></li>
+<li>Wikipedia contributors. “Protein structure prediction”. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Protein_structure_prediction">https://en.wikipedia.org/wiki/Protein_structure_prediction</a></li>
+<li>Video: 3Blue1Brown (Sanderson G) (2017). But what is a neural network? Deep Learning, chapter 1 [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=aircAruvnKk">https://www.youtube.com/watch?v=aircAruvnKk</a></li>
+<li>Video: 3Blue1Brown (Sanderson G) (2017). Gradient descent, how neural networks learn. Deep Learning, chapter 2 [video]. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=IHZwWFHWa-w">https://www.youtube.com/watch?v=IHZwWFHWa-w</a></li>
+</ul>
+</section>
+<section class="level3" id="session-8">
+<h3 class="anchored" data-anchor-id="session-8">Session 8</h3>
+<ul>
+<li>UniProt Consortium. UniProt help: Subcellular location (CC BY 4.0). <a class="uri" href="https://www.uniprot.org/help/subcellular_location">https://www.uniprot.org/help/subcellular_location</a></li>
+<li>Wikipedia contributors. Activation function. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Activation_function">https://en.wikipedia.org/wiki/Activation_function</a></li>
+<li>Wikipedia contributors. Batch effect. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Batch_effect">https://en.wikipedia.org/wiki/Batch_effect</a></li>
+<li>Wikipedia contributors. CASP. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/CASP">https://en.wikipedia.org/wiki/CASP</a></li>
+<li>Wikipedia contributors. Chou-Fasman method. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Chou%E2%80%93Fasman_method">https://en.wikipedia.org/wiki/Chou%E2%80%93Fasman_method</a></li>
+<li>Wikipedia contributors. Coefficient of determination. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Coefficient_of_determination">https://en.wikipedia.org/wiki/Coefficient_of_determination</a></li>
+<li>Wikipedia contributors. Confusion matrix. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Confusion_matrix">https://en.wikipedia.org/wiki/Confusion_matrix</a></li>
+<li>Wikipedia contributors. Cross-validation (statistics). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Cross-validation_(statistics)">https://en.wikipedia.org/wiki/Cross-validation_(statistics)</a></li>
+<li>Wikipedia contributors. Hydrophilicity plot. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Hydrophilicity_plot">https://en.wikipedia.org/wiki/Hydrophilicity_plot</a></li>
+<li>Wikipedia contributors. Leakage (machine learning). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Leakage_(machine_learning)">https://en.wikipedia.org/wiki/Leakage_(machine_learning)</a></li>
+<li>Wikipedia contributors. Logistic regression. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Logistic_regression">https://en.wikipedia.org/wiki/Logistic_regression</a></li>
+<li>Wikipedia contributors. Matthews correlation coefficient (Phi coefficient). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Phi_coefficient">https://en.wikipedia.org/wiki/Phi_coefficient</a></li>
+<li>Wikipedia contributors. Neural network (machine learning). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Neural_network_(machine_learning)">https://en.wikipedia.org/wiki/Neural_network_(machine_learning)</a></li>
+<li>Wikipedia contributors. Neuron. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Neuron">https://en.wikipedia.org/wiki/Neuron</a></li>
+<li>Wikipedia contributors. Precision and recall. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Precision_and_recall">https://en.wikipedia.org/wiki/Precision_and_recall</a></li>
+<li>Wikipedia contributors. Receiver operating characteristic. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">https://en.wikipedia.org/wiki/Receiver_operating_characteristic</a></li>
+<li>Wikipedia contributors. Regression analysis. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Regression_analysis">https://en.wikipedia.org/wiki/Regression_analysis</a></li>
+<li>Wikipedia contributors. Softmax function. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Softmax_function">https://en.wikipedia.org/wiki/Softmax_function</a></li>
+<li>Wikipedia contributors. Statistical classification. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Statistical_classification">https://en.wikipedia.org/wiki/Statistical_classification</a></li>
+<li>Wikipedia contributors. Supervised learning. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Supervised_learning">https://en.wikipedia.org/wiki/Supervised_learning</a></li>
+<li>Wikipedia contributors. Training, validation, and test data sets. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Training,_validation,_and_test_data_sets">https://en.wikipedia.org/wiki/Training,_validation,_and_test_data_sets</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, “Builders’ Guide”. d2l.ai (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_builders-guide/index.html">https://d2l.ai/chapter_builders-guide/index.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, “Generalization in Classification”. d2l.ai (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_linear-classification/generalization-classification.html">https://d2l.ai/chapter_linear-classification/generalization-classification.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, “Linear Regression”. d2l.ai (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_linear-regression/linear-regression.html">https://d2l.ai/chapter_linear-regression/linear-regression.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, “Softmax Regression”. d2l.ai (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_linear-classification/softmax-regression.html">https://d2l.ai/chapter_linear-classification/softmax-regression.html</a></li>
+</ul>
+</section>
+<section class="level3" id="session-9">
+<h3 class="anchored" data-anchor-id="session-9">Session 9</h3>
+<ul>
+<li>Wikipedia contributors. Backpropagation. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Backpropagation">https://en.wikipedia.org/wiki/Backpropagation</a></li>
+<li>Wikipedia contributors. Dropout (neural networks). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Dropout_(neural_networks)">https://en.wikipedia.org/wiki/Dropout_(neural_networks)</a></li>
+<li>Wikipedia contributors. Early stopping. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Early_stopping">https://en.wikipedia.org/wiki/Early_stopping</a></li>
+<li>Wikipedia contributors. Overfitting. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Overfitting">https://en.wikipedia.org/wiki/Overfitting</a></li>
+<li>Wikipedia contributors. Regularization (mathematics). Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Regularization_(mathematics)">https://en.wikipedia.org/wiki/Regularization_(mathematics)</a></li>
+<li>Wikipedia contributors. Stochastic gradient descent. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent">https://en.wikipedia.org/wiki/Stochastic_gradient_descent</a></li>
+<li>Wikipedia contributors. Vanishing gradient problem. Wikipedia, The Free Encyclopedia (CC BY-SA 4.0). <a class="uri" href="https://en.wikipedia.org/wiki/Vanishing_gradient_problem">https://en.wikipedia.org/wiki/Vanishing_gradient_problem</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, “Linear Regression”. d2l.ai (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_linear-regression/linear-regression.html">https://d2l.ai/chapter_linear-regression/linear-regression.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, “Multilayer Perceptrons”. d2l.ai (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_multilayer-perceptrons/index.html">https://d2l.ai/chapter_multilayer-perceptrons/index.html</a></li>
+<li>Video: 3Blue1Brown (Sanderson G). Backpropagation calculus. Deep Learning, chapter 4. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=tIeHLnjs5U8">https://www.youtube.com/watch?v=tIeHLnjs5U8</a></li>
+<li>Video: 3Blue1Brown (Sanderson G). Backpropagation, intuitively. Deep Learning, chapter 3. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=Ilg3gGewQ5U">https://www.youtube.com/watch?v=Ilg3gGewQ5U</a></li>
+<li>Video: 3Blue1Brown (Sanderson G). But what is a neural network? Deep Learning, chapter 1. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=aircAruvnKk">https://www.youtube.com/watch?v=aircAruvnKk</a></li>
+<li>Video: 3Blue1Brown (Sanderson G). But what is cross-entropy? Compression is Intelligence, part 2. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=GlYgs6v2YfU">https://www.youtube.com/watch?v=GlYgs6v2YfU</a></li>
+</ul>
+</section>
+<section class="level3" id="session-10">
+<h3 class="anchored" data-anchor-id="session-10">Session 10</h3>
+<ul>
+<li>Wikipedia contributors. “U-Net”. Wikipedia, The Free Encyclopedia. <a class="uri" href="https://en.wikipedia.org/wiki/U-Net">https://en.wikipedia.org/wiki/U-Net</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, ch. “Convolutional Neural Networks” (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_convolutional-neural-networks/index.html">https://d2l.ai/chapter_convolutional-neural-networks/index.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, ch. “Modern Convolutional Neural Networks” (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_convolutional-modern/index.html">https://d2l.ai/chapter_convolutional-modern/index.html</a></li>
+<li>Video: 3Blue1Brown (Grant Sanderson). “But what is a convolution?” YouTube. <a class="uri" href="https://www.youtube.com/watch?v=KuXjwB4LzSA">https://www.youtube.com/watch?v=KuXjwB4LzSA</a></li>
+</ul>
+</section>
+<section class="level3" id="session-11">
+<h3 class="anchored" data-anchor-id="session-11">Session 11</h3>
+<ul>
+<li>The Nobel Prize in Physiology or Medicine 1999: Günter Blobel. NobelPrize.org. <a class="uri" href="https://www.nobelprize.org/prizes/medicine/1999/summary/">https://www.nobelprize.org/prizes/medicine/1999/summary/</a></li>
+<li>Wikipedia contributors. “Long short-term memory”. Wikipedia, The Free Encyclopedia. <a class="uri" href="https://en.wikipedia.org/wiki/Long_short-term_memory">https://en.wikipedia.org/wiki/Long_short-term_memory</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, ch. “Attention Mechanisms and Transformers” (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_attention-mechanisms-and-transformers/index.html">https://d2l.ai/chapter_attention-mechanisms-and-transformers/index.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, ch. “Modern Recurrent Neural Networks” (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_recurrent-modern/index.html">https://d2l.ai/chapter_recurrent-modern/index.html</a></li>
+<li>Zhang A, Lipton ZC, Li M, Smola AJ. Dive into Deep Learning, ch. “Recurrent Neural Networks” (CC BY-SA 4.0). <a class="uri" href="https://d2l.ai/chapter_recurrent-neural-networks/index.html">https://d2l.ai/chapter_recurrent-neural-networks/index.html</a></li>
+<li>Video: 3Blue1Brown (Grant Sanderson). “Attention in transformers, step-by-step” (Deep Learning ch. 6). YouTube. <a class="uri" href="https://www.youtube.com/watch?v=eMlx5fFNoYc">https://www.youtube.com/watch?v=eMlx5fFNoYc</a></li>
+<li>Video: 3Blue1Brown (Grant Sanderson). “How might LLMs store facts” (Deep Learning ch. 7). YouTube. <a class="uri" href="https://www.youtube.com/watch?v=9-Jl0dxWQs8">https://www.youtube.com/watch?v=9-Jl0dxWQs8</a></li>
+<li>Video: 3Blue1Brown (Grant Sanderson). “Large Language Models explained briefly”. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=LPZh9BOjkQs">https://www.youtube.com/watch?v=LPZh9BOjkQs</a></li>
+<li>Video: 3Blue1Brown (Grant Sanderson). “Transformers, the tech behind LLMs” (Deep Learning ch. 5). YouTube. <a class="uri" href="https://www.youtube.com/watch?v=wjZofJX0v4M">https://www.youtube.com/watch?v=wjZofJX0v4M</a></li>
+</ul>
+</section>
+<section class="level3" id="session-12">
+<h3 class="anchored" data-anchor-id="session-12">Session 12</h3>
+<ul>
+<li>The Nobel Prize in Chemistry 2024 (Baker; Hassabis &amp; Jumper). NobelPrize.org. <a class="uri" href="https://www.nobelprize.org/prizes/chemistry/2024/summary/">https://www.nobelprize.org/prizes/chemistry/2024/summary/</a></li>
+<li>Video: AI Coffee Break with Letitia (Parcalabescu L). “Flow-Matching vs Diffusion Models explained side by side”. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=firXjwZ_6KI">https://www.youtube.com/watch?v=firXjwZ_6KI</a></li>
+<li>Video: Kohl S (DeepMind). “Highly accurate protein structure prediction with AlphaFold”. YouTube. <a class="uri" href="https://www.youtube.com/watch?v=92j-7b-sRPw">https://www.youtube.com/watch?v=92j-7b-sRPw</a></li>
+</ul>
+</section>
+</section>
+<section class="level2" id="what-isnt-reused-and-why">
+<h2 class="anchored" data-anchor-id="what-isnt-reused-and-why">What isn’t reused, and why</h2>
+<ul>
+<li><strong>Magnus Ekman’s <em>Learning Deep Learning</em></strong> and <strong>Jonathan Pevsner’s <em>Bioinformatics and Functional Genomics</em></strong> were this course’s previously assigned textbooks. Both are under conventional copyright. Nothing from either is reproduced here; some pages credit Ekman’s book (and the teachers’ own earlier lecture slides) as an internal source of ideas, and any resemblance in topic ordering is because these books teach the same standard material.</li>
+<li><strong>Goodfellow, Bengio &amp; Courville’s <em>Deep Learning</em></strong> is free to read online but not licensed for reuse or redistribution, so it is treated like the two textbooks above.</li>
+<li><strong>Michael Nielsen’s <em>Neural Networks and Deep Learning</em></strong> is CC BY-NC: freely reusable for non-commercial teaching, but an earlier draft that used it was switched to <em>Dive into Deep Learning</em> throughout, to keep one license without a non-commercial restriction across the whole book.</li>
+</ul>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="Capstone Project: Secondary Structure Prediction" class="pagination-link" href="./capstone.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Capstone Project: Secondary Structure Prediction</span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>
