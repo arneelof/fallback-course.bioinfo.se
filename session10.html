@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>10  Session 10: CNNs, from ImageNet to Biology – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./notebooks/session10-cnns-in-code.html" rel="next"/>
+<link href="./notebooks/session09-backprop-training-regularization.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./session10.html"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#learning-goals" href="#learning-goals" id="toc-learning-goals"><span class="header-section-number">10.1</span> Learning goals</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s10-convolution" href="#sec-s10-convolution" id="toc-sec-s10-convolution"><span class="header-section-number">10.2</span> Why convolution?</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#the-problem-with-dense-layers" href="#the-problem-with-dense-layers" id="toc-the-problem-with-dense-layers"><span class="header-section-number">10.2.1</span> The problem with dense layers</a></li>
+<li><a class="nav-link" data-scroll-target="#a-small-detector-reused-everywhere" href="#a-small-detector-reused-everywhere" id="toc-a-small-detector-reused-everywhere"><span class="header-section-number">10.2.2</span> A small detector, reused everywhere</a></li>
+<li><a class="nav-link" data-scroll-target="#equivariance-and-invariance-what-happens-when-the-input-moves" href="#equivariance-and-invariance-what-happens-when-the-input-moves" id="toc-equivariance-and-invariance-what-happens-when-the-input-moves"><span class="header-section-number">10.2.3</span> Equivariance and invariance: what happens when the input moves?</a></li>
+<li><a class="nav-link" data-scroll-target="#stacking-convolutions-the-receptive-field" href="#stacking-convolutions-the-receptive-field" id="toc-stacking-convolutions-the-receptive-field"><span class="header-section-number">10.2.4</span> Stacking convolutions: the receptive field</a></li>
+<li><a class="nav-link" data-scroll-target="#what-actually-happened-from-lenet-to-resnet" href="#what-actually-happened-from-lenet-to-resnet" id="toc-what-actually-happened-from-lenet-to-resnet"><span class="header-section-number">10.2.5</span> What actually happened: from LeNet to ResNet</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s10-assumptions" href="#sec-s10-assumptions" id="toc-sec-s10-assumptions"><span class="header-section-number">10.3</span> What assumptions does a CNN build in?</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#more-weights-are-not-better-dense-vs.-cnn-on-blood-cells" href="#more-weights-are-not-better-dense-vs.-cnn-on-blood-cells" id="toc-more-weights-are-not-better-dense-vs.-cnn-on-blood-cells"><span class="header-section-number">10.3.1</span> More weights are not better: dense vs. CNN on blood cells</a></li>
+<li><a class="nav-link" data-scroll-target="#few-labels-transfer-learning-on-cancer-histology" href="#few-labels-transfer-learning-on-cancer-histology" id="toc-few-labels-transfer-learning-on-cancer-histology"><span class="header-section-number">10.3.2</span> Few labels: transfer learning on cancer histology</a></li>
+<li><a class="nav-link" data-scroll-target="#which-transformations-should-not-matter" href="#which-transformations-should-not-matter" id="toc-which-transformations-should-not-matter"><span class="header-section-number">10.3.3</span> Which transformations should not matter?</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s10-biology" href="#sec-s10-biology" id="toc-sec-s10-biology"><span class="header-section-number">10.4</span> CNNs on biological sequences</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#filters-become-motifs" href="#filters-become-motifs" id="toc-filters-become-motifs"><span class="header-section-number">10.4.1</span> Filters become motifs</a></li>
+<li><a class="nav-link" data-scroll-target="#proteins-our-own-cnn-finds-the-signal-peptide" href="#proteins-our-own-cnn-finds-the-signal-peptide" id="toc-proteins-our-own-cnn-finds-the-signal-peptide"><span class="header-section-number">10.4.2</span> Proteins: our own CNN finds the signal peptide</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s10-structure" href="#sec-s10-structure" id="toc-sec-s10-structure"><span class="header-section-number">10.5</span> Beyond sequences: a contact map is an image</a></li>
+<li><a class="nav-link" data-scroll-target="#check-your-understanding" href="#check-your-understanding" id="toc-check-your-understanding"><span class="header-section-number">10.6</span> Check your understanding</a></li>
+<li><a class="nav-link" data-scroll-target="#the-course-notebook" href="#the-course-notebook" id="toc-the-course-notebook"><span class="header-section-number">10.7</span> The course notebook</a></li>
+<li><a class="nav-link" data-scroll-target="#the-lab" href="#the-lab" id="toc-the-lab"><span class="header-section-number">10.8</span> The lab</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#submitting-this-lab" href="#submitting-this-lab" id="toc-submitting-this-lab"><span class="header-section-number">10.8.1</span> Submitting this lab</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#whats-next" href="#whats-next" id="toc-whats-next"><span class="header-section-number">10.9</span> What’s next</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Sources for this page:</strong> d2l.ai, <em>Dive into Deep Learning</em>, <a href="https://d2l.ai/chapter_convolutional-neural-networks/index.html">Convolutional Neural Networks</a> and <a href="https://d2l.ai/chapter_convolutional-modern/index.html">Modern Convolutional Neural Networks</a> — CC BY-SA 4.0. Every historical number on this page is taken from the primary paper or the official challenge report, cited where it is used (ImageNet: Russakovsky et al. 2015, <a href="https://doi.org/10.1007/s11263-015-0816-y"><em>IJCV</em> 115:211-252</a>). Lab results quoted on the page come from the executed solution of the Session 10 lab (BloodMNIST, Yang et al. 2023, CC BY 4.0). Data: colorectal-cancer histology tiles NCT-CRC-HE-100K and CRC-VAL-HE-7K (Kather, Halama &amp; Marx 2018, <a href="https://doi.org/10.5281/zenodo.1214456">Zenodo</a>, CC BY 4.0; a small subset is kept in the course repository), Sessions 8-9’s UniProt localisation dataset, and PDB entry <a href="https://www.rcsb.org/structure/4HHB">4HHB</a> (haemoglobin, CC0). The ImageNet-trained ResNet-18 weights come from <code>torchvision</code>, and the DINOv2 weights (Apache 2.0) from Hugging Face. The classic-architecture and transfer-learning material draws on Magnus Ekman’s <em>Learning Deep Learning</em> (ch. 7-8 slide decks and <code>notebooks/ch07.ipynb</code>/<code>ch08.ipynb</code>), a copyrighted, not openly licensed textbook, credited here as an internal source and not linked. All figures were drawn or computed for this course. Every number from our own code was read back from the notebook’s output.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Notebook:</strong> <a href="notebooks/session10-cnns-in-code.html" target="_blank">Session 10 — CNNs in code</a> — the code behind this page. <a download="" href="./notebooks/session10-cnns-in-code.html">Download it</a> to run it yourself.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Translation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<blockquote class="blockquote">
+<p><strong>Why did the CNN fail its language exam?</strong> It was only translation-equivariant.</p>
+</blockquote>
+</div>
+</div>
+<section class="level2" data-number="10.1" id="learning-goals">
+<h2 class="anchored" data-anchor-id="learning-goals" data-number="10.1"><span class="header-section-number">10.1</span> Learning goals</h2>
+<p>By the end of this session you should be able to:</p>
+<ul>
+<li>explain why convolution is useful (locality, weight sharing, far fewer weights), and count the weights of a dense and a convolutional layer;</li>
+<li>read image and sequence tensor shapes, and say what kernel size, padding, stride, pooling and the number of filters do;</li>
+<li>distinguish <strong>equivariance</strong> from <strong>invariance</strong>: convolution is equivariant, local pooling adds some tolerance to small shifts, and global pooling turns position-wise features into a position-invariant summary;</li>
+<li>explain how stacking convolutions enlarges the <strong>receptive field</strong>, so that simple local patterns combine into larger ones;</li>
+<li>explain why a CNN can beat a much larger dense network, and why augmentation should encode only label-preserving transformations;</li>
+<li>interpret a first-layer sequence filter as a learned position weight matrix, and say what global pooling throws away when a motif’s position matters;</li>
+<li>say what a residual connection does.</li>
+</ul>
+<p>The central message of this session is that a dense layer learns a separate weight for every position, while <strong>a convolutional layer assumes that nearby inputs belong together and reuses the same small detector at every position.</strong> This built-in assumption is why CNNs need fewer weights and less data.</p>
+</section>
+<section class="level2" data-number="10.2" id="sec-s10-convolution">
+<h2 class="anchored" data-anchor-id="sec-s10-convolution" data-number="10.2"><span class="header-section-number">10.2</span> Why convolution?</h2>
+<section class="level3" data-number="10.2.1" id="the-problem-with-dense-layers">
+<h3 class="anchored" data-anchor-id="the-problem-with-dense-layers" data-number="10.2.1"><span class="header-section-number">10.2.1</span> The problem with dense layers</h3>
+<p>Every model so far gives every input position its own weight. For the 150-residue one-hot sequences of Sessions 8-9, that means 3,000 weights per hidden unit, and for a <span class="math inline">\(224 \times 224\)</span> colour image over 150,000. The same feature detector must then be learned separately at every position, and neighbouring pixels or residues are treated as being as unrelated as distant ones.</p>
+</section>
+<section class="level3" data-number="10.2.2" id="a-small-detector-reused-everywhere">
+<h3 class="anchored" data-anchor-id="a-small-detector-reused-everywhere" data-number="10.2.2"><span class="header-section-number">10.2.2</span> A small detector, reused everywhere</h3>
+<p>A <strong>convolutional layer</strong> instead slides a small <strong>kernel</strong> (say 3 × 3 pixels, or 7 residues) across every position, using <em>the same weights</em> everywhere. Its number of weights therefore does not depend on the input length. The table compares one layer of each kind on the localisation data (150 residues × 20 amino acids):</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s10-weights">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s10-weights-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 10.1: The number of weights in one dense and one convolutional layer on the localisation data.
+</figcaption>
+<div aria-describedby="tbl-s10-weights-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Weights</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dense, 3,000 inputs → 64 units</td>
+<td>inputs × outputs + biases</td>
+<td>3,000 × 64 + 64 = <strong>192,064</strong></td>
+</tr>
+<tr class="even">
+<td>Convolution, 20 channels → 32 filters, kernel 7</td>
+<td>kernel × input channels × filters + biases</td>
+<td>7 × 20 × 32 + 32 = <strong>4,512</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The convolution has 40 times fewer weights, and it keeps that number for a protein of any length. (Whole networks are less simple. In the lab, <em>adding</em> a convolutional layer makes the network smaller, because the following dense layer receives a smaller feature map.)</p>
+<p><strong>Shapes.</strong> A batch of images is a tensor <strong>B × C × H × W</strong> (batch, channels, height, width, with C = 3 for colour), and a batch of sequences is <strong>B × C × L</strong> (C = 20 for one-hot protein, 4 for DNA). A size-7 kernel on protein therefore has 20 × 7 weights, one per amino acid per position. A layer has several kernels (<strong>filters</strong>), and each produces one output channel, that is, one learned feature type. Four more settings control a convolutional layer:</p>
+<ul>
+<li><strong>kernel size</strong>: the width of the local window;</li>
+<li><strong>padding</strong>: zeros added at the edges, so that the output can keep the input’s length;</li>
+<li><strong>stride</strong>: how far the kernel moves between steps (1 = every position);</li>
+<li><strong>pooling</strong>: replacing small regions by their maximum or mean, which shrinks the feature map.</li>
+</ul>
+</section>
+<section class="level3" data-number="10.2.3" id="equivariance-and-invariance-what-happens-when-the-input-moves">
+<h3 class="anchored" data-anchor-id="equivariance-and-invariance-what-happens-when-the-input-moves" data-number="10.2.3"><span class="header-section-number">10.2.3</span> Equivariance and invariance: what happens when the input moves?</h3>
+<p>Two words from mathematics describe how a model’s output responds when its input is changed in a systematic way, for example <strong>shifted</strong> (in mathematics, <em>translated</em>: this is the joke at the top of the page), rotated or mirrored. Take a motif detector that slides along a DNA sequence, and move its motif, a TATA box, eight positions further along (<a class="quarto-xref" href="#fig-session10-equi-inv">Figure <span>10.1</span></a>):</p>
+<ul>
+<li>An output is <strong>equivariant</strong> if it <em>changes in the same way as the input</em>. The detector’s score at every position is equivariant: when the motif moves eight positions, the peak in the scores moves eight positions too. An equivariant output answers the question <em>where?</em></li>
+<li>An output is <strong>invariant</strong> if it <em>does not change at all</em>. The single answer “does this sequence contain a TATA box?” is invariant: it is “yes” wherever the motif sits. An invariant output answers the question <em>whether?</em> or <em>what?</em></li>
+</ul>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-equi-inv">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-equi-inv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-equi-inv.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-equi-inv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.1: A motif detector on a DNA sequence (top) and on the same sequence with the motif moved eight positions (bottom). Its score at every position, a feature map, moves with the motif: it is equivariant to shifts. Taking the maximum over all positions (global max pooling) gives one answer for the whole sequence, which does not change: it is invariant to shifts.
+</figcaption>
+</figure>
+</div>
+<p>In symbols, with <span class="math inline">\(T\)</span> the shift and <span class="math inline">\(f\)</span> the model: equivariance means <span class="math inline">\(f(T x) = T f(x)\)</span>, so shifting the input shifts the output, and invariance means <span class="math inline">\(f(T x) = f(x)\)</span>, so shifting the input changes nothing.</p>
+<p>Which of the two we want depends on the question. Per-residue labels, such as whether each residue belongs to a signal peptide (Session 11) or the secondary structure of each residue (Sessions 7 and 9), should be equivariant: if the sequence is shifted, the labels should shift with it. A label for the whole input, such as the cell type in a blood-cell image or the compartment of a protein (the localisation CNN in <a class="quarto-xref" href="#sec-s10-biology"><span>Section 10.4</span></a>), should be invariant: a lymphocyte is a lymphocyte wherever it sits in the image.</p>
+<p><strong>Convolution is equivariant.</strong> If the input shifts, a shared kernel sees the same pattern somewhere else, so its output shifts by the same amount. This <strong>translation equivariance</strong> comes from weight sharing itself, and it holds even for a random, untrained kernel:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-conv-equivariance">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-conv-equivariance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-conv-equivariance.png" style="width:85.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-conv-equivariance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.2: A random, untrained 1D convolution applied to a signal and to the same signal shifted by 10 positions. The shifted input’s output (green) matches the original output shifted by 10 (orange dashed).
+</figcaption>
+</figure>
+</div>
+<p><strong>But equivariance is not invariance.</strong> The feature is found wherever it is, but <em>where</em> it is found still differs, and whether a classifier’s answer changes depends on what the rest of the network does with that position:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-position">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-position-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-position.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-position-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.3: Where position information goes. (1) Convolution: the feature map shifts with the input. (2) Local max pooling: a small shift may stay within one pooling window, which gives some tolerance, not invariance. (3) Flatten + Linear: every position gets its own weight again. (4) Global average pooling: one number per filter, whatever the position.
+</figcaption>
+</figure>
+</div>
+<ul>
+<li><strong>Local pooling</strong> (for example 2 × 2 max pooling) gives <strong>some tolerance to small shifts</strong>, because a pattern that moves by one pixel often stays in the same pooling window.</li>
+<li><strong>Flatten followed by a dense layer</strong> brings absolute position back, because every position of the final feature map gets its own weight. In the lab, CNNs trained on blood cells pasted into one corner reach 0.77-0.86 accuracy on corner cells but only 0.18-0.29 on cells at random positions, close to always guessing the most common class (0.198).</li>
+<li><strong>Global average pooling</strong> averages each feature map over all positions, giving one number per filter. The network then asks “was this feature present?”, not “was it present at position 17?”. The result is a <strong>position-invariant summary</strong>, used by the localisation CNN below.</li>
+</ul>
+<p>Rotation is a different matter, because nothing in convolution or pooling handles it.</p>
+</section>
+<section class="level3" data-number="10.2.4" id="stacking-convolutions-the-receptive-field">
+<h3 class="anchored" data-anchor-id="stacking-convolutions-the-receptive-field" data-number="10.2.4"><span class="header-section-number">10.2.4</span> Stacking convolutions: the receptive field</h3>
+<p>A single layer sees only the window of its kernel, but stacking layers widens the view. A unit in a second convolutional layer combines several first-layer units, each with its own window, so it depends on a wider stretch of the input, its <strong>receptive field</strong>.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-receptive-field">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-receptive-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-receptive-field.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-receptive-field-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.4: Receptive field of stacked 1D convolutions with kernel size 3 and stride 1. A unit in layer 1 sees 3 residues, in layer 2 five, in layer 3 seven.
+</figcaption>
+</figure>
+</div>
+<p>With kernel size <em>k</em> and stride 1, every layer adds <em>k</em> − 1 positions, and pooling and larger strides make the receptive field grow faster. This is how deep CNNs build complex patterns from simple ones: edges, shapes and objects in images, and motifs and then combinations of motifs in DNA and proteins. The second discussion problem asks how wide the window must be for a signal peptide.</p>
+<section class="level4" data-number="10.2.4.1" id="further-watching">
+<h4 class="anchored" data-anchor-id="further-watching" data-number="10.2.4.1"><span class="header-section-number">10.2.4.1</span> Further watching</h4>
+<p><a href="https://www.youtube.com/watch?v=KuXjwB4LzSA"><em>But what is a convolution?</em></a> (3Blue1Brown): convolution from probability to image blurring, the same sliding weighted sum a CNN learns:</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin-bottom:1em;">
+<iframe allowfullscreen="" src="https://www.youtube.com/embed/KuXjwB4LzSA" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" title="But what is a convolution?, 3Blue1Brown"></iframe>
+</div>
+</section>
+</section>
+<section class="level3" data-number="10.2.5" id="what-actually-happened-from-lenet-to-resnet">
+<h3 class="anchored" data-anchor-id="what-actually-happened-from-lenet-to-resnet" data-number="10.2.5"><span class="header-section-number">10.2.5</span> What actually happened: from LeNet to ResNet</h3>
+<p>The idea behind CNNs is more than 60 years old, but it took until 2012 for it to work at scale. The story shows what a good idea needs before it works.</p>
+<p><strong>From the cat’s visual cortex to the Neocognitron.</strong> In the late 1950s, David Hubel and Torsten Wiesel recorded single neurons in the visual cortex of cats while showing them simple patterns (Hubel &amp; Wiesel 1962, <a href="https://doi.org/10.1113/jphysiol.1962.sp006837"><em>J. Physiol.</em> 160:106-154</a>; Nobel Prize 1981). Each neuron responded only to a small part of the visual field, its <em>receptive field</em>, and only to one feature there, such as an edge at a particular angle. “Simple cells” responded to an edge at one exact position. “Complex cells” responded to the same edge anywhere within a somewhat larger region. These are the two operations of a CNN: a local feature detector, and a pooling step that tolerates small shifts. In 1980 Kunihiko Fukushima built them into a layered network, the <strong>Neocognitron</strong>, whose title promised pattern recognition “unaffected by shift in position” (Fukushima 1980, <a href="https://doi.org/10.1007/BF00344251"><em>Biol. Cybern.</em> 36:193-202</a>). What it lacked was a good way to learn its weights.</p>
+<p><strong>LeNet: backpropagation meets convolution.</strong> Yann LeCun and colleagues at Bell Labs supplied it. They trained a convolutional network with backpropagation (Session 9) to read handwritten zip codes on US mail (LeCun et al. 1989, <a href="https://doi.org/10.1162/neco.1989.1.4.541"><em>Neural Computation</em> 1:541-551</a>). Its successor, <strong>LeNet-5</strong> (LeCun et al. 1998, <a href="https://doi.org/10.1109/5.726791"><em>Proc. IEEE</em> 86:2278-2324</a>), was used by banks to read the amounts on cheques, and by the late 1990s it read a large share of the cheques written in the United States.</p>
+<p><strong>The quiet decade.</strong> Yet CNNs did not take over. Through the 2000s, computer vision was dominated by <strong>hand-crafted features</strong>, carefully designed descriptors of edges and corners, fed to <strong>support vector machines</strong>: classifiers that, like the perceptron of Session 7, separate the classes with a boundary, but choose the one that leaves the widest margin between them. Neural networks were widely considered hard to train and not worth the trouble, and the datasets of the time, with thousands of images, were too small for a network to beat a well-designed feature. Two ingredients were missing: data and compute.</p>
+<p><strong>ImageNet: the data.</strong> In 2009 Fei-Fei Li’s group published <strong>ImageNet</strong> (Deng et al. 2009, <a href="https://doi.org/10.1109/CVPR.2009.5206848">CVPR</a>), millions of photos labelled by thousands of crowd-workers paid per image. From 2010 an annual challenge asked programs to sort 1.2 million training photos into 1,000 classes, scored by the <em>top-5 error</em>, the fraction of test photos whose true class is not among the program’s five best guesses. The first two winners used hand-crafted features and reached errors of 28% and 26% (<a class="quarto-xref" href="#fig-session10-imagenet-history">Figure <span>10.5</span></a>).</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-imagenet-history">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-imagenet-history-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-imagenet-history.png" style="width:80.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-imagenet-history-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.5: Top-5 error of the winning ImageNet entry each year (Russakovsky et al. 2015; He et al. 2016). The first two winners used hand-crafted features; from 2012 every winner was a CNN.
+</figcaption>
+</figure>
+</div>
+<p><strong>2012: AlexNet.</strong> Alex Krizhevsky, a PhD student of Geoffrey Hinton in Toronto, with Ilya Sutskever, entered a CNN with 60 million weights (Krizhevsky, Sutskever &amp; Hinton 2012, <a href="https://papers.nips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html">NIPS 25</a>). He trained it for five to six days on two gaming graphics cards (GPUs), which do the many multiplications of a convolution in parallel. Its top-5 error was 16.4% on the challenge’s own training data, and 15.3% when extra data was allowed, against 26.2% for the runner-up: the largest jump the challenge ever saw. Little in AlexNet was new on its own: convolution came from LeNet, and the rest was the tools of Session 9 and of this session, ReLU instead of sigmoid, dropout, and data augmentation. What was new was the scale, with ImageNet’s data and the GPUs’ compute. Within two years almost every entry was a CNN, and the deep-learning boom of the following decade started here. (Hinton shared the 2024 Nobel Prize in Physics, with John Hopfield, for the foundations of neural networks.)</p>
+<p><strong>Deeper and deeper.</strong> The following winners mainly went deeper:</p>
+<ul>
+<li><strong>VGG</strong> (Simonyan &amp; Zisserman 2014, <a href="https://arxiv.org/abs/1409.1556">arXiv</a>) used stacks of up to 19 layers of small 3 × 3 convolutions. Two stacked 3 × 3 layers see a 5 × 5 region with fewer weights than one 5 × 5 layer (the receptive field above). GoogLeNet (Szegedy et al. 2014, <a href="https://arxiv.org/abs/1409.4842">arXiv</a>) won that year with 22 layers.</li>
+<li>But simply adding layers then stopped working. Deeper plain networks had a <em>higher</em> training error than shallower ones. This was not overfitting, since the training error itself was worse. He et al. also ruled out vanishing gradients, which batch normalisation had already dealt with: they measured the gradients and found them healthy. The deeper network was simply harder to optimise. A 56-layer network can always copy a 34-layer one and leave the extra layers doing nothing, so a solution at least as good exists — but plain gradient descent did not find it.</li>
+<li><strong>ResNet</strong> (He et al., <a href="https://arxiv.org/abs/1512.03385">CVPR 2016</a>) solved it with <strong>residual connections</strong>. Each block learns a correction to its input and returns <span class="math inline">\(x + F(x)\)</span>. If a block has nothing useful to add, it can learn <span class="math inline">\(F(x) \approx 0\)</span> and pass its input on unchanged, and the gradient has a short path back through the “+ x”. With 152 layers, ResNet reached a top-5 error of 3.6% in 2015 — an ensemble of several such networks, not one model — below the roughly 5% measured for a trained human annotator on the same task. In the lab, a three-block ResNet beats a three-block VGG network (0.771 against 0.722).</li>
+</ul>
+<p><strong>And then CNNs stopped being the answer in images, too.</strong> The <strong>Vision Transformer</strong> (Dosovitskiy et al. 2021, <a href="https://arxiv.org/abs/2010.11929">ICLR</a>) cuts an image into patches and treats them as a sequence, with none of convolution’s built-in assumptions, and given enough data it matches and passes CNNs on exactly the tasks CNNs had owned. DINOv2, the strongest model in this session’s lab, is one of these, not a CNN. So the right reading of the ImageNet story is not that convolution won: it is that an assumption is worth a great deal when data is scarce, and worth less as data grows, which is the trade-off this whole session is about. In biology, where labelled data is usually scarce, that trade-off still mostly favours convolution — but CNNs never took over biology either. They sit alongside the sequence models of Session 11 and the structure models of Session 12, each with its own assumption about what matters.</p>
+<p>The challenge ended in 2017, because the task was considered solved. The networks it produced did not disappear: pretrained on ImageNet, they are the starting point for transfer learning in biology (<a class="quarto-xref" href="#sec-s10-assumptions"><span>Section 10.3</span></a>), and residual connections are in nearly every deep network since, including the Transformers of Session 11 and AlphaFold (Session 12).</p>
+<p>The lesson is that an architecture with the right built-in assumptions (local, shared, stacked detectors) needed <strong>data and compute</strong> before it could beat hand-crafted features, and <strong>residual connections</strong> before its depth became trainable.</p>
+<section class="level4" data-number="10.2.5.1" id="further-reading">
+<h4 class="anchored" data-anchor-id="further-reading" data-number="10.2.5.1"><span class="header-section-number">10.2.5.1</span> Further reading</h4>
+<ul>
+<li>d2l.ai, <a href="https://d2l.ai/chapter_convolutional-modern/index.html">Modern Convolutional Neural Networks</a> (AlexNet, VGG, ResNet in detail)</li>
+<li>Russakovsky et al. (2015), <a href="https://arxiv.org/abs/1409.0575">ImageNet Large Scale Visual Recognition Challenge</a> (including the comparison with human annotators)</li>
+<li>LeCun, Bengio &amp; Hinton (2015), <a href="https://doi.org/10.1038/nature14539">Deep learning</a>, <em>Nature</em> 521:436-444: a review by three of the people in this story</li>
+</ul>
+</section>
+</section>
+</section>
+<section class="level2" data-number="10.3" id="sec-s10-assumptions">
+<h2 class="anchored" data-anchor-id="sec-s10-assumptions" data-number="10.3"><span class="header-section-number">10.3</span> What assumptions does a CNN build in?</h2>
+<section class="level3" data-number="10.3.1" id="more-weights-are-not-better-dense-vs.-cnn-on-blood-cells">
+<h3 class="anchored" data-anchor-id="more-weights-are-not-better-dense-vs.-cnn-on-blood-cells" data-number="10.3.1"><span class="header-section-number">10.3.1</span> More weights are not better: dense vs. CNN on blood cells</h3>
+<p>The lab trains four models on the same BloodMNIST blood-cell images, and the result shows that more weights are not better. The best dense network, with one hidden layer of 128 units and <strong>302,216 weights</strong>, reaches a validation accuracy of 0.793. A small CNN with two convolution blocks and only <strong>17,640 weights</strong> reaches <strong>0.887</strong>. The CNN wins with 17 times fewer weights because it does not have to learn locality and weight sharing from the data, since they are built in. This is Session 9’s lesson again, seen from the other side: more weights do not help, but the right assumptions do.</p>
+</section>
+<section class="level3" data-number="10.3.2" id="few-labels-transfer-learning-on-cancer-histology">
+<h3 class="anchored" data-anchor-id="few-labels-transfer-learning-on-cancer-histology" data-number="10.3.2"><span class="header-section-number">10.3.2</span> Few labels: transfer learning on cancer histology</h3>
+<p>Biology rarely has 1.2 million labelled images. Kather et al. (2019, <a href="https://doi.org/10.1371/journal.pmed.1002730"><em>PLoS Med</em> 16:e1002730</a>) cut H&amp;E-stained slides of colorectal cancer into small tiles and labelled each with one of <strong>nine tissue types</strong>:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-crc-classes">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-crc-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-crc-classes.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-crc-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.6: One training tile of each of the nine tissue types (NCT-CRC-HE-100K; Kather, Halama &amp; Marx 2018, CC BY 4.0).
+</figcaption>
+</figure>
+</div>
+<p>To imitate a small dataset, the notebook pretends that we have only <strong>40 labelled tiles per class</strong> for training and 40 for validation, all from the same 86 slides. It tests on 100 tiles per class from <strong>50 other patients</strong>:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s10-transfer">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s10-transfer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 10.2: Colorectal-cancer tissue classification from few labelled tiles: training from scratch and transfer learning.
+</figcaption>
+<div aria-describedby="tbl-s10-transfer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%"/>
+<col style="width: 17%"/>
+<col style="width: 17%"/>
+<col style="width: 17%"/>
+<col style="width: 17%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Small CNN from scratch (242,697 weights)</th>
+<th>Same CNN + data augmentation</th>
+<th>Transfer: frozen ImageNet ResNet-18 + new last layer</th>
+<th>Transfer: frozen DINOv2 + new last layer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Validation accuracy</td>
+<td>0.861</td>
+<td>0.855</td>
+<td>0.856</td>
+<td>0.917</td>
+</tr>
+<tr class="even">
+<td>Test accuracy (new patients)</td>
+<td>0.745</td>
+<td>0.792</td>
+<td>0.780</td>
+<td><strong>0.832</strong></td>
+</tr>
+<tr class="odd">
+<td>Test accuracy, range over three seeds</td>
+<td>0.721-0.786</td>
+<td>0.769-0.821</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<ul>
+<li><strong>From scratch</strong>, the CNN memorises its 360 training tiles. With so little data, the random seed alone moves its test accuracy by more than 6 percentage points.</li>
+<li><strong>Data augmentation</strong> (below) helps on average, though not in every seed.</li>
+<li><strong>Transfer learning</strong> is what the field actually did. The layers of a network trained on millions of images are kept frozen, as a feature extractor, and only a new last layer is trained. ResNet-18 never saw a tissue tile, yet its features match the augmented CNN.</li>
+<li><strong>Validation from the same slides, test from new patients.</strong> Every model scores clearly higher on validation than on test, because the validation tiles share patients, staining runs and scanner with the training tiles. This is Session 8’s homology trap again. When examples come in groups (proteins in families, tiles in patients), the honest split is by group.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Transfer learning from very large image collections
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A network trained on a huge image collection has learned features that are useful for a new task with few labels. DINOv2 (Oquab et al. 2023, <a href="https://arxiv.org/abs/2304.07193">arXiv:2304.07193</a>) was trained on 142 million images <em>without any labels</em> (self-supervised), and its features still work best on tissue it has never seen. Such reusable models are called <strong>foundation models</strong>, and Session 11 shows the same recipe for proteins.</p>
+</div>
+</div>
+</section>
+<section class="level3" data-number="10.3.3" id="which-transformations-should-not-matter">
+<h3 class="anchored" data-anchor-id="which-transformations-should-not-matter" data-number="10.3.3"><span class="header-section-number">10.3.3</span> Which transformations should not matter?</h3>
+<p>A CNN handles small shifts through its architecture, but everything else it must learn from data. <strong>Data augmentation</strong> is how we tell it what should not matter: in every epoch, the network sees a slightly changed copy of every training image, with the same label. Augmentation should therefore encode only transformations that <strong>preserve the label</strong>, which is a statement about the biology, not about the network. A tissue section or a blood cell on a slide has no “up”, so rotations and mirror images are valid, and small colour changes imitate staining differences between labs. A handwritten 6 rotated by 180° becomes a 9, however, so the same augmentation would be wrong for digits.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-augmentation">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-augmentation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-augmentation.png" style="width:85.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-augmentation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.7: One training tile (normal mucosa) and five augmented versions of it.
+</figcaption>
+</figure>
+</div>
+<p>Does the network need augmentation? The notebook counts how often the <strong>predicted class changes</strong> when the same test tile is shifted, rotated or mirrored. An invariant classifier would change none:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-rotation-shift">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-rotation-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-rotation-shift.png" style="width:80.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-rotation-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.8: Fraction of the 900 test tiles whose predicted class changes when the tile is shifted by 8 pixels, rotated or mirrored, for the CNN without and with augmentation and for the two transfer-learning classifiers.
+</figcaption>
+</figure>
+</div>
+<p>Without augmentation, an 8-pixel shift changes the CNN’s answer for 5% of tiles, but a 90° rotation changes it for 18% and a mirror image for 17%. Training with rotated and mirrored copies roughly halves the last two (9% and 7%), so the network has learned from data a symmetry that the architecture could not give it. The pretrained networks are not rotation-invariant either, since their training photos are almost always upright. This is why histology pipelines augment with all rotations and flips, and why rotation-equivariant CNNs were developed for pathology (Veeling et al. 2018, <a href="https://doi.org/10.1007/978-3-030-00934-2_24">MICCAI</a>).</p>
+</section>
+</section>
+<section class="level2" data-number="10.4" id="sec-s10-biology">
+<h2 class="anchored" data-anchor-id="sec-s10-biology" data-number="10.4"><span class="header-section-number">10.4</span> CNNs on biological sequences</h2>
+<section class="level3" data-number="10.4.1" id="filters-become-motifs">
+<h3 class="anchored" data-anchor-id="filters-become-motifs" data-number="10.4.1"><span class="header-section-number">10.4.1</span> Filters become motifs</h3>
+<p>A first-layer filter on one-hot DNA has shape 4 × <em>k</em>, with one weight per base per position. Sliding it along the sequence is exactly how a <strong>position weight matrix</strong> scores a sequence (Session 5), except that the matrix is learned instead of counted from aligned sites. Two examples show this:</p>
+<ul>
+<li><strong>DeepBind</strong> (Alipanahi et al. 2015, <a href="https://pubmed.ncbi.nlm.nih.gov/26213851/"><em>Nat Biotechnol</em> 33:831</a>) trained CNNs on protein-DNA and protein-RNA binding data, and its learned specificities could be “readily visualized as … position weight matrices”.</li>
+<li><strong>DeepSEA</strong> (Zhou &amp; Troyanskaya 2015, <a href="https://pubmed.ncbi.nlm.nih.gov/26301843/"><em>Nat Methods</em> 12:931</a>) read 1,000 bp of sequence and predicted 919 chromatin features at once. Comparing its predictions for the reference and a mutated sequence scores the effect of a <strong>non-coding variant</strong>.</li>
+</ul>
+<p>Later networks found that many of their filters matched known transcription-factor motifs, rediscovered from sequence alone. Longer-range models needed larger receptive fields and, eventually, Transformers (Session 11).</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-cnn-biology-timeline">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-cnn-biology-timeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-cnn-biology-timeline.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-cnn-biology-timeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.9: How CNNs spread from general computer vision into biomedical imaging, DNA and proteins. Dates are publication years of the papers cited.
+</figcaption>
+</figure>
+</div>
+<p>The spread was as fast in biomedical imaging. <strong>U-Net</strong> (Ronneberger et al. 2015, <a href="https://arxiv.org/abs/1505.04597">arXiv:1505.04597</a>) became the standard for segmenting cells and tissues, and ImageNet-pretrained CNNs fine-tuned on retinal, skin or pathology images reached expert level on the tasks they were trained for (e.g. Esteva et al. 2017, <a href="https://pubmed.ncbi.nlm.nih.gov/28117445/"><em>Nature</em> 542:115</a>).</p>
+</section>
+<section class="level3" data-number="10.4.2" id="proteins-our-own-cnn-finds-the-signal-peptide">
+<h3 class="anchored" data-anchor-id="proteins-our-own-cnn-finds-the-signal-peptide" data-number="10.4.2"><span class="header-section-number">10.4.2</span> Proteins: our own CNN finds the signal peptide</h3>
+<p>The same idea works on protein sequences. The localisation network of Sessions 8-9 becomes a 1D CNN with two convolutional layers of 7-residue filters, followed by global average pooling and a linear layer to the five classes. It is trained and evaluated exactly as in Session 9, on the same homology-aware split:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s10-localisation">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s10-localisation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 10.3: The CNN compared with the models of Session 9 on the localisation data.
+</figcaption>
+<div aria-describedby="tbl-s10-localisation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Session 9: flat network</th>
+<th>Session 9: logistic regression</th>
+<th>Session 10: 1D CNN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Weights</td>
+<td>192,389</td>
+<td>15,005</td>
+<td><strong>19,237</strong></td>
+</tr>
+<tr class="even">
+<td>Test accuracy</td>
+<td>0.514</td>
+<td>0.569</td>
+<td><strong>0.587</strong></td>
+</tr>
+<tr class="odd">
+<td>F1</td>
+<td>0.493</td>
+<td>—</td>
+<td><strong>0.586</strong></td>
+</tr>
+<tr class="even">
+<td>MCC</td>
+<td>0.394</td>
+<td>0.461</td>
+<td><strong>0.484</strong></td>
+</tr>
+<tr class="odd">
+<td>AUROC</td>
+<td>0.831</td>
+<td>0.849</td>
+<td><strong>0.869</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The CNN beats the flat network on every metric with a tenth of the weights. It does so because it builds in an assumption instead of learning 192,389 free weights from 486 proteins: the same local pattern can be detected with the same weights wherever it occurs. Its margin over logistic regression, in contrast, is within the noise of a 109-protein test set (retraining from other random initial weights gave 0.569-0.587). The robust finding is therefore the gap to the flat network.</p>
+<p><strong>What did it learn?</strong> Each first-layer filter is a 20 × 7 matrix, that is, a learned PWM over a 7-residue window. The five filters most selective for secreted proteins correlate with the Kyte-Doolittle hydrophobicity scale at r = 0.70-0.83 (all 32 filters: mean r = 0.12). They fire at a median residue position of 11-12 in secreted proteins, against 62-76 elsewhere:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-signal-filter">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-signal-filter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-signal-filter.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-signal-filter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.10: Left: weights of the filter most selective for secreted proteins, with amino acids ordered from most hydrophobic (top) to least. Right: where along the sequence that filter responds most strongly, in secreted proteins and in the other four classes.
+</figcaption>
+</figure>
+</div>
+<p>Nobody told the network about signal peptides, yet it found a detector for their hydrophobic core on its own, just as the DNA filters rediscovered transcription-factor motifs. Each unit of its second layer sees 20 residues (7 in layer 1, then 2× pooling and another 7-wide kernel), about the length of a signal peptide.</p>
+<p><strong>But position matters in proteins.</strong> Convolution assumes that a pattern can be <em>detected</em> the same way everywhere, not that it <em>means</em> the same thing everywhere. A hydrophobic stretch at the N-terminus is a signal peptide, whereas in the middle of a protein it may be a transmembrane helix, and some targeting signals sit specifically at the C-terminus. Global average pooling throws away <em>where</em> the filter fired, so our network only knows that a hydrophobic stretch occurred somewhere. <strong>If signal peptides matter at the N-terminus, what has the network lost, and how could you give it back?</strong> Later layers, positional features or position-aware pooling are options. Session 11’s models, which read the sequence in order and encode position explicitly, return to signal peptides in depth.</p>
+<p>The real tool, DeepLoc (Almagro Armenteros et al. 2017, <a href="https://pubmed.ncbi.nlm.nih.gov/29036616/"><em>Bioinformatics</em> 33:3387</a>), puts convolutions first and a bidirectional LSTM with attention (Session 11) after them, so that the order-aware part restores position.</p>
+<section class="level4" data-number="10.4.2.1" id="further-reading-1">
+<h4 class="anchored" data-anchor-id="further-reading-1" data-number="10.4.2.1"><span class="header-section-number">10.4.2.1</span> Further reading</h4>
+<ul>
+<li>Zhou &amp; Troyanskaya (2015), <a href="https://pubmed.ncbi.nlm.nih.gov/26301843/">Predicting effects of noncoding variants with deep learning-based sequence model</a></li>
+<li>Kelley, Snoek &amp; Rinn (2016), <a href="https://pubmed.ncbi.nlm.nih.gov/27197224/">Basset</a></li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/U-Net">U-Net</a></li>
+</ul>
+</section>
+</section>
+</section>
+<section class="level2" data-number="10.5" id="sec-s10-structure">
+<h2 class="anchored" data-anchor-id="sec-s10-structure" data-number="10.5"><span class="header-section-number">10.5</span> Beyond sequences: a contact map is an image</h2>
+<p>Convolution is not limited to sequences and photographs. It also works on the <strong>contact map</strong> of a protein, which you met in Session 6 (section “A structure as a matrix: distance and contact maps”).</p>
+<p><strong>What a contact map is.</strong> A structure is a list of coordinates in 3D. A contact map turns it into a 2D picture that only says <em>which residues touch</em>. For a protein of <span class="math inline">\(L\)</span> residues it is an <span class="math inline">\(L \times L\)</span> grid: the pixel in row <span class="math inline">\(i\)</span> and column <span class="math inline">\(j\)</span> is black (1) if residues <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are close in space, and white (0) if not. “Close” needs a definition, and the usual one is that the two residues’ Cβ atoms (Cα for glycine, which has no Cβ) are within 8 Å, about the distance at which side chains can touch. Three things follow from this definition:</p>
+<ul>
+<li>The map is <strong>symmetric</strong>: if <span class="math inline">\(i\)</span> touches <span class="math inline">\(j\)</span>, then <span class="math inline">\(j\)</span> touches <span class="math inline">\(i\)</span>, so every contact appears twice, mirrored in the diagonal.</li>
+<li>The <strong>diagonal</strong> is always black, since every residue is close to itself and to its neighbours in the chain. Contacts near the diagonal are <em>local</em>: the two residues are near each other in the sequence as well as in space.</li>
+<li>Contacts <strong>far from the diagonal</strong> are the interesting ones. They join residues that are far apart in the sequence but brought together by the fold, and they are what makes a protein’s 3D structure what it is.</li>
+</ul>
+<p>Like the distance map it is made from, a contact map does not change when the protein is rotated or moved (Session 6): it is invariant to those transformations, in the sense of <a class="quarto-xref" href="#sec-s10-convolution"><span>Section 10.2</span></a>. <a class="quarto-xref" href="#fig-session10-hbb-contacts-3d">Figure <span>10.11</span></a> shows how pairs of residues in the structure of the β chain of haemoglobin (PDB 4HHB) become pixels of its contact map:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session10-hbb-contacts-3d">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session10-hbb-contacts-3d-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session10-hbb-contacts-3d.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session10-hbb-contacts-3d-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10.11: Left: β-globin (4HHB chain B, 146 residues) rendered with PyMOL, with four pairs of residues in contact (Cβ atoms as spheres, joined by dashed lines). Right: its contact map, with the same four pairs circled; each pair appears twice, mirrored in the diagonal. The pair within helix E (green) lies next to the diagonal: helices give a thick diagonal band because residues <span class="math inline">\(i\)</span> and <span class="math inline">\(i + 3\)</span> or <span class="math inline">\(i + 4\)</span> sit on neighbouring turns. The three pairs on different helices (blue, orange, purple) lie far from the diagonal, in the short stripes where two helices pack against each other.
+</figcaption>
+</figure>
+</div>
+<p>Contacts form local patterns, as helices give bands and strand pairs give lines along or across the diagonal. Once a protein is an <span class="math inline">\(L \times L\)</span> map, 2D convolutions are therefore a natural way to predict it. From 2016, deep residual CNNs that predict contact and distance maps transformed structure prediction, and Session 12 tells that story. The third discussion problem asks you to read fold classes from contact maps.</p>
+</section>
+<section class="level2" data-number="10.6" id="check-your-understanding">
+<h2 class="anchored" data-anchor-id="check-your-understanding" data-number="10.6"><span class="header-section-number">10.6</span> Check your understanding</h2>
+<div id="session10-quiz"></div>
+<script>
+renderQuiz("session10-quiz", [
+  {
+    question: "Why does a convolutional layer need far fewer weights than a fully connected layer on the same input?",
+    choices: [
+      "It slides the same small kernel over every position (weight sharing) instead of learning a separate weight per position",
+      "It only looks at half of the input",
+      "It discards the least useful positions automatically",
+      "It stores its weights with fewer bits"
+    ],
+    correctIndex: 0,
+    explanation: "Weight sharing is what cuts the count: 19,237 weights for the localisation CNN vs. 192,389 for the flat network on the same input."
+  },
+  {
+    question: "A CNN classifies a tissue tile the same way when the tile is shifted by a few pixels, but changes its answer for many tiles when they are rotated by 90 degrees. Why?",
+    choices: [
+      "Shared kernels make the features shift with the input, and pooling adds tolerance to small shifts; nothing in the architecture handles rotation, so it must be learned from (augmented) rotated examples",
+      "Rotated images always contain black corners",
+      "CNNs only work on square images",
+      "The kernels are too small to see rotated objects"
+    ],
+    correctIndex: 0,
+    explanation: "This is why rotation is a standard data augmentation, especially for microscopy and histology where there is no natural 'up'."
+  },
+  {
+    question: "A CNN trained on blood cells pasted in one corner of the image fails on cells at random positions, although convolution is translation-equivariant. Why?",
+    choices: [
+      "The final Flatten + Linear layer gives every position its own weight, so features in new positions meet weights that were never trained; local pooling adds only a few pixels of tolerance",
+      "Convolution stops being equivariant after training",
+      "The cells at random positions have different colours",
+      "Pooling removes the cells from the image"
+    ],
+    correctIndex: 0,
+    explanation: "Equivariance is not invariance. Global average pooling, which averages each feature map over all positions, would make the summary position-invariant."
+  },
+  {
+    question: "Three stacked 1D convolutions with kernel size 3 and stride 1: how many input residues does one unit in the third layer depend on?",
+    choices: ["7", "3", "9", "27"],
+    correctIndex: 0,
+    explanation: "Each layer adds kernel - 1 = 2 positions: 3, then 5, then 7. Stacking enlarges the receptive field, so deeper units combine simple local patterns into larger ones."
+  },
+  {
+    question: "With 40 labelled histology tiles per class, which approach gave the best test accuracy on tiles from new patients?",
+    choices: [
+      "A frozen DINOv2 (self-supervised on 142 million unlabelled images) with a newly trained last layer",
+      "A small CNN trained from scratch",
+      "The same small CNN with data augmentation",
+      "A frozen ImageNet ResNet-18 with a newly trained last layer, by a wide margin over everything else"
+    ],
+    correctIndex: 0,
+    explanation: "DINOv2 reached 0.832, against 0.780 for ResNet-18, 0.792 for the augmented CNN and 0.745 for the CNN from scratch. Features learned on huge image collections transfer to new tasks, even without any labels during pretraining."
+  },
+  {
+    question: "Every model scored higher on the validation tiles (from the same slides as the training tiles) than on the test tiles (from 50 other patients). What does this show?",
+    choices: [
+      "Tiles from the same patient share staining, scanner and tissue features, so validation on them is optimistic; the honest split is by patient, like Session 8's homology-aware split",
+      "The test tiles are mislabelled",
+      "The models were trained on the test set",
+      "Validation accuracy is always higher than test accuracy, whatever the split"
+    ],
+    correctIndex: 0,
+    explanation: "When examples come in related groups (proteins in families, tiles in patients), random splits leak information between training and evaluation."
+  },
+  {
+    question: "Rotating training images is a good augmentation for blood cells but a bad one for handwritten digits. Why?",
+    choices: [
+      "Augmentation should only use transformations that preserve the label: a rotated cell is still the same cell type, but a 6 rotated by 180 degrees becomes a 9",
+      "Digits are smaller than cells",
+      "CNNs cannot be trained on rotated digits",
+      "Rotation is only allowed for colour images"
+    ],
+    correctIndex: 0,
+    explanation: "Which transformations should not matter is a property of the data and the biology, not of the network."
+  },
+  {
+    question: "The localisation CNN detects the hydrophobic core of signal peptides and then averages each filter's output over the whole sequence (global average pooling). What does that throw away?",
+    choices: [
+      "Where the filter fired: an N-terminal signal peptide and a hydrophobic transmembrane helix in the middle of the protein look the same after pooling",
+      "The amino-acid identities in the 7-residue window",
+      "The number of training proteins",
+      "Nothing: global pooling keeps all position information"
+    ],
+    correctIndex: 0,
+    explanation: "Convolution assumes a pattern can be detected the same way everywhere, not that it means the same everywhere. Positional features, later layers or position-aware models (Session 11) can restore the position."
+  },
+  {
+    question: "The first-layer filter of the localisation CNN that responds most strongly in secreted proteins has large weights for L, I, V and F, and fires around residues 10-15. What has it learned?",
+    choices: [
+      "A detector for the hydrophobic core of an N-terminal signal peptide: a learned PWM",
+      "A detector for nuclear localisation signals",
+      "Nothing: first-layer weights are random",
+      "The protein's total length"
+    ],
+    correctIndex: 0,
+    explanation: "The filter has learned the hydrophobic core of a signal peptide, a biological signal nobody told the network about."
+  },
+  {
+    question: "DeepSEA predicts 919 chromatin features from 1,000 bp of DNA. How does it score the effect of a single non-coding variant?",
+    choices: [
+      "By comparing its predictions for the reference sequence and for the sequence carrying the variant",
+      "By looking the variant up in a database of known mutations",
+      "By counting how often the variant occurs in the population",
+      "It cannot score single variants"
+    ],
+    correctIndex: 0,
+    explanation: "A trained sequence model can be asked 'what if' questions: change one base and see how the predicted chromatin profile changes."
+  }
+]);
+</script>
+</section>
+<section class="level2" data-number="10.7" id="the-course-notebook">
+<h2 class="anchored" data-anchor-id="the-course-notebook" data-number="10.7"><span class="header-section-number">10.7</span> The course notebook</h2>
+<p><code>notebooks/session10-cnns-in-code.ipynb</code> computes every number on this page:</p>
+<ol type="1">
+<li>the equivariance demonstration; cancer histology from scratch, with augmentation and with transfer learning (ResNet-18, DINOv2); the shift/rotation test;</li>
+<li>the localisation 1D CNN on the homology-aware split, and its first-layer filters;</li>
+<li>the contact map of β-globin (PDB 4HHB).</li>
+</ol>
+<p>The first part of the notebook trains a small CNN six times for 100 epochs, so use a GPU runtime on Colab (<em>Runtime → Change runtime type</em>), or lower <code>EPOCHS</code> on a CPU. Open it in <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session10-cnns-in-code.ipynb">Google Colab</a> via the badge at the top of the notebook page.</p>
+</section>
+<section class="level2" data-number="10.8" id="the-lab">
+<h2 class="anchored" data-anchor-id="the-lab" data-number="10.8"><span class="header-section-number">10.8</span> The lab</h2>
+<p><strong>Full lab, on blood-cell images</strong> (BloodMNIST, as in the Session 8 and 9 labs). The lab is adapted from the previous course’s “Neural Networks” lab. Work through <a download="" href="https://course.bioinfo.se/notebooks/session10-lab.ipynb"><code>notebooks/session10-lab.ipynb</code></a>, replacing every <code>todo(...)</code> call with your own code:</p>
+<ol type="1">
+<li>count the weights of a dense and a convolutional layer, then of whole models, and see why adding a convolutional layer can make the whole model <em>smaller</em> (the next dense layer receives a smaller feature map);</li>
+<li>train four models side by side, two dense networks of 23,000 and 302,000 weights, a one-layer convolutional network and a small CNN, and see that the CNN, with 17,640 weights, beats them all;</li>
+<li>choose the number of filters yourself, by trying a few values and watching the validation accuracy, and then measure the model you chose once on the test set, which has been untouched since the start;</li>
+<li>find out how many unpadded 5×5 convolutions fit on a 28×28 image;</li>
+<li>build a VGG block, and test it on cells placed at positions it never saw during training, before and after training on randomly placed cells, to see that equivariance is not invariance.</li>
+</ol>
+<p>Two optional extras, which are not part of the quiz, follow if you have time. In the first you build a ResNet block with a skip connection and compare it with VGG. In the second you rotate and mirror the cells and measure what augmentation buys you.</p>
+<section class="level3" data-number="10.8.1" id="submitting-this-lab">
+<h3 class="anchored" data-anchor-id="submitting-this-lab" data-number="10.8.1"><span class="header-section-number">10.8.1</span> Submitting this lab</h3>
+<p>This lab is administered through Canvas, not through this book. See the course’s Canvas page for the current quiz, the deadline and how to submit.</p>
+</section>
+</section>
+<section class="level2" data-number="10.9" id="whats-next">
+<h2 class="anchored" data-anchor-id="whats-next" data-number="10.9"><span class="header-section-number">10.9</span> What’s next</h2>
+<p>CNNs are excellent when local patterns matter, but they see only as far as their receptive field, and global pooling forgets where things were. Session 11 turns to models that read a whole sequence <em>in order</em> and relate distant positions: recurrent networks and LSTMs, the history of language models, and the Transformer. SignalP, from its 1995 feed-forward network to its 2022 protein language model, follows that whole history.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="9 Session 9: How a Neural Network Learns, and Why Training Fails" class="pagination-link" href="./session09.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="11 Session 11: Sequences, Language Models and SignalP" class="pagination-link" href="./session11.html">
+<span class="nav-page-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

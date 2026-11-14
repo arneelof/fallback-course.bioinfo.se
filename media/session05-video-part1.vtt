@@ -1,0 +1,946 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.375
+Welcome to Session five.
+
+2
+00:00:02.375 --> 00:00:07.725
+Session four left two problems unsolved, and this session is about both of them.
+
+3
+00:00:07.725 --> 00:00:09.800
+The first is scale.
+
+4
+00:00:09.800 --> 00:00:17.925
+Needleman-Wunsch and Smith-Waterman find the provably optimal alignment between two sequences, and that guarantee is genuine.
+
+5
+00:00:17.925 --> 00:00:27.150
+But the cost grows with the product of the two lengths, and a database search is not two sequences — it is one query against well over a hundred million.
+
+6
+00:00:27.150 --> 00:00:32.100
+The guarantee becomes unaffordable, and we have to decide what to give up.
+
+7
+00:00:32.100 --> 00:00:34.750
+The second is sensitivity.
+
+8
+00:00:34.750 --> 00:00:38.150
+Session four aligned two sequences at a time.
+
+9
+00:00:38.150 --> 00:00:45.875
+But we saw that a protein family carries information no pair does: which positions evolution keeps, and which it lets vary.
+
+10
+00:00:45.875 --> 00:00:53.625
+If we have a whole family, we ought to be able to use it to recognise a relative too distant for any pairwise comparison to catch.
+
+11
+00:00:53.625 --> 00:00:56.175
+So the session has three blocks.
+
+12
+00:00:56.175 --> 00:01:02.000
+The first is BLAST — the heuristic that makes database search possible, and what it costs you.
+
+13
+00:01:02.000 --> 00:01:09.150
+The second builds a profile from a family, as a position-specific scoring matrix, and iterates the search with it.
+
+14
+00:01:09.150 --> 00:01:20.300
+The third goes one step further, to profile hidden Markov models, which model not only which residues occur at each position but where the family tolerates insertions and deletions.
+
+15
+00:01:20.300 --> 00:01:31.350
+The thread running through all three is a single idea: the more the search knows about the family, the more distant the relatives it can find — and the more carefully that family has to be built.
+
+16
+00:01:31.950 --> 00:01:37.575
+Here is the picture to hold in mind for the whole session, and we will come back to it at the end.
+
+17
+00:01:37.575 --> 00:01:40.225
+On the left, ordinary BLAST.
+
+18
+00:01:40.225 --> 00:01:51.100
+One query sequence, and every position of it scored with the same substitution matrix — the same BLOSUM sixty-two numbers at position three as at position ninety.
+
+19
+00:01:51.100 --> 00:01:54.475
+The matrix knows about proteins in general.
+
+20
+00:01:54.475 --> 00:01:57.275
+It knows nothing about this family.
+
+21
+00:01:57.275 --> 00:01:59.425
+On the right, a profile.
+
+22
+00:01:59.425 --> 00:02:05.600
+Every position has its own scores, derived from what the family actually does at that position.
+
+23
+00:02:05.600 --> 00:02:12.950
+Where the family is rigidly conserved, the profile demands the conserved residue and penalises everything else heavily.
+
+24
+00:02:12.950 --> 00:02:16.775
+Where the family varies freely, the profile is tolerant.
+
+25
+00:02:16.775 --> 00:02:23.350
+The same sequence, described by a model of its relatives rather than by a general-purpose average.
+
+26
+00:02:23.350 --> 00:02:28.625
+That difference is what lets a profile reach relatives a single sequence cannot.
+
+27
+00:02:28.625 --> 00:02:38.825
+And it is also where the risk enters, because a profile is built from sequences you chose, and if you choose badly the profile describes something other than the family you meant.
+
+28
+00:02:39.425 --> 00:02:41.025
+First block.
+
+29
+00:02:41.025 --> 00:02:46.000
+How do you search a hundred million sequences, and what do you give up to do it?
+
+30
+00:02:46.600 --> 00:02:51.175
+Start with the size of the problem, because the numbers settle the argument.
+
+31
+00:02:51.175 --> 00:03:01.200
+Session four's dynamic programming costs on the order of the product of the two sequence lengths — for two proteins a few hundred residues long, around ten thousand cells.
+
+32
+00:03:01.200 --> 00:03:04.250
+On any modern machine that is instant.
+
+33
+00:03:04.250 --> 00:03:07.875
+There is nothing wrong with dynamic programming for a pair.
+
+34
+00:03:07.875 --> 00:03:11.625
+Now put a hundred million sequences on the other side.
+
+35
+00:03:11.625 --> 00:03:16.600
+You are no longer filling one matrix, you are filling a hundred million of them.
+
+36
+00:03:16.600 --> 00:03:27.475
+The arithmetic is no longer instant, and the important part is that the problem keeps getting worse: every database release makes it worse, while the query stays the same size.
+
+37
+00:03:27.475 --> 00:03:32.950
+So a database search needs something faster, and faster means giving something up.
+
+38
+00:03:32.950 --> 00:03:40.025
+BLAST — the Basic Local Alignment Search Tool — gives up the guarantee of optimality, and buys speed with it.
+
+39
+00:03:40.025 --> 00:03:42.725
+That trade is the whole design.
+
+40
+00:03:42.725 --> 00:03:51.925
+The insight is that most of the database is irrelevant to any given query, and you can find out which parts are irrelevant far more cheaply than by aligning them.
+
+41
+00:03:51.925 --> 00:04:01.850
+So BLAST first looks for short near-exact matches, which are cheap to find, and spends the expensive alignment step only on the regions those matches point at.
+
+42
+00:04:01.850 --> 00:04:07.750
+Keep the shape of that bargain in mind, because we will see it cost us an answer later in this block.
+
+43
+00:04:08.350 --> 00:04:13.825
+BLAST runs in three stages, and each one passes on far less than it received.
+
+44
+00:04:13.825 --> 00:04:22.400
+Seeding: break the query into short words, work out every word that would score well against each of them, and scan the database for those words.
+
+45
+00:04:22.400 --> 00:04:26.150
+Cheap per position, and it discards almost everything.
+
+46
+00:04:26.150 --> 00:04:32.850
+Extension: take each seed that survived and grow it outwards in both directions into a full local alignment.
+
+47
+00:04:32.850 --> 00:04:37.150
+More expensive, but now running on a tiny fraction of the database.
+
+48
+00:04:37.150 --> 00:04:42.800
+Evaluation: ask whether the resulting alignment scores better than chance would produce.
+
+49
+00:04:42.800 --> 00:04:46.375
+This is where a score becomes a claim about biology.
+
+50
+00:04:46.375 --> 00:04:48.825
+The funnel shape is the point.
+
+51
+00:04:48.825 --> 00:04:55.300
+Each stage is more expensive per candidate than the last, and each receives far fewer candidates.
+
+52
+00:04:55.300 --> 00:04:58.325
+That is what makes the whole thing affordable.
+
+53
+00:04:58.325 --> 00:05:18.575
+Real production BLAST adds refinements on top: the two-hit rule, where a seed is extended only when a second seed lies close by on the same diagonal; masking of low-complexity regions so that runs of a single residue do not generate spurious seeds; gapped extension; and corrections for unusual amino-acid composition.
+
+54
+00:05:18.575 --> 00:05:22.950
+We will meet the two-hit rule again shortly, when it costs us something.
+
+55
+00:05:22.950 --> 00:05:26.300
+But none of these refinements changes the logic.
+
+56
+00:05:26.300 --> 00:05:28.875
+Seed, extend, evaluate.
+
+57
+00:05:29.475 --> 00:05:32.950
+The first stage turns the query into short words.
+
+58
+00:05:32.950 --> 00:05:41.750
+For proteins a word is usually three residues, so a query of length two hundred contains a hundred and ninety-eight overlapping three-letter words.
+
+59
+00:05:41.750 --> 00:05:48.225
+Now, BLAST does not search for exact occurrences of those words only, and the reason is biological.
+
+60
+00:05:48.225 --> 00:05:57.850
+A genuinely related sequence may well have substituted a residue inside any given three-residue window without the relationship being any less real.
+
+61
+00:05:57.850 --> 00:06:03.425
+Searching for exact matches only would miss precisely the distant relatives we most want.
+
+62
+00:06:03.425 --> 00:06:16.475
+So instead, for each query word, BLAST uses a substitution matrix — BLOSUM sixty-two, from Session four — to precompute every three-letter combination scoring above a threshold T against it.
+
+63
+00:06:16.475 --> 00:06:20.600
+Those are the neighbour words, and all of them are treated as seeds.
+
+64
+00:06:20.600 --> 00:06:24.400
+Take the query word L-W-G as the example.
+
+65
+00:06:24.400 --> 00:06:27.375
+Against itself it scores twenty-one.
+
+66
+00:06:27.375 --> 00:06:40.350
+I-W-G scores nineteen, and M-W-G also scores nineteen, because leucine-to-isoleucine and leucine-to-methionine are conservative substitutions that BLOSUM sixty-two scores positively.
+
+67
+00:06:40.350 --> 00:06:49.200
+V-W-G gets eighteen, F-W-G seventeen, and then a group at sixteen — A-W-G, C-W-G, T-W-G, Y-W-G.
+
+68
+00:06:49.200 --> 00:06:55.050
+With a typical threshold of T equals twelve, forty-nine words clear the bar in total.
+
+69
+00:06:55.050 --> 00:06:57.650
+Notice the pattern in that list.
+
+70
+00:06:57.650 --> 00:07:04.000
+The tryptophan and the glycine are untouched in every one of them; it is only the leucine that varies.
+
+71
+00:07:04.000 --> 00:07:11.700
+That is BLOSUM sixty-two talking: leucine has many acceptable substitutes, tryptophan has almost none.
+
+72
+00:07:11.700 --> 00:07:15.950
+The neighbourhood of a word is shaped by the chemistry of its residues.
+
+73
+00:07:15.950 --> 00:07:18.000
+And T is a dial.
+
+74
+00:07:18.000 --> 00:07:23.675
+Lower it and you get more neighbour words, more seeds, more sensitivity and a slower search.
+
+75
+00:07:23.675 --> 00:07:26.300
+Raise it and you get the opposite.
+
+76
+00:07:26.300 --> 00:07:30.475
+Sensitivity against speed, exposed as a parameter.
+
+77
+00:07:31.075 --> 00:07:37.475
+Now the trick that actually makes BLAST fast, and it is worth being precise about where the speed comes from.
+
+78
+00:07:37.475 --> 00:07:44.375
+All those query words and their neighbours go into a lookup table — a hash table, with the word itself as the key.
+
+79
+00:07:44.375 --> 00:07:52.525
+The defining property of a hash table is that looking something up costs the same whether the table holds a thousand entries or a million.
+
+80
+00:07:52.525 --> 00:07:55.325
+The table is built once per query.
+
+81
+00:07:55.325 --> 00:08:07.325
+Then BLAST reads each database sequence once, start to end, and at every position asks a single question: is this three-letter word in my table, and if so, which query positions does it seed?
+
+82
+00:08:07.325 --> 00:08:10.250
+That question is one table lookup.
+
+83
+00:08:10.250 --> 00:08:18.500
+Not an alignment, not a comparison against the query, not anything whose cost grows with the query's length — one constant-time lookup.
+
+84
+00:08:18.500 --> 00:08:24.250
+So scanning the database is linear in the size of the database, and the constant is small.
+
+85
+00:08:24.250 --> 00:08:28.225
+This is the answer to "where does BLAST's speed come from".
+
+86
+00:08:28.225 --> 00:08:32.950
+Not from a cleverer alignment algorithm; the alignment is ordinary.
+
+87
+00:08:32.950 --> 00:08:44.600
+It comes from replacing the question "how well does the query align here?" with the question "is this word in a table?" — and only asking the expensive question at the few places where the cheap one says yes.
+
+88
+00:08:45.200 --> 00:08:48.250
+A seed is a three-letter coincidence.
+
+89
+00:08:48.250 --> 00:08:56.525
+With twenty amino acids, three-letter coincidences happen constantly by chance, so a seed is not yet evidence of anything.
+
+90
+00:08:56.525 --> 00:08:59.350
+Stage two grows it to find out.
+
+91
+00:08:59.350 --> 00:09:10.450
+BLAST extends the seed outwards in both directions, keeping a running score as it goes, using the same substitution-matrix logic as Session four but without filling a matrix.
+
+92
+00:09:10.450 --> 00:09:14.700
+The question is when to stop, and the answer is the X-drop rule.
+
+93
+00:09:14.700 --> 00:09:20.150
+BLAST tracks two numbers: the running score right now, and the best score seen so far.
+
+94
+00:09:20.150 --> 00:09:30.825
+If the running score ever falls more than X below that best score, extension stops — on the reasoning that an alignment which has given up that much ground is very unlikely to recover.
+
+95
+00:09:30.825 --> 00:09:41.325
+The worked example uses two short English strings, scoring plus one for a matching character and minus one for a mismatch, ignoring spaces, with X equal to five.
+
+96
+00:09:41.325 --> 00:09:47.225
+The query reads "The quick brown fox jumps" and the database "The quiet brown cat purrs".
+
+97
+00:09:47.225 --> 00:09:49.425
+Follow the running score.
+
+98
+00:09:49.425 --> 00:09:51.500
+It climbs through "The qu".
+
+99
+00:09:51.500 --> 00:09:58.200
+Then "ick" against "iet" mismatches and it dips — but the dip is smaller than X, so extension survives it.
+
+100
+00:09:58.200 --> 00:10:03.925
+That matters: a real alignment can contain a bad patch, and the rule is tolerant of one.
+
+101
+00:10:03.925 --> 00:10:09.350
+Then "brown" against "brown" matches all the way and the score climbs to a peak of nine.
+
+102
+00:10:09.350 --> 00:10:14.775
+After that, "fox jump" against "cat purr" diverges and the score falls steadily.
+
+103
+00:10:14.775 --> 00:10:19.325
+Once it has fallen five below the peak of nine, extension stops.
+
+104
+00:10:19.325 --> 00:10:21.975
+Now the detail people get wrong.
+
+105
+00:10:21.975 --> 00:10:26.275
+The reported alignment is not what was scored when extension stopped.
+
+106
+00:10:26.275 --> 00:10:29.875
+It is trimmed back to where the best score actually occurred.
+
+107
+00:10:29.875 --> 00:10:36.225
+So the output pairs "The quick brown" with "The quiet brown" and leaves out the diverging tail entirely.
+
+108
+00:10:36.225 --> 00:10:41.625
+The drop-off rule decides when to stop looking; the peak decides what to report.
+
+109
+00:10:41.625 --> 00:10:43.575
+Two different things.
+
+110
+00:10:43.575 --> 00:10:51.900
+An extended seed scoring above a cutoff is called a high-scoring segment pair, an HSP, and that is the unit BLAST reports.
+
+111
+00:10:51.900 --> 00:10:59.550
+One pair of sequences can give several — two proteins sharing two domains will often give one HSP per domain.
+
+112
+00:11:00.150 --> 00:11:07.775
+This slide is the statistical result underneath every E-value you will ever read, and it is worth a minute of your attention.
+
+113
+00:11:07.775 --> 00:11:14.450
+Here are four thousand alignments of shuffled sequences — no relationship at all — with their scores plotted.
+
+114
+00:11:14.450 --> 00:11:16.500
+Look at the left panel.
+
+115
+00:11:16.500 --> 00:11:19.275
+The distribution is not symmetric.
+
+116
+00:11:19.275 --> 00:11:23.050
+It is skewed, with a distinct tail running out to the right.
+
+117
+00:11:23.050 --> 00:11:26.425
+That is not an artefact; it is necessary.
+
+118
+00:11:26.425 --> 00:11:29.850
+A local alignment score is not one measurement.
+
+119
+00:11:29.850 --> 00:11:35.200
+It is the best of an enormous number of possible sub-alignments between the two sequences.
+
+120
+00:11:35.200 --> 00:11:42.500
+And the maximum of many random tries does not follow a bell curve, however nicely behaved the individual tries are.
+
+121
+00:11:42.500 --> 00:11:48.575
+It follows an extreme-value distribution — a Gumbel — which is skewed, with a long right tail.
+
+122
+00:11:48.575 --> 00:11:52.800
+Now the right panel, which is why this is not a technicality.
+
+123
+00:11:52.800 --> 00:11:59.225
+Same data, and the question: what are the chances of a chance alignment beating a score of twenty-five?
+
+124
+00:11:59.225 --> 00:12:02.325
+The measurements say about one in a thousand.
+
+125
+00:12:02.325 --> 00:12:07.925
+A normal distribution fitted with the same mean and spread says about one in a million.
+
+126
+00:12:07.925 --> 00:12:13.450
+That is wrong by three orders of magnitude, and it is wrong in the dangerous direction.
+
+127
+00:12:13.450 --> 00:12:21.325
+The normal curve would tell you a hit that chance produces once in a thousand tries is overwhelming, once-in-a-million evidence.
+
+128
+00:12:21.325 --> 00:12:31.450
+If you search a database of a million sequences, the difference between those two numbers is the difference between expecting a thousand chance hits and expecting one.
+
+129
+00:12:31.450 --> 00:12:40.025
+Karlin and Altschul proved the correct result in nineteen ninety, and the constants K and lambda in the E-value formula come directly from it.
+
+130
+00:12:40.025 --> 00:12:44.800
+Every E-value in every BLAST output you will ever read rests on this.
+
+131
+00:12:45.400 --> 00:12:49.425
+From that distribution follows the number we actually use.
+
+132
+00:12:49.425 --> 00:12:55.875
+The E-value is the number of alignments scoring at least S that you would expect to see purely by chance.
+
+133
+00:12:55.875 --> 00:13:01.525
+The formula is E equals K times m times n times e to the minus lambda S.
+
+134
+00:13:01.525 --> 00:13:03.375
+Take it apart.
+
+135
+00:13:03.375 --> 00:13:14.875
+S is the score, and it enters through a negative exponential, so a better score drives E down exponentially — which is why real E-values are written as ten to the minus thirty-something.
+
+136
+00:13:14.875 --> 00:13:18.875
+m and n are the lengths of the query and of the database.
+
+137
+00:13:18.875 --> 00:13:30.175
+K and lambda are constants belonging to the scoring system, the substitution matrix and gap penalties together, and real BLAST output reports them as the Karlin-Altschul statistics.
+
+138
+00:13:30.175 --> 00:13:33.250
+Two consequences matter in practice.
+
+139
+00:13:33.250 --> 00:13:35.450
+First, read the units.
+
+140
+00:13:35.450 --> 00:13:39.450
+An E-value is an expected count, not a probability.
+
+141
+00:13:39.450 --> 00:13:46.275
+An E-value of five means you would expect about five hits this good by chance, so finding one proves nothing.
+
+142
+00:13:46.275 --> 00:13:51.600
+An E-value of ten to the minus twenty means chance would essentially never do this.
+
+143
+00:13:51.600 --> 00:14:00.100
+Second — and this is the one people forget — a bigger database inflates E for exactly the same alignment, because n is in the formula.
+
+144
+00:14:00.100 --> 00:14:03.125
+Nothing about the alignment has changed.
+
+145
+00:14:03.125 --> 00:14:06.575
+The opportunities for chance to produce it have.
+
+146
+00:14:06.575 --> 00:14:19.100
+So an E-value is only meaningful together with the database it was computed against, and the same alignment can be convincingly significant against a small database and unremarkable against all of GenBank.
+
+147
+00:14:19.100 --> 00:14:21.725
+This is also the textbook form.
+
+148
+00:14:21.725 --> 00:14:30.450
+Real BLAST uses slightly smaller effective lengths, since an alignment cannot start right at the end of a sequence, and corrects for composition.
+
+149
+00:14:30.450 --> 00:14:32.800
+The behaviour is the same.
+
+150
+00:14:33.400 --> 00:14:38.575
+Both numbers appear in every BLAST output, and they answer different questions.
+
+151
+00:14:38.575 --> 00:14:44.175
+A raw score depends on the scoring system, so it cannot be compared between searches.
+
+152
+00:14:44.175 --> 00:14:51.675
+The bit score fixes that: S-prime equals lambda S minus the natural log of K, all over the natural log of two.
+
+153
+00:14:51.675 --> 00:15:02.550
+That normalises the scoring system away, so bit scores from completely different searches — even searches using different substitution matrices — can be compared directly.
+
+154
+00:15:02.550 --> 00:15:06.600
+What the bit score does not do is tell you about significance.
+
+155
+00:15:06.600 --> 00:15:17.725
+There is no universal bit-score cutoff, because whether a score is surprising depends on how large a space it was found in, and the bit score deliberately knows nothing about the database.
+
+156
+00:15:17.725 --> 00:15:23.200
+So: the bit score measures the quality of the alignment, independent of where you found it.
+
+157
+00:15:23.200 --> 00:15:27.250
+The E-value measures how surprised you should be to find it there.
+
+158
+00:15:27.250 --> 00:15:33.850
+Use the bit score to compare alignments across searches; read the E-value to decide whether to believe one.
+
+159
+00:15:33.850 --> 00:15:40.750
+And since the E-value moves with database size while the bit score does not, keeping both is genuinely useful.
+
+160
+00:15:41.350 --> 00:15:48.575
+Here is a real BLASTP search: human beta-globin against its five closest human globin relatives.
+
+161
+00:15:48.575 --> 00:15:59.525
+Delta-globin comes back at ninety-three point two per cent identity, with an E-value of nine times ten to the minus one hundred and five and a bit score of two hundred and eighty-four.
+
+162
+00:15:59.525 --> 00:16:05.100
+Epsilon-globin: seventy-five and a half per cent, ten to the minus eighty-seven.
+
+163
+00:16:05.100 --> 00:16:10.050
+Alpha-globin: forty-three point four per cent, ten to the minus thirty-eight.
+
+164
+00:16:10.050 --> 00:16:15.200
+Zeta-globin: thirty-five point nine per cent, ten to the minus thirty-two.
+
+165
+00:16:15.200 --> 00:16:17.350
+Four confident hits.
+
+166
+00:16:17.350 --> 00:16:28.700
+Note how the identity falls while the E-values stay astronomically small — even forty-three per cent identity over a full globin is far beyond anything chance produces.
+
+167
+00:16:28.700 --> 00:16:30.725
+Then myoglobin.
+
+168
+00:16:30.725 --> 00:16:36.475
+Sixteen per cent identity, bit score ten point eight, and an E-value of sixty-three.
+
+169
+00:16:36.475 --> 00:16:38.150
+Sixty-three.
+
+170
+00:16:38.150 --> 00:16:43.575
+Taken at face value, that is not weak evidence — it is no evidence whatsoever.
+
+171
+00:16:43.575 --> 00:16:47.125
+You would expect sixty-three hits this good by chance.
+
+172
+00:16:47.125 --> 00:16:50.325
+But myoglobin genuinely is a globin.
+
+173
+00:16:50.325 --> 00:17:01.175
+It has the globin fold, it binds haem, and it shares a real evolutionary origin with haemoglobin — we built the tree in Session four and saw the duplication that separates them.
+
+174
+00:17:01.175 --> 00:17:03.875
+The relationship is not in doubt.
+
+175
+00:17:03.875 --> 00:17:11.550
+So before the next slide, sit with the question: why does BLAST report essentially nothing for a relationship we know is real?
+
+176
+00:17:12.150 --> 00:17:16.000
+Here is the answer, and it is not about statistics.
+
+177
+00:17:16.000 --> 00:17:18.600
+It is about what BLAST looked at.
+
+178
+00:17:18.600 --> 00:17:23.675
+That E-value of sixty-three correctly evaluates the alignment BLAST found.
+
+179
+00:17:23.675 --> 00:17:28.475
+The problem is the alignment BLAST found is not the best one available.
+
+180
+00:17:28.475 --> 00:17:46.925
+Run the same search with the two-hit rule switched off — window size zero in BLAST-plus, so that every single seed gets extended — and BLAST finds a full-length alignment: a hundred and forty-five residues at twenty-five and a half per cent identity, with an E-value of five times ten to the minus eleven.
+
+181
+00:17:46.925 --> 00:17:48.750
+Not marginal.
+
+182
+00:17:48.750 --> 00:17:50.400
+Convincing.
+
+183
+00:17:50.400 --> 00:17:52.975
+The alignment was always there.
+
+184
+00:17:52.975 --> 00:18:03.500
+With the default settings, no two seeds happened to fall close enough together on the right diagonal, so that region never got extended, and the good alignment was never found.
+
+185
+00:18:03.500 --> 00:18:08.200
+The statistics were never wrong; they were computed on the wrong alignment.
+
+186
+00:18:08.200 --> 00:18:12.125
+This is the price of the bargain we made at the start of the block.
+
+187
+00:18:12.125 --> 00:18:17.600
+BLAST is fast because it skips most of the search, and occasionally it skips the answer.
+
+188
+00:18:17.600 --> 00:18:22.325
+Smith-Waterman, with its guarantee of optimality, would not have missed this.
+
+189
+00:18:22.325 --> 00:18:25.750
+The practical lesson is not "distrust BLAST".
+
+190
+00:18:25.750 --> 00:18:35.300
+It is that a poor E-value has two possible meanings — there is nothing there, or BLAST did not look in the right place — and they are indistinguishable from the output.
+
+191
+00:18:35.300 --> 00:18:45.375
+If you have an independent reason to expect a relationship and BLAST reports nothing, that is a reason to search harder, not to conclude the relationship is absent.
+
+192
+00:18:45.975 --> 00:18:52.750
+One more thing about that myoglobin alignment, which brings the database-size point back with real numbers.
+
+193
+00:18:52.750 --> 00:18:59.775
+The E-value of five times ten to the minus eleven was computed against a database of five sequences.
+
+194
+00:18:59.775 --> 00:19:06.100
+That is a ludicrously small database — essentially no opportunity for chance to produce anything.
+
+195
+00:19:06.100 --> 00:19:18.125
+Take the identical alignment, the same hundred and forty-five residues at the same identity, and evaluate it against UniProtKB instead, about nine times ten to the tenth residues.
+
+196
+00:19:18.125 --> 00:19:22.475
+The E-value becomes roughly zero point zero zero seven.
+
+197
+00:19:22.475 --> 00:19:24.600
+Still significant.
+
+198
+00:19:24.600 --> 00:19:33.350
+But only just — and from ten to the minus eleven to seven in a thousand is eight orders of magnitude, purely from the size of the haystack.
+
+199
+00:19:33.350 --> 00:19:35.850
+The alignment never changed.
+
+200
+00:19:35.850 --> 00:19:38.175
+And then the sobering part.
+
+201
+00:19:38.175 --> 00:19:48.000
+Relatives that have diverged further than myoglobin — the bacterial truncated haemoglobins, for instance — give no detectable pairwise signal at all.
+
+202
+00:19:48.000 --> 00:19:56.100
+Not a weak signal that better parameters would rescue: no signal, even with the optimal alignment and no heuristic in the way.
+
+203
+00:19:56.100 --> 00:19:59.350
+Those proteins still share the globin fold.
+
+204
+00:19:59.350 --> 00:20:02.275
+Session six shows you their structures.
+
+205
+00:20:02.275 --> 00:20:11.025
+The relationship is real and pairwise sequence comparison simply cannot see it, because too much sequence has changed while the fold stayed put.
+
+206
+00:20:11.025 --> 00:20:16.725
+That is the wall this block ends at, and it is what the second block exists to get past.
+
+207
+00:20:16.725 --> 00:20:20.200
+If one sequence is not enough, use the family.
+
+208
+00:20:20.800 --> 00:20:27.275
+Before the profiles, a word about scale, because BLAST's own bargain has been renegotiated since.
+
+209
+00:20:27.275 --> 00:20:33.725
+BLAST was designed in nineteen ninety, when protein databases held tens of thousands of sequences.
+
+210
+00:20:33.725 --> 00:20:37.175
+Metagenomic collections now hold billions.
+
+211
+00:20:37.175 --> 00:20:43.175
+At that scale even BLAST is too slow, and the reason is structural rather than incidental.
+
+212
+00:20:43.175 --> 00:20:45.825
+Look again at how BLAST works.
+
+213
+00:20:45.825 --> 00:20:52.400
+It builds a lookup table from the query and its neighbour words, and then reads through every database sequence.
+
+214
+00:20:52.400 --> 00:21:03.425
+The database scan is linear in the database size, which was fine when the database was small — but it happens again for every single query, and nothing is reused between queries.
+
+215
+00:21:03.425 --> 00:21:10.525
+MMseqs2, from Steinegger and Söding in twenty seventeen, keeps the logic and turns that part around.
+
+216
+00:21:10.525 --> 00:21:21.600
+It indexes the target database by short words — k-mers, typically six or seven residues for proteins — mapping each k-mer to the sequences and positions where it occurs.
+
+217
+00:21:21.600 --> 00:21:26.075
+That index is built once and reused for every query thereafter.
+
+218
+00:21:26.075 --> 00:21:37.075
+Then, for each k-mer in the query, it generates the similar k-mers, scored with a substitution matrix exactly as BLAST generates neighbour words, and looks them up in the index.
+
+219
+00:21:37.075 --> 00:21:42.000
+The query no longer reads the database; it asks the index where to look.
+
+220
+00:21:42.000 --> 00:21:44.975
+Same seed-extend-evaluate idea.
+
+221
+00:21:44.975 --> 00:21:47.775
+Same substitution matrices.
+
+222
+00:21:47.775 --> 00:21:50.525
+No machine learning anywhere in it.
+
+223
+00:21:50.525 --> 00:21:59.350
+The difference is purely which side gets indexed, and it is worth noticing how much follows from a decision that sounds like an implementation detail.
+
+224
+00:21:59.950 --> 00:22:08.100
+What MMseqs2 does after the lookup is the other half of the speed, and it is the funnel idea from BLAST taken much further.
+
+225
+00:22:08.100 --> 00:22:17.375
+First filter: keep only database sequences where two matching k-mers fall on the same diagonal — the same offset between query and target position.
+
+226
+00:22:17.375 --> 00:22:27.775
+That is exactly the dot-plot idea from Session four: two consistent hits lying on one diagonal are far stronger evidence of a real alignment than one hit anywhere.
+
+227
+00:22:27.775 --> 00:22:30.225
+Most candidates die here.
+
+228
+00:22:30.225 --> 00:22:37.300
+Second filter: score the survivors with a quick ungapped alignment along that diagonal, and discard the weak ones.
+
+229
+00:22:37.300 --> 00:22:49.150
+Only then, on the small set remaining, run the expensive gapped Smith-Waterman alignment — heavily optimised to use the processor's vector instructions, so that even the expensive step is fast.
+
+230
+00:22:49.150 --> 00:22:54.450
+A cascade of ever more expensive filters, each passing on a small fraction.
+
+231
+00:22:54.450 --> 00:22:59.950
+The result is often hundreds of times faster than BLAST at similar sensitivity.
+
+232
+00:22:59.950 --> 00:23:02.875
+Two things follow for the rest of the course.
+
+233
+00:23:02.875 --> 00:23:09.975
+Like PSI-BLAST, which is next, MMseqs2 can iterate — turn its hits into a profile and search again.
+
+234
+00:23:09.975 --> 00:23:16.750
+And it is what ColabFold uses to build the alignments AlphaFold needs, which you meet in Session twelve.
+
+235
+00:23:16.750 --> 00:23:22.675
+The speed of this search is part of why predicting a structure is now a thing you do in an afternoon.
+
+236
+00:23:22.675 --> 00:23:27.625
+Session six meets its structural counterpart, Foldseek, from the same group.
+

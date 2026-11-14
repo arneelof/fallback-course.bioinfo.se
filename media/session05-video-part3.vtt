@@ -1,0 +1,546 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.600
+Third block.
+
+2
+00:00:01.600 --> 00:00:05.000
+A profile knows what each position prefers.
+
+3
+00:00:05.000 --> 00:00:08.925
+It still knows nothing about where the family tolerates a gap.
+
+4
+00:00:09.525 --> 00:00:14.600
+Here is the gap problem drawn out, and it is a real mismatch with biology.
+
+5
+00:00:14.600 --> 00:00:24.050
+A PSSM gives position-specific substitution scores, but the gaps are handled by the alignment algorithm, with the same penalties everywhere.
+
+6
+00:00:24.050 --> 00:00:27.975
+Every position is charged identically for an insertion.
+
+7
+00:00:27.975 --> 00:00:30.950
+Real families are nothing like that.
+
+8
+00:00:30.950 --> 00:00:40.775
+A loop between two helices may tolerate insertions of almost any length — the loop's job is to connect, and a few extra residues often connect just as well.
+
+9
+00:00:40.775 --> 00:00:48.950
+The core of a domain almost never has one, because inserting a residue into a packed hydrophobic core means repacking the protein.
+
+10
+00:00:48.950 --> 00:01:03.175
+So the same alignment carries positions where a gap costs essentially nothing biologically and positions where it is close to prohibited, and a uniform penalty splits the difference, charging too much in the loops and far too little in the core.
+
+11
+00:01:03.175 --> 00:01:08.325
+Too much in the loops means missing real relatives that differ by a loop insertion.
+
+12
+00:01:08.325 --> 00:01:13.625
+Too little in the core means accepting alignments no protein could actually realise.
+
+13
+00:01:13.625 --> 00:01:18.650
+And note that the information needed to do better is already sitting in the alignment.
+
+14
+00:01:18.650 --> 00:01:23.825
+If a column is full of gaps in the family, insertions are clearly tolerated there.
+
+15
+00:01:23.825 --> 00:01:28.400
+The PSSM formalism simply has nowhere to put that fact.
+
+16
+00:01:28.400 --> 00:01:33.150
+The slide's alignment, by the way, is a schematic rather than real data.
+
+17
+00:01:33.750 --> 00:01:42.975
+A profile hidden Markov model puts position-specific match, insertion and deletion behaviour into a single probabilistic model of the family.
+
+18
+00:01:42.975 --> 00:01:48.575
+It uses three kinds of state, in a repeating unit, one unit per alignment position.
+
+19
+00:01:48.575 --> 00:01:51.875
+Match states represent a conserved position.
+
+20
+00:01:51.875 --> 00:01:58.975
+Each has its own per-residue emission probabilities, and plays exactly the role of one PSSM column.
+
+21
+00:01:58.975 --> 00:02:04.050
+If a profile HMM had only match states, it would be a PSSM.
+
+22
+00:02:04.050 --> 00:02:08.950
+Insert states represent extra residues between conserved positions.
+
+23
+00:02:08.950 --> 00:02:22.775
+The model emits a residue from an insert state and can then loop back to the same state, which is how it allows insertions of more than one residue — and of unbounded length, with each extra residue costing another pass round the loop.
+
+24
+00:02:22.775 --> 00:02:26.550
+Delete states represent a skipped conserved position.
+
+25
+00:02:26.550 --> 00:02:32.125
+They emit nothing at all; they are a way to pass through the model without consuming a residue.
+
+26
+00:02:32.125 --> 00:02:35.275
+Begin and End states bookend the whole thing.
+
+27
+00:02:35.275 --> 00:02:46.150
+Transitions connect the states of consecutive positions — match to next match, match to insert, match to next delete, and so on — and every transition has its own probability.
+
+28
+00:02:46.150 --> 00:02:48.675
+Here is the part that matters.
+
+29
+00:02:48.675 --> 00:02:53.500
+Those transition probabilities are learned per position, from the family.
+
+30
+00:02:53.500 --> 00:03:01.625
+So the model does not merely permit insertions; it knows where in this family insertions actually happen, and charges accordingly.
+
+31
+00:03:01.625 --> 00:03:05.625
+A gap in a loop where the family routinely has gaps is cheap.
+
+32
+00:03:05.625 --> 00:03:09.750
+The same gap in a conserved core position is expensive.
+
+33
+00:03:09.750 --> 00:03:14.375
+That is precisely the information the PSSM could not express.
+
+34
+00:03:14.975 --> 00:03:19.275
+A word on the name, since "hidden" sounds mysterious and is not.
+
+35
+00:03:19.275 --> 00:03:22.650
+Take an observed residue in a real sequence.
+
+36
+00:03:22.650 --> 00:03:26.050
+Did it come from a match state or an insert state?
+
+37
+00:03:26.050 --> 00:03:28.775
+The model never tells you directly.
+
+38
+00:03:28.775 --> 00:03:31.325
+All you see is the residue.
+
+39
+00:03:31.325 --> 00:03:43.625
+Which state produced it has to be inferred — and it is inferred not residue by residue but from the path through the states that best explains the whole sequence, using emission and transition probabilities together.
+
+40
+00:03:43.625 --> 00:03:53.925
+A residue near a region the family usually inserts into is probably an insert; the same residue where the family is rigidly conserved is probably a match.
+
+41
+00:03:53.925 --> 00:03:58.725
+The evidence is the whole sequence and the whole model, not the one position.
+
+42
+00:03:58.725 --> 00:04:03.150
+So the states generate what you observe, but they themselves stay hidden.
+
+43
+00:04:03.150 --> 00:04:09.375
+That is the general meaning of "hidden" in any hidden Markov model, and it is the whole of the mystery.
+
+44
+00:04:09.375 --> 00:04:13.575
+The two paths drawn on this slide are a schematic of that idea.
+
+45
+00:04:14.175 --> 00:04:16.800
+To put the two side by side.
+
+46
+00:04:16.800 --> 00:04:25.075
+A PSSM: one row per position, substitution scores only, gaps handled outside the model with uniform penalties.
+
+47
+00:04:25.075 --> 00:04:30.725
+Simple, fast, and — as we saw — already a linear model you can read entry by entry.
+
+48
+00:04:30.725 --> 00:04:42.075
+A profile HMM: match, insert and delete states per position, with learned transition probabilities, so insertions and deletions are part of the model rather than bolted on.
+
+49
+00:04:42.075 --> 00:04:44.950
+The practical difference is concrete.
+
+50
+00:04:44.950 --> 00:04:56.675
+A profile HMM can recognise a new family member even when it has a genuinely different number of residues in a variable region, because the model has learned that this region varies in length.
+
+51
+00:04:56.675 --> 00:05:01.750
+A PSSM with uniform gap penalties can only approximate that.
+
+52
+00:05:01.750 --> 00:05:09.125
+Which is why profile HMMs, not PSSMs, sit behind the protein family databases — Pfam above all.
+
+53
+00:05:09.125 --> 00:05:19.825
+The tools are HMMER, with hmmsearch to search using a model and jackhmmer to iterate one from a single sequence, exactly as PSI-BLAST iterates a PSSM.
+
+54
+00:05:19.825 --> 00:05:35.850
+And then HHblits, which goes a step further and aligns a profile against a database of profiles rather than against plain sequences — using family information on both sides at once, which reaches relationships neither BLAST nor a single-profile search will find.
+
+55
+00:05:35.850 --> 00:05:40.650
+It is slower, which is why BLAST is still the default for everyday work.
+
+56
+00:05:41.250 --> 00:05:46.600
+The same idea at production scale, on the protein we have followed since Session three.
+
+57
+00:05:46.600 --> 00:05:57.800
+Search Pfam's library of profile HMMs against the real UniProt entry P68871, human beta-globin, fetched live from EBI's InterPro API.
+
+58
+00:05:57.800 --> 00:06:13.125
+The search finds PF00042, the Globin family, covering residues twenty-seven to a hundred and forty-two of the hundred and forty-seven-residue protein, with an E-value of around one point three times ten to the minus twenty-nine.
+
+59
+00:06:13.125 --> 00:06:18.550
+In a database of this size, essentially no match that good is expected by chance.
+
+60
+00:06:18.550 --> 00:06:20.900
+Two things to take from it.
+
+61
+00:06:20.900 --> 00:06:29.875
+The domain does not span the whole protein — it starts at residue twenty-seven, and the first twenty-six residues are not part of the globin domain.
+
+62
+00:06:29.875 --> 00:06:38.550
+A profile HMM finds a domain within a sequence, not a whole-sequence resemblance, and real proteins are assemblies of domains.
+
+63
+00:06:38.550 --> 00:06:41.700
+And compare this with where the block started.
+
+64
+00:06:41.700 --> 00:06:47.725
+BLAST, with one sequence against a fixed matrix, gave myoglobin an E-value of sixty-three.
+
+65
+00:06:47.725 --> 00:06:56.075
+A profile HMM, with a family behind it, gives beta-globin's own family membership an E-value of ten to the minus twenty-nine.
+
+66
+00:06:56.075 --> 00:06:59.025
+That is the value of knowing the family.
+
+67
+00:06:59.025 --> 00:07:05.250
+The lab does the same search on HIV-one's Gag-Pol polyprotein, through the same API.
+
+68
+00:07:05.850 --> 00:07:11.550
+Now the limitation both models share, because it is the one that drives the rest of the course.
+
+69
+00:07:11.550 --> 00:07:14.850
+Both score a sequence position by position.
+
+70
+00:07:14.850 --> 00:07:20.975
+The score is a sum over columns, so every position contributes independently of every other.
+
+71
+00:07:20.975 --> 00:07:27.775
+Whatever the profile has learned about position forty, it applies regardless of what sits at position ninety.
+
+72
+00:07:27.775 --> 00:07:30.950
+Real proteins are not always like that.
+
+73
+00:07:30.950 --> 00:07:40.850
+When mutations interact — when the effect of one depends on the residue at another position — the phenomenon is called epistasis, and no profile can represent it.
+
+74
+00:07:40.850 --> 00:07:50.225
+A sum of independent terms cannot express "these two are fine individually and disastrous together", because the sum does not know they occurred together.
+
+75
+00:07:50.225 --> 00:07:53.700
+This matters concretely, not just in principle.
+
+76
+00:07:53.700 --> 00:08:05.175
+Session nine shows a protein where it dominates: all hundred and sixty thousand variants at four positions of GB1, where the effect of a mutation genuinely depends on its partners.
+
+77
+00:08:05.175 --> 00:08:17.675
+Session twelve shows how pairwise models fitted to an alignment — direct coupling analysis — add those interactions back, and why that turned out to be the key to predicting contacts and eventually structures.
+
+78
+00:08:17.675 --> 00:08:32.875
+And the same limitation in its simplest possible form is Session seven's XOR problem: a function no sum of independent weighted inputs can compute, which is exactly why a single perceptron is not enough and why networks have hidden layers.
+
+79
+00:08:32.875 --> 00:08:37.350
+The profile's limitation and the perceptron's are the same limitation.
+
+80
+00:08:37.950 --> 00:08:46.725
+Rather than take any of that on trust, here is a real profile HMM opened up — Pfam's Globin model, the same file HMMER uses.
+
+81
+00:08:46.725 --> 00:08:53.725
+The top panel shows, for each of the hundred and seventeen match states, the probability of each amino acid.
+
+82
+00:08:53.725 --> 00:08:59.650
+Each match state carries twenty emission probabilities, stored as negative natural logs.
+
+83
+00:08:59.650 --> 00:09:11.175
+A few columns are almost fixed — you can see one histidine and three near-invariant positions — and those are the residues Session four's logo identified as the ones globins cannot do without.
+
+84
+00:09:11.175 --> 00:09:13.650
+But look at most of the columns.
+
+85
+00:09:13.650 --> 00:09:15.850
+They are far from fixed.
+
+86
+00:09:15.850 --> 00:09:22.100
+The model is recording a distribution over residues at each position, not a consensus letter.
+
+87
+00:09:22.100 --> 00:09:26.950
+That is the thing a consensus sequence throws away and a profile keeps.
+
+88
+00:09:26.950 --> 00:09:32.875
+The bottom panel is the transitions, and this is what a PSSM cannot express at all.
+
+89
+00:09:32.875 --> 00:09:36.825
+Each match state has seven transition probabilities.
+
+90
+00:09:36.825 --> 00:09:49.575
+The typical match-to-insert probability is about nought point zero zero four and match-to-delete about nought point zero zero two — so for most of the model, insertions and deletions are strongly discouraged.
+
+91
+00:09:49.575 --> 00:09:54.950
+At a few positions, though, they rise to between nought point one and nought point seven.
+
+92
+00:09:54.950 --> 00:09:59.575
+A hundred-fold increase, concentrated at specific positions.
+
+93
+00:09:59.575 --> 00:10:04.675
+Those are the loops between helices, where globins genuinely differ in length.
+
+94
+00:10:04.675 --> 00:10:08.325
+That is the whole argument of this block in one picture.
+
+95
+00:10:08.325 --> 00:10:15.075
+A PSSM charges the same gap penalty at every one of those hundred and seventeen positions.
+
+96
+00:10:15.075 --> 00:10:24.550
+The HMM has learned, from the family, which handful of positions are the ones where length actually varies — and it got that for free from the same alignment.
+
+97
+00:10:25.150 --> 00:10:31.150
+Which brings us back to the picture from the start of the session, and to a question I want to leave open.
+
+98
+00:10:31.150 --> 00:10:37.575
+Everything in this session has been getting faster and more sensitive by knowing more about the family.
+
+99
+00:10:37.575 --> 00:10:56.575
+And it continues: MMseqs2 on GPUs runs single-protein searches six times faster than CPU methods on two by sixty-four cores, speeds up ColabFold's structure prediction by thirty-one point eight times over the standard AlphaFold2 pipeline, and Foldseek by four to twenty-seven times.
+
+100
+00:10:56.575 --> 00:11:00.150
+But alongside that, something different is happening.
+
+101
+00:11:00.150 --> 00:11:12.625
+Profiles are being replaced by embedding vectors from protein language models — Session eleven — where a sequence becomes a few hundred numbers and two sequences are compared by the distance between their vectors.
+
+102
+00:11:12.625 --> 00:11:15.575
+It works, often better than a profile.
+
+103
+00:11:15.575 --> 00:11:18.350
+Now hold the two side by side.
+
+104
+00:11:18.350 --> 00:11:23.800
+The profile HMM on the previous slide can be read and checked, column by column.
+
+105
+00:11:23.800 --> 00:11:30.200
+You can look at match state ninety-two, see that it is almost all histidine, and connect it to the haem iron.
+
+106
+00:11:30.200 --> 00:11:36.175
+You can look at the transition probabilities, find the loops, and check them against the known structure.
+
+107
+00:11:36.175 --> 00:11:41.100
+If the model is wrong about a position, you can point at the number that is wrong.
+
+108
+00:11:41.100 --> 00:11:43.950
+An embedding cannot be read that way.
+
+109
+00:11:43.950 --> 00:11:46.575
+There is no column ninety-two.
+
+110
+00:11:46.575 --> 00:11:50.125
+There is no entry you can check against the chemistry.
+
+111
+00:11:50.125 --> 00:11:53.750
+So the question: what do we gain, and what do we lose?
+
+112
+00:11:53.750 --> 00:11:57.975
+We gain sensitivity and speed, which are not small things.
+
+113
+00:11:57.975 --> 00:12:04.575
+We lose the ability to inspect, to check against what we know, and to say why the model thinks what it thinks.
+
+114
+00:12:04.575 --> 00:12:13.050
+This is the same question Session four ended on with learned similarity in place of a substitution matrix, and it will keep coming back.
+
+115
+00:12:13.050 --> 00:12:16.025
+I do not think it has a settled answer.
+
+116
+00:12:16.625 --> 00:12:18.975
+To draw the session together.
+
+117
+00:12:18.975 --> 00:12:25.000
+BLAST: fast, one matrix for every position, E-values tied to the database it searched.
+
+118
+00:12:25.000 --> 00:12:31.950
+It trades optimality for speed, and we saw it skip a real myoglobin alignment that was sitting there to be found.
+
+119
+00:12:31.950 --> 00:12:40.250
+PSI-BLAST: a PSSM refined by iteration, so the scoring becomes specific to the family rather than generic.
+
+120
+00:12:40.250 --> 00:12:49.650
+More sensitive to remote homologs, and vulnerable to profile drift, because a model that selects its own training data can reinforce its own mistakes.
+
+121
+00:12:49.650 --> 00:12:58.825
+Profile HMMs: match, insert and delete states with learned transition probabilities, so the model knows where the family tolerates gaps.
+
+122
+00:12:58.825 --> 00:13:05.800
+This is what Pfam is built from, and what finds a globin domain in a real sequence at ten to the minus twenty-nine.
+
+123
+00:13:05.800 --> 00:13:15.725
+The thread, as promised at the start: the more the search knows about the family, the more distant the relatives it can find — and the more carefully the family has to be built.
+
+124
+00:13:15.725 --> 00:13:20.150
+BLAST knows nothing about the family and misses distant relatives.
+
+125
+00:13:20.150 --> 00:13:23.875
+A profile HMM knows a great deal and finds them.
+
+126
+00:13:23.875 --> 00:13:30.125
+In between sits PSI-BLAST, which builds its own family and can therefore build the wrong one.
+
+127
+00:13:30.125 --> 00:13:35.225
+And all three share a limitation: each position is scored independently.
+
+128
+00:13:35.225 --> 00:13:39.350
+Interactions between positions are invisible to all of them.
+
+129
+00:13:39.950 --> 00:13:42.150
+That is Session five.
+
+130
+00:13:42.150 --> 00:13:58.500
+The notebook reproduces every worked example in code — it traces the X-drop extension, builds the PSSM from the toy alignment with and without pseudocounts including the rare-residue check, and fetches beta-globin's real Pfam hit live from the InterPro API.
+
+131
+00:13:58.500 --> 00:14:23.075
+The lab identifies an unknown gene with a real NCBI BLAST search — it turns out to be a sixth human globin-family gene, continuing the thread — then builds a Clustal Omega alignment and PSSM of five globin-family proteins, compares round one with round three of an iterated profile search with jackhmmer against every sequence in the PDB, and searches Pfam for HIV-one's Gag-Pol polyprotein.
+
+132
+00:14:23.075 --> 00:14:31.225
+Every search runs on EMBL-EBI's servers through web APIs, so there is nothing to install and it all runs on Colab.
+
+133
+00:14:31.225 --> 00:14:34.625
+Session six follows the wall this session hit.
+
+134
+00:14:34.625 --> 00:14:44.600
+A remote homolog can become unrecognisable from its sequence while its fold stays conserved — the bacterial truncated haemoglobins being the case in point.
+
+135
+00:14:44.600 --> 00:14:54.525
+So Session six turns to structure itself: the four levels of protein structure, hands-on in PyMOL, structure alignment, and structural search with Foldseek.
+
+136
+00:14:54.525 --> 00:14:56.150
+See you there.
+

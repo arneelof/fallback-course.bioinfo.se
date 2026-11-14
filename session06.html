@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>6  Session 6: Protein Structure – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./notebooks/session06-protein-structure-in-code.html" rel="next"/>
+<link href="./notebooks/session05-blast-and-profiles-in-code.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./session06.html"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#learning-goals" href="#learning-goals" id="toc-learning-goals"><span class="header-section-number">6.1</span> Learning goals</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s06-levels" href="#sec-s06-levels" id="toc-sec-s06-levels"><span class="header-section-number">6.2</span> Sequence becomes structure</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#four-levels-four-computational-tasks" href="#four-levels-four-computational-tasks" id="toc-four-levels-four-computational-tasks"><span class="header-section-number">6.2.1</span> Four levels, four computational tasks</a></li>
+<li><a class="nav-link" data-scroll-target="#what-the-backbone-can-and-cannot-do" href="#what-the-backbone-can-and-cannot-do" id="toc-what-the-backbone-can-and-cannot-do"><span class="header-section-number">6.2.2</span> What the backbone can and cannot do</a></li>
+<li><a class="nav-link" data-scroll-target="#haemoglobin-all-four-levels-in-one-protein" href="#haemoglobin-all-four-levels-in-one-protein" id="toc-haemoglobin-all-four-levels-in-one-protein"><span class="header-section-number">6.2.3</span> Haemoglobin: all four levels in one protein</a></li>
+<li><a class="nav-link" data-scroll-target="#does-the-sequence-determine-the-structure" href="#does-the-sequence-determine-the-structure" id="toc-does-the-sequence-determine-the-structure"><span class="header-section-number">6.2.4</span> Does the sequence determine the structure?</a></li>
+<li><a class="nav-link" data-scroll-target="#a-structure-as-a-matrix-distance-and-contact-maps" href="#a-structure-as-a-matrix-distance-and-contact-maps" id="toc-a-structure-as-a-matrix-distance-and-contact-maps"><span class="header-section-number">6.2.5</span> A structure as a matrix: distance and contact maps</a></li>
+<li><a class="nav-link" data-scroll-target="#looking-at-structures-pymol" href="#looking-at-structures-pymol" id="toc-looking-at-structures-pymol"><span class="header-section-number">6.2.6</span> Looking at structures: PyMOL</a></li>
+<li><a class="nav-link" data-scroll-target="#further-reading" href="#further-reading" id="toc-further-reading"><span class="header-section-number">6.2.7</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s06-compare" href="#sec-s06-compare" id="toc-sec-s06-compare"><span class="header-section-number">6.3</span> Comparing proteins in 3D</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#sec-s06-structure-evidence" href="#sec-s06-structure-evidence" id="toc-sec-s06-structure-evidence"><span class="header-section-number">6.3.1</span> Read the evidence behind the coordinates</a></li>
+<li><a class="nav-link" data-scroll-target="#sequence-alignment-versus-structure-alignment" href="#sequence-alignment-versus-structure-alignment" id="toc-sequence-alignment-versus-structure-alignment"><span class="header-section-number">6.3.2</span> Sequence alignment versus structure alignment</a></li>
+<li><a class="nav-link" data-scroll-target="#measuring-structural-similarity-rmsd-and-tm-score" href="#measuring-structural-similarity-rmsd-and-tm-score" id="toc-measuring-structural-similarity-rmsd-and-tm-score"><span class="header-section-number">6.3.3</span> Measuring structural similarity: RMSD and TM-score</a></li>
+<li><a class="nav-link" data-scroll-target="#sec-s06-superposition" href="#sec-s06-superposition" id="toc-sec-s06-superposition"><span class="header-section-number">6.3.4</span> The arithmetic underneath</a></li>
+<li><a class="nav-link" data-scroll-target="#dali-comparing-distance-maps" href="#dali-comparing-distance-maps" id="toc-dali-comparing-distance-maps"><span class="header-section-number">6.3.5</span> DALI: comparing distance maps</a></li>
+<li><a class="nav-link" data-scroll-target="#foldseek-structure-search-at-sequence-search-speed" href="#foldseek-structure-search-at-sequence-search-speed" id="toc-foldseek-structure-search-at-sequence-search-speed"><span class="header-section-number">6.3.6</span> Foldseek: structure search at sequence-search speed</a></li>
+<li><a class="nav-link" data-scroll-target="#further-reading-1" href="#further-reading-1" id="toc-further-reading-1"><span class="header-section-number">6.3.7</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s06-states" href="#sec-s06-states" id="toc-sec-s06-states"><span class="header-section-number">6.4</span> Domains, complexes and conformational states</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#structural-domains" href="#structural-domains" id="toc-structural-domains"><span class="header-section-number">6.4.1</span> Structural domains</a></li>
+<li><a class="nav-link" data-scroll-target="#quaternary-structure-interfaces-and-ligands" href="#quaternary-structure-interfaces-and-ligands" id="toc-quaternary-structure-interfaces-and-ligands"><span class="header-section-number">6.4.2</span> Quaternary structure, interfaces and ligands</a></li>
+<li><a class="nav-link" data-scroll-target="#predicting-a-complex-docking" href="#predicting-a-complex-docking" id="toc-predicting-a-complex-docking"><span class="header-section-number">6.4.3</span> Predicting a complex: docking</a></li>
+<li><a class="nav-link" data-scroll-target="#judging-a-predicted-complex" href="#judging-a-predicted-complex" id="toc-judging-a-predicted-complex"><span class="header-section-number">6.4.4</span> Judging a predicted complex</a></li>
+<li><a class="nav-link" data-scroll-target="#one-protein-more-than-one-structure-haemoglobin-t-and-r" href="#one-protein-more-than-one-structure-haemoglobin-t-and-r" id="toc-one-protein-more-than-one-structure-haemoglobin-t-and-r"><span class="header-section-number">6.4.5</span> One protein, more than one structure: haemoglobin T and R</a></li>
+<li><a class="nav-link" data-scroll-target="#further-reading-2" href="#further-reading-2" id="toc-further-reading-2"><span class="header-section-number">6.4.6</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#sec-s06-predict" href="#sec-s06-predict" id="toc-sec-s06-predict"><span class="header-section-number">6.5</span> From structure back to sequence prediction</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#secondary-structure-as-a-prediction-target" href="#secondary-structure-as-a-prediction-target" id="toc-secondary-structure-as-a-prediction-target"><span class="header-section-number">6.5.1</span> Secondary structure as a prediction target</a></li>
+<li><a class="nav-link" data-scroll-target="#predicting-the-whole-fold" href="#predicting-the-whole-fold" id="toc-predicting-the-whole-fold"><span class="header-section-number">6.5.2</span> Predicting the whole fold</a></li>
+<li><a class="nav-link" data-scroll-target="#further-reading-3" href="#further-reading-3" id="toc-further-reading-3"><span class="header-section-number">6.5.3</span> Further reading</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#the-course-notebook" href="#the-course-notebook" id="toc-the-course-notebook"><span class="header-section-number">6.6</span> The course notebook</a></li>
+<li><a class="nav-link" data-scroll-target="#check-your-understanding" href="#check-your-understanding" id="toc-check-your-understanding"><span class="header-section-number">6.7</span> Check your understanding</a></li>
+<li><a class="nav-link" data-scroll-target="#the-lab" href="#the-lab" id="toc-the-lab"><span class="header-section-number">6.8</span> The lab</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#submitting-this-lab" href="#submitting-this-lab" id="toc-submitting-this-lab"><span class="header-section-number">6.8.1</span> Submitting this lab</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#whats-next" href="#whats-next" id="toc-whats-next"><span class="header-section-number">6.9</span> What’s next</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Sources for this page:</strong> Petras Kundrotas’s KB8029 lecture “Protein Structure” (Feb 2026) — this page follows its structure for the levels- of-structure and structure-prediction material, adapted and substantially shortened, not copied verbatim; Wikipedia, <a href="https://en.wikipedia.org/wiki/Protein_structure">Protein structure</a>, <a href="https://en.wikipedia.org/wiki/Alpha_helix">Alpha helix</a>, <a href="https://en.wikipedia.org/wiki/Beta_sheet">Beta sheet</a>, <a href="https://en.wikipedia.org/wiki/Anfinsen%27s_dogma">Anfinsen’s dogma</a>, <a href="https://en.wikipedia.org/wiki/Homology_modeling">Homology modeling</a>, <a href="https://en.wikipedia.org/wiki/Threading_(protein_sequence)">Threading (protein sequence)</a>, <a href="https://en.wikipedia.org/wiki/Root-mean-square_deviation_of_atomic_positions">Root-mean-square deviation of atomic positions</a>, <a href="https://en.wikipedia.org/wiki/Template_modeling_score">Template modeling score</a>, <a href="https://en.wikipedia.org/wiki/CASP">CASP</a> — CC BY-SA 4.0; RCSB <a href="https://pdb101.rcsb.org/">PDB-101</a> — CC BY 4.0; Baldwin &amp; Chothia (1979), “Haemoglobin: the structural changes related to ligand binding and its allosteric mechanism,” <em>Journal of Molecular Biology</em> 129:175-220 (<a href="https://pubmed.ncbi.nlm.nih.gov/39173/">PubMed</a>). Structural-classification and structural-alignment sources: Murzin, Brenner, Hubbard &amp; Chothia (1995), “SCOP: a structural classification of proteins database for the investigation of sequences and structures,” <em>J. Mol. Biol.</em> 247:536-540 (<a href="https://pubmed.ncbi.nlm.nih.gov/7723011/">PubMed</a>); Orengo, Michie, Jones, Jones, Swindells &amp; Thornton (1997), “CATH — a hierarchic classification of protein domain structures,” <em>Structure</em> 5:1093-1108 (<a href="https://pubmed.ncbi.nlm.nih.gov/9309224/">PubMed</a>); Cheng, Schaeffer, Liao et al. (2014), “ECOD: an evolutionary classification of protein domains,” <em>PLoS Computational Biology</em> 10:e1003926 (<a href="https://pubmed.ncbi.nlm.nih.gov/25474468/">PubMed</a>); Lau, Bordin, Kandathil et al. (2024), “Exploring structural diversity across the protein universe with The Encyclopedia of Domains,” <em>Science</em> 386:eadq4946 (<a href="https://pubmed.ncbi.nlm.nih.gov/39480926/">PubMed</a>); Holm &amp; Sander (1993), “Protein structure comparison by alignment of distance matrices” (DALI), <em>J. Mol. Biol.</em> 233:123-138 (<a href="https://pubmed.ncbi.nlm.nih.gov/8377180/">PubMed</a>); Zhang &amp; Skolnick (2005), “TM-align: a protein structure alignment algorithm based on the TM-score,” <em>Nucleic Acids Research</em> 33:2302-2309 (<a href="https://pubmed.ncbi.nlm.nih.gov/15849316/">PubMed</a>); van Kempen, Kim, Tumescheit, Mirdita, Lee, Gilchrist, Söding &amp; Steinegger (2024), “Fast and accurate protein structure search with Foldseek,” <em>Nature Biotechnology</em> 42:243-246 (<a href="https://pubmed.ncbi.nlm.nih.gov/37156916/">PubMed</a>) — CC BY 4.0 (Foldseek paper). The two real crystal structures used below and in the notebook, PDB entries <a href="https://www.rcsb.org/structure/2HHB">2HHB</a> (deoxy hemoglobin) and <a href="https://www.rcsb.org/structure/1HHO">1HHO</a> (oxy hemoglobin), were fetched live from the PDB archive — structure coordinate data is <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> (public domain), as is a third real structure used below, <a href="https://www.rcsb.org/structure/1EMA">1EMA</a> (green fluorescent protein), as are <a href="https://www.rcsb.org/structure/3RGK">3RGK</a> (human myoglobin, a K45R variant), <a href="https://www.rcsb.org/structure/1OJ6">1OJ6</a> (human neuroglobin) and <a href="https://www.rcsb.org/structure/1IDR">1IDR</a> (<em>M. tuberculosis</em> truncated hemoglobin N). All secondary-structure counts, distances, distance maps, alignments, TM-scores and rendered figures below were computed fresh for this page and its notebook using <a href="https://biopython.org/">Biopython</a>, a locally-run <a href="https://pymol.org/">PyMOL</a> (open-source), TM-align (through <a href="https://pypi.org/project/tmtools/"><code>tmtools</code></a>), and a locally-run <a href="https://github.com/steineggerlab/foldseek">Foldseek</a> (open-source), not taken from the lecture’s own numbers or images; CATH and Pfam classifications were fetched live from the PDBe and InterPro APIs.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><strong>Notebook:</strong> <a href="notebooks/session06-protein-structure-in-code.html" target="_blank">Session 6 — Protein Structure in code</a> — the code behind this page. <a download="" href="./notebooks/session06-protein-structure-in-code.html">Download it</a> to run it yourself.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Tense and relaxed
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<blockquote class="blockquote">
+<p>Haemoglobin walks into a bar. The bartender says: “You look tense.”</p>
+<p>Haemoglobin: “Give me some oxygen and I’ll relax.”</p>
+</blockquote>
+</div>
+</div>
+<section class="level2" data-number="6.1" id="learning-goals">
+<h2 class="anchored" data-anchor-id="learning-goals" data-number="6.1"><span class="header-section-number">6.1</span> Learning goals</h2>
+<p>By the end of this session you should be able to:</p>
+<ul>
+<li>describe the four levels of protein structure, using haemoglobin, and name the computational task that belongs to each;</li>
+<li>represent a structure as coordinates, as a distance map and as a contact map, and explain what each makes easy to see;</li>
+<li>explain the difference between a sequence alignment and a structure alignment, and why structure is often more conserved than sequence;</li>
+<li>interpret RMSD and TM-score, and explain at a conceptual level how DALI and Foldseek compare structures;</li>
+<li>explain why a single PDB entry is not necessarily “the” structure of a protein;</li>
+<li>state secondary-structure prediction as a supervised learning problem: what goes in, what comes out.</li>
+</ul>
+<p>The question for this session is: <strong>what information about a protein is contained in its sequence, what becomes visible only in 3D, and how can computers connect the two?</strong> Sessions 3–5 worked with sequences, retrieving them, aligning them and searching for families. In Session 3 you also found structures, but only as <em>database records</em> (a PDB entry, an AlphaFold model). In this session the structure itself becomes the data. Its coordinates can be turned into distances, secondary structure, domains and interfaces, and compared with other structures. The course’s globin thread continues as well. In Session 3 you looked up <em>HBB</em>’s identifiers, in Session 4 you aligned globin sequences and in Session 5 you searched for the globin family, and now you compare globin structures.</p>
+</section>
+<section class="level2" data-number="6.2" id="sec-s06-levels">
+<h2 class="anchored" data-anchor-id="sec-s06-levels" data-number="6.2"><span class="header-section-number">6.2</span> Sequence becomes structure</h2>
+<section class="level3" data-number="6.2.1" id="four-levels-four-computational-tasks">
+<h3 class="anchored" data-anchor-id="four-levels-four-computational-tasks" data-number="6.2.1"><span class="header-section-number">6.2.1</span> Four levels, four computational tasks</h3>
+<p>A protein starts as a <strong>polypeptide chain</strong>, a linear polymer of amino acids, which folds into a 3D shape. Structural biology describes the result at four levels, and in this course each level comes with its own computational problem:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s06-levels">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s06-levels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 6.1: The four levels of protein structure and where they appear in the course.
+</figcaption>
+<div aria-describedby="tbl-s06-levels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+<col style="width: 25%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Level</th>
+<th>What it is</th>
+<th>Computational task</th>
+<th>Where in the course</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Primary</strong></td>
+<td>the amino-acid sequence</td>
+<td>alignment, BLAST, profiles</td>
+<td>Sessions 3–5</td>
+</tr>
+<tr class="even">
+<td><strong>Secondary</strong></td>
+<td>local backbone shapes: α-helix, β-strand, coil</td>
+<td>prediction from sequence</td>
+<td>Sessions 7–11</td>
+</tr>
+<tr class="odd">
+<td><strong>Tertiary</strong></td>
+<td>the 3D fold of one chain</td>
+<td>structure comparison, prediction</td>
+<td>this session; Session 12</td>
+</tr>
+<tr class="even">
+<td><strong>Quaternary</strong></td>
+<td>several chains packed together</td>
+<td>interfaces, complexes</td>
+<td>this session; Session 12</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<ul>
+<li>An <strong>α-helix</strong> is a coil held together by hydrogen bonds between the backbone N-H and C=O groups of residues four apart. A <strong>β-sheet</strong> is built from extended <strong>β-strands</strong> that are hydrogen-bonded edge to edge. Everything else is called <strong>coil</strong>. Programs such as DSSP assign these labels from the coordinates of a solved structure.</li>
+<li>The tertiary fold is held together mainly by the <strong>hydrophobic effect</strong> (non-polar side chains bury themselves away from water), together with hydrogen bonds, electrostatic interactions and van der Waals contacts. Two of these are worth naming. A <strong>salt bridge</strong> is an electrostatic interaction between oppositely charged side chains: a lysine or arginine against an aspartate or glutamate. A <strong>disulfide bond</strong> is a covalent link between two cysteine sulphur atoms, far stronger than the rest, and the only one of these interactions that is a real bond rather than an attraction.</li>
+<li>Many proteins work as a single chain, while others assemble into complexes of two to hundreds of chains.</li>
+</ul>
+</section>
+<section class="level3" data-number="6.2.2" id="what-the-backbone-can-and-cannot-do">
+<h3 class="anchored" data-anchor-id="what-the-backbone-can-and-cannot-do" data-number="6.2.2"><span class="header-section-number">6.2.2</span> What the backbone can and cannot do</h3>
+<p>The chain is often called flexible, which is true but narrower than it sounds. Each residue contributes three <strong>dihedral angles</strong> to the backbone: φ about the N–Cα bond, ψ about Cα–C, and ω about the peptide bond that joins one residue to the next. Only the first two turn freely. The peptide bond has partial double-bond character, so ω is held near 180° — the <em>trans</em> form — and only about 0.3% of residues are found in the <em>cis</em> form, most of them before a proline.</p>
+<p>A conformation of the backbone is therefore two numbers per residue, not three, and that is why the <strong>Ramachandran plot</strong> — φ against ψ — can show the conformation of a whole chain on one pair of axes. Residues in an α-helix fall in one tight cluster, because a helix <em>is</em> the same pair of angles repeated; residues in a β-strand fall in another; coil residues scatter between them. The clusters are not drawn on the plot. They are where the residues land.</p>
+</section>
+<section class="level3" data-number="6.2.3" id="haemoglobin-all-four-levels-in-one-protein">
+<h3 class="anchored" data-anchor-id="haemoglobin-all-four-levels-in-one-protein" data-number="6.2.3"><span class="header-section-number">6.2.3</span> Haemoglobin: all four levels in one protein</h3>
+<p>Haemoglobin is a <strong>heterotetramer</strong> of two α-globin chains (141 residues) and two β-globin chains (146 residues; β-globin is <em>HBB</em>, this course’s running example since Session 3). Each chain folds on its own and carries an oxygen-binding haem group. Using PyMOL’s secondary-structure algorithm (<code>dss</code>), the notebook computes that one β chain is <strong>118 of 146 residues (80.8%) α-helix and 0% β-strand</strong>. The PDB entry’s own annotation, which Session 7 uses, gives 117 helical residues, because the two methods differ slightly in where exactly a helix ends.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session06-hemoglobin-tetramer">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session06-hemoglobin-tetramer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session06-hemoglobin-tetramer.png" style="width:85.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session06-hemoglobin-tetramer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 6.1: PDB entry <code>2HHB</code>, human deoxyhaemoglobin: two α chains (blue/cyan), two β chains (salmon/pink), four haem iron atoms (orange spheres). Rendered from the real structure with PyMOL.
+</figcaption>
+</figure>
+</div>
+</section>
+<section class="level3" data-number="6.2.4" id="does-the-sequence-determine-the-structure">
+<h3 class="anchored" data-anchor-id="does-the-sequence-determine-the-structure" data-number="6.2.4"><span class="header-section-number">6.2.4</span> Does the sequence determine the structure?</h3>
+<p>Whether a computer can predict a structure at all depends on how much of it the sequence determines. In the 1960s Christian Anfinsen showed that ribonuclease, unfolded in the test tube, refolds into its active shape on its own once the denaturant is removed. For many small globular proteins, then, the sequence contains enough information to specify the native fold under the right conditions, and this principle is what makes structure prediction possible. It is not a law for every protein, however. Some proteins need chaperones to fold efficiently, many need a ligand, cofactor or binding partner, some switch between alternative states (haemoglobin itself, below), and <strong>intrinsically disordered</strong> regions have no single fold.</p>
+<p>Two kinds of interaction build a fold. <strong>Local</strong> interactions, between residues close in sequence, form secondary structure. The hydrogen bonds of an α-helix, for example, connect residues <span class="math inline">\(i\)</span> and <span class="math inline">\(i+4\)</span>. <strong>Long-range</strong> interactions, between residues far apart in sequence but close in space, pack the helices and strands into a tertiary structure. Local structure can therefore be partly guessed from a short window of sequence (Session 7), whereas long-range structure cannot, which is why tertiary-structure prediction is so much harder.</p>
+</section>
+<section class="level3" data-number="6.2.5" id="a-structure-as-a-matrix-distance-and-contact-maps">
+<h3 class="anchored" data-anchor-id="a-structure-as-a-matrix-distance-and-contact-maps" data-number="6.2.5"><span class="header-section-number">6.2.5</span> A structure as a matrix: distance and contact maps</h3>
+<p>A structure file is a list of atomic coordinates, but coordinates are not always the most useful representation. An alternative is the distance between every pair of residues, which for a chain of <span class="math inline">\(L\)</span> residues gives an <span class="math inline">\(L \times L\)</span> <strong>distance map</strong>. Thresholding the distance map gives a <strong>contact map</strong>, with 1 where two residues are close (here, Cβ atoms within 8 Å) and 0 elsewhere. Unlike coordinates, both maps stay the same however the protein is rotated or moved, so two structures can be compared without first superimposing them.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session06-hbb-distance-map">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session06-hbb-distance-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session06-hbb-distance-map.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session06-hbb-distance-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 6.2: Three representations of β-globin (2HHB, chain B). Left: the 3D structure, coloured from the N-terminus (blue) to the C-terminus (red). Middle: the distance map. Right: the contact map, with the eight α-helices of the PDB file as red bars. The band along the diagonal is each helix in contact with itself (local interactions); the off-diagonal stripes are helices packed against each other (long-range interactions).
+</figcaption>
+</figure>
+</div>
+<p>This representation returns twice later in the course. First, an <span class="math inline">\(L
+\times L\)</span> map looks like an image, which is why image-processing networks (CNNs, Session 10) turned out to be good at predicting contacts. Second, coevolution, contact prediction and AlphaFold’s “pair representation” (Session 12) all work on residue-pair information like this.</p>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Representations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The same protein can be represented as a sequence, a profile (Session 5), a set of coordinates, a distance or contact map, or a learned embedding (Session 11). The choice of representation determines which patterns are easy to see and, later in the course, which patterns a model can easily learn.</p>
+</div>
+</div>
+</section>
+<section class="level3" data-number="6.2.6" id="looking-at-structures-pymol">
+<h3 class="anchored" data-anchor-id="looking-at-structures-pymol" data-number="6.2.6"><span class="header-section-number">6.2.6</span> Looking at structures: PyMOL</h3>
+<p>To look at a structure yourself, you need a molecular viewer. <a href="https://pymol.org/">PyMOL</a> is, with ChimeraX, one of the two most widely used, and its open-source version is free. It loads a structure directly from the PDB and shows it as <strong>cartoon</strong> (secondary structure as ribbons and arrows, as in the figures above), as <strong>sticks</strong> (every bond, useful for a side chain or ligand) or as <strong>spheres</strong> (every atom, useful for packing). It also measures distances and angles directly from the coordinates. This session’s lab uses PyMOL hands-on, but you do not need to install the program: open-source PyMOL is also a Python library, which the lab notebook installs on Colab. You type the same commands as in PyMOL’s own command line, and the notebook draws the picture. The course notebook drives PyMOL the same way, so that its figures and measurements are reproducible.</p>
+</section>
+<section class="level3" data-number="6.2.7" id="further-reading">
+<h3 class="anchored" data-anchor-id="further-reading" data-number="6.2.7"><span class="header-section-number">6.2.7</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Protein_structure">Protein structure</a> and <a href="https://en.wikipedia.org/wiki/Anfinsen%27s_dogma">Anfinsen’s dogma</a></li>
+<li>RCSB <a href="https://pdb101.rcsb.org/">PDB-101</a> — short, illustrated explainers on structure and specific proteins, aimed at newcomers</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="6.3" id="sec-s06-compare">
+<h2 class="anchored" data-anchor-id="sec-s06-compare" data-number="6.3"><span class="header-section-number">6.3</span> Comparing proteins in 3D</h2>
+<section class="level3" data-number="6.3.1" id="sec-s06-structure-evidence">
+<h3 class="anchored" data-anchor-id="sec-s06-structure-evidence" data-number="6.3.1"><span class="header-section-number">6.3.1</span> Read the evidence behind the coordinates</h3>
+<p>An experimental structure and a predicted model both give us coordinates. For an X-ray crystal structure, <strong>resolution</strong> describes the level of detail in the diffraction data used to build the model. It is reported in ångströms (Å). Smaller values indicate finer detail in the data. <a href="https://pdb101.rcsb.org/learn/guide-to-understanding-pdb-data/crystallographic-structure-factors-and-electron-density-resolution-and-r-value">PDB-101 guide to crystallographic resolution</a></p>
+<p>An AlphaFold model reports <strong>pLDDT</strong> on a scale from 0 to 100 for each residue. A higher value means the model is more confident in the local shape around that residue. To see how closely a prediction matches an experimental structure, compare their coordinates using the methods below. Session 12 returns to AlphaFold confidence scores in more detail. <a href="https://www.ebi.ac.uk/training/online/courses/alphafold/inputs-and-outputs/evaluating-alphafolds-predicted-structures-using-confidence-scores/plddt-understanding-local-confidence/">EMBL-EBI guide to pLDDT</a></p>
+</section>
+<section class="level3" data-number="6.3.2" id="sequence-alignment-versus-structure-alignment">
+<h3 class="anchored" data-anchor-id="sequence-alignment-versus-structure-alignment" data-number="6.3.2"><span class="header-section-number">6.3.2</span> Sequence alignment versus structure alignment</h3>
+<p>Session 4 defined an alignment as a hypothesis about which residues correspond. A <strong>sequence alignment</strong> decides this from the sequences alone, using substitution scores. A <strong>structure alignment</strong> decides it from the 3D coordinates, by asking which residues occupy the same position in the two folds. The notebook compares β-globin both ways with five proteins, ranging from a close paralog to an unrelated fold:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s06-globins">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s06-globins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 6.2: Five proteins compared with β-globin, by sequence and by structure.
+</figcaption>
+<div aria-describedby="tbl-s06-globins-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+<col style="width: 20%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Compared with β-globin</th>
+<th>Sequence identity*</th>
+<th>Sequence-only score (shuffled max)</th>
+<th>Residue pairs agreeing</th>
+<th>TM-score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>α-globin (human, 2HHB)</td>
+<td>43%</td>
+<td>288 (43)</td>
+<td>95%</td>
+<td>0.88</td>
+</tr>
+<tr class="even">
+<td>myoglobin (human, 3RGK)</td>
+<td>25%</td>
+<td>111 (46)</td>
+<td>97%</td>
+<td>0.91</td>
+</tr>
+<tr class="odd">
+<td>neuroglobin (human, 1OJ6)</td>
+<td>22%</td>
+<td>89 (41)</td>
+<td>66%</td>
+<td>0.82</td>
+</tr>
+<tr class="even">
+<td>truncated haemoglobin N (<em>M. tuberculosis</em>, 1IDR)</td>
+<td>16%</td>
+<td>28 (49)</td>
+<td>0%</td>
+<td>0.57</td>
+</tr>
+<tr class="odd">
+<td>GFP (jellyfish, 1EMA)</td>
+<td>6%</td>
+<td>25 (50)</td>
+<td>—</td>
+<td>0.33</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>*Identity over the structurally aligned residues. “Sequence-only score” is the best Smith–Waterman alignment with BLOSUM62, and the number in brackets is the highest score among 200 alignments against shuffled versions of the same sequence. “Residue pairs agreeing” is the fraction of structurally aligned pairs that the sequence alignment also pairs up. TM-scores are normalised by the length of β-globin.</p>
+<p>The table is best read from top to bottom. For α-globin and myoglobin, the sequence alignment has a strong signal and pairs up almost exactly the same residues as the structure alignment. (Session 5 showed that BLAST, with default settings, nevertheless missed myoglobin, because a heuristic search can skip an alignment that an exhaustive one finds.) For neuroglobin the sequence signal is still clear, but a third of the pairs are wrong, because the gaps are in the wrong places. For the bacterial truncated haemoglobin, the sequence alignment does no better than shuffled sequences and pairs up none of the right residues. The structure alignment nevertheless finds a shared globin fold over more than 100 residues. This is the central lesson: <strong>structure is more conserved than sequence.</strong> When the sequence evidence fades, structure can still reveal a relationship.</p>
+</section>
+<section class="level3" data-number="6.3.3" id="measuring-structural-similarity-rmsd-and-tm-score">
+<h3 class="anchored" data-anchor-id="measuring-structural-similarity-rmsd-and-tm-score" data-number="6.3.3"><span class="header-section-number">6.3.3</span> Measuring structural similarity: RMSD and TM-score</h3>
+<p>To compare structures, we need a number for how similar they are. <strong>RMSD</strong> (root-mean-square deviation) is the most direct measure. It is the root-mean-square distance between corresponding atoms after the two structures have been optimally superimposed. RMSD is simple, but it grows with protein length, and one badly placed loop can inflate it even when the rest of the fold matches. RMSD also depends on <em>which</em> atoms are compared. A superposition can be restricted to the residues that fit well, and a very low RMSD over a short fragment says nothing about the rest of the proteins. An RMSD should therefore always be given together with the number of aligned residues, for example “1.5 Å over 140 residues”. The <strong>TM-score</strong> avoids these problems. It weights each residue pair by how close it is, so that small deviations count fully and large ones hardly at all, and it normalises by protein length. It runs from 0 to 1 (identical). Unrelated proteins typically score around 0.2–0.3, and scores above about 0.5 usually mean the same overall fold. This is a rule of thumb, not a law. The truncated haemoglobin above (0.57) and GFP (0.33) are clear cases, but scores in between need other evidence.</p>
+<p>Both measures share a dependency worth making explicit. Before either can be calculated, one structure has to be moved onto the other: a <strong>rigid-body transformation</strong>, which translates the centre of mass and rotates about it without changing anything inside the structure. The rotation is usually reported as a 3×3 matrix, and can equivalently be written as three <strong>Euler angles</strong>. Alignment programs print both the matrix and the translation vector, and the superposition they choose is the one that minimises RMSD — so an RMSD is always the <em>best</em> RMSD, never an arbitrary one.</p>
+</section>
+<section class="level3" data-number="6.3.4" id="sec-s06-superposition">
+<h3 class="anchored" data-anchor-id="sec-s06-superposition" data-number="6.3.4"><span class="header-section-number">6.3.4</span> The arithmetic underneath</h3>
+<p>It is worth seeing what “optimally superimposed” actually means, because it is one of the few places in this course where the optimum has a closed-form answer rather than a heuristic.</p>
+<p>Moving one structure onto another without deforming it means applying a rotation <span class="math inline">\(R\)</span> and a translation <span class="math inline">\(\mathbf{t}\)</span> to every atom:</p>
+<p><span class="math display">\[
+\mathbf{y}_i = R\,\mathbf{x}_i + \mathbf{t}
+\]</span></p>
+<p><span class="math inline">\(R\)</span> is a 3×3 <strong>rotation matrix</strong>: orthogonal (<span class="math inline">\(R^{\mathsf{T}}R = I\)</span>) with <span class="math inline">\(\det R = +1\)</span>. Orthogonality is what keeps every internal distance unchanged, which is exactly what “rigid” means; the determinant being <span class="math inline">\(+1\)</span> rather than <span class="math inline">\(-1\)</span> rules out reflections, so a left-handed helix cannot be superimposed on a right-handed one by flipping it. Nine numbers with those constraints leave three degrees of freedom, which is why the same rotation can be written as three Euler angles instead.</p>
+<p>Given a correspondence — which residue of one structure pairs with which of the other — the RMSD over <span class="math inline">\(n\)</span> pairs is</p>
+<p><span class="math display">\[
+\mathrm{RMSD} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} \lVert R\,\mathbf{x}_i + \mathbf{t} - \mathbf{y}_i \rVert^2}
+\]</span></p>
+<p>and the superposition problem is to minimise it over <span class="math inline">\(R\)</span> and <span class="math inline">\(\mathbf{t}\)</span>. It separates into two parts. The translation is immediate: the optimum always puts the two centroids on top of each other, so subtract each structure’s own centroid and the translation is dealt with. What is left is the rotation, and that is solved exactly by the <strong>Kabsch algorithm</strong>: form the 3×3 covariance matrix of the centred coordinates,</p>
+<p><span class="math display">\[
+H = \sum_{i=1}^{n} \mathbf{x}_i \mathbf{y}_i^{\mathsf{T}}
+\]</span></p>
+<p>take its singular value decomposition <span class="math inline">\(H = U\Sigma V^{\mathsf{T}}\)</span>, and the best rotation is</p>
+<p><span class="math display">\[
+R = V
+\begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; d \end{pmatrix}
+U^{\mathsf{T}},
+\qquad d = \operatorname{sign}\!\left(\det(V U^{\mathsf{T}})\right)
+\]</span></p>
+<p>The <span class="math inline">\(d\)</span> is there to prevent exactly the reflection that the determinant condition forbids: without it the algebra will happily return the mirror image when that fits better.</p>
+<p>The TM-score replaces the plain average with a weighted one, which is what stops a single bad loop dominating:</p>
+<p><span class="math display">\[
+\mathrm{TM} = \frac{1}{L}\sum_{i=1}^{n} \frac{1}{1 + (d_i/d_0)^2},
+\qquad d_0 = 1.24\sqrt[3]{L - 15} - 1.8
+\]</span></p>
+<p>Here <span class="math inline">\(d_i\)</span> is the distance between the <span class="math inline">\(i\)</span>th pair after superposition and <span class="math inline">\(L\)</span> is the length of the reference protein. A pair much closer than <span class="math inline">\(d_0\)</span> contributes nearly 1 and a pair much further contributes nearly 0, so the score counts how much of the protein is in roughly the right place rather than averaging the errors. Dividing by <span class="math inline">\(L\)</span> rather than by <span class="math inline">\(n\)</span> is what stops a short, well-fitting fragment scoring highly. For β-globin’s 146 residues <span class="math inline">\(d_0\)</span> is about 4.5 Å.</p>
+<p><strong>What the arithmetic does not solve.</strong> All of the above assumes the correspondence is already known. Finding it — deciding which residue pairs with which, allowing for insertions, deletions and rearranged segments — is the hard half of structural alignment, and it has no closed-form solution. That is what DALI and TM-align actually spend their time on, each optimising the correspondence and the superposition together: DALI by matching patterns of internal distances, below, and TM-align by searching for the correspondence that maximises the TM-score. Kabsch is the inner step they call once the correspondence is fixed.</p>
+<p>Some measures avoid the superposition altogether. The <strong>global distance test</strong>, GDT, asks instead what fraction of distances in the model match the reference within a cutoff. Because the answer depends on the cutoff, the score is computed at several and averaged. GDT is the measure CASP has used to rank structure predictions for twenty-five years.</p>
+</section>
+<section class="level3" data-number="6.3.5" id="dali-comparing-distance-maps">
+<h3 class="anchored" data-anchor-id="dali-comparing-distance-maps" data-number="6.3.5"><span class="header-section-number">6.3.5</span> DALI: comparing distance maps</h3>
+<p>If two proteins have the same fold, their distance maps should look alike, even when their sequences do not. <strong>DALI</strong> (Holm &amp; Sander, 1993) uses this idea to compare structures. Rather than superimposing coordinates, it looks for residue correspondences that make the patterns of intramolecular distances agree.</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="fig-session06-distance-maps-compared">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-session06-distance-maps-compared-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img class="img-fluid figure-img" src="figs/session06-distance-maps-compared.png" style="width:100.0%"/>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-session06-distance-maps-compared-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 6.3: Distance maps of β-globin, human myoglobin and GFP. The first two are almost indistinguishable although only a quarter of their residues are identical; GFP’s β-barrel gives a completely different pattern.
+</figcaption>
+</figure>
+</div>
+<p>The analogy with sequence alignment is direct:</p>
+<ul>
+<li>Sequence alignment compares residues along two sequences.</li>
+<li>DALI compares patterns of residue–residue geometry.</li>
+</ul>
+<p>DALI and <strong>TM-align</strong> (Zhang &amp; Skolnick, 2005), which finds the superposition that maximises the TM-score, are accurate and still used for careful pairwise comparisons. They are, however, far too slow to search hundreds of millions of structures.</p>
+</section>
+<section class="level3" data-number="6.3.6" id="foldseek-structure-search-at-sequence-search-speed">
+<h3 class="anchored" data-anchor-id="foldseek-structure-search-at-sequence-search-speed" data-number="6.3.6"><span class="header-section-number">6.3.6</span> Foldseek: structure search at sequence-search speed</h3>
+<p>Session 5 ended with MMseqs2, which searches billions of sequences. <strong>Foldseek</strong> (van Kempen, Steinegger et al., 2024), from the same group, does the same for structures:</p>
+<div class="quarto-float quarto-figure quarto-figure-center anchored" id="tbl-s06-search">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-s06-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 6.3: Searching by sequence and by structure.
+</figcaption>
+<div aria-describedby="tbl-s06-search-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>Search tool</th>
+<th>Searches with</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sequence (Session 5)</td>
+<td>BLAST, MMseqs2</td>
+<td>the amino-acid sequence</td>
+</tr>
+<tr class="even">
+<td>Structure (this session)</td>
+<td>Foldseek</td>
+<td>a “structural sequence”</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The key idea of Foldseek is a change of representation. For each residue, Foldseek looks at the local 3D environment (the geometry between that residue and its closest neighbour in space) and assigns one of 20 discrete structural states, the <strong>3Di alphabet</strong>. A structure thus becomes a string of 3Di letters, one per residue. Two structures can then be compared with fast sequence-alignment machinery (the same prefilter-and-align approach as MMseqs2) instead of expensive geometric superposition:</p>
+<pre><code>3D coordinates
+   → local geometry around each residue
+   → one 3Di state per residue
+   → a structural "sequence"
+   → fast alignment and database search</code></pre>
+<p>This makes it possible to search the hundreds of millions of structures in the AlphaFold Database and the PDB in seconds to minutes. Foldseek is tens of thousands of times faster than TM-align at comparable sensitivity.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Machine-learning preview: a learned representation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Nobody designed the 20 states of Foldseek’s 3Di alphabet by hand. Instead, a machine-learning model (a variational autoencoder) was trained on pairs of structurally aligned residues to find a compact set of recurring 3D environments that are conserved between related structures. You do not need to know how such a model works. The point is that a <em>useful representation can itself be learned from data</em>. In Session 5, humans chose both the representation (amino acids) and the scoring scheme (BLOSUM62), whereas in Foldseek, machine learning helped choose the representation. Sessions 7–12 build up the machinery behind models that learn increasingly powerful representations.</p>
+</div>
+</div>
+<p><strong>A worked comparison.</strong> We ran Foldseek locally on three structures: the two haemoglobin states used on this page (<code>2HHB</code>, deoxy; <code>1HHO</code>, oxy) and green fluorescent protein (<code>1EMA</code>). Matching α-to-α or β-to-β chains between <code>2HHB</code> and <code>1HHO</code>, which are the <em>same</em> protein in two states, gives a TM-score of <strong>0.98</strong> and an RMSD of <strong>0.7 Å</strong>, about as similar as two independently solved structures get. α against β globin (43% identical) still gives a TM-score of <strong>0.90–0.91</strong> (RMSD 1.7–1.8 Å). Searching <code>2HHB</code> against GFP, in contrast, returns <strong>no hits</strong>, even with a loosened significance threshold.</p>
+</section>
+<section class="level3" data-number="6.3.7" id="further-reading-1">
+<h3 class="anchored" data-anchor-id="further-reading-1" data-number="6.3.7"><span class="header-section-number">6.3.7</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Root-mean-square_deviation_of_atomic_positions">Root-mean-square deviation of atomic positions</a> and <a href="https://en.wikipedia.org/wiki/Template_modeling_score">Template modeling score</a></li>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Kabsch_algorithm">Kabsch algorithm</a> and <a href="https://en.wikipedia.org/wiki/Rotation_matrix">Rotation matrix</a> — the derivation behind <a class="quarto-xref" href="#sec-s06-superposition"><span>Section 6.3.4</span></a>, including why the SVD gives the optimum</li>
+<li>Original sources: Kabsch (1976), <a href="https://doi.org/10.1107/S0567739476001873">A solution for the best rotation to relate two sets of vectors</a>, <em>Acta Cryst.</em> A32:922, and the 1978 correction, <a href="https://doi.org/10.1107/S0567739478001680">A discussion of the solution for the best rotation</a>, <em>Acta Cryst.</em> A34:827; Zhang &amp; Skolnick (2004), <a href="https://doi.org/10.1002/prot.20264">Scoring function for automated assessment of protein structure template quality</a>, <em>Proteins</em> 57:702, which defines the TM-score and <span class="math inline">\(d_0\)</span></li>
+<li>Foldseek, <a href="https://github.com/steineggerlab/foldseek">GitHub</a> and <a href="https://search.foldseek.com/search">web server</a> — try it on any PDB entry or AlphaFold model, no installation needed</li>
+<li>DALI server, <a href="http://ekhidna2.biocenter.helsinki.fi/dali/"><code>ekhidna2.biocenter.helsinki.fi/dali</code></a></li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="6.4" id="sec-s06-states">
+<h2 class="anchored" data-anchor-id="sec-s06-states" data-number="6.4"><span class="header-section-number">6.4</span> Domains, complexes and conformational states</h2>
+<section class="level3" data-number="6.4.1" id="structural-domains">
+<h3 class="anchored" data-anchor-id="structural-domains" data-number="6.4.1"><span class="header-section-number">6.4.1</span> Structural domains</h3>
+<p>A <strong>domain</strong> is a compact, semi-independent unit of a structure, which is often able to fold on its own and is reused in many different proteins. Sessions 3 and 5 met domains from the <em>sequence</em> side, as Pfam families built from profile HMMs. Structural classifications instead group domains by their 3D shape, which, as the table above showed, can reveal relationships that sequence misses.</p>
+<p><strong>CATH</strong> (Orengo et al., 1997) classifies domains in four levels: <strong>C</strong>lass (mainly α, mainly β, α/β, few secondary structures), <strong>A</strong>rchitecture (the overall arrangement of secondary-structure elements), <strong>T</strong>opology (how they are connected, that is, the fold), and <strong>H</strong>omologous superfamily (domains with evidence of common ancestry). β-globin’s domain is <code>1.10.490.10</code>: Mainly Alpha → Orthogonal Bundle → Globin-like → Globins. So are myoglobin, neuroglobin and the <em>M. tuberculosis</em> truncated haemoglobin from the table above. Pfam, which works from sequence, needs a separate family for the truncated haemoglobin (PF01152, “Bacterial-like globin”, not PF00042, “Globin”) and connects the two only at the level of a <em>clan</em>. GFP, in contrast, is in CATH class 2 (Mainly Beta), Beta Barrel.</p>
+<p>Three other classifications exist, each with a different philosophy: <strong>SCOP</strong> (Murzin et al., 1995; expert manual curation), <strong>ECOD</strong> (Cheng et al., 2014; organised by evolutionary relationship), and <strong>TED</strong> (Lau, Bordin et al., 2024; domains parsed automatically from the entire AlphaFold Database, hundreds of millions of predicted structures). They do not always agree on where one domain ends or on how distant superfamilies group together. Knowing that several classifications exist, and why, therefore matters more than picking one.</p>
+</section>
+<section class="level3" data-number="6.4.2" id="quaternary-structure-interfaces-and-ligands">
+<h3 class="anchored" data-anchor-id="quaternary-structure-interfaces-and-ligands" data-number="6.4.2"><span class="header-section-number">6.4.2</span> Quaternary structure, interfaces and ligands</h3>
+<p>Beyond single chains, a complex is held together by <strong>interfaces</strong>, patches of surface where two chains touch. Interfaces are usually more hydrophobic and more conserved than the rest of the surface. Many proteins also bind <strong>ligands</strong>, small molecules or ions such as haemoglobin’s haem groups. Interfaces and ligand-binding sites are where much of a protein’s function happens, and predicting them is one of the open problems of Session 12.</p>
+</section>
+<section class="level3" data-number="6.4.3" id="predicting-a-complex-docking">
+<h3 class="anchored" data-anchor-id="predicting-a-complex-docking" data-number="6.4.3"><span class="header-section-number">6.4.3</span> Predicting a complex: docking</h3>
+<p>Predicting how two proteins of known structure fit together is called <strong>docking</strong>, and it has its own history, running alongside single-chain prediction and along the same three routes.</p>
+<p><strong>Shape and physics.</strong> Katchalski-Katzir et al. (1992, <a href="https://doi.org/10.1073/pnas.89.6.2195"><em>PNAS</em> 89:2195</a>) put both proteins on a 3D grid and scored shape complementarity for every relative translation at once using the fast Fourier transform, sampling rotations exhaustively. That became the standard engine. <strong>GRAMM</strong> used low-resolution grids that tolerate errors in the structures (Vakser 1995, <a href="https://doi.org/10.1093/protein/8.4.371"><em>Protein Eng</em> 8:371</a>), and <strong>ZDOCK</strong> added electrostatics and desolvation (Chen, Li &amp; Weng 2003, <a href="https://doi.org/10.1002/prot.10389"><em>Proteins</em> 52:80</a>). All of them produce thousands of candidate poses, so the hard part is not generating an answer but ranking the ones you have.</p>
+<p><strong>Data.</strong> <strong>HADDOCK</strong> drives the search with experimental information — mutations, NMR data — marking which residues are at the interface (Dominguez, Boelens &amp; Bonvin 2003, <a href="https://doi.org/10.1021/ja026939x"><em>J Am Chem Soc</em> 125:1731</a>).</p>
+<p><strong>Templates.</strong> A complex can also be modelled from a related complex whose structure is known. Templates “are available to model nearly all complexes of structurally characterized proteins” (Kundrotas, Zhu, Janin &amp; Vakser 2012, <a href="https://doi.org/10.1073/pnas.1200678109"><em>PNAS</em> 109:9438</a>); Petras Kundrotas, the first author, teaches on this course.</p>
+</section>
+<section class="level3" data-number="6.4.4" id="judging-a-predicted-complex">
+<h3 class="anchored" data-anchor-id="judging-a-predicted-complex" data-number="6.4.4"><span class="header-section-number">6.4.4</span> Judging a predicted complex</h3>
+<p>A complex needs its own measures, because the two chains can each be modelled well and still be put together wrongly. The convention is to superimpose on the larger chain, the <em>receptor</em>, and measure the error on the smaller one: that is <strong>ligand RMSD</strong>. <strong>Interface RMSD</strong> measures only over the residues in contact. A third kind of measure counts contacts rather than distances — what fraction of the real complex’s contacts the model reproduces. <strong>DockQ</strong> combines these into one number between 0 and 1 (Basu &amp; Wallner 2016, <a href="https://doi.org/10.1371/journal.pone.0161879"><em>PLoS One</em> 11:e0161879</a>), which is why it is the figure usually quoted.</p>
+<p><strong>CAPRI</strong> has been docking’s CASP since 2001 (Janin et al. 2003, <a href="https://doi.org/10.1002/prot.10381"><em>Proteins</em> 52:2</a>). Until 2018 its verdict was consistent: targets with a template were predicted “very good to excellent”, but of 11 difficult targets without one, “medium and high quality models [were] submitted for only 3” (Lensink et al. 2019, <a href="https://doi.org/10.1002/prot.25838"><em>Proteins</em> 87:1200</a>). What changed that is the subject of <a class="quarto-xref" href="session12.html#sec-s12-complexes"><span>Section 12.5</span></a>.</p>
+</section>
+<section class="level3" data-number="6.4.5" id="one-protein-more-than-one-structure-haemoglobin-t-and-r">
+<h3 class="anchored" data-anchor-id="one-protein-more-than-one-structure-haemoglobin-t-and-r" data-number="6.4.5"><span class="header-section-number">6.4.5</span> One protein, more than one structure: haemoglobin T and R</h3>
+<p>A PDB entry is one snapshot of one state. Haemoglobin has two classic states, deoxy (<strong>T</strong>, tense; <code>2HHB</code>) and oxy (<strong>R</strong>, relaxed; <code>1HHO</code>). Each chain hardly changes between them (TM-score 0.98), but the two α/β pairs rotate relative to each other by about 13–15° (Baldwin &amp; Chothia, 1979; the third discussion problem measures it). The notebook measures one consequence: the distance between the iron atoms of the two β-chain haems is about 5 Å shorter in the oxy state. This quaternary change is how haemoglobin binds oxygen cooperatively, since binding at one subunit makes binding at the others easier.</p>
+<p>It follows that <strong>a PDB structure is not necessarily “the” structure of a protein.</strong> Proteins can occupy different conformational states depending on ligands, partners and conditions. This matters whenever a predicted model is compared with “the” experimental structure, and it is one of the limitations that Session 12 returns to, because AlphaFold usually predicts one state.</p>
+</section>
+<section class="level3" data-number="6.4.6" id="further-reading-2">
+<h3 class="anchored" data-anchor-id="further-reading-2" data-number="6.4.6"><span class="header-section-number">6.4.6</span> Further reading</h3>
+<ul>
+<li>CATH, <a href="https://www.cathdb.info/"><code>cathdb.info</code></a>; SCOP, <a href="https://www.ebi.ac.uk/pdbe/scop/"><code>ebi.ac.uk/pdbe/scop</code></a>; ECOD, <a href="http://prodata.swmed.edu/ecod/"><code>prodata.swmed.edu/ecod</code></a>; TED, <a href="https://ted.cathdb.info/"><code>ted.cathdb.info</code></a></li>
+<li>RCSB PDB-101, <a href="https://pdb101.rcsb.org/motm/41">Hemoglobin</a> — the T and R states, illustrated</li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="6.5" id="sec-s06-predict">
+<h2 class="anchored" data-anchor-id="sec-s06-predict" data-number="6.5"><span class="header-section-number">6.5</span> From structure back to sequence prediction</h2>
+<section class="level3" data-number="6.5.1" id="secondary-structure-as-a-prediction-target">
+<h3 class="anchored" data-anchor-id="secondary-structure-as-a-prediction-target" data-number="6.5.1"><span class="header-section-number">6.5.1</span> Secondary structure as a prediction target</h3>
+<p>Given only the sequence, could a computer predict which residues become helix, strand or coil? Stated as a learning problem, the task is:</p>
+<pre><code>input:   the sequence (or its profile), one window per residue
+target:  H (helix), E (strand) or C (coil) for every residue</code></pre>
+<p>The training labels come from solved structures, assigned by DSSP as in the notebook. What information could help the prediction? The residue itself is one source, because some amino acids favour helices, others strands, and proline and glycine break both. Its neighbours in the sequence are another. A third, from Session 5, is how that position varies across homologous sequences, that is, a profile. Sessions 7–11 develop the machinery for learning such mappings, and the course returns to this problem in Sessions 7, 9 and 10 and in the capstone project.</p>
+</section>
+<section class="level3" data-number="6.5.2" id="predicting-the-whole-fold">
+<h3 class="anchored" data-anchor-id="predicting-the-whole-fold" data-number="6.5.2"><span class="header-section-number">6.5.2</span> Predicting the whole fold</h3>
+<p>Predicting the full 3D structure has been one of biology’s hardest problems for decades. Since 1994 the <strong>CASP</strong> competition (Critical Assessment of Structure Prediction) has tested methods blindly, on structures that are solved but not yet published. The classical strategies each build on something you have already met:</p>
+<ul>
+<li><strong>Physics</strong> (<em>de novo</em> or <em>ab initio</em> modelling) searches for the lowest-energy arrangement of the chain, using physical interactions. It is rigorous in principle, but so expensive that it long worked only for small proteins. <strong>Rosetta</strong> (Baker lab) assembles structures from short fragments of known structures, and it grew into a tool for protein <em>design</em>.</li>
+<li><strong>Comparative (homology) modelling</strong> finds a related protein of known structure (Sessions 4–5) and builds the model on it as a template. It is reliable when a template exists, but useless for a new fold. The table above shows why it works: related sequences share their structure.</li>
+<li><strong>Contact prediction</strong> uses the fact that residues that touch tend to mutate together. Large alignments (Session 5) therefore reveal which pairs are in contact and fill in a contact map like the one above.</li>
+<li><strong>Deep learning</strong> arrived with AlphaFold2 (2020), which combines learned representations, evolutionary information and geometry, and was the breakthrough in CASP14. David Baker, Demis Hassabis and John Jumper shared the 2024 Nobel Prize in Chemistry for protein design and structure prediction. Session 12 covers AlphaFold, once Sessions 7–11 have built up the neural-network machinery.</li>
+</ul>
+<p>In terms of representations, the course’s path from here is:</p>
+<pre><code>sequence
+  → profile / evolutionary information      (Session 5)
+  → learned representation                  (Sessions 7–11)
+  → local structure, contacts, distances    (Sessions 7, 10, 12)
+  → 3D structure                            (Session 12)</code></pre>
+</section>
+<section class="level3" data-number="6.5.3" id="further-reading-3">
+<h3 class="anchored" data-anchor-id="further-reading-3" data-number="6.5.3"><span class="header-section-number">6.5.3</span> Further reading</h3>
+<ul>
+<li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Homology_modeling">Homology modeling</a> and <a href="https://en.wikipedia.org/wiki/CASP">CASP</a></li>
+<li>Rosetta Commons, <a href="https://rosettacommons.org/"><code>rosettacommons.org</code></a></li>
+</ul>
+</section>
+</section>
+<section class="level2" data-number="6.6" id="the-course-notebook">
+<h2 class="anchored" data-anchor-id="the-course-notebook" data-number="6.6"><span class="header-section-number">6.6</span> The course notebook</h2>
+<p><code>notebooks/session06-protein-structure-in-code.ipynb</code> fetches the two haemoglobin structures (deoxy <code>2HHB</code>, oxy <code>1HHO</code>) and makes each level of structure concrete. It reads the chains and residues from the file, computes the secondary structure with PyMOL (and compares it with the PDB annotation that Session 7 uses), and renders an image of the tetramer. It also draws β-globin’s distance and contact maps, builds the sequence-versus-structure alignment table above, and measures the iron-to-iron distance that changes by about 5 Å between the two states. Open it in <a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session06-protein-structure-in-code.ipynb">Google Colab</a> via the badge at the top of the notebook page to edit and run it yourself.</p>
+</section>
+<section class="level2" data-number="6.7" id="check-your-understanding">
+<h2 class="anchored" data-anchor-id="check-your-understanding" data-number="6.7"><span class="header-section-number">6.7</span> Check your understanding</h2>
+<p>The questions below give immediate feedback and cover the sections above. They are in the same style as the course’s live in-class peer-instruction quizzes, and the full question bank is in <code>quizzes/session06.md</code> in the repository.</p>
+<div id="session06-quiz"></div>
+<script>
+renderQuiz("session06-quiz", [
+  {
+    question: "Haemoglobin's four chains (two alpha, two beta), each already folded, packed together into one assembly is an example of which level of structure?",
+    choices: ["Quaternary structure", "Primary structure", "Secondary structure", "Tertiary structure"],
+    correctIndex: 0,
+    explanation: "Quaternary structure is the arrangement of several separately folded chains; tertiary structure is the fold of one chain."
+  },
+  {
+    question: "Anfinsen showed that unfolded ribonuclease refolds on its own. Which conclusion is justified?",
+    choices: [
+      "For many globular proteins the sequence contains enough information to specify the native fold under the right conditions, though some proteins also need chaperones, ligands or partners, and some have no single fold",
+      "Every protein sequence folds into exactly one structure, whatever the conditions",
+      "Protein structure is determined by the cell, not by the sequence",
+      "Structure prediction from sequence is impossible in principle"
+    ],
+    correctIndex: 0,
+    explanation: "The principle makes structure prediction possible, but it is not a law for every protein: chaperones, ligands, partners, alternative states and intrinsic disorder all matter."
+  },
+  {
+    question: "In a contact map of a mostly helical protein, what does a stripe of contacts far from the diagonal represent?",
+    choices: [
+      "Long-range contacts: residues far apart in sequence but close in space, for example two helices packed against each other",
+      "Hydrogen bonds within one helix, between residues i and i+4",
+      "Residues that are identical in sequence",
+      "Errors in the structure"
+    ],
+    correctIndex: 0,
+    explanation: "Contacts within a helix are local and lie in the band along the diagonal; off-diagonal contacts connect parts of the chain that are far apart in sequence."
+  },
+  {
+    question: "The bacterial truncated haemoglobin (1IDR) aligns to beta-globin with a sequence-only score no better than shuffled sequences, yet TM-align finds a shared fold over more than 100 residues (TM-score 0.57). What does this show?",
+    choices: [
+      "Structure can remain recognisably similar after sequence similarity has become undetectable: structure is more conserved than sequence",
+      "The two proteins cannot be related, since their sequences show no signal",
+      "TM-align finds a match between any two proteins",
+      "The sequence alignment must contain a bug"
+    ],
+    correctIndex: 0,
+    explanation: "CATH classifies both in the same homologous superfamily (Globins). When sequence evidence fades, structural evidence can still reveal the relationship."
+  },
+  {
+    question: "Why is the TM-score usually preferred over RMSD for asking whether two proteins share a fold?",
+    choices: [
+      "It weights close residue pairs fully and distant ones hardly at all, and normalises by length, so one misplaced loop or a longer protein does not dominate it",
+      "It does not need the structures to be superimposed or aligned",
+      "It is always exactly 1 for proteins with the same fold",
+      "RMSD can only be computed for proteins of the same length"
+    ],
+    correctIndex: 0,
+    explanation: "TM-scores above about 0.5 usually mean the same fold, but that is a rule of thumb; borderline scores need other evidence."
+  },
+  {
+    question: "How does DALI compare two structures?",
+    choices: [
+      "It looks for residue correspondences that make the two proteins' patterns of internal residue-residue distances agree",
+      "It compares the amino-acid sequences with BLOSUM62",
+      "It counts how many helices and strands each protein has",
+      "It compares the proteins' molecular weights"
+    ],
+    correctIndex: 0,
+    explanation: "Distance maps do not depend on how a structure is oriented, so related folds give similar maps even when their sequences differ."
+  },
+  {
+    question: "Foldseek searches hundreds of millions of structures in minutes. What is the key idea?",
+    choices: [
+      "Each residue's local 3D environment is encoded as one letter of a learned 20-state 3Di alphabet, so structures become strings that fast sequence-search machinery can align",
+      "It compares only the first 50 residues of every structure",
+      "It skips significance testing to save time",
+      "It predicts structures with AlphaFold before comparing them"
+    ],
+    correctIndex: 0,
+    explanation: "A change of representation, like BLAST's and MMseqs2's word tricks for sequences. The 3Di states were learned with a variational autoencoder: a representation learned from data."
+  },
+  {
+    question: "CATH classifies beta-globin and the M. tuberculosis truncated haemoglobin in the same homologous superfamily (1.10.490.10, Globins), while Pfam puts them in two different families. Why can this happen?",
+    choices: [
+      "CATH groups domains by 3D structure, which can stay similar after sequence similarity has faded too far for one sequence family to cover both",
+      "Pfam is wrong and should be replaced by CATH",
+      "CATH only uses the protein names",
+      "The two proteins have identical sequences"
+    ],
+    correctIndex: 0,
+    explanation: "Sequence- and structure-based classifications are complementary. Pfam links the two families at a higher level, the Globin clan."
+  },
+  {
+    question: "Deoxy (2HHB) and oxy (1HHO) haemoglobin give a TM-score of 0.98 chain against chain, yet the beta-beta haem iron distance differs by about 5 Angstrom. What is the general lesson?",
+    choices: [
+      "A PDB entry is one snapshot of one state; a protein can occupy several conformational states, here differing mainly in how the chains are arranged",
+      "One of the two structures must be wrong",
+      "The chains themselves unfold when oxygen binds",
+      "TM-score cannot be computed for haemoglobin"
+    ],
+    correctIndex: 0,
+    explanation: "Each chain barely changes; the two alpha/beta pairs rotate relative to each other (the T-to-R transition). Comparing a prediction with 'the' structure needs this caveat."
+  },
+  {
+    question: "Secondary-structure prediction stated as a supervised learning problem: what are the input and the target?",
+    choices: [
+      "Input: the sequence (or its profile) around each residue. Target: helix, strand or coil for every residue, taken from solved structures",
+      "Input: the 3D coordinates. Target: the amino-acid sequence",
+      "Input: helix, strand or coil labels. Target: the protein's name",
+      "Input: the contact map. Target: the PDB identifier"
+    ],
+    correctIndex: 0,
+    explanation: "Sessions 7-11 build the machinery for learning such per-residue mappings; profiles (Session 5) turn out to be the most useful input."
+  }
+]);
+</script>
+</section>
+<section class="level2" data-number="6.8" id="the-lab">
+<h2 class="anchored" data-anchor-id="the-lab" data-number="6.8"><span class="header-section-number">6.8</span> The lab</h2>
+<p>The whole lab runs in <a download="" href="https://course.bioinfo.se/notebooks/session06-lab.ipynb"><code>notebooks/session06-lab.ipynb</code></a> on Colab, in the browser or from VS Code; nothing is installed on your own computer. <strong>It starts with PyMOL</strong>, run as a Python library inside the notebook, on three structures beyond haemoglobin. An HIV envelope glycoprotein trimer with an antibody (<code>7LXM</code>) is used for representations, chains and structural alignment (<code>cealign</code>). A chitinase with bound metal ions and an inhibitor (<code>8C6Z</code>) is used for ligands and charged residues. Human neuroglobin (<code>1OJ6</code>) is used for the central comparison, which you run with TM-align:</p>
+<pre><code>same protein, experimental vs. AlphaFold prediction  → nearly identical
+a different globin (hemoglobin)                       → same fold
+GFP                                                   → unrelated fold</code></pre>
+<p>You then return to the two myoglobin records from Session 3. The notebook superimposes their structures and lets you connect the coordinates to the experimental resolution and prediction confidence reported in the records. Session 12 explains how the prediction is produced. Next, you search the whole PDB with neuroglobin through the Foldseek web server’s API, and the lab ends with a structural domain lookup in CATH. An optional tip shows how to view structures directly in VS Code with the Protein Viewer extension.</p>
+<section class="level3" data-number="6.8.1" id="submitting-this-lab">
+<h3 class="anchored" data-anchor-id="submitting-this-lab" data-number="6.8.1"><span class="header-section-number">6.8.1</span> Submitting this lab</h3>
+<p>This lab is administered through Canvas, not through this book. See the course’s Canvas page for the current quiz, the deadline and how to submit.</p>
+</section>
+</section>
+<section class="level2" data-number="6.9" id="whats-next">
+<h2 class="anchored" data-anchor-id="whats-next" data-number="6.9"><span class="header-section-number">6.9</span> What’s next</h2>
+<p>This session gave you structural properties that are worth predicting from sequence. Session 7 starts building the machinery to predict them. It returns to the weighted sum that a PSSM computes, <span class="math inline">\(S(x) = \sum_i w[i,
+x_i]\)</span>, and formalises it as a <strong>perceptron</strong> whose weights are <em>learned</em> from labelled examples. It then applies the perceptron to the secondary structure you met in this session, through Rost &amp; Sander’s PHD method, and shows why the helix you saw in PyMOL can be hard to predict from a window of residues.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="5 Session 5: Advanced Database Search &amp; Profile Methods" class="pagination-link" href="./session05.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="7 Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction" class="pagination-link" href="./session07.html">
+<span class="nav-page-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

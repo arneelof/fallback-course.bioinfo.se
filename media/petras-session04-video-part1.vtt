@@ -1,0 +1,530 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.450
+This is the sequence alignment lecture for KB8029, Bioinformatics, given by Petras Kundrotas.
+
+2
+00:00:07.450 --> 00:00:17.950
+It covers how two sequences are compared and scored, the dynamic programming algorithms that find the best alignment, and how the idea extends from two sequences to many.
+
+3
+00:00:18.550 --> 00:00:26.275
+This lecture draws on chapters three and six of the Pevsner book, with the topics rearranged so that each one builds on the last.
+
+4
+00:00:26.875 --> 00:00:28.400
+Four parts.
+
+5
+00:00:28.400 --> 00:00:36.000
+First some definitions — homology, similarity, orthologues and paralogues — and why sequences need aligning at all.
+
+6
+00:00:36.000 --> 00:00:43.525
+Then the two algorithms at the heart of pairwise alignment: Needleman-Wunsch for global alignment, Smith-Waterman for local.
+
+7
+00:00:43.525 --> 00:00:49.600
+Then substitution matrices: the PAM and BLOSUM families, and how each is built.
+
+8
+00:00:49.600 --> 00:00:53.975
+And finally multiple sequence alignment, which is chapter six.
+
+9
+00:00:53.975 --> 00:01:01.400
+That chapter also covers alignment databases, which this lecture does not — read them anyway, they are useful in practice.
+
+10
+00:01:02.000 --> 00:01:06.400
+Start with homology, because it is the word people misuse most.
+
+11
+00:01:06.400 --> 00:01:10.325
+Two sequences are homologous if they share an ancestry.
+
+12
+00:01:10.325 --> 00:01:18.950
+Note "ancestry" rather than "ancestor": ancestor suggests species, and genes also duplicate and diverge within one species.
+
+13
+00:01:18.950 --> 00:01:22.000
+Homology is a yes-or-no property.
+
+14
+00:01:22.000 --> 00:01:25.350
+There is no such thing as a degree of homology.
+
+15
+00:01:25.350 --> 00:01:28.600
+Sequences are homologous or they are not.
+
+16
+00:01:28.600 --> 00:01:32.675
+What you can measure is relatedness, and there are two measures.
+
+17
+00:01:32.675 --> 00:01:37.500
+Identity is the fraction of positions holding the same amino acid.
+
+18
+00:01:37.500 --> 00:01:45.550
+Similarity is the fraction holding amino acids with similar physicochemical properties — two hydrophobics, two positives.
+
+19
+00:01:45.550 --> 00:01:50.050
+Similarity is therefore always at least as large as identity.
+
+20
+00:01:50.050 --> 00:01:58.325
+Homologous proteins almost always have similar three-dimensional structures, usually with detectable sequence similarity as well.
+
+21
+00:01:58.325 --> 00:02:02.275
+The threshold for calling homology has moved over time.
+
+22
+00:02:02.275 --> 00:02:09.250
+It used to be thirty to forty per cent identity; with better methods it is now more like fifteen to twenty.
+
+23
+00:02:09.850 --> 00:02:15.800
+Both orthologues and paralogues are homologous — in both cases there is an ancestral gene.
+
+24
+00:02:15.800 --> 00:02:17.850
+Orthologues first.
+
+25
+00:02:17.850 --> 00:02:23.800
+Every myoglobin in every organism does the same job, carrying oxygen in muscle.
+
+26
+00:02:23.800 --> 00:02:32.200
+The red cartoon is human myoglobin, the magenta one is from sperm whale, and both are a hundred and fifty-four amino acids long.
+
+27
+00:02:32.200 --> 00:02:34.150
+Paralogues next.
+
+28
+00:02:34.150 --> 00:02:39.650
+The human globins are all oxygen transporters, but they are not interchangeable.
+
+29
+00:02:39.650 --> 00:02:43.075
+Neuroglobin, in light blue, works in the brain.
+
+30
+00:02:43.075 --> 00:02:48.100
+Haemoglobin delta, in yellow, carries oxygen from the lungs to the tissues.
+
+31
+00:02:48.100 --> 00:02:51.425
+Epsilon globin works in the early embryo.
+
+32
+00:02:51.425 --> 00:02:54.150
+Then a question worth pausing on.
+
+33
+00:02:54.150 --> 00:02:59.100
+Are human epsilon globin and whale myoglobin paralogues or orthologues?
+
+34
+00:02:59.100 --> 00:03:04.425
+They look like paralogues, because the different globins come from gene duplication.
+
+35
+00:03:04.425 --> 00:03:08.950
+But they are not, strictly, because they evolved in different organisms.
+
+36
+00:03:08.950 --> 00:03:13.900
+Which leads to the real question: how do we measure the similarity between them?
+
+37
+00:03:14.500 --> 00:03:20.150
+It is easy when the two proteins are the same length, as human and whale myoglobin are.
+
+38
+00:03:20.150 --> 00:03:23.925
+Write one sequence under the other, and the measures follow.
+
+39
+00:03:24.525 --> 00:03:31.750
+Count the pairs where both sequences have the same residue — the blue ones — and divide by the total number of pairs.
+
+40
+00:03:31.750 --> 00:03:38.750
+Multiply by a hundred and you have percentage identity, which is how every alignment program reports it.
+
+41
+00:03:39.350 --> 00:03:42.500
+Now look at the red pairs, the ones that differ.
+
+42
+00:03:42.500 --> 00:03:44.750
+Some differ more than others.
+
+43
+00:03:44.750 --> 00:03:48.600
+Valine against isoleucine is two hydrophobics.
+
+44
+00:03:48.600 --> 00:03:56.900
+Arginine against lysine is two positives, aspartate against glutamate two negatives, serine against threonine two polars.
+
+45
+00:03:56.900 --> 00:04:05.150
+Those are far closer than, say, charged aspartate against hydrophobic alanine, or polar asparagine against charged lysine.
+
+46
+00:04:05.150 --> 00:04:12.675
+So split the red pairs into genuinely different ones and merely different ones, and you get the second measure: similarity.
+
+47
+00:04:13.275 --> 00:04:16.875
+Now the hard case: two proteins of different lengths.
+
+48
+00:04:16.875 --> 00:04:19.950
+The first problem is what to divide by.
+
+49
+00:04:19.950 --> 00:04:24.250
+Use the shorter sequence, and every residue gets counted.
+
+50
+00:04:24.250 --> 00:04:26.750
+The second problem is worse.
+
+51
+00:04:26.750 --> 00:04:30.425
+There are many ways to place one sequence under the other.
+
+52
+00:04:30.425 --> 00:04:39.100
+Here the first residues are lined up, which gives seventeen identical residues out of a hundred and forty-seven — eleven point six per cent.
+
+53
+00:04:39.700 --> 00:04:45.350
+Line up the last residues instead and identity falls to four point one per cent.
+
+54
+00:04:45.950 --> 00:04:50.200
+And this is the right answer: twenty-one point five per cent.
+
+55
+00:04:50.200 --> 00:04:52.100
+How do you get there?
+
+56
+00:04:52.100 --> 00:04:57.075
+The obvious approach is to try every possible placement and keep the best.
+
+57
+00:04:57.075 --> 00:05:00.475
+But look at the lower sequence — it has gaps in it.
+
+58
+00:05:00.475 --> 00:05:07.175
+Allowing gaps multiplies the number of possible placements enormously, and brute force stops being possible.
+
+59
+00:05:07.175 --> 00:05:09.450
+So we need an algorithm.
+
+60
+00:05:09.450 --> 00:05:13.350
+Doing this properly is called pairwise sequence alignment.
+
+61
+00:05:13.950 --> 00:05:23.500
+To summarise: pairwise alignment lines up two sequences to maximise identity and to show where evolution has conserved, inserted or deleted.
+
+62
+00:05:23.500 --> 00:05:28.900
+The point of it is to judge similarity, and from that, the possibility of homology.
+
+63
+00:05:28.900 --> 00:05:32.225
+Mechanically it is an optimisation problem.
+
+64
+00:05:32.225 --> 00:05:37.975
+You need an objective function — a score for any given alignment — and a way to maximise it.
+
+65
+00:05:37.975 --> 00:05:42.075
+That score is not identity and it is not similarity.
+
+66
+00:05:42.075 --> 00:05:54.475
+It has three parts: a reward for matching residues exactly, which contributes most; a smaller reward for matching residues that merely resemble each other; and a penalty for opening and extending gaps.
+
+67
+00:05:55.075 --> 00:05:59.050
+So the algorithm must find the alignment with the highest score.
+
+68
+00:05:59.050 --> 00:06:03.250
+The first question with any problem is whether brute force will do.
+
+69
+00:06:03.250 --> 00:06:06.400
+Try it with two sequences of length three.
+
+70
+00:06:06.400 --> 00:06:11.225
+With no gaps allowed there is exactly one alignment, since the lengths match.
+
+71
+00:06:11.225 --> 00:06:19.775
+Allow one gap and there are twelve more: four places to put a gap in the first sequence, and for each, three places in the second that do not collide.
+
+72
+00:06:19.775 --> 00:06:24.050
+Four times three is twelve, plus the ungapped one makes thirteen.
+
+73
+00:06:24.050 --> 00:06:32.025
+Allow two gaps in the first sequence and there are ten ways to place them, each with three ways to place one in the second — thirty more.
+
+74
+00:06:32.025 --> 00:06:34.600
+Three gaps gives twenty more.
+
+75
+00:06:34.600 --> 00:06:38.825
+So sequences of length three admit sixty-three alignments.
+
+76
+00:06:38.825 --> 00:06:44.625
+You cannot go further, because four gaps would put gaps opposite each other, which is not allowed.
+
+77
+00:06:44.625 --> 00:06:47.550
+There is a formula for the general case.
+
+78
+00:06:48.150 --> 00:06:51.000
+And the numbers it gives settle the question.
+
+79
+00:06:51.000 --> 00:06:53.050
+Brute force is out.
+
+80
+00:06:53.650 --> 00:06:58.400
+So we need algorithms that find the best alignment without trying everything.
+
+81
+00:06:58.400 --> 00:07:01.375
+These are the ones this lecture covers.
+
+82
+00:07:01.975 --> 00:07:04.900
+First, the simplest: the dot plot.
+
+83
+00:07:04.900 --> 00:07:07.925
+Put one sequence along each axis.
+
+84
+00:07:07.925 --> 00:07:11.875
+Wherever the residues at two positions match, put a dot.
+
+85
+00:07:11.875 --> 00:07:14.150
+That is the whole method.
+
+86
+00:07:14.150 --> 00:07:17.250
+What makes it useful is what the dots form.
+
+87
+00:07:17.250 --> 00:07:23.175
+A diagonal run of dots is a stretch of similarity — a conserved domain, or a repeat.
+
+88
+00:07:23.175 --> 00:07:28.725
+Dots off the main diagonal suggest an insertion or a deletion has shifted things.
+
+89
+00:07:28.725 --> 00:07:32.175
+Repeated diagonals mean repeated elements.
+
+90
+00:07:32.175 --> 00:07:40.750
+It is a way of seeing the relationship before you compute anything about it, and it works best alongside the methods that follow rather than instead of them.
+
+91
+00:07:41.350 --> 00:07:58.200
+Now dynamic programming, which is the engine inside a remarkable number of programs: BLAST and FASTA for database search, ClustalW for multiple alignment, HMMER for profile search, GENSCAN for gene finding, even MFOLD for RNA folding.
+
+92
+00:07:58.200 --> 00:08:00.525
+A small piece of history.
+
+93
+00:08:00.525 --> 00:08:08.850
+Dynamic programming was formalised in the early nineteen-fifties by Richard Bellman at RAND, working on optimal decision processes.
+
+94
+00:08:08.850 --> 00:08:11.400
+The name was chosen for cover.
+
+95
+00:08:11.400 --> 00:08:19.400
+His funder was a defence secretary hostile to mathematical research, and Bellman wanted something that sounded unobjectionable.
+
+96
+00:08:19.400 --> 00:08:27.225
+His work involved time series and planning, hence dynamic and programming — nothing to do with computer programming at all.
+
+97
+00:08:27.225 --> 00:08:33.800
+He liked dynamic because, as he put it, it is impossible to use the word in a pejorative sense.
+
+98
+00:08:33.800 --> 00:08:36.850
+The way to understand it is an example.
+
+99
+00:08:36.850 --> 00:08:42.575
+Two sequences, x and y, at the top of the slide: thirteen residues and twelve.
+
+100
+00:08:42.575 --> 00:08:44.950
+The method has two steps.
+
+101
+00:08:44.950 --> 00:08:51.525
+First fill a matrix, using a gap penalty — one, here — and a score for aligning each pair of residues.
+
+102
+00:08:51.525 --> 00:08:55.525
+Then recover the alignment by tracing back through the matrix.
+
+103
+00:08:55.525 --> 00:09:00.625
+Notice the matrix has an extra row and an extra column, numbered zero.
+
+104
+00:09:01.225 --> 00:09:11.375
+Those extra ones get filled first, with the gap penalty multiplied by how far along you are: by the column number for the top row, by the row number for the first column.
+
+105
+00:09:11.975 --> 00:09:15.125
+Which, for this example, gives these numbers.
+
+106
+00:09:15.725 --> 00:09:18.675
+Here are the rules for everything else.
+
+107
+00:09:18.675 --> 00:09:21.500
+Any cell can be reached three ways.
+
+108
+00:09:21.500 --> 00:09:26.475
+Diagonally from the upper left, adding the score for matching those two residues.
+
+109
+00:09:26.475 --> 00:09:30.075
+From directly above, subtracting the gap penalty.
+
+110
+00:09:30.075 --> 00:09:33.450
+Or from the left, subtracting the gap penalty.
+
+111
+00:09:33.450 --> 00:09:36.500
+Work out all three and keep the largest.
+
+112
+00:09:36.500 --> 00:09:40.725
+That is the whole recurrence, and it is the equation on the slide.
+
+113
+00:09:41.325 --> 00:09:44.825
+Here is that rule applied to the very first cell.
+
+114
+00:09:45.425 --> 00:09:47.825
+And with the actual numbers.
+
+115
+00:09:47.825 --> 00:09:52.000
+The largest of the three is two, and it came from the upper left.
+
+116
+00:09:52.000 --> 00:09:56.375
+So two goes in the cell, and we remember the direction: diagonal.
+
+117
+00:09:56.975 --> 00:10:00.000
+The rule again, for the cell to its right.
+
+118
+00:10:00.600 --> 00:10:02.350
+And the numbers.
+
+119
+00:10:02.350 --> 00:10:10.225
+This time the largest came from subtracting the gap penalty from the cell on the left, so the direction we remember is: left.
+
+120
+00:10:10.825 --> 00:10:14.325
+Carry on in the same way until the matrix is full.
+
+121
+00:10:14.925 --> 00:10:17.000
+Which looks like this.
+
+122
+00:10:17.000 --> 00:10:19.725
+Now the second step, the traceback.
+
+123
+00:10:19.725 --> 00:10:23.375
+For Needleman-Wunsch it starts in the bottom right corner.
+
+124
+00:10:23.975 --> 00:10:27.050
+Say the direction recorded there was left.
+
+125
+00:10:27.050 --> 00:10:31.250
+That means aligning the M from the first sequence against a gap.
+
+126
+00:10:31.250 --> 00:10:36.800
+The alignment starts to build at the bottom of the slide, and we move one cell to the left.
+
+127
+00:10:37.400 --> 00:10:47.200
+In that cell the direction was diagonal, which means aligning the twelfth residue of the first sequence against the twelfth of the second — both proline, as it happens.
+
+128
+00:10:47.200 --> 00:10:50.925
+That pair joins the alignment and we move diagonally.
+
+129
+00:10:51.525 --> 00:10:57.625
+Here the direction was above, which means a gap in the first sequence against the glycine in the second.
+
+130
+00:10:57.625 --> 00:11:00.675
+That goes into the alignment and we move up.
+
+131
+00:11:01.275 --> 00:11:04.025
+And so on until the top left.
+
+132
+00:11:04.025 --> 00:11:09.675
+The alignment at the bottom is the result, and the number in the bottom right corner is its score.
+

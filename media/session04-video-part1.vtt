@@ -1,0 +1,806 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.325
+Welcome to Session four.
+
+2
+00:00:02.325 --> 00:00:09.975
+This is the session about sequence alignment, and it is where the course stops fetching data and starts drawing conclusions from it.
+
+3
+00:00:09.975 --> 00:00:15.275
+Session three ended with two related sequences pulled out of the databases.
+
+4
+00:00:15.275 --> 00:00:26.625
+Today's question is the obvious next one: which residues in the first sequence correspond to which residues in the second, and how much evidence does that correspondence give for a shared ancestor?
+
+5
+00:00:26.625 --> 00:00:32.050
+That is a harder question than it sounds, and I want to be precise about what we are doing.
+
+6
+00:00:32.050 --> 00:00:34.975
+An alignment is not an observation.
+
+7
+00:00:34.975 --> 00:00:37.300
+It is a hypothesis.
+
+8
+00:00:37.300 --> 00:00:50.850
+It proposes that these residues here descend from the same ancestral position, so that the places where the two sequences differ are substitutions, and the places where one has residues the other lacks are insertions or deletions.
+
+9
+00:00:50.850 --> 00:00:56.875
+The score we then compute says how plausible that proposal is — under the scoring scheme we chose.
+
+10
+00:00:56.875 --> 00:01:00.150
+It does not say we have recovered the true history.
+
+11
+00:01:00.150 --> 00:01:04.200
+That qualification is the thread running through the whole session.
+
+12
+00:01:04.200 --> 00:01:14.400
+Most of what follows is about the choices that go into the score: how to penalise a gap, which substitution matrix to use, and how to tell a good score from a lucky one.
+
+13
+00:01:14.400 --> 00:01:16.800
+The session has three blocks.
+
+14
+00:01:16.800 --> 00:01:23.925
+The first asks why alignment needs an algorithm at all, and builds the dynamic-programming algorithm that answers it.
+
+15
+00:01:23.925 --> 00:01:30.575
+The second is about scoring: gap penalties, substitution matrices, and whether a score means anything.
+
+16
+00:01:30.575 --> 00:01:38.225
+The third moves from two sequences to many — multiple alignment, trees, and what a family tells you that a pair cannot.
+
+17
+00:01:38.825 --> 00:01:42.050
+Here is what we are talking about, concretely.
+
+18
+00:01:42.050 --> 00:01:52.500
+This is the start of an alignment of human beta-globin against human alpha-globin, scored with BLOSUM sixty-two — two proteins we will keep coming back to all session.
+
+19
+00:01:52.500 --> 00:01:54.450
+Read the columns.
+
+20
+00:01:54.450 --> 00:02:02.325
+Where both sequences have a residue, the alignment is claiming those two residues sit at the same position in the common ancestor.
+
+21
+00:02:02.325 --> 00:02:06.200
+If they are the same residue, we call it an identity.
+
+22
+00:02:06.200 --> 00:02:11.900
+If they differ, the alignment is claiming a substitution happened on one of the two lineages.
+
+23
+00:02:11.900 --> 00:02:18.700
+Where one sequence has a residue and the other has a gap, the alignment is claiming an insertion or a deletion.
+
+24
+00:02:18.700 --> 00:02:21.525
+Every one of those claims could be wrong.
+
+25
+00:02:21.525 --> 00:02:27.050
+Shift the gaps by one position and you get a different set of claims, and a different score.
+
+26
+00:02:27.050 --> 00:02:36.400
+That is why the algorithm matters: we want the arrangement that scores highest under our scheme, and we want to find it without being fooled into thinking it is the truth.
+
+27
+00:02:37.000 --> 00:02:38.600
+First block.
+
+28
+00:02:38.600 --> 00:02:45.050
+Why does aligning two sequences need a dedicated algorithm, and what does that algorithm look like?
+
+29
+00:02:45.650 --> 00:02:53.125
+Before the algorithm, the vocabulary, because it gets misused constantly and the misuse causes real confusion.
+
+30
+00:02:53.125 --> 00:02:58.850
+Two sequences are homologous if and only if they share a common evolutionary origin.
+
+31
+00:02:58.850 --> 00:03:01.400
+That is the whole definition.
+
+32
+00:03:01.400 --> 00:03:04.900
+Note what it is not: it is not a percentage.
+
+33
+00:03:04.900 --> 00:03:08.900
+Homology is a yes-or-no property about ancestry.
+
+34
+00:03:08.900 --> 00:03:14.650
+You cannot be eighty per cent homologous any more than you can be eighty per cent someone's cousin.
+
+35
+00:03:14.650 --> 00:03:16.975
+And we never observe it.
+
+36
+00:03:16.975 --> 00:03:27.800
+The common ancestor is long gone, so homology is always inferred, and the evidence we infer it from is usually the similarity of the sequences — which requires an alignment.
+
+37
+00:03:27.800 --> 00:03:36.150
+So there is a dependency to keep straight: we align in order to measure similarity, and we use similarity as evidence for homology.
+
+38
+00:03:36.150 --> 00:03:38.425
+Two measures get used.
+
+39
+00:03:38.425 --> 00:03:43.300
+Identity is the fraction of aligned positions holding the same residue.
+
+40
+00:03:43.300 --> 00:03:51.325
+Similarity is looser and also counts residues sharing physicochemical properties — two hydrophobic residues, say.
+
+41
+00:03:51.325 --> 00:03:53.925
+Both are evidence for homology.
+
+42
+00:03:53.925 --> 00:03:55.825
+Neither is proof.
+
+43
+00:03:55.825 --> 00:04:03.700
+Since homology is defined by a common ancestor, homologs come in two kinds, depending on what event separated them.
+
+44
+00:04:03.700 --> 00:04:09.825
+Orthologs were separated by a speciation: myoglobin in human and myoglobin in mouse.
+
+45
+00:04:09.825 --> 00:04:19.675
+Paralogs were separated by a gene duplication: alpha-globin and beta-globin, which both descend from a single duplicated ancestral globin gene.
+
+46
+00:04:19.675 --> 00:04:22.750
+Here is the subtlety that catches people.
+
+47
+00:04:22.750 --> 00:04:26.650
+Those definitions refer to events, not to genomes.
+
+48
+00:04:26.650 --> 00:04:30.225
+So paralogs need not sit in the same organism.
+
+49
+00:04:30.225 --> 00:04:44.025
+Human alpha-globin and mouse beta-globin are paralogs, even though they are in different species, because the event separating them is the alpha-beta duplication — and that duplication happened before human and mouse diverged.
+
+50
+00:04:44.025 --> 00:04:49.850
+Which means you cannot tell orthologs from paralogs by looking at which species they came from.
+
+51
+00:04:49.850 --> 00:04:53.450
+You need the order of events, and for that you need a tree.
+
+52
+00:04:53.450 --> 00:04:55.975
+We build one in the third block.
+
+53
+00:04:56.575 --> 00:04:58.825
+Now the problem itself.
+
+54
+00:04:58.825 --> 00:05:05.875
+To measure identity we first have to decide which residues to compare, and that turns out to be the hard part.
+
+55
+00:05:05.875 --> 00:05:09.625
+If two sequences are the same length, it is trivial.
+
+56
+00:05:09.625 --> 00:05:13.700
+Put one under the other, walk down the columns, count the matches.
+
+57
+00:05:13.700 --> 00:05:14.700
+Done.
+
+58
+00:05:14.700 --> 00:05:21.750
+Real sequences are not the same length, because insertions and deletions accumulate over evolutionary time.
+
+59
+00:05:21.750 --> 00:05:29.000
+And once lengths differ, where you place one sequence under the other changes the answer — not slightly, but dramatically.
+
+60
+00:05:29.000 --> 00:05:31.525
+Look at the numbers on this slide.
+
+61
+00:05:31.525 --> 00:05:34.700
+These are two real globin sequences.
+
+62
+00:05:34.700 --> 00:05:39.075
+Aligned correctly they are twenty-one and a half per cent identical.
+
+63
+00:05:39.075 --> 00:05:46.900
+Place them naively — just butt the two N-termini together and start counting — and they look as low as four per cent identical.
+
+64
+00:05:46.900 --> 00:05:49.175
+Same two sequences.
+
+65
+00:05:49.175 --> 00:05:51.800
+Same evolutionary history.
+
+66
+00:05:51.800 --> 00:05:56.250
+A five-fold difference in the answer, purely from where you put them.
+
+67
+00:05:56.250 --> 00:05:59.575
+So the real problem is not counting matches.
+
+68
+00:05:59.575 --> 00:06:01.550
+Counting is easy.
+
+69
+00:06:01.550 --> 00:06:07.000
+The problem is finding the right placement, and that is what the rest of this block is about.
+
+70
+00:06:07.600 --> 00:06:13.450
+The obvious idea is to try every possible placement and keep whichever scores best.
+
+71
+00:06:13.450 --> 00:06:15.800
+It is obviously correct.
+
+72
+00:06:15.800 --> 00:06:19.850
+It is also hopeless, and it is worth seeing how hopeless.
+
+73
+00:06:19.850 --> 00:06:27.550
+Allowing gaps, the number of ways to align two sequences of length n grows like the binomial coefficient: two n choose n.
+
+74
+00:06:27.550 --> 00:06:37.275
+For sequences of a hundred residues — which is a small protein, shorter than the globins we have been looking at — that is about nine times ten to the fifty-eighth.
+
+75
+00:06:37.275 --> 00:06:39.775
+Call it ten to the fifty-ninth.
+
+76
+00:06:39.775 --> 00:06:43.050
+There is no useful comparison for that number.
+
+77
+00:06:43.050 --> 00:06:46.625
+It is vastly more than the number of atoms in the Earth.
+
+78
+00:06:46.625 --> 00:06:52.500
+You cannot enumerate it with any computer that will ever exist, and the sequences are short.
+
+79
+00:06:52.500 --> 00:06:55.050
+So exhaustive search is out.
+
+80
+00:06:55.050 --> 00:07:01.350
+But notice we do not actually need to look at most of those alignments, and the reason is the key insight.
+
+81
+00:07:01.350 --> 00:07:05.875
+Enormous numbers of those candidate alignments share the same beginnings.
+
+82
+00:07:05.875 --> 00:07:15.200
+If you have already worked out the best way to align the first ten residues against the first eight, every alignment extending that prefix reuses the same answer.
+
+83
+00:07:15.200 --> 00:07:20.350
+Solve each prefix problem once, store the answer, look it up when you need it again.
+
+84
+00:07:20.350 --> 00:07:28.925
+That is dynamic programming, and it finds the guaranteed-optimal alignment while never examining the overwhelming majority of the possibilities.
+
+85
+00:07:28.925 --> 00:07:38.650
+Before we build it, though, there is something simpler worth seeing — because sometimes you do not need an optimal alignment, you just need to know whether there is anything there at all.
+
+86
+00:07:39.250 --> 00:07:45.600
+A dot plot needs no algorithm whatsoever, and it answers a question the algorithm answers slowly.
+
+87
+00:07:45.600 --> 00:07:53.725
+The construction: put one sequence along each axis of a grid, and put a dot wherever the row residue and the column residue match.
+
+88
+00:07:53.725 --> 00:07:55.400
+That is it.
+
+89
+00:07:55.400 --> 00:08:03.150
+A run of consecutive matches then lines up as a diagonal line, and the human eye picks a diagonal out of noise instantly.
+
+90
+00:08:03.150 --> 00:08:05.350
+Compare the two panels.
+
+91
+00:08:05.350 --> 00:08:08.925
+On the left, every identical pair gets a dot.
+
+92
+00:08:08.925 --> 00:08:19.850
+With twenty amino acids, any two residues match about one time in twenty by chance, so the plot is mostly noise — you can just about convince yourself there is something there.
+
+93
+00:08:19.850 --> 00:08:26.100
+On the right, a dot is drawn only where a window of ten residues contains at least five identities.
+
+94
+00:08:26.100 --> 00:08:30.075
+The noise disappears and the diagonal is unmistakable.
+
+95
+00:08:30.075 --> 00:08:36.375
+What a dot plot gives you is qualitative: is there a relationship here, and roughly whereabouts is it?
+
+96
+00:08:36.375 --> 00:08:39.775
+What it does not give you is a score or an alignment.
+
+97
+00:08:39.775 --> 00:08:43.025
+It will not tell you which residue pairs with which.
+
+98
+00:08:43.025 --> 00:08:46.600
+It is not a historical curiosity, by the way.
+
+99
+00:08:46.600 --> 00:08:54.300
+BLAST's web output still shows you one, because a picture answers "is there anything here" faster than reading a number does.
+
+100
+00:08:54.900 --> 00:09:05.375
+Three patterns are worth learning to recognise, and these three panels are built to show them cleanly — each piece is twenty-five residues of beta-globin, assembled to order.
+
+101
+00:09:05.375 --> 00:09:11.475
+The first is a sequence against itself: A plus B plus C, compared with A plus B plus C.
+
+102
+00:09:11.475 --> 00:09:15.100
+One long unbroken diagonal, corner to corner.
+
+103
+00:09:15.100 --> 00:09:18.825
+That is what a single end-to-end alignment looks like.
+
+104
+00:09:18.825 --> 00:09:22.450
+The second is A plus B plus A against itself.
+
+105
+00:09:22.450 --> 00:09:31.725
+Now there are parallel diagonals off the main one, and they are there because the A piece appears twice: the first copy matches the second copy as well as itself.
+
+106
+00:09:31.725 --> 00:09:34.575
+Parallel diagonals mean a repeat.
+
+107
+00:09:34.575 --> 00:09:39.000
+The third is A plus B plus C against A plus reversed-B plus C.
+
+108
+00:09:39.000 --> 00:09:46.825
+The outer pieces still give diagonals running the usual way, but the middle one runs the other way — perpendicular to the rest.
+
+109
+00:09:46.825 --> 00:09:51.100
+A diagonal with the opposite slope means an inverted segment.
+
+110
+00:09:51.100 --> 00:09:54.875
+Learn these three and you can read most real dot plots.
+
+111
+00:09:54.875 --> 00:10:00.750
+But for a score, and for an actual residue-by-residue alignment, we need dynamic programming.
+
+112
+00:10:01.350 --> 00:10:03.525
+So let us build it.
+
+113
+00:10:03.525 --> 00:10:11.375
+Dynamic programming makes a matrix, called V, with one extra row and one extra column to handle the starts of the sequences.
+
+114
+00:10:11.375 --> 00:10:15.450
+One sequence runs down the side, the other along the top.
+
+115
+00:10:15.450 --> 00:10:18.975
+The meaning of each cell is the thing to hold on to.
+
+116
+00:10:18.975 --> 00:10:28.300
+Cell V at i, j holds the score of the best possible alignment of the first i residues of one sequence against the first j residues of the other.
+
+117
+00:10:28.900 --> 00:10:31.450
+Not an alignment — the best one.
+
+118
+00:10:31.450 --> 00:10:40.025
+If that is true for every cell, then the bottom-right cell holds the score of the best alignment of both sequences entire, which is what we want.
+
+119
+00:10:40.025 --> 00:10:43.700
+Now, how do we fill a cell so that the claim stays true?
+
+120
+00:10:43.700 --> 00:10:48.125
+Think about what the last column of that best alignment can possibly be.
+
+121
+00:10:48.125 --> 00:10:50.425
+There are only three options.
+
+122
+00:10:51.025 --> 00:11:00.625
+Either the two residues are aligned to each other, or the residue from the side sequence is aligned to a gap, or the residue from the top sequence is aligned to a gap.
+
+123
+00:11:00.625 --> 00:11:02.875
+There is no fourth case.
+
+124
+00:11:03.475 --> 00:11:07.025
+Each option points at a cell we have already solved.
+
+125
+00:11:07.025 --> 00:11:19.175
+Align the two residues, and the rest of the alignment is the best alignment of the two shorter prefixes — the cell diagonally up and left — plus the substitution score for this pair, a match or a mismatch.
+
+126
+00:11:19.175 --> 00:11:24.775
+Put a gap against the side residue and you come from the cell above, plus a gap penalty.
+
+127
+00:11:25.375 --> 00:11:31.175
+Put a gap against the top residue and you come from the cell to the left, plus a gap penalty.
+
+128
+00:11:31.175 --> 00:11:36.350
+So: compute all three candidates, keep the largest, and remember which one you kept.
+
+129
+00:11:36.350 --> 00:11:41.200
+That last part matters — the stored choice is what we follow in the traceback.
+
+130
+00:11:41.200 --> 00:11:48.825
+The slide shows this for cell V at one, one, with a gap penalty of one: three candidates computed, the biggest retained.
+
+131
+00:11:48.825 --> 00:11:53.050
+Every other cell in the matrix is filled by exactly this rule.
+
+132
+00:11:53.050 --> 00:11:57.600
+Nothing changes except the numbers going into the three candidates.
+
+133
+00:11:58.200 --> 00:12:00.100
+Now watch it run.
+
+134
+00:12:00.100 --> 00:12:10.875
+The order matters only in that each cell's three neighbours — above, left, and diagonally up-left — must already be done, so filling row by row from the top, left to right, works fine.
+
+135
+00:12:10.875 --> 00:12:15.875
+Let me do a small one completely, because it is worth seeing every number once.
+
+136
+00:12:15.875 --> 00:12:24.075
+Align G-C-A-T down the side against G-A-C along the top, with match plus one, mismatch minus one, and gap minus one.
+
+137
+00:12:24.675 --> 00:12:30.175
+The first row and first column are the base cases: aligning something against nothing.
+
+138
+00:12:30.175 --> 00:12:40.925
+There is only one way to do that, all gaps, so the entries are zero, minus one, minus two, minus three across, and zero, minus one, minus two, minus three, minus four down.
+
+139
+00:12:40.925 --> 00:12:44.350
+Take the top-left interior cell, G against G.
+
+140
+00:12:44.350 --> 00:12:47.575
+Diagonal: zero plus a match, plus one.
+
+141
+00:12:47.575 --> 00:12:51.000
+From above: minus one plus a gap, minus two.
+
+142
+00:12:51.600 --> 00:12:54.225
+From the left: the same, minus two.
+
+143
+00:12:54.225 --> 00:12:58.075
+The largest is plus one, and it came from the diagonal.
+
+144
+00:12:58.075 --> 00:13:08.900
+Now C against G: the diagonal gives minus one plus a mismatch, minus two; from above, plus one minus one is zero; from the left, minus two minus one is minus three.
+
+145
+00:13:08.900 --> 00:13:11.300
+Zero wins, from above.
+
+146
+00:13:11.300 --> 00:13:14.350
+Carry on like that and the matrix fills.
+
+147
+00:13:14.950 --> 00:13:21.700
+The bottom-right corner comes out at zero, which is the score of the best global alignment of these two sequences.
+
+148
+00:13:21.700 --> 00:13:28.325
+The same procedure works at real scale, with a real substitution matrix instead of plus and minus one.
+
+149
+00:13:28.925 --> 00:13:35.150
+The figure shows the completed matrix for two protein sequences of twelve and thirteen residues.
+
+150
+00:13:35.150 --> 00:13:39.175
+It is the same rule applied a hundred and fifty-six times.
+
+151
+00:13:39.175 --> 00:13:43.950
+Nothing about the algorithm changed; only the size of the picture did.
+
+152
+00:13:44.550 --> 00:13:47.175
+The matrix gives us the score.
+
+153
+00:13:47.175 --> 00:13:52.625
+It does not yet give us the alignment — for that we walk backwards through the choices we stored.
+
+154
+00:13:53.225 --> 00:14:00.400
+Start at the bottom-right corner, because that is the cell holding the score of the best alignment of both sequences in full.
+
+155
+00:14:00.400 --> 00:14:07.525
+Then ask, at each step, which of the three candidates this cell's value actually came from, and step to that neighbour.
+
+156
+00:14:07.525 --> 00:14:12.900
+Each step writes one column of the alignment, and which column depends on the direction.
+
+157
+00:14:13.500 --> 00:14:18.875
+A diagonal step means the two residues were aligned to each other — write them as a pair.
+
+158
+00:14:18.875 --> 00:14:23.050
+A step upwards means the side residue was aligned to a gap.
+
+159
+00:14:23.050 --> 00:14:27.225
+A step to the left means the top residue was aligned to a gap.
+
+160
+00:14:27.225 --> 00:14:30.675
+Keep stepping until you reach the top-left corner.
+
+161
+00:14:30.675 --> 00:14:36.500
+Because you are walking backwards, the alignment comes out backwards too, so reverse it at the end.
+
+162
+00:14:37.100 --> 00:14:44.475
+That is a detail, but it is the kind of detail that costs an hour when you implement this yourself, which you will do in the lab.
+
+163
+00:14:44.475 --> 00:14:54.150
+On our small example, the path in bold runs from the bottom-right back to the top-left and reads out as G-C-A-T on top against G-gap-A-C underneath.
+
+164
+00:14:54.150 --> 00:14:58.025
+Checking it against the score: G matches G, plus one.
+
+165
+00:14:58.025 --> 00:15:00.875
+C is aligned to a gap, minus one.
+
+166
+00:15:00.875 --> 00:15:03.300
+A matches A, plus one.
+
+167
+00:15:03.900 --> 00:15:07.100
+T is mismatched against C, minus one.
+
+168
+00:15:07.100 --> 00:15:11.125
+Total: zero — which is exactly what the corner cell said.
+
+169
+00:15:11.125 --> 00:15:13.725
+One more thing worth noticing.
+
+170
+00:15:13.725 --> 00:15:21.500
+If two candidates tie, there are two equally optimal alignments, and the algorithm has no principled way to prefer either.
+
+171
+00:15:21.500 --> 00:15:24.600
+Implementations pick by convention.
+
+172
+00:15:24.600 --> 00:15:32.175
+So "the optimal alignment" is sometimes "an optimal alignment", and a tool that shows you one answer may be hiding a tie.
+
+173
+00:15:32.775 --> 00:15:42.050
+The algorithm we have just built is Needleman-Wunsch, and it produces a global alignment: both sequences end to end, in their entirety, gaps and all.
+
+174
+00:15:42.050 --> 00:15:48.575
+The traceback starts in the bottom-right corner precisely because that corner means "all of both sequences".
+
+175
+00:15:48.575 --> 00:15:51.100
+Often that is not what we want.
+
+176
+00:15:51.100 --> 00:15:55.525
+We may want only the best-matching sub-region — a local alignment.
+
+177
+00:15:55.525 --> 00:16:00.675
+Smith-Waterman does that, and the remarkable thing is how little has to change.
+
+178
+00:16:00.675 --> 00:16:03.125
+Three changes, all small.
+
+179
+00:16:03.125 --> 00:16:07.450
+First, any negative value in the matrix is reset to zero.
+
+180
+00:16:07.450 --> 00:16:14.100
+Second, the traceback starts not at the bottom-right corner but at the highest-scoring cell anywhere in the matrix.
+
+181
+00:16:14.100 --> 00:16:19.150
+Third, it stops as soon as it reaches a zero, rather than running to the corner.
+
+182
+00:16:19.150 --> 00:16:22.625
+Think about what flooring the matrix at zero does.
+
+183
+00:16:22.625 --> 00:16:27.975
+A cell going negative means the alignment up to that point is worse than nothing.
+
+184
+00:16:27.975 --> 00:16:33.100
+Resetting it to zero says: forget everything before here and start fresh.
+
+185
+00:16:33.100 --> 00:16:39.225
+The alignment is free to begin anywhere and end anywhere, which is exactly what "local" means.
+
+186
+00:16:39.225 --> 00:16:44.100
+One change to the recurrence turns a global algorithm into a local one.
+
+187
+00:16:44.700 --> 00:16:53.425
+Which of the two you use is a biological decision, not a technical one, and getting it wrong produces nonsense that still looks like an alignment.
+
+188
+00:16:53.425 --> 00:16:58.525
+Use global when you expect the two sequences to correspond along most of their length.
+
+189
+00:16:58.525 --> 00:17:06.900
+Two myoglobins from different species are the obvious case: same protein, same architecture, same length to within a few residues.
+
+190
+00:17:06.900 --> 00:17:12.075
+Forcing them end to end is right, because end to end is the real relationship.
+
+191
+00:17:12.075 --> 00:17:15.350
+Use local when they may share only a part.
+
+192
+00:17:15.350 --> 00:17:19.750
+One domain shared between two large multidomain proteins.
+
+193
+00:17:19.750 --> 00:17:22.950
+A short motif buried in a long sequence.
+
+194
+00:17:22.950 --> 00:17:26.175
+A fragment against a full-length protein.
+
+195
+00:17:26.175 --> 00:17:30.425
+Here is what happens if you choose wrong in the dangerous direction.
+
+196
+00:17:30.425 --> 00:17:39.200
+Force a global alignment onto two sequences that share only a domain, and the algorithm must account for every residue outside the shared region.
+
+197
+00:17:39.200 --> 00:17:50.600
+It does so with a long tail of meaningless gaps, which cost points, and the genuine shared domain gets buried in the middle of that mess — sometimes scoring worse than an unrelated pair would.
+
+198
+00:17:50.600 --> 00:17:54.300
+The relationship is real and the alignment hides it.
+
+199
+00:17:54.300 --> 00:17:58.550
+So: how much of the two sequences do you expect to correspond?
+
+200
+00:17:58.550 --> 00:18:01.750
+Answer that first, then pick the algorithm.
+
+201
+00:18:01.750 --> 00:18:07.125
+And since the answer depends heavily on how gaps are charged, gaps are where we go next.
+

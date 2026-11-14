@@ -1,0 +1,508 @@
+1
+00:00:00,000 --> 00:00:01,775
+Second block.
+
+2
+00:00:01,775 --> 00:00:05,450
+One sequence was not enough to find myoglobin.
+
+3
+00:00:05,450 --> 00:00:10,425
+So let us use the family instead, and see what that buys and what it costs.
+
+4
+00:00:11,025 --> 00:00:13,325
+The diagnosis first.
+
+5
+00:00:13,325 --> 00:00:20,675
+Ordinary BLAST scores everything against one fixed substitution matrix, whatever family the query belongs to.
+
+6
+00:00:20,675 --> 00:00:33,325
+BLOSUM sixty-two is an average over proteins in general, and an average is exactly wrong for a specific family: it is too tolerant where the family is rigid, and too harsh where the family is free.
+
+7
+00:00:33,325 --> 00:00:39,075
+A faint but real family signal gets lost against the background of a large database.
+
+8
+00:00:39,075 --> 00:00:48,500
+PSI-BLAST — Position-Specific Iterated BLAST — builds a scoring matrix for this query specifically, and refines it over several rounds.
+
+9
+00:00:48,500 --> 00:00:52,250
+Round one is an ordinary BLAST search with the query.
+
+10
+00:00:52,250 --> 00:01:04,275
+Then take the hits passing the inclusion threshold, align them to the query, and turn that alignment into a position-specific scoring matrix — a PSSM, which the next slides build by hand.
+
+11
+00:01:04,275 --> 00:01:09,975
+Search the database again, scoring with the PSSM instead of a generic matrix.
+
+12
+00:01:09,975 --> 00:01:19,875
+Then repeat, each round's hits refining the matrix further, until no new sequences pass the threshold — convergence — or a set number of rounds is reached.
+
+13
+00:01:19,875 --> 00:01:24,975
+One detail worth noting, because it is where the control over the method lives.
+
+14
+00:01:24,975 --> 00:01:30,800
+The inclusion threshold is not the reporting threshold, and by default it is stricter.
+
+15
+00:01:30,800 --> 00:01:34,475
+Hits can be displayed to you without entering the profile.
+
+16
+00:01:34,475 --> 00:01:39,700
+That distinction is deliberate, and the next slide shows why it matters so much.
+
+17
+00:01:39,700 --> 00:01:52,700
+The effect is real: PSI-BLAST is substantially more sensitive than a single BLAST pass, particularly for remote homologs whose similarity to the original query is too faint for a fixed matrix to catch.
+
+18
+00:01:53,300 --> 00:02:01,725
+Iteration is not automatically better, and this failure mode is worth knowing by name because you will meet its relatives for the rest of the course.
+
+19
+00:02:01,725 --> 00:02:07,250
+Suppose one unrelated sequence passes the inclusion threshold in round two.
+
+20
+00:02:07,250 --> 00:02:09,525
+It enters the alignment.
+
+21
+00:02:09,525 --> 00:02:15,300
+The next PSSM is built from that alignment, so it shifts a little towards the intruder.
+
+22
+00:02:15,300 --> 00:02:23,900
+Round three searches with the shifted profile, and now finds more sequences like the intruder — which also pass, and shift the profile further.
+
+23
+00:02:23,900 --> 00:02:30,750
+After a few rounds the "family" can be dominated by proteins having nothing to do with your original query.
+
+24
+00:02:30,750 --> 00:02:34,475
+And crucially, nothing in the output tells you this happened.
+
+25
+00:02:34,475 --> 00:02:38,900
+Each round looks like a successful search finding new relatives.
+
+26
+00:02:38,900 --> 00:02:41,200
+The E-values are small.
+
+27
+00:02:41,200 --> 00:02:45,100
+They are correct — the sequences really do match the profile.
+
+28
+00:02:45,100 --> 00:02:48,475
+The profile just stopped describing what you meant.
+
+29
+00:02:48,475 --> 00:02:57,775
+In practice the intruder usually gets in through a shared low-complexity region or a coiled-coil, rather than through anything resembling real homology.
+
+30
+00:02:57,775 --> 00:03:04,375
+Those are compositionally unusual stretches that match many things for reasons unrelated to ancestry.
+
+31
+00:03:04,375 --> 00:03:11,350
+The general lesson is the one I want to flag hardest, because the machine-learning half of this course is full of it.
+
+32
+00:03:11,350 --> 00:03:20,000
+A model is only as good as the examples it was built from, and a model that chooses its own training data can reinforce its own mistakes.
+
+33
+00:03:20,000 --> 00:03:31,975
+PSI-BLAST is the earliest clean example of that pattern in bioinformatics, and the same shape recurs in pseudo-labelling, in self-training, and in every system fine-tuned on its own output.
+
+34
+00:03:31,975 --> 00:03:44,325
+What to do about it, concretely: keep the inclusion threshold strict, look at what actually entered in each round rather than only at the final hit list, and check surprising late-round hits independently.
+
+35
+00:03:44,925 --> 00:03:51,175
+Now let us build a PSSM by hand, because it is four steps and all of them are arithmetic.
+
+36
+00:03:51,175 --> 00:03:56,225
+Session four ended with alignment columns, their entropy, and sequence logos.
+
+37
+00:03:56,225 --> 00:03:58,750
+A logo describes a column.
+
+38
+00:03:58,750 --> 00:04:04,650
+A PSSM turns the same column statistics into numbers that can score a new sequence.
+
+39
+00:04:04,650 --> 00:04:08,850
+Same information, different purpose — describe versus score.
+
+40
+00:04:08,850 --> 00:04:11,050
+Step one is counting.
+
+41
+00:04:11,050 --> 00:04:20,125
+Take a small alignment of five sequences, five positions each: A-G-L-S-P, A-G-L-T-P, R-G-I-S-P, A-A-L-S-Q, A-A-L-S-P.
+
+42
+00:04:20,125 --> 00:04:24,200
+For every position, count how often each residue appears.
+
+43
+00:04:24,200 --> 00:04:27,800
+Position one: four alanines and one arginine.
+
+44
+00:04:27,800 --> 00:04:31,325
+Position two: three glycines and two alanines.
+
+45
+00:04:31,325 --> 00:04:34,925
+Position five: four prolines and one glutamine.
+
+46
+00:04:34,925 --> 00:04:37,175
+And so on for the rest.
+
+47
+00:04:37,175 --> 00:04:39,550
+That is all step one is.
+
+48
+00:04:39,550 --> 00:04:45,650
+But there is an important caveat that the toy example hides, because it is suspiciously balanced.
+
+49
+00:04:45,650 --> 00:04:47,975
+Real alignments are not.
+
+50
+00:04:47,975 --> 00:05:07,625
+If your search returned fifty nearly identical mammalian sequences and three distant ones, raw counting would give you a profile describing mammals, not the family — the fifty near-duplicates would swamp everything the three distant sequences had to say, and those three are precisely the ones carrying information about what the family tolerates.
+
+51
+00:05:07,625 --> 00:05:17,300
+So real tools reduce redundancy or weight sequences, removing or down-weighting near-duplicates so an over-represented subfamily cannot dominate.
+
+52
+00:05:17,300 --> 00:05:20,750
+The exact recipe varies between programs.
+
+53
+00:05:20,750 --> 00:05:28,725
+The principle is what matters, and notice that it is the same concern as the sequence weighting mentioned for logos in Session four.
+
+54
+00:05:29,325 --> 00:05:35,175
+Step two, and it fixes two problems that turning raw counts straight into frequencies would cause.
+
+55
+00:05:35,175 --> 00:05:37,975
+The first is fatal arithmetic.
+
+56
+00:05:37,975 --> 00:05:46,125
+A residue never seen at a position gets a frequency of exactly zero, and the log-odds score of zero is minus infinity.
+
+57
+00:05:46,125 --> 00:05:58,625
+Tryptophan does not appear at position one of our alignment, so a new sequence with tryptophan there would score minus infinity — the profile would declare it categorically impossible on the evidence of five sequences.
+
+58
+00:05:58,625 --> 00:06:01,800
+The second is subtler and more important.
+
+59
+00:06:01,800 --> 00:06:08,875
+With only five sequences, a residue's absence might be bad luck rather than a real biological constraint.
+
+60
+00:06:08,875 --> 00:06:13,425
+Five sequences is simply not enough evidence to rule anything out.
+
+61
+00:06:13,425 --> 00:06:15,800
+Pseudocounts fix both.
+
+62
+00:06:15,800 --> 00:06:24,750
+Add a small constant to every count before computing frequencies; in our teaching model, plus one to every residue type at every position.
+
+63
+00:06:24,750 --> 00:06:30,050
+Nothing is zero any more, and every estimate is pulled slightly towards "possible".
+
+64
+00:06:30,050 --> 00:06:36,250
+Conceptually a pseudocount is a prior: what you assume about a column before looking at the alignment.
+
+65
+00:06:36,250 --> 00:06:40,000
+Here the assumption is "every residue is possible".
+
+66
+00:06:40,000 --> 00:06:45,950
+And the balance between prior and evidence depends entirely on how much evidence you have.
+
+67
+00:06:45,950 --> 00:06:49,825
+With five sequences the prior has a large influence.
+
+68
+00:06:49,825 --> 00:06:59,725
+With hundreds, the observed counts swamp it, which is exactly the behaviour you want from a prior — it should matter when you know little and get out of the way when you know a lot.
+
+69
+00:06:59,725 --> 00:07:03,500
+Real tools use smarter priors than a flat plus one.
+
+70
+00:07:03,500 --> 00:07:19,100
+A common refinement gives larger pseudocounts to residues that substitute easily for the ones actually observed, according to a substitution matrix — so seeing leucine makes isoleucine more expected, rather than making every residue equally expected.
+
+71
+00:07:19,700 --> 00:07:26,025
+Steps three and four turn frequencies into scores, and the construction is Session four's log-odds again.
+
+72
+00:07:26,025 --> 00:07:28,525
+Step three is the background.
+
+73
+00:07:28,525 --> 00:07:39,900
+Compute how often each residue occurs in proteins generally, independently of this alignment: alanine about seven point four per cent, tryptophan about one point three per cent.
+
+74
+00:07:39,900 --> 00:07:43,125
+This is the comparison the score is against.
+
+75
+00:07:43,125 --> 00:07:45,800
+Step four is the score itself.
+
+76
+00:07:45,800 --> 00:07:55,950
+For position i and residue j, S equals log base two of f over q — the observed, pseudocount-adjusted frequency divided by the background frequency.
+
+77
+00:07:55,950 --> 00:08:05,600
+The ratio is the whole idea, and it is the same idea as a substitution matrix: not "how often does this happen" but "how much more often than chance".
+
+78
+00:08:05,600 --> 00:08:08,525
+Base two makes it readable in bits.
+
+79
+00:08:08,525 --> 00:08:12,200
+Plus one means twice as likely here as by chance.
+
+80
+00:08:12,200 --> 00:08:15,175
+Plus three means eight times as likely.
+
+81
+00:08:15,175 --> 00:08:21,450
+Negative means less likely than chance — this residue is actively unexpected at this position.
+
+82
+00:08:21,450 --> 00:08:28,525
+Arrange those scores with one row per position and one column per residue, and that matrix is the PSSM.
+
+83
+00:08:28,525 --> 00:08:34,550
+Some tools store it transposed; the orientation is a storage convention and nothing more.
+
+84
+00:08:34,550 --> 00:08:39,675
+To score a candidate sequence, look up one value per position and add them up.
+
+85
+00:08:39,675 --> 00:08:51,375
+In the notebook, the highest-scoring sequence this matrix can produce turns out to be A-G-L-S-P, scoring eleven point four three — which is the alignment's own consensus, exactly as it should be.
+
+86
+00:08:51,375 --> 00:08:54,525
+A profile scores its own family best.
+
+87
+00:08:54,525 --> 00:09:06,625
+One technical footnote so the numbers reconcile: the notebook adds pseudocounts only over the nine residue types appearing in its tables, so its figures differ from the twenty-residue example on the next slide.
+
+88
+00:09:06,625 --> 00:09:09,125
+The logic is identical.
+
+89
+00:09:09,725 --> 00:09:14,875
+This example shows what pseudocounts do, and — more usefully — what they cannot do.
+
+90
+00:09:14,875 --> 00:09:24,625
+Take a position where four of five sequences show alanine, background seven point four per cent, and one shows tryptophan, background one point three per cent.
+
+91
+00:09:24,625 --> 00:09:26,425
+Raw log-odds.
+
+92
+00:09:26,425 --> 00:09:32,925
+Alanine: log two of nought point eight over nought point zero seven four, about three point four three.
+
+93
+00:09:32,925 --> 00:09:39,350
+Tryptophan: log two of nought point two over nought point zero one three, about three point nine four.
+
+94
+00:09:39,350 --> 00:09:41,350
+Tryptophan wins.
+
+95
+00:09:41,350 --> 00:09:44,400
+A single observation outscores four.
+
+96
+00:09:44,400 --> 00:09:52,350
+And the reason is sound in itself — tryptophan is rare, so finding one where chance predicts almost none is genuinely surprising.
+
+97
+00:09:52,350 --> 00:09:58,800
+Rarity carries information, which we saw in Session four with the plus seventeen for a tryptophan pair.
+
+98
+00:09:58,800 --> 00:10:07,550
+But one tryptophan in five sequences could very easily be chance, and the raw score treats it as a reliable frequency of twenty per cent.
+
+99
+00:10:07,550 --> 00:10:11,625
+Now add plus one pseudocounts over twenty residue types.
+
+100
+00:10:11,625 --> 00:10:19,400
+The frequencies become five twenty-fifths and two twenty-fifths, and the scores fall to one point four three and two point six two.
+
+101
+00:10:19,400 --> 00:10:22,575
+Both more cautious, which is what we wanted.
+
+102
+00:10:22,575 --> 00:10:24,975
+But look at what did not change.
+
+103
+00:10:24,975 --> 00:10:27,275
+Tryptophan still wins.
+
+104
+00:10:27,275 --> 00:10:31,000
+That is the lesson, and it is why this slide exists.
+
+105
+00:10:31,000 --> 00:10:34,250
+Pseudocounts make every score more cautious.
+
+106
+00:10:34,250 --> 00:10:42,600
+They do not fix the underlying problem, because they cannot: a pseudocount has no way to tell a lucky single observation from a real one.
+
+107
+00:10:42,600 --> 00:10:45,325
+Nothing in the arithmetic can.
+
+108
+00:10:45,325 --> 00:10:47,800
+Only more sequences can.
+
+109
+00:10:47,800 --> 00:10:57,650
+So when you see a profile built from a handful of sequences, the right reaction is not "did they add pseudocounts" but "is five sequences enough to support this at all".
+
+110
+00:10:58,250 --> 00:11:05,225
+One structural observation before we leave PSSMs, and it is the hinge between the two halves of this course.
+
+111
+00:11:05,225 --> 00:11:12,050
+For an ungapped sequence, the PSSM score is S of x equals the sum over positions i of w at i, x-i.
+
+112
+00:11:12,050 --> 00:11:15,775
+One weight looked up per position, all added together.
+
+113
+00:11:15,775 --> 00:11:18,950
+That is the weighted sum from Session one.
+
+114
+00:11:18,950 --> 00:11:20,825
+A dot product.
+
+115
+00:11:20,825 --> 00:11:22,600
+A linear model.
+
+116
+00:11:22,600 --> 00:11:24,325
+Nothing else.
+
+117
+00:11:24,325 --> 00:11:34,000
+A PSSM is a linear model whose weights were derived from alignment statistics — counted, adjusted with a prior, divided by a background, logged.
+
+118
+00:11:34,000 --> 00:11:40,200
+Every weight is traceable: you can point at the column it came from and the arithmetic that produced it.
+
+119
+00:11:40,200 --> 00:11:44,550
+Session seven keeps this exact form and changes one thing.
+
+120
+00:11:44,550 --> 00:11:51,350
+The weights are learned from labelled examples by gradient descent, instead of being derived from alignment counts.
+
+121
+00:11:51,350 --> 00:11:55,525
+Same sum, same shape of model, different source for the numbers.
+
+122
+00:11:55,525 --> 00:12:01,275
+When we formalise the perceptron in two sessions' time, you will already have built one by hand.
+
+123
+00:12:01,275 --> 00:12:03,150
+Finally, gaps.
+
+124
+00:12:03,150 --> 00:12:11,325
+A PSSM holds only substitution scores, one row per position, so it says nothing about insertions or deletions.
+
+125
+00:12:11,325 --> 00:12:25,400
+To align a new sequence to a PSSM, PSI-BLAST uses ordinary gapped dynamic programming — Session four's algorithm, unchanged — with the PSSM row for position i standing in for the substitution-matrix row.
+
+126
+00:12:25,400 --> 00:12:31,575
+The gap-open and gap-extension penalties are the ordinary ones, identical at every position.
+
+127
+00:12:31,575 --> 00:12:35,275
+And that last clause is the opening for the third block.
+

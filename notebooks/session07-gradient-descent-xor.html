@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>Session 7 — Linear models, gradient descent, and the XOR problem – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta content="../" name="quarto:offset"/>
+<link href="../session08.html" rel="next"/>
+<link href="../session07.html" rel="prev"/>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="../site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="../session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notebooks/session07-gradient-descent-xor.html">Session 7 — Notebook</a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="../">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="../KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#learning-weights-linear-regression-two-ways" href="#learning-weights-linear-regression-two-ways" id="toc-learning-weights-linear-regression-two-ways">2. Learning weights: linear regression, two ways</a></li>
+<li><a class="nav-link" data-scroll-target="#what-one-weighted-sum-can-do" href="#what-one-weighted-sum-can-do" id="toc-what-one-weighted-sum-can-do">3. What one weighted sum can do</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#and-learned-by-gradient-descent" href="#and-learned-by-gradient-descent" id="toc-and-learned-by-gradient-descent">AND, learned by gradient descent</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#what-it-can-never-do-xor" href="#what-it-can-never-do-xor" id="toc-what-it-can-never-do-xor">4. What it can never do: XOR</a></li>
+<li><a class="nav-link" data-scroll-target="#why-a-hidden-layer-helps" href="#why-a-hidden-layer-helps" id="toc-why-a-hidden-layer-helps">5. Why a hidden layer helps</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#a-small-network-learns-xor" href="#a-small-network-learns-xor" id="toc-a-small-network-learns-xor">A small network learns XOR</a></li>
+<li><a class="nav-link" data-scroll-target="#remove-the-nonlinearity-and-the-hidden-layer-is-useless" href="#remove-the-nonlinearity-and-the-hidden-layer-is-useless" id="toc-remove-the-nonlinearity-and-the-hidden-layer-is-useless">Remove the nonlinearity, and the hidden layer is useless</a></li>
+<li><a class="nav-link" data-scroll-target="#visualizing-why-the-decision-boundary" href="#visualizing-why-the-decision-boundary" id="toc-visualizing-why-the-decision-boundary">Visualizing why: the decision boundary</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#a.-changing-the-input-instead" href="#a.-changing-the-input-instead" id="toc-a.-changing-the-input-instead">6a. Changing the input instead</a></li>
+<li><a class="nav-link" data-scroll-target="#b.-two-views-of-a-real-protein-hbb" href="#b.-two-views-of-a-real-protein-hbb" id="toc-b.-two-views-of-a-real-protein-hbb">6b. Two views of a real protein: HBB</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title">Session 7 — Linear models, gradient descent, and the XOR problem</h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<p><a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session07-gradient-descent-xor.ipynb" style="display:inline-block;padding:10px 18px;background-color:#F9AB00;color:#000000;font-weight:bold;text-decoration:none;border-radius:6px;font-family:sans-serif;font-size:14px;">▶  Open in Google Colab</a></p>
+<p>This notebook follows the argument of the Session 7 page, and its section numbers are the page’s:</p>
+<ol start="2" type="1">
+<li><strong>Learning weights:</strong> a least-squares solver and gradient descent find the same line.</li>
+<li><strong>What one weighted sum can do:</strong> AND, OR and NAND with the page’s weights, every corner computed, and AND learned by gradient descent.</li>
+<li><strong>What it can never do:</strong> the same model trained on XOR gives up, and a search over thousands of weights finds none that work.</li>
+<li><strong>Why a hidden layer helps:</strong> the page’s two-layer network computed step by step; a small network learns XOR, with the shape of every tensor printed; without its nonlinear activation it fails again.</li>
+<li><strong>Changing the input, and a real protein:</strong> one engineered feature makes XOR linear; <em>HBB</em>’s per-residue secondary structure against its composition.</li>
+</ol>
+<p>No training-loop abstractions are used on purpose: Session 8 introduces <code>nn.Module</code> and the idiomatic training loop. Here, the mechanics are the point.</p>
+<div class="cell" data-execution_count="1" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:14.998010Z","iopub.status.busy":"2026-09-29T15:22:14.997828Z","iopub.status.idle":"2026-09-29T15:22:16.739235Z","shell.execute_reply":"2026-09-29T15:22:16.738148Z"}}' id="8fff6c58">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-hidden="true" href="#cb1-1" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-2"><a aria-hidden="true" href="#cb1-2" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-3"><a aria-hidden="true" href="#cb1-3" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span>
+<span id="cb1-4"><a aria-hidden="true" href="#cb1-4" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a aria-hidden="true" href="#cb1-5" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a aria-hidden="true" href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a aria-hidden="true" href="#cb1-7" tabindex="-1"></a>torch.manual_seed(<span class="dv">0</span>)</span>
+<span id="cb1-8"><a aria-hidden="true" href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a aria-hidden="true" href="#cb1-9" tabindex="-1"></a><span class="co"># The four corners of the unit square are our whole "dataset" for both logic functions</span></span>
+<span id="cb1-10"><a aria-hidden="true" href="#cb1-10" tabindex="-1"></a>X <span class="op">=</span> torch.tensor([[<span class="fl">0.</span>, <span class="fl">0.</span>], [<span class="fl">0.</span>, <span class="fl">1.</span>], [<span class="fl">1.</span>, <span class="fl">0.</span>], [<span class="fl">1.</span>, <span class="fl">1.</span>]])</span>
+<span id="cb1-11"><a aria-hidden="true" href="#cb1-11" tabindex="-1"></a>y_and <span class="op">=</span> torch.tensor([<span class="fl">0.</span>, <span class="fl">0.</span>, <span class="fl">0.</span>, <span class="fl">1.</span>])</span>
+<span id="cb1-12"><a aria-hidden="true" href="#cb1-12" tabindex="-1"></a>y_xor <span class="op">=</span> torch.tensor([<span class="fl">0.</span>, <span class="fl">1.</span>, <span class="fl">1.</span>, <span class="fl">0.</span>])</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+</div>
+<section class="level2" id="learning-weights-linear-regression-two-ways">
+<h2 class="anchored" data-anchor-id="learning-weights-linear-regression-two-ways">2. Learning weights: linear regression, two ways</h2>
+<p>Before perceptrons, one more contrast on the simplest possible model. Ordinary linear regression has a direct numerical solution (least squares), so the same weights can be found two ways: solved for directly, or learned iteratively by gradient descent. Both should agree. (<code>np.linalg.lstsq</code> solves least squares with stable numerical methods; the textbook formula with an explicit matrix inverse, the normal equations, is on the page as optional reading.)</p>
+<div class="cell" data-execution_count="2" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:16.741875Z","iopub.status.busy":"2026-09-29T15:22:16.741623Z","iopub.status.idle":"2026-09-29T15:22:17.017708Z","shell.execute_reply":"2026-09-29T15:22:17.016723Z"}}' id="2dcb8e27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-hidden="true" href="#cb2-1" tabindex="-1"></a>x_reg <span class="op">=</span> np.array([<span class="fl">1.</span>, <span class="fl">2.</span>, <span class="fl">3.</span>, <span class="fl">4.</span>, <span class="fl">5.</span>])</span>
+<span id="cb2-2"><a aria-hidden="true" href="#cb2-2" tabindex="-1"></a>y_reg <span class="op">=</span> np.array([<span class="fl">2.1</span>, <span class="fl">3.9</span>, <span class="fl">6.2</span>, <span class="fl">7.8</span>, <span class="fl">10.1</span>])</span>
+<span id="cb2-3"><a aria-hidden="true" href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a aria-hidden="true" href="#cb2-4" tabindex="-1"></a><span class="co"># --- direct solution: least squares ---</span></span>
+<span id="cb2-5"><a aria-hidden="true" href="#cb2-5" tabindex="-1"></a>X_reg <span class="op">=</span> np.column_stack([np.ones_like(x_reg), x_reg])</span>
+<span id="cb2-6"><a aria-hidden="true" href="#cb2-6" tabindex="-1"></a>beta_direct, <span class="op">*</span>_ <span class="op">=</span> np.linalg.lstsq(X_reg, y_reg, rcond<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb2-7"><a aria-hidden="true" href="#cb2-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"least squares    b0, b1:"</span>, np.<span class="bu">round</span>(beta_direct, <span class="dv">4</span>))</span>
+<span id="cb2-8"><a aria-hidden="true" href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a aria-hidden="true" href="#cb2-9" tabindex="-1"></a><span class="co"># --- gradient descent on the exact same data ---</span></span>
+<span id="cb2-10"><a aria-hidden="true" href="#cb2-10" tabindex="-1"></a>b0, b1 <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">0.0</span></span>
+<span id="cb2-11"><a aria-hidden="true" href="#cb2-11" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">0.01</span></span>
+<span id="cb2-12"><a aria-hidden="true" href="#cb2-12" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">20000</span>):</span>
+<span id="cb2-13"><a aria-hidden="true" href="#cb2-13" tabindex="-1"></a>    pred <span class="op">=</span> b0 <span class="op">+</span> b1 <span class="op">*</span> x_reg</span>
+<span id="cb2-14"><a aria-hidden="true" href="#cb2-14" tabindex="-1"></a>    err <span class="op">=</span> pred <span class="op">-</span> y_reg</span>
+<span id="cb2-15"><a aria-hidden="true" href="#cb2-15" tabindex="-1"></a>    grad_b0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.mean(err)</span>
+<span id="cb2-16"><a aria-hidden="true" href="#cb2-16" tabindex="-1"></a>    grad_b1 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.mean(err <span class="op">*</span> x_reg)</span>
+<span id="cb2-17"><a aria-hidden="true" href="#cb2-17" tabindex="-1"></a>    b0 <span class="op">-=</span> lr <span class="op">*</span> grad_b0</span>
+<span id="cb2-18"><a aria-hidden="true" href="#cb2-18" tabindex="-1"></a>    b1 <span class="op">-=</span> lr <span class="op">*</span> grad_b1</span>
+<span id="cb2-19"><a aria-hidden="true" href="#cb2-19" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gradient descent  b0, b1:"</span>, np.<span class="bu">round</span>([b0, b1], <span class="dv">4</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>least squares    b0, b1: [0.05 1.99]
+gradient descent  b0, b1: [0.05 1.99]</code></pre>
+</div>
+</div>
+<p>Same answer, found two different ways: the least-squares solver finds the minimum directly; gradient descent gets there gradually, step by step. Session 5’s PSSM weights are “derived” in this direct spirit (counted from alignment statistics); a perceptron’s classification loss has no direct solution, which is why the rest of this notebook learns its weights by gradient descent.</p>
+</section>
+<section class="level2" id="what-one-weighted-sum-can-do">
+<h2 class="anchored" data-anchor-id="what-one-weighted-sum-can-do">3. What one weighted sum can do</h2>
+<p>A single perceptron with a step activation implements AND, OR and NAND with hand-chosen weights: each is one straight boundary through the square of four inputs. The cell below uses exactly the weights of the page’s table and prints <span class="math inline">\(z\)</span> and the output for every corner. Then gradient descent learns AND by itself.</p>
+<div class="cell" data-execution_count="3" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.020204Z","iopub.status.busy":"2026-09-29T15:22:17.019932Z","iopub.status.idle":"2026-09-29T15:22:17.027113Z","shell.execute_reply":"2026-09-29T15:22:17.026193Z"}}' id="1ef9b361">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a aria-hidden="true" href="#cb4-1" tabindex="-1"></a><span class="kw">def</span> hand_perceptron(w1, w2, b, x1, x2):</span>
+<span id="cb4-2"><a aria-hidden="true" href="#cb4-2" tabindex="-1"></a>    z <span class="op">=</span> w1 <span class="op">*</span> x1 <span class="op">+</span> w2 <span class="op">*</span> x2 <span class="op">+</span> b</span>
+<span id="cb4-3"><a aria-hidden="true" href="#cb4-3" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="cf">if</span> z <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb4-4"><a aria-hidden="true" href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a aria-hidden="true" href="#cb4-5" tabindex="-1"></a>corners <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">0</span>), (<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">0</span>), (<span class="dv">1</span>, <span class="dv">1</span>)]</span>
+<span id="cb4-6"><a aria-hidden="true" href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a aria-hidden="true" href="#cb4-7" tabindex="-1"></a>gates <span class="op">=</span> {</span>
+<span id="cb4-8"><a aria-hidden="true" href="#cb4-8" tabindex="-1"></a>    <span class="st">"AND"</span>:  (<span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="fl">1.5</span>),</span>
+<span id="cb4-9"><a aria-hidden="true" href="#cb4-9" tabindex="-1"></a>    <span class="st">"OR"</span>:   (<span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="fl">0.5</span>),</span>
+<span id="cb4-10"><a aria-hidden="true" href="#cb4-10" tabindex="-1"></a>    <span class="st">"NAND"</span>: (<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="fl">1.5</span>),</span>
+<span id="cb4-11"><a aria-hidden="true" href="#cb4-11" tabindex="-1"></a>}</span>
+<span id="cb4-12"><a aria-hidden="true" href="#cb4-12" tabindex="-1"></a>targets <span class="op">=</span> {</span>
+<span id="cb4-13"><a aria-hidden="true" href="#cb4-13" tabindex="-1"></a>    <span class="st">"AND"</span>:  [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb4-14"><a aria-hidden="true" href="#cb4-14" tabindex="-1"></a>    <span class="st">"OR"</span>:   [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>],</span>
+<span id="cb4-15"><a aria-hidden="true" href="#cb4-15" tabindex="-1"></a>    <span class="st">"NAND"</span>: [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>],</span>
+<span id="cb4-16"><a aria-hidden="true" href="#cb4-16" tabindex="-1"></a>}</span>
+<span id="cb4-17"><a aria-hidden="true" href="#cb4-17" tabindex="-1"></a><span class="cf">for</span> name, (w1, w2, b) <span class="kw">in</span> gates.items():</span>
+<span id="cb4-18"><a aria-hidden="true" href="#cb4-18" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: z = </span><span class="sc">{</span>w1<span class="sc">:+d}</span><span class="ss">*x1 </span><span class="sc">{</span>w2<span class="sc">:+d}</span><span class="ss">*x2 </span><span class="sc">{</span>b<span class="sc">:+.1f}</span><span class="ss">"</span>)</span>
+<span id="cb4-19"><a aria-hidden="true" href="#cb4-19" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"   x1  x2      z   output"</span>)</span>
+<span id="cb4-20"><a aria-hidden="true" href="#cb4-20" tabindex="-1"></a>    <span class="cf">for</span> x1, x2 <span class="kw">in</span> corners:</span>
+<span id="cb4-21"><a aria-hidden="true" href="#cb4-21" tabindex="-1"></a>        z <span class="op">=</span> w1 <span class="op">*</span> x1 <span class="op">+</span> w2 <span class="op">*</span> x2 <span class="op">+</span> b</span>
+<span id="cb4-22"><a aria-hidden="true" href="#cb4-22" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"   </span><span class="sc">{</span>x1<span class="sc">:2d}</span><span class="ss">  </span><span class="sc">{</span>x2<span class="sc">:2d}</span><span class="ss">  </span><span class="sc">{</span>z<span class="sc">:+5.1f}</span><span class="ss">   </span><span class="sc">{</span>hand_perceptron(w1, w2, b, x1, x2)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-23"><a aria-hidden="true" href="#cb4-23" tabindex="-1"></a>    outputs <span class="op">=</span> [hand_perceptron(w1, w2, b, x1, x2) <span class="cf">for</span> x1, x2 <span class="kw">in</span> corners]</span>
+<span id="cb4-24"><a aria-hidden="true" href="#cb4-24" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"   matches the </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss"> truth table </span><span class="sc">{</span>targets[name]<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>outputs <span class="op">==</span> targets[name]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>AND: z = +1*x1 +1*x2 -1.5
+   x1  x2      z   output
+    0   0   -1.5   0
+    0   1   -0.5   0
+    1   0   -0.5   0
+    1   1   +0.5   1
+   matches the AND truth table [0, 0, 0, 1]: True
+
+OR: z = +1*x1 +1*x2 -0.5
+   x1  x2      z   output
+    0   0   -0.5   0
+    0   1   +0.5   1
+    1   0   +0.5   1
+    1   1   +1.5   1
+   matches the OR truth table [0, 1, 1, 1]: True
+
+NAND: z = -1*x1 -1*x2 +1.5
+   x1  x2      z   output
+    0   0   +1.5   1
+    0   1   +0.5   1
+    1   0   +0.5   1
+    1   1   -0.5   0
+   matches the NAND truth table [1, 1, 1, 0]: True
+</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.029071Z","iopub.status.busy":"2026-09-29T15:22:17.028927Z","iopub.status.idle":"2026-09-29T15:22:17.282287Z","shell.execute_reply":"2026-09-29T15:22:17.281459Z"}}' id="634d3a3e">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a aria-hidden="true" href="#cb6-1" tabindex="-1"></a><span class="co"># The page's figure: each gate is one straight line, z = 0, with the output-1 corners on the side where z &gt; 0</span></span>
+<span id="cb6-2"><a aria-hidden="true" href="#cb6-2" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">4.2</span>))</span>
+<span id="cb6-3"><a aria-hidden="true" href="#cb6-3" tabindex="-1"></a>xx, yy <span class="op">=</span> np.meshgrid(np.linspace(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>, <span class="dv">200</span>), np.linspace(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>, <span class="dv">200</span>))</span>
+<span id="cb6-4"><a aria-hidden="true" href="#cb6-4" tabindex="-1"></a><span class="cf">for</span> ax, (name, (w1, w2, b)) <span class="kw">in</span> <span class="bu">zip</span>(axes, gates.items()):</span>
+<span id="cb6-5"><a aria-hidden="true" href="#cb6-5" tabindex="-1"></a>    ax.contourf(xx, yy, w1 <span class="op">*</span> xx <span class="op">+</span> w2 <span class="op">*</span> yy <span class="op">+</span> b <span class="op">&gt;</span> <span class="dv">0</span>, levels<span class="op">=</span>[<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">1.5</span>], colors<span class="op">=</span>[<span class="st">"white"</span>, <span class="st">"#c6f6d5"</span>])</span>
+<span id="cb6-6"><a aria-hidden="true" href="#cb6-6" tabindex="-1"></a>    xs <span class="op">=</span> np.array([<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>])</span>
+<span id="cb6-7"><a aria-hidden="true" href="#cb6-7" tabindex="-1"></a>    ax.plot(xs, <span class="op">-</span>(w1 <span class="op">*</span> xs <span class="op">+</span> b) <span class="op">/</span> w2, color<span class="op">=</span><span class="st">"green"</span>, lw<span class="op">=</span><span class="dv">2</span>)          <span class="co"># the line w1*x1 + w2*x2 + b = 0</span></span>
+<span id="cb6-8"><a aria-hidden="true" href="#cb6-8" tabindex="-1"></a>    <span class="cf">for</span> x1, x2 <span class="kw">in</span> corners:</span>
+<span id="cb6-9"><a aria-hidden="true" href="#cb6-9" tabindex="-1"></a>        out <span class="op">=</span> hand_perceptron(w1, w2, b, x1, x2)</span>
+<span id="cb6-10"><a aria-hidden="true" href="#cb6-10" tabindex="-1"></a>        ax.scatter(x1, x2, s<span class="op">=</span><span class="dv">200</span>, edgecolor<span class="op">=</span><span class="st">"k"</span>, color<span class="op">=</span><span class="st">"k"</span> <span class="cf">if</span> out <span class="cf">else</span> <span class="st">"white"</span>, zorder<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb6-11"><a aria-hidden="true" href="#cb6-11" tabindex="-1"></a>        ax.annotate(<span class="ss">f"z=</span><span class="sc">{</span>w1 <span class="op">*</span> x1 <span class="op">+</span> w2 <span class="op">*</span> x2 <span class="op">+</span> b<span class="sc">:+.1f}</span><span class="ss">"</span>, (x1, x2), xytext<span class="op">=</span>(<span class="dv">0</span>, <span class="op">-</span><span class="dv">22</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>,</span>
+<span id="cb6-12"><a aria-hidden="true" href="#cb6-12" tabindex="-1"></a>                    ha<span class="op">=</span><span class="st">"center"</span>)</span>
+<span id="cb6-13"><a aria-hidden="true" href="#cb6-13" tabindex="-1"></a>    ax.set_title(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: w=(</span><span class="sc">{</span>w1<span class="sc">}</span><span class="ss">,</span><span class="sc">{</span>w2<span class="sc">}</span><span class="ss">), b=</span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-14"><a aria-hidden="true" href="#cb6-14" tabindex="-1"></a>    ax.set_xlim(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>)<span class="op">;</span> ax.set_ylim(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>)<span class="op">;</span> ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb6-15"><a aria-hidden="true" href="#cb6-15" tabindex="-1"></a>    ax.set_xticks([<span class="dv">0</span>, <span class="dv">1</span>])<span class="op">;</span> ax.set_yticks([<span class="dv">0</span>, <span class="dv">1</span>])<span class="op">;</span> ax.set_xlabel(<span class="st">"x1"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"x2"</span>)</span>
+<span id="cb6-16"><a aria-hidden="true" href="#cb6-16" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb6-17"><a aria-hidden="true" href="#cb6-17" tabindex="-1"></a>plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session07-gradient-descent-xor_files/figure-html/cell-5-output-1.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+<section class="level3" id="and-learned-by-gradient-descent">
+<h3 class="anchored" data-anchor-id="and-learned-by-gradient-descent">AND, learned by gradient descent</h3>
+<div class="cell" data-execution_count="5" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.284037Z","iopub.status.busy":"2026-09-29T15:22:17.283896Z","iopub.status.idle":"2026-09-29T15:22:17.475671Z","shell.execute_reply":"2026-09-29T15:22:17.474704Z"}}' id="af053bd0">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a aria-hidden="true" href="#cb7-1" tabindex="-1"></a><span class="kw">def</span> train_linear(X, y, lr<span class="op">=</span><span class="fl">0.5</span>, epochs<span class="op">=</span><span class="dv">300</span>, track_every<span class="op">=</span><span class="dv">50</span>):</span>
+<span id="cb7-2"><a aria-hidden="true" href="#cb7-2" tabindex="-1"></a>    w <span class="op">=</span> torch.zeros(<span class="dv">2</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-3"><a aria-hidden="true" href="#cb7-3" tabindex="-1"></a>    b <span class="op">=</span> torch.zeros(<span class="dv">1</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-4"><a aria-hidden="true" href="#cb7-4" tabindex="-1"></a>    losses <span class="op">=</span> []</span>
+<span id="cb7-5"><a aria-hidden="true" href="#cb7-5" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(epochs):</span>
+<span id="cb7-6"><a aria-hidden="true" href="#cb7-6" tabindex="-1"></a>        z <span class="op">=</span> X <span class="op">@</span> w <span class="op">+</span> b</span>
+<span id="cb7-7"><a aria-hidden="true" href="#cb7-7" tabindex="-1"></a>        pred <span class="op">=</span> torch.sigmoid(z)</span>
+<span id="cb7-8"><a aria-hidden="true" href="#cb7-8" tabindex="-1"></a>        loss <span class="op">=</span> torch.nn.functional.binary_cross_entropy(pred, y)</span>
+<span id="cb7-9"><a aria-hidden="true" href="#cb7-9" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb7-10"><a aria-hidden="true" href="#cb7-10" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb7-11"><a aria-hidden="true" href="#cb7-11" tabindex="-1"></a>            w <span class="op">-=</span> lr <span class="op">*</span> w.grad</span>
+<span id="cb7-12"><a aria-hidden="true" href="#cb7-12" tabindex="-1"></a>            b <span class="op">-=</span> lr <span class="op">*</span> b.grad</span>
+<span id="cb7-13"><a aria-hidden="true" href="#cb7-13" tabindex="-1"></a>            w.grad.zero_()</span>
+<span id="cb7-14"><a aria-hidden="true" href="#cb7-14" tabindex="-1"></a>            b.grad.zero_()</span>
+<span id="cb7-15"><a aria-hidden="true" href="#cb7-15" tabindex="-1"></a>        <span class="cf">if</span> epoch <span class="op">%</span> track_every <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-16"><a aria-hidden="true" href="#cb7-16" tabindex="-1"></a>            losses.append(loss.item())</span>
+<span id="cb7-17"><a aria-hidden="true" href="#cb7-17" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb7-18"><a aria-hidden="true" href="#cb7-18" tabindex="-1"></a>        final_pred <span class="op">=</span> torch.sigmoid(X <span class="op">@</span> w <span class="op">+</span> b)</span>
+<span id="cb7-19"><a aria-hidden="true" href="#cb7-19" tabindex="-1"></a>    <span class="cf">return</span> w.detach(), b.detach(), losses, final_pred</span>
+<span id="cb7-20"><a aria-hidden="true" href="#cb7-20" tabindex="-1"></a></span>
+<span id="cb7-21"><a aria-hidden="true" href="#cb7-21" tabindex="-1"></a>w_and, b_and, losses_and, pred_and <span class="op">=</span> train_linear(X, y_and)</span>
+<span id="cb7-22"><a aria-hidden="true" href="#cb7-22" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"learned weights:"</span>, w_and.numpy(), <span class="st">"bias:"</span>, b_and.numpy())</span>
+<span id="cb7-23"><a aria-hidden="true" href="#cb7-23" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"target:         "</span>, y_and.numpy())</span>
+<span id="cb7-24"><a aria-hidden="true" href="#cb7-24" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"predicted:      "</span>, np.<span class="bu">round</span>(pred_and.numpy(), <span class="dv">3</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>learned weights: [3.7240057 3.7240057] bias: [-5.786265]
+target:          [0. 0. 0. 1.]
+predicted:       [0.003 0.113 0.113 0.84 ]</code></pre>
+</div>
+</div>
+<p>The predictions land close to 0 for the three “false” corners and close to 1 for <code>(1,1)</code> — the linear model finds a straight line that separates AND’s two classes without any trouble, as Session 1’s perceptron discussion would predict for a linearly separable function.</p>
+</section>
+</section>
+<section class="level2" id="what-it-can-never-do-xor">
+<h2 class="anchored" data-anchor-id="what-it-can-never-do-xor">4. What it can never do: XOR</h2>
+<div class="cell" data-execution_count="6" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.477448Z","iopub.status.busy":"2026-09-29T15:22:17.477304Z","iopub.status.idle":"2026-09-29T15:22:17.804799Z","shell.execute_reply":"2026-09-29T15:22:17.804118Z"}}' id="06270e60">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a aria-hidden="true" href="#cb9-1" tabindex="-1"></a>w_xor, b_xor, losses_xor, pred_xor <span class="op">=</span> train_linear(X, y_xor, epochs<span class="op">=</span><span class="dv">2000</span>)</span>
+<span id="cb9-2"><a aria-hidden="true" href="#cb9-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"learned weights:"</span>, w_xor.numpy(), <span class="st">"bias:"</span>, b_xor.numpy())</span>
+<span id="cb9-3"><a aria-hidden="true" href="#cb9-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"target:         "</span>, y_xor.numpy())</span>
+<span id="cb9-4"><a aria-hidden="true" href="#cb9-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"predicted:      "</span>, np.<span class="bu">round</span>(pred_xor.numpy(), <span class="dv">3</span>))</span>
+<span id="cb9-5"><a aria-hidden="true" href="#cb9-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"final loss:     "</span>, <span class="bu">round</span>(losses_xor[<span class="op">-</span><span class="dv">1</span>], <span class="dv">4</span>), <span class="st">" (ln(2) ="</span>, <span class="bu">round</span>(np.log(<span class="dv">2</span>), <span class="dv">4</span>), <span class="st">"— i.e. no better than guessing 0.5 for everything)"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>learned weights: [0. 0.] bias: [0.]
+target:          [0. 1. 1. 0.]
+predicted:       [0.5 0.5 0.5 0.5]
+final loss:      0.6931  (ln(2) = 0.6931 — i.e. no better than guessing 0.5 for everything)</code></pre>
+</div>
+</div>
+<p>Every prediction converges to exactly 0.5 — the model has given up and is guessing. No choice of two weights and a bias can separate XOR’s diagonal pattern with a straight line, so gradient descent has nowhere better to go. This is the same limitation Bulyk, Johnson &amp; Church (2002) documented for real transcription-factor binding sites: a linear/profile score cannot represent an effect that depends on the <em>combination</em> of two positions rather than each independently.</p>
+<p>The page asks you to try to find weights for XOR by hand. The cell below tries for you: every combination of <span class="math inline">\(w_1\)</span>, <span class="math inline">\(w_2\)</span> and <span class="math inline">\(b\)</span> on a grid from −3 to 3 in steps of 0.1, over 200,000 perceptrons, and counts how many reproduce each truth table.</p>
+<div class="cell" data-execution_count="7" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.807158Z","iopub.status.busy":"2026-09-29T15:22:17.807012Z","iopub.status.idle":"2026-09-29T15:22:17.848658Z","shell.execute_reply":"2026-09-29T15:22:17.847623Z"}}' id="6c5554d8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a aria-hidden="true" href="#cb11-1" tabindex="-1"></a>grid <span class="op">=</span> np.<span class="bu">round</span>(np.arange(<span class="op">-</span><span class="dv">3</span>, <span class="fl">3.01</span>, <span class="fl">0.1</span>), <span class="dv">1</span>)</span>
+<span id="cb11-2"><a aria-hidden="true" href="#cb11-2" tabindex="-1"></a>W1, W2, B <span class="op">=</span> np.meshgrid(grid, grid, grid, indexing<span class="op">=</span><span class="st">"ij"</span>)</span>
+<span id="cb11-3"><a aria-hidden="true" href="#cb11-3" tabindex="-1"></a>corners_np <span class="op">=</span> np.array(corners)</span>
+<span id="cb11-4"><a aria-hidden="true" href="#cb11-4" tabindex="-1"></a><span class="co"># outputs of every perceptron on the grid, at all four corners: shape (61, 61, 61, 4)</span></span>
+<span id="cb11-5"><a aria-hidden="true" href="#cb11-5" tabindex="-1"></a>out <span class="op">=</span> ((W1[..., <span class="va">None</span>] <span class="op">*</span> corners_np[:, <span class="dv">0</span>] <span class="op">+</span> W2[..., <span class="va">None</span>] <span class="op">*</span> corners_np[:, <span class="dv">1</span>] <span class="op">+</span> B[..., <span class="va">None</span>]) <span class="op">&gt;</span> <span class="dv">0</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb11-6"><a aria-hidden="true" href="#cb11-6" tabindex="-1"></a>tables <span class="op">=</span> {<span class="op">**</span>targets, <span class="st">"XOR"</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>]}</span>
+<span id="cb11-7"><a aria-hidden="true" href="#cb11-7" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>W1<span class="sc">.</span>size<span class="sc">:,}</span><span class="ss"> perceptrons tried"</span>)</span>
+<span id="cb11-8"><a aria-hidden="true" href="#cb11-8" tabindex="-1"></a><span class="cf">for</span> name, target <span class="kw">in</span> tables.items():</span>
+<span id="cb11-9"><a aria-hidden="true" href="#cb11-9" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>name<span class="sc">:5s}</span><span class="ss"> </span><span class="sc">{</span>target<span class="sc">}</span><span class="ss">: reproduced by </span><span class="sc">{</span><span class="bu">int</span>((out <span class="op">==</span> target).<span class="bu">all</span>(axis<span class="op">=-</span><span class="dv">1</span>).<span class="bu">sum</span>())<span class="sc">:,}</span><span class="ss"> of them"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>226,981 perceptrons tried
+  AND   [0, 0, 0, 1]: reproduced by 5,012 of them
+  OR    [0, 1, 1, 1]: reproduced by 9,455 of them
+  NAND  [1, 1, 1, 0]: reproduced by 4,467 of them
+  XOR   [0, 1, 1, 0]: reproduced by 0 of them</code></pre>
+</div>
+</div>
+<p>Thousands of weight choices implement AND, OR or NAND: any line that cuts off the right corners will do. Not a single one implements XOR, as the page’s geometric argument (and the optional proof) says.</p>
+</section>
+<section class="level2" id="why-a-hidden-layer-helps">
+<h2 class="anchored" data-anchor-id="why-a-hidden-layer-helps">5. Why a hidden layer helps</h2>
+<p>One perceptron draws one line; XOR needs two. The page’s network feeds the outputs of an OR perceptron and a NAND perceptron into an AND perceptron. Written as matrices (one column of <span class="math inline">\(W_1\)</span> per hidden unit), with the four input rows stacked into <span class="math inline">\(X\)</span>:</p>
+<p><span class="math display">\[
+W_1 = \begin{pmatrix} 1 &amp; -1 \\ 1 &amp; -1 \end{pmatrix},\quad
+\mathbf{b}_1 = (-0.5,\ 1.5),\quad
+W_2 = \begin{pmatrix} 1 \\ 1 \end{pmatrix},\quad
+b_2 = -1.5
+\]</span></p>
+<p>The cell computes every step for all four inputs at once, exactly as the page’s step-by-step table does.</p>
+<div class="cell" data-execution_count="8" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.850383Z","iopub.status.busy":"2026-09-29T15:22:17.850213Z","iopub.status.idle":"2026-09-29T15:22:17.864736Z","shell.execute_reply":"2026-09-29T15:22:17.864056Z"}}' id="9ed201ad">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a aria-hidden="true" href="#cb13-1" tabindex="-1"></a>step <span class="op">=</span> <span class="kw">lambda</span> z: (z <span class="op">&gt;</span> <span class="dv">0</span>).<span class="bu">float</span>()          <span class="co"># the step activation: 1 if z &gt; 0, else 0</span></span>
+<span id="cb13-2"><a aria-hidden="true" href="#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a aria-hidden="true" href="#cb13-3" tabindex="-1"></a>W1 <span class="op">=</span> torch.tensor([[<span class="fl">1.</span>, <span class="op">-</span><span class="fl">1.</span>],               <span class="co"># column 1: the OR unit, column 2: the NAND unit</span></span>
+<span id="cb13-4"><a aria-hidden="true" href="#cb13-4" tabindex="-1"></a>                   [<span class="fl">1.</span>, <span class="op">-</span><span class="fl">1.</span>]])</span>
+<span id="cb13-5"><a aria-hidden="true" href="#cb13-5" tabindex="-1"></a>b1 <span class="op">=</span> torch.tensor([<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.5</span>])</span>
+<span id="cb13-6"><a aria-hidden="true" href="#cb13-6" tabindex="-1"></a>W2 <span class="op">=</span> torch.tensor([[<span class="fl">1.</span>],                    <span class="co"># the AND unit, reading the two hidden units</span></span>
+<span id="cb13-7"><a aria-hidden="true" href="#cb13-7" tabindex="-1"></a>                   [<span class="fl">1.</span>]])</span>
+<span id="cb13-8"><a aria-hidden="true" href="#cb13-8" tabindex="-1"></a>b2 <span class="op">=</span> torch.tensor([<span class="op">-</span><span class="fl">1.5</span>])</span>
+<span id="cb13-9"><a aria-hidden="true" href="#cb13-9" tabindex="-1"></a></span>
+<span id="cb13-10"><a aria-hidden="true" href="#cb13-10" tabindex="-1"></a>Z1 <span class="op">=</span> X <span class="op">@</span> W1 <span class="op">+</span> b1            <span class="co"># (4, 2): weighted sums of the two hidden units</span></span>
+<span id="cb13-11"><a aria-hidden="true" href="#cb13-11" tabindex="-1"></a>H <span class="op">=</span> step(Z1)                <span class="co"># (4, 2): hidden outputs, h1 = OR, h2 = NAND</span></span>
+<span id="cb13-12"><a aria-hidden="true" href="#cb13-12" tabindex="-1"></a>z2 <span class="op">=</span> H <span class="op">@</span> W2 <span class="op">+</span> b2            <span class="co"># (4, 1): weighted sum of the output unit</span></span>
+<span id="cb13-13"><a aria-hidden="true" href="#cb13-13" tabindex="-1"></a>y_hat <span class="op">=</span> step(z2)            <span class="co"># (4, 1): the network's output</span></span>
+<span id="cb13-14"><a aria-hidden="true" href="#cb13-14" tabindex="-1"></a></span>
+<span id="cb13-15"><a aria-hidden="true" href="#cb13-15" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  x1 x2 |  z_h1  h1   z_h2  h2 |  z_out  y | XOR"</span>)</span>
+<span id="cb13-16"><a aria-hidden="true" href="#cb13-16" tabindex="-1"></a><span class="cf">for</span> (x1, x2), (za, zb), (ha, hb), zo, yo, t <span class="kw">in</span> <span class="bu">zip</span>(X.<span class="bu">int</span>().tolist(), Z1.tolist(), H.<span class="bu">int</span>().tolist(),</span>
+<span id="cb13-17"><a aria-hidden="true" href="#cb13-17" tabindex="-1"></a>                                                   z2.squeeze(<span class="dv">1</span>).tolist(), y_hat.<span class="bu">int</span>().squeeze(<span class="dv">1</span>).tolist(),</span>
+<span id="cb13-18"><a aria-hidden="true" href="#cb13-18" tabindex="-1"></a>                                                   y_xor.<span class="bu">int</span>().tolist()):</span>
+<span id="cb13-19"><a aria-hidden="true" href="#cb13-19" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"   </span><span class="sc">{</span>x1<span class="sc">}</span><span class="ss">  </span><span class="sc">{</span>x2<span class="sc">}</span><span class="ss"> | </span><span class="sc">{</span>za<span class="sc">:+5.1f}</span><span class="ss">  </span><span class="sc">{</span>ha<span class="sc">}</span><span class="ss">   </span><span class="sc">{</span>zb<span class="sc">:+5.1f}</span><span class="ss">  </span><span class="sc">{</span>hb<span class="sc">}</span><span class="ss"> |  </span><span class="sc">{</span>zo<span class="sc">:+5.1f}</span><span class="ss">  </span><span class="sc">{</span>yo<span class="sc">}</span><span class="ss"> |  </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb13-20"><a aria-hidden="true" href="#cb13-20" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">network output equals XOR:"</span>, torch.equal(y_hat.squeeze(<span class="dv">1</span>), y_xor))</span>
+<span id="cb13-21"><a aria-hidden="true" href="#cb13-21" tabindex="-1"></a>xor_by_hand <span class="op">=</span> y_hat.<span class="bu">int</span>().squeeze(<span class="dv">1</span>).tolist()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x1 x2 |  z_h1  h1   z_h2  h2 |  z_out  y | XOR
+   0  0 |  -0.5  0    +1.5  1 |   -0.5  0 |  0
+   0  1 |  +0.5  1    +0.5  1 |   +0.5  1 |  1
+   1  0 |  +0.5  1    +0.5  1 |   +0.5  1 |  1
+   1  1 |  +1.5  1    -0.5  0 |   -0.5  0 |  0
+
+network output equals XOR: True</code></pre>
+</div>
+</div>
+<p>Exact, with no training at all: two perceptrons (OR and NAND) form a hidden layer, and a third perceptron (AND) combines their outputs into XOR. This is the same <em>shape</em> – two hidden units feeding one output unit – as the hidden-layer network below finds automatically by gradient descent; the hand-built version just proves such weights exist and shows concretely what they look like.</p>
+<section class="level3" id="a-small-network-learns-xor">
+<h3 class="anchored" data-anchor-id="a-small-network-learns-xor">A small network learns XOR</h3>
+<div class="cell" data-execution_count="9" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:17.866186Z","iopub.status.busy":"2026-09-29T15:22:17.866054Z","iopub.status.idle":"2026-09-29T15:22:19.138929Z","shell.execute_reply":"2026-09-29T15:22:19.138056Z"}}' id="def2c9a9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a aria-hidden="true" href="#cb15-1" tabindex="-1"></a><span class="kw">def</span> train_mlp(X, y, hidden<span class="op">=</span><span class="dv">2</span>, lr<span class="op">=</span><span class="fl">0.5</span>, epochs<span class="op">=</span><span class="dv">5000</span>, seed<span class="op">=</span><span class="dv">0</span>, activation<span class="op">=</span>torch.tanh, show_shapes<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb15-2"><a aria-hidden="true" href="#cb15-2" tabindex="-1"></a>    torch.manual_seed(seed)</span>
+<span id="cb15-3"><a aria-hidden="true" href="#cb15-3" tabindex="-1"></a>    W1 <span class="op">=</span> torch.randn(<span class="dv">2</span>, hidden, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-4"><a aria-hidden="true" href="#cb15-4" tabindex="-1"></a>    b1 <span class="op">=</span> torch.zeros(hidden, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-5"><a aria-hidden="true" href="#cb15-5" tabindex="-1"></a>    W2 <span class="op">=</span> torch.randn(hidden, <span class="dv">1</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-6"><a aria-hidden="true" href="#cb15-6" tabindex="-1"></a>    b2 <span class="op">=</span> torch.zeros(<span class="dv">1</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-7"><a aria-hidden="true" href="#cb15-7" tabindex="-1"></a>    params <span class="op">=</span> [W1, b1, W2, b2]</span>
+<span id="cb15-8"><a aria-hidden="true" href="#cb15-8" tabindex="-1"></a>    y <span class="op">=</span> y.view(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)                          <span class="co"># targets as a column: shape (4, 1)</span></span>
+<span id="cb15-9"><a aria-hidden="true" href="#cb15-9" tabindex="-1"></a>    losses <span class="op">=</span> []</span>
+<span id="cb15-10"><a aria-hidden="true" href="#cb15-10" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(epochs):</span>
+<span id="cb15-11"><a aria-hidden="true" href="#cb15-11" tabindex="-1"></a>        h <span class="op">=</span> activation(X <span class="op">@</span> W1 <span class="op">+</span> b1)            <span class="co"># (4, 2) @ (2, 2) -&gt; (4, 2)</span></span>
+<span id="cb15-12"><a aria-hidden="true" href="#cb15-12" tabindex="-1"></a>        z <span class="op">=</span> h <span class="op">@</span> W2 <span class="op">+</span> b2                        <span class="co"># (4, 2) @ (2, 1) -&gt; (4, 1)</span></span>
+<span id="cb15-13"><a aria-hidden="true" href="#cb15-13" tabindex="-1"></a>        pred <span class="op">=</span> torch.sigmoid(z)</span>
+<span id="cb15-14"><a aria-hidden="true" href="#cb15-14" tabindex="-1"></a>        loss <span class="op">=</span> torch.nn.functional.binary_cross_entropy(pred, y)</span>
+<span id="cb15-15"><a aria-hidden="true" href="#cb15-15" tabindex="-1"></a>        <span class="cf">if</span> show_shapes <span class="kw">and</span> epoch <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb15-16"><a aria-hidden="true" href="#cb15-16" tabindex="-1"></a>            <span class="cf">for</span> name, t <span class="kw">in</span> [(<span class="st">"X"</span>, X), (<span class="st">"W1"</span>, W1), (<span class="st">"h"</span>, h), (<span class="st">"W2"</span>, W2), (<span class="st">"pred"</span>, pred)]:</span>
+<span id="cb15-17"><a aria-hidden="true" href="#cb15-17" tabindex="-1"></a>                <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:5s}</span><span class="ss"> shape </span><span class="sc">{</span><span class="bu">tuple</span>(t.shape)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb15-18"><a aria-hidden="true" href="#cb15-18" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb15-19"><a aria-hidden="true" href="#cb15-19" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb15-20"><a aria-hidden="true" href="#cb15-20" tabindex="-1"></a>            <span class="cf">for</span> p <span class="kw">in</span> params:</span>
+<span id="cb15-21"><a aria-hidden="true" href="#cb15-21" tabindex="-1"></a>                p <span class="op">-=</span> lr <span class="op">*</span> p.grad</span>
+<span id="cb15-22"><a aria-hidden="true" href="#cb15-22" tabindex="-1"></a>                p.grad.zero_()</span>
+<span id="cb15-23"><a aria-hidden="true" href="#cb15-23" tabindex="-1"></a>        <span class="cf">if</span> epoch <span class="op">%</span> <span class="dv">500</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb15-24"><a aria-hidden="true" href="#cb15-24" tabindex="-1"></a>            losses.append(loss.item())</span>
+<span id="cb15-25"><a aria-hidden="true" href="#cb15-25" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb15-26"><a aria-hidden="true" href="#cb15-26" tabindex="-1"></a>        final_pred <span class="op">=</span> torch.sigmoid(activation(X <span class="op">@</span> W1 <span class="op">+</span> b1) <span class="op">@</span> W2 <span class="op">+</span> b2)</span>
+<span id="cb15-27"><a aria-hidden="true" href="#cb15-27" tabindex="-1"></a>    <span class="cf">return</span> losses, final_pred.flatten()</span>
+<span id="cb15-28"><a aria-hidden="true" href="#cb15-28" tabindex="-1"></a></span>
+<span id="cb15-29"><a aria-hidden="true" href="#cb15-29" tabindex="-1"></a>losses_mlp, pred_mlp <span class="op">=</span> train_mlp(X, y_xor, seed<span class="op">=</span><span class="dv">0</span>, show_shapes<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-30"><a aria-hidden="true" href="#cb15-30" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">target:     "</span>, y_xor.numpy())</span>
+<span id="cb15-31"><a aria-hidden="true" href="#cb15-31" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"predicted:  "</span>, np.<span class="bu">round</span>(pred_mlp.numpy(), <span class="dv">3</span>))</span>
+<span id="cb15-32"><a aria-hidden="true" href="#cb15-32" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"final loss: "</span>, <span class="bu">round</span>(losses_mlp[<span class="op">-</span><span class="dv">1</span>], <span class="dv">4</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>X     shape (4, 2)
+W1    shape (2, 2)
+h     shape (4, 2)
+W2    shape (2, 1)
+pred  shape (4, 1)
+
+target:      [0. 1. 1. 0.]
+predicted:   [0.001 0.998 0.998 0.001]
+final loss:  0.0014</code></pre>
+</div>
+</div>
+<p>With just two hidden units, the network finds a solution — each hidden unit learns its own linear boundary, and combining them lets the output represent XOR’s non-linear pattern. (With only two hidden units, not every random initialization finds this solution — some get stuck in a symmetric local minimum where the two hidden units learn identical, redundant boundaries. Try re-running <code>train_mlp</code> with a different <code>seed</code> to see this happen; it’s a genuine, well-known property of small networks, not a bug in this notebook.)</p>
+</section>
+<section class="level3" id="remove-the-nonlinearity-and-the-hidden-layer-is-useless">
+<h3 class="anchored" data-anchor-id="remove-the-nonlinearity-and-the-hidden-layer-is-useless">Remove the nonlinearity, and the hidden layer is useless</h3>
+<p>The same network, with the <code>tanh</code> activation replaced by the identity (<code>lambda t: t</code>): the hidden layer is now just another weighted sum, and two weighted sums in a row are one weighted sum, <span class="math inline">\(W_2(W_1 x + b_1) + b_2 = (W_2 W_1)x + (W_2 b_1 + b_2)\)</span>. Predict what happens before running it.</p>
+<div class="cell" data-execution_count="10" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:19.141265Z","iopub.status.busy":"2026-09-29T15:22:19.141108Z","iopub.status.idle":"2026-09-29T15:22:20.279293Z","shell.execute_reply":"2026-09-29T15:22:20.278471Z"}}' id="f77d2071">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a aria-hidden="true" href="#cb17-1" tabindex="-1"></a>losses_lin, pred_lin <span class="op">=</span> train_mlp(X, y_xor, seed<span class="op">=</span><span class="dv">0</span>, activation<span class="op">=</span><span class="kw">lambda</span> t: t)</span>
+<span id="cb17-2"><a aria-hidden="true" href="#cb17-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"target:     "</span>, y_xor.numpy())</span>
+<span id="cb17-3"><a aria-hidden="true" href="#cb17-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"predicted:  "</span>, np.<span class="bu">round</span>(pred_lin.numpy(), <span class="dv">3</span>))</span>
+<span id="cb17-4"><a aria-hidden="true" href="#cb17-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"final loss: "</span>, <span class="bu">round</span>(losses_lin[<span class="op">-</span><span class="dv">1</span>], <span class="dv">4</span>), <span class="st">"(ln 2 = 0.6931: no better than guessing 0.5)"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>target:      [0. 1. 1. 0.]
+predicted:   [0.5 0.5 0.5 0.5]
+final loss:  0.6931 (ln 2 = 0.6931: no better than guessing 0.5)</code></pre>
+</div>
+</div>
+<p>Every prediction is 0.5 again, exactly like the linear model in Section 4. Without a nonlinear activation, the extra layer adds parameters but no new kinds of functions. The <code>tanh</code> between the layers is what makes the hidden layer able to solve XOR.</p>
+</section>
+<section class="level3" id="visualizing-why-the-decision-boundary">
+<h3 class="anchored" data-anchor-id="visualizing-why-the-decision-boundary">Visualizing why: the decision boundary</h3>
+<div class="cell" data-execution_count="11" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:20.281806Z","iopub.status.busy":"2026-09-29T15:22:20.281604Z","iopub.status.idle":"2026-09-29T15:22:21.817711Z","shell.execute_reply":"2026-09-29T15:22:21.816807Z"}}' id="305a004c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a aria-hidden="true" href="#cb19-1" tabindex="-1"></a><span class="kw">def</span> plot_boundary(ax, predict_fn, title, annotate_flat<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb19-2"><a aria-hidden="true" href="#cb19-2" tabindex="-1"></a>    xx, yy <span class="op">=</span> np.meshgrid(np.linspace(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.5</span>, <span class="dv">200</span>), np.linspace(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.5</span>, <span class="dv">200</span>))</span>
+<span id="cb19-3"><a aria-hidden="true" href="#cb19-3" tabindex="-1"></a>    grid <span class="op">=</span> torch.tensor(np.c_[xx.ravel(), yy.ravel()], dtype<span class="op">=</span>torch.float32)</span>
+<span id="cb19-4"><a aria-hidden="true" href="#cb19-4" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb19-5"><a aria-hidden="true" href="#cb19-5" tabindex="-1"></a>        zz <span class="op">=</span> predict_fn(grid).numpy().reshape(xx.shape)</span>
+<span id="cb19-6"><a aria-hidden="true" href="#cb19-6" tabindex="-1"></a>    im <span class="op">=</span> ax.imshow(zz, extent<span class="op">=</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.5</span>, <span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.5</span>), origin<span class="op">=</span><span class="st">"lower"</span>, cmap<span class="op">=</span><span class="st">"RdBu_r"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">1</span>, aspect<span class="op">=</span><span class="st">"auto"</span>)</span>
+<span id="cb19-7"><a aria-hidden="true" href="#cb19-7" tabindex="-1"></a>    ax.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y_xor, cmap<span class="op">=</span><span class="st">"RdBu_r"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, s<span class="op">=</span><span class="dv">150</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb19-8"><a aria-hidden="true" href="#cb19-8" tabindex="-1"></a>    <span class="cf">if</span> annotate_flat:</span>
+<span id="cb19-9"><a aria-hidden="true" href="#cb19-9" tabindex="-1"></a>        ax.text(<span class="fl">0.5</span>, <span class="op">-</span><span class="fl">0.35</span>, <span class="st">"model output = 0.5 everywhere</span><span class="ch">\n</span><span class="st">(no boundary to draw)"</span>, ha<span class="op">=</span><span class="st">"center"</span>, fontsize<span class="op">=</span><span class="dv">9</span>, style<span class="op">=</span><span class="st">"italic"</span>)</span>
+<span id="cb19-10"><a aria-hidden="true" href="#cb19-10" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb19-11"><a aria-hidden="true" href="#cb19-11" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"x1"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"x2"</span>)</span>
+<span id="cb19-12"><a aria-hidden="true" href="#cb19-12" tabindex="-1"></a>    <span class="cf">return</span> im</span>
+<span id="cb19-13"><a aria-hidden="true" href="#cb19-13" tabindex="-1"></a></span>
+<span id="cb19-14"><a aria-hidden="true" href="#cb19-14" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">5</span>))</span>
+<span id="cb19-15"><a aria-hidden="true" href="#cb19-15" tabindex="-1"></a>im0 <span class="op">=</span> plot_boundary(axes[<span class="dv">0</span>], <span class="kw">lambda</span> g: torch.sigmoid(g <span class="op">@</span> w_xor <span class="op">+</span> b_xor), <span class="st">"Linear model on XOR</span><span class="ch">\n</span><span class="st">(no boundary can separate the classes)"</span>, annotate_flat<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-16"><a aria-hidden="true" href="#cb19-16" tabindex="-1"></a></span>
+<span id="cb19-17"><a aria-hidden="true" href="#cb19-17" tabindex="-1"></a><span class="co"># retrain the seed-0 hidden-layer model once more, keeping the raw parameters</span></span>
+<span id="cb19-18"><a aria-hidden="true" href="#cb19-18" tabindex="-1"></a><span class="co"># (not just its predictions) so we can reuse them in the plotting closure below</span></span>
+<span id="cb19-19"><a aria-hidden="true" href="#cb19-19" tabindex="-1"></a>torch.manual_seed(<span class="dv">0</span>)</span>
+<span id="cb19-20"><a aria-hidden="true" href="#cb19-20" tabindex="-1"></a>W1 <span class="op">=</span> torch.randn(<span class="dv">2</span>, <span class="dv">2</span>, requires_grad<span class="op">=</span><span class="va">True</span>)<span class="op">;</span> b1 <span class="op">=</span> torch.zeros(<span class="dv">2</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-21"><a aria-hidden="true" href="#cb19-21" tabindex="-1"></a>W2 <span class="op">=</span> torch.randn(<span class="dv">2</span>, <span class="dv">1</span>, requires_grad<span class="op">=</span><span class="va">True</span>)<span class="op">;</span> b2 <span class="op">=</span> torch.zeros(<span class="dv">1</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb19-22"><a aria-hidden="true" href="#cb19-22" tabindex="-1"></a>params <span class="op">=</span> [W1, b1, W2, b2]</span>
+<span id="cb19-23"><a aria-hidden="true" href="#cb19-23" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5000</span>):</span>
+<span id="cb19-24"><a aria-hidden="true" href="#cb19-24" tabindex="-1"></a>    h <span class="op">=</span> torch.tanh(X <span class="op">@</span> W1 <span class="op">+</span> b1)</span>
+<span id="cb19-25"><a aria-hidden="true" href="#cb19-25" tabindex="-1"></a>    z <span class="op">=</span> h <span class="op">@</span> W2 <span class="op">+</span> b2</span>
+<span id="cb19-26"><a aria-hidden="true" href="#cb19-26" tabindex="-1"></a>    pred <span class="op">=</span> torch.sigmoid(z)</span>
+<span id="cb19-27"><a aria-hidden="true" href="#cb19-27" tabindex="-1"></a>    loss <span class="op">=</span> torch.nn.functional.binary_cross_entropy(pred, y_xor.view(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb19-28"><a aria-hidden="true" href="#cb19-28" tabindex="-1"></a>    loss.backward()</span>
+<span id="cb19-29"><a aria-hidden="true" href="#cb19-29" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb19-30"><a aria-hidden="true" href="#cb19-30" tabindex="-1"></a>        <span class="cf">for</span> p <span class="kw">in</span> params:</span>
+<span id="cb19-31"><a aria-hidden="true" href="#cb19-31" tabindex="-1"></a>            p <span class="op">-=</span> <span class="fl">0.5</span> <span class="op">*</span> p.grad</span>
+<span id="cb19-32"><a aria-hidden="true" href="#cb19-32" tabindex="-1"></a>            p.grad.zero_()</span>
+<span id="cb19-33"><a aria-hidden="true" href="#cb19-33" tabindex="-1"></a></span>
+<span id="cb19-34"><a aria-hidden="true" href="#cb19-34" tabindex="-1"></a><span class="kw">def</span> mlp_predict(g):</span>
+<span id="cb19-35"><a aria-hidden="true" href="#cb19-35" tabindex="-1"></a>    h <span class="op">=</span> torch.tanh(g <span class="op">@</span> W1.detach() <span class="op">+</span> b1.detach())</span>
+<span id="cb19-36"><a aria-hidden="true" href="#cb19-36" tabindex="-1"></a>    <span class="cf">return</span> torch.sigmoid(h <span class="op">@</span> W2.detach() <span class="op">+</span> b2.detach())</span>
+<span id="cb19-37"><a aria-hidden="true" href="#cb19-37" tabindex="-1"></a></span>
+<span id="cb19-38"><a aria-hidden="true" href="#cb19-38" tabindex="-1"></a>im1 <span class="op">=</span> plot_boundary(axes[<span class="dv">1</span>], mlp_predict, <span class="st">"Hidden-layer model on XOR</span><span class="ch">\n</span><span class="st">(two linear boundaries, combined)"</span>)</span>
+<span id="cb19-39"><a aria-hidden="true" href="#cb19-39" tabindex="-1"></a>fig.colorbar(im1, ax<span class="op">=</span>axes, shrink<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">"predicted probability"</span>)</span>
+<span id="cb19-40"><a aria-hidden="true" href="#cb19-40" tabindex="-1"></a>plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session07-gradient-descent-xor_files/figure-html/cell-12-output-1.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The left panel shows why the linear model gave up: the two “true” corners <code>(0,1)</code> and <code>(1,0)</code> sit on opposite sides of the square from each other, so they can’t be put on one side of any single straight line while the two “false” corners sit on the other. The right panel shows the hidden-layer model’s solution: it combines two different linear boundaries (one per hidden unit) into a region that correctly isolates the two “true” corners — the extra representational power a hidden layer buys you, and what Session 9 uses to build a real secondary-structure predictor.</p>
+</section>
+</section>
+<section class="level2" id="a.-changing-the-input-instead">
+<h2 class="anchored" data-anchor-id="a.-changing-the-input-instead">6a. Changing the input instead</h2>
+<p>A hidden layer isn’t the only way to rescue a linear model on XOR: a better <em>input</em> works too. For 0/1-valued inputs, <span class="math inline">\(\text{XOR}(x_1, x_2) = x_1 + x_2 - 2 x_1 x_2\)</span> exactly – so adding <span class="math inline">\(x_1 x_2\)</span> as a third input turns XOR back into something an ordinary linear model (even plain linear regression, not a perceptron) can fit exactly.</p>
+<div class="cell" data-execution_count="12" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:21.819812Z","iopub.status.busy":"2026-09-29T15:22:21.819667Z","iopub.status.idle":"2026-09-29T15:22:21.825247Z","shell.execute_reply":"2026-09-29T15:22:21.824607Z"}}' id="8f448037">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a aria-hidden="true" href="#cb20-1" tabindex="-1"></a>X_xor_raw <span class="op">=</span> np.array([[<span class="fl">0.</span>, <span class="fl">0.</span>], [<span class="fl">0.</span>, <span class="fl">1.</span>], [<span class="fl">1.</span>, <span class="fl">0.</span>], [<span class="fl">1.</span>, <span class="fl">1.</span>]])</span>
+<span id="cb20-2"><a aria-hidden="true" href="#cb20-2" tabindex="-1"></a>y_xor_np <span class="op">=</span> np.array([<span class="fl">0.</span>, <span class="fl">1.</span>, <span class="fl">1.</span>, <span class="fl">0.</span>])</span>
+<span id="cb20-3"><a aria-hidden="true" href="#cb20-3" tabindex="-1"></a></span>
+<span id="cb20-4"><a aria-hidden="true" href="#cb20-4" tabindex="-1"></a><span class="co"># engineer the interaction feature by hand</span></span>
+<span id="cb20-5"><a aria-hidden="true" href="#cb20-5" tabindex="-1"></a>interaction <span class="op">=</span> X_xor_raw[:, <span class="dv">0</span>] <span class="op">*</span> X_xor_raw[:, <span class="dv">1</span>]</span>
+<span id="cb20-6"><a aria-hidden="true" href="#cb20-6" tabindex="-1"></a>X_xor_engineered <span class="op">=</span> np.column_stack([X_xor_raw, interaction])</span>
+<span id="cb20-7"><a aria-hidden="true" href="#cb20-7" tabindex="-1"></a></span>
+<span id="cb20-8"><a aria-hidden="true" href="#cb20-8" tabindex="-1"></a>weights_by_hand <span class="op">=</span> np.array([<span class="fl">1.</span>, <span class="fl">1.</span>, <span class="op">-</span><span class="fl">2.</span>])</span>
+<span id="cb20-9"><a aria-hidden="true" href="#cb20-9" tabindex="-1"></a>bias_by_hand <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb20-10"><a aria-hidden="true" href="#cb20-10" tabindex="-1"></a>pred_engineered <span class="op">=</span> X_xor_engineered <span class="op">@</span> weights_by_hand <span class="op">+</span> bias_by_hand</span>
+<span id="cb20-11"><a aria-hidden="true" href="#cb20-11" tabindex="-1"></a></span>
+<span id="cb20-12"><a aria-hidden="true" href="#cb20-12" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"inputs (x1, x2, x1*x2):"</span>)</span>
+<span id="cb20-13"><a aria-hidden="true" href="#cb20-13" tabindex="-1"></a><span class="bu">print</span>(X_xor_engineered)</span>
+<span id="cb20-14"><a aria-hidden="true" href="#cb20-14" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"predicted:"</span>, pred_engineered)</span>
+<span id="cb20-15"><a aria-hidden="true" href="#cb20-15" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"target:   "</span>, y_xor_np)</span>
+<span id="cb20-16"><a aria-hidden="true" href="#cb20-16" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"exact match:"</span>, np.allclose(pred_engineered, y_xor_np))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>inputs (x1, x2, x1*x2):
+[[0. 0. 0.]
+ [0. 1. 0.]
+ [1. 0. 0.]
+ [1. 1. 1.]]
+predicted: [0. 1. 1. 0.]
+target:    [0. 1. 1. 0.]
+exact match: True</code></pre>
+</div>
+</div>
+<p>An exact fit, with plain linear weights <span class="math inline">\((1, 1, -2)\)</span> and zero bias – once someone has already noticed that <span class="math inline">\(x_1 x_2\)</span> is the feature that matters. The model did not change; only the <em>input</em> did. That “someone has to notice” is the catch: for Bulyk et al.’s real transcription-factor data, or for secondary structure, nobody knows the useful interaction terms in advance. A hidden layer’s advantage is that it <em>learns</em> features like this from data.</p>
+<p>The lesson reaches beyond XOR: what a model can learn depends on what its input represents. No model, however large, can recover information the input does not contain. The lab makes the same point with real proteins.</p>
+</section>
+<section class="level2" id="b.-two-views-of-a-real-protein-hbb">
+<h2 class="anchored" data-anchor-id="b.-two-views-of-a-real-protein-hbb">6b. Two views of a real protein: HBB</h2>
+<p>A secondary-structure predictor has to label <em>every residue</em>. Fetch the labels of <em>HBB</em> (beta-globin, chain B of the human hemoglobin crystal structure <code>2HHB</code>) from EBI’s PDBe API, and compare two ways of presenting this protein to a model: a window of neighbouring residues (what PHD reads) and the 20 amino-acid fractions (what the lab uses).</p>
+<div class="cell" data-execution_count="13" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-09-29T15:22:21.827332Z","iopub.status.busy":"2026-09-29T15:22:21.827190Z","iopub.status.idle":"2026-09-29T15:22:22.347337Z","shell.execute_reply":"2026-09-29T15:22:22.346310Z"}}' id="404740de">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a aria-hidden="true" href="#cb22-1" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb22-2"><a aria-hidden="true" href="#cb22-2" tabindex="-1"></a></span>
+<span id="cb22-3"><a aria-hidden="true" href="#cb22-3" tabindex="-1"></a>base <span class="op">=</span> <span class="st">"https://www.ebi.ac.uk/pdbe/api/pdb/entry"</span></span>
+<span id="cb22-4"><a aria-hidden="true" href="#cb22-4" tabindex="-1"></a>entry <span class="op">=</span> requests.get(<span class="ss">f"</span><span class="sc">{</span>base<span class="sc">}</span><span class="ss">/secondary_structure/2hhb"</span>, timeout<span class="op">=</span><span class="dv">10</span>).json()[<span class="st">"2hhb"</span>]</span>
+<span id="cb22-5"><a aria-hidden="true" href="#cb22-5" tabindex="-1"></a>molecules <span class="op">=</span> requests.get(<span class="ss">f"</span><span class="sc">{</span>base<span class="sc">}</span><span class="ss">/molecules/2hhb"</span>, timeout<span class="op">=</span><span class="dv">10</span>).json()[<span class="st">"2hhb"</span>]</span>
+<span id="cb22-6"><a aria-hidden="true" href="#cb22-6" tabindex="-1"></a></span>
+<span id="cb22-7"><a aria-hidden="true" href="#cb22-7" tabindex="-1"></a><span class="co"># HBB (beta-globin) is chain B; its sequence comes from the structure itself</span></span>
+<span id="cb22-8"><a aria-hidden="true" href="#cb22-8" tabindex="-1"></a>seq <span class="op">=</span> <span class="bu">next</span>(m[<span class="st">"sequence"</span>] <span class="cf">for</span> m <span class="kw">in</span> molecules <span class="cf">if</span> <span class="st">"B"</span> <span class="kw">in</span> m.get(<span class="st">"in_chains"</span>, []) <span class="kw">and</span> m.get(<span class="st">"length"</span>))</span>
+<span id="cb22-9"><a aria-hidden="true" href="#cb22-9" tabindex="-1"></a>chain <span class="op">=</span> <span class="bu">next</span>(c <span class="cf">for</span> m <span class="kw">in</span> entry[<span class="st">"molecules"</span>] <span class="cf">for</span> c <span class="kw">in</span> m[<span class="st">"chains"</span>] <span class="cf">if</span> c[<span class="st">"chain_id"</span>] <span class="op">==</span> <span class="st">"B"</span>)</span>
+<span id="cb22-10"><a aria-hidden="true" href="#cb22-10" tabindex="-1"></a>helices <span class="op">=</span> chain[<span class="st">"secondary_structure"</span>][<span class="st">"helices"</span>]</span>
+<span id="cb22-11"><a aria-hidden="true" href="#cb22-11" tabindex="-1"></a>strands <span class="op">=</span> chain[<span class="st">"secondary_structure"</span>].get(<span class="st">"strands"</span>, [])</span>
+<span id="cb22-12"><a aria-hidden="true" href="#cb22-12" tabindex="-1"></a></span>
+<span id="cb22-13"><a aria-hidden="true" href="#cb22-13" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">"C"</span>] <span class="op">*</span> <span class="bu">len</span>(seq)                      <span class="co"># C = coil, H = helix</span></span>
+<span id="cb22-14"><a aria-hidden="true" href="#cb22-14" tabindex="-1"></a><span class="cf">for</span> h <span class="kw">in</span> helices:</span>
+<span id="cb22-15"><a aria-hidden="true" href="#cb22-15" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(h[<span class="st">"start"</span>][<span class="st">"residue_number"</span>], h[<span class="st">"end"</span>][<span class="st">"residue_number"</span>] <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb22-16"><a aria-hidden="true" href="#cb22-16" tabindex="-1"></a>        labels[r <span class="op">-</span> <span class="dv">1</span>] <span class="op">=</span> <span class="st">"H"</span></span>
+<span id="cb22-17"><a aria-hidden="true" href="#cb22-17" tabindex="-1"></a>labels <span class="op">=</span> <span class="st">""</span>.join(labels)</span>
+<span id="cb22-18"><a aria-hidden="true" href="#cb22-18" tabindex="-1"></a></span>
+<span id="cb22-19"><a aria-hidden="true" href="#cb22-19" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"View 1, per residue: the sequence and the label a predictor must produce"</span>)</span>
+<span id="cb22-20"><a aria-hidden="true" href="#cb22-20" tabindex="-1"></a><span class="cf">for</span> start <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(seq), <span class="dv">50</span>):</span>
+<span id="cb22-21"><a aria-hidden="true" href="#cb22-21" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>start <span class="op">+</span> <span class="dv">1</span><span class="sc">:4d}</span><span class="ss">  </span><span class="sc">{</span>seq[start:start <span class="op">+</span> <span class="dv">50</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-22"><a aria-hidden="true" href="#cb22-22" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"      </span><span class="sc">{</span>labels[start:start <span class="op">+</span> <span class="dv">50</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-23"><a aria-hidden="true" href="#cb22-23" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>labels<span class="sc">.</span>count(<span class="st">'H'</span>)<span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span><span class="bu">len</span>(seq)<span class="sc">}</span><span class="ss"> residues in a helix (</span><span class="sc">{</span>labels<span class="sc">.</span>count(<span class="st">'H'</span>) <span class="op">/</span> <span class="bu">len</span>(seq)<span class="sc">:.0%}</span><span class="ss">), "</span></span>
+<span id="cb22-24"><a aria-hidden="true" href="#cb22-24" tabindex="-1"></a>      <span class="ss">f"</span><span class="sc">{</span><span class="bu">len</span>(strands)<span class="sc">}</span><span class="ss"> strands"</span>)</span>
+<span id="cb22-25"><a aria-hidden="true" href="#cb22-25" tabindex="-1"></a></span>
+<span id="cb22-26"><a aria-hidden="true" href="#cb22-26" tabindex="-1"></a>centre, half <span class="op">=</span> <span class="dv">63</span>, <span class="dv">6</span>                           <span class="co"># a PHD-style window of 13 residues around His63</span></span>
+<span id="cb22-27"><a aria-hidden="true" href="#cb22-27" tabindex="-1"></a>window <span class="op">=</span> seq[centre <span class="op">-</span> <span class="dv">1</span> <span class="op">-</span> half:centre <span class="op">+</span> half]</span>
+<span id="cb22-28"><a aria-hidden="true" href="#cb22-28" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">PHD-style input for residue </span><span class="sc">{</span>centre<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>seq[centre <span class="op">-</span> <span class="dv">1</span>]<span class="sc">}</span><span class="ss">): the window </span><span class="sc">{</span>window<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb22-29"><a aria-hidden="true" href="#cb22-29" tabindex="-1"></a>      <span class="ss">f"target label </span><span class="sc">{</span>labels[centre <span class="op">-</span> <span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-30"><a aria-hidden="true" href="#cb22-30" tabindex="-1"></a></span>
+<span id="cb22-31"><a aria-hidden="true" href="#cb22-31" tabindex="-1"></a>aas <span class="op">=</span> <span class="st">"ACDEFGHIKLMNPQRSTVWY"</span></span>
+<span id="cb22-32"><a aria-hidden="true" href="#cb22-32" tabindex="-1"></a>composition <span class="op">=</span> [seq.count(a) <span class="op">/</span> <span class="bu">len</span>(seq) <span class="cf">for</span> a <span class="kw">in</span> aas]</span>
+<span id="cb22-33"><a aria-hidden="true" href="#cb22-33" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">View 2, the lab's input: 20 fractions, the same for any order of these residues"</span>)</span>
+<span id="cb22-34"><a aria-hidden="true" href="#cb22-34" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  "</span> <span class="op">+</span> <span class="st">"  "</span>.join(<span class="ss">f"</span><span class="sc">{</span>a<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>f<span class="sc">:.3f}</span><span class="ss">"</span> <span class="cf">for</span> a, f <span class="kw">in</span> <span class="bu">zip</span>(aas, composition)))</span>
+<span id="cb22-35"><a aria-hidden="true" href="#cb22-35" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  and one target: helix fraction = </span><span class="sc">{</span>labels<span class="sc">.</span>count(<span class="st">'H'</span>) <span class="op">/</span> <span class="bu">len</span>(seq)<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb22-36"><a aria-hidden="true" href="#cb22-36" tabindex="-1"></a></span>
+<span id="cb22-37"><a aria-hidden="true" href="#cb22-37" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(strands) <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> labels.count(<span class="st">"H"</span>) <span class="op">==</span> <span class="dv">117</span> <span class="kw">and</span> <span class="bu">len</span>(seq) <span class="op">==</span> <span class="dv">146</span></span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>View 1, per residue: the sequence and the label a predictor must produce
+   1  VHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLST
+      CCCCHHHHHHHHHHHCCCCHHHHHHHHHHHHHHHCHHHHHHCHHHCCCCC
+  51  PDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDP
+      HHHHHHCHHHHHHHHHHHHHHHHHHCCHHHHHHHHHHHHHHHHHHCCCCC
+ 101  ENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH
+      HHHHHHHHHHHHHHHHHHHHHCCHHHHHHHHHHHHHHHHHHHCCCC
+
+117 of 146 residues in a helix (80%), 0 strands
+
+PHD-style input for residue 63 (H): the window NPKVKAHGKKVLG, target label H
+
+View 2, the lab's input: 20 fractions, the same for any order of these residues
+  A:0.103  C:0.014  D:0.048  E:0.055  F:0.055  G:0.089  H:0.062  I:0.000  K:0.075  L:0.123  M:0.007  N:0.041  P:0.048  Q:0.021  R:0.021  S:0.034  T:0.048  V:0.123  W:0.014  Y:0.021
+  and one target: helix fraction = 0.80</code></pre>
+</div>
+</div>
+<p>View 1 keeps what matters for each label: which residues are neighbours, in what order, and where helices start and stop. View 2 keeps only counts. A model given view 2 can at best predict the overall fraction; it can never say <em>which</em> residues are helical. The lab builds exactly such a model on 55 proteins.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction" class="pagination-link" href="../session07.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="Session 8: Machine Learning Foundations &amp; Practical PyTorch" class="pagination-link" href="../session08.html">
+<span class="nav-page-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

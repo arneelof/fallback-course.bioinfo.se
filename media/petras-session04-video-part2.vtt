@@ -1,0 +1,466 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.500
+There is a catch, though, and it is worth knowing about.
+
+2
+00:00:03.500 --> 00:00:10.200
+Sometimes the direction is ambiguous — here the value in one cell could have come from the left or from above.
+
+3
+00:00:10.200 --> 00:00:14.275
+That gives a second, equally good alignment, shown in green.
+
+4
+00:00:14.275 --> 00:00:17.900
+Nothing inside the algorithm can choose between them.
+
+5
+00:00:17.900 --> 00:00:20.725
+You have to bring something else to bear.
+
+6
+00:00:20.725 --> 00:00:29.775
+In this case the green alignment puts a gap, then a residue, then a gap, which almost never happens in evolution — so the yellow one is the better bet.
+
+7
+00:00:29.775 --> 00:00:35.300
+The argument differs case by case, and it is outside what the algorithm can tell you.
+
+8
+00:00:35.900 --> 00:00:42.625
+Smith-Waterman, for local alignment, differs in one way: no negative numbers are allowed in the matrix.
+
+9
+00:00:42.625 --> 00:00:53.050
+So the zeroth row and column are filled with zeros rather than accumulating gap penalties, and anywhere the recurrence would give a negative number, you write zero instead.
+
+10
+00:00:53.650 --> 00:00:56.950
+Filling the matrix under those rules gives this.
+
+11
+00:00:57.550 --> 00:00:59.900
+The traceback differs too.
+
+12
+00:00:59.900 --> 00:01:05.550
+Instead of starting at the bottom right, you start at the highest number anywhere in the matrix.
+
+13
+00:01:06.150 --> 00:01:11.200
+And you trace back by the same rules as before, but you stop when you hit a zero.
+
+14
+00:01:11.200 --> 00:01:15.500
+What comes out is the best local alignment of the two sequences.
+
+15
+00:01:15.500 --> 00:01:20.625
+Note where the score is now: at the cell where the traceback began, not at the corner.
+
+16
+00:01:21.225 --> 00:01:28.300
+Both algorithms needed a score for matching one residue against another, so now we need to say where those come from.
+
+17
+00:01:28.300 --> 00:01:33.575
+The simplest scheme makes the score depend only on which two amino acids are involved.
+
+18
+00:01:33.575 --> 00:01:40.700
+There are twenty, so there are four hundred possible pairs — a twenty-by-twenty table, called a substitution matrix.
+
+19
+00:01:40.700 --> 00:01:48.225
+In the simplest case it is symmetric: scoring alanine against histidine is the same as histidine against alanine.
+
+20
+00:01:48.225 --> 00:01:49.675
+Then gaps.
+
+21
+00:01:49.675 --> 00:01:55.900
+A gap needs a penalty, and the penalty depends on how many consecutive gaps you are introducing.
+
+22
+00:01:55.900 --> 00:01:58.225
+Three schemes are in use.
+
+23
+00:01:58.225 --> 00:02:04.375
+A linear penalty, which is what the examples used, is simply proportional to the number of gaps.
+
+24
+00:02:04.375 --> 00:02:19.575
+The trouble is visible in the top alignment on the slide: it produces gaps alternating with residues, and it fails to line up the QQW that both sequences contain — which could easily be read as those proteins not sharing a functional site when they do.
+
+25
+00:02:19.575 --> 00:02:22.450
+An affine penalty fixes that.
+
+26
+00:02:22.450 --> 00:02:30.500
+It has two parts: a large cost to open a gap, around ten, and a much smaller cost to extend one, around nought point one.
+
+27
+00:02:30.500 --> 00:02:36.650
+That pushes gaps into a few long stretches instead of many short ones, as in the second alignment.
+
+28
+00:02:36.650 --> 00:02:47.725
+And if you know in advance that some region should not contain gaps — because it is a rigid part of the structure, say — you can raise the penalty just there, with a position-specific factor.
+
+29
+00:02:47.725 --> 00:02:52.975
+That is an advanced technique; from here on this lecture uses affine penalties.
+
+30
+00:02:53.575 --> 00:02:56.900
+There are two families of substitution matrix.
+
+31
+00:02:56.900 --> 00:03:04.000
+PAM stands for accepted point mutations — the letters rearranged because PAM is easier to say than APM.
+
+32
+00:03:04.000 --> 00:03:07.950
+Margaret Dayhoff introduced it in the nineteen-seventies.
+
+33
+00:03:07.950 --> 00:03:15.550
+BLOSUM is the blocks substitution matrix, developed in the nineteen-nineties by Steven and Jorja Henikoff.
+
+34
+00:03:15.550 --> 00:03:21.175
+The next slides go through how each is built, because the difference matters when you choose one.
+
+35
+00:03:21.775 --> 00:03:29.800
+Dayhoff worked from thirty-four protein superfamilies, aligned pairwise with Needleman-Wunsch and assembled into multiple alignments.
+
+36
+00:03:29.800 --> 00:03:36.925
+Some families are extremely conserved — the dehydrogenases at the top, where only a few positions differ at all.
+
+37
+00:03:36.925 --> 00:03:44.500
+Others are not: the kappa-caseins at the bottom have only a handful of conserved positions and some highly variable ones.
+
+38
+00:03:44.500 --> 00:03:50.800
+At the time, the Atlas of Protein Sequence and Structure held about eight hundred proteins in total.
+
+39
+00:03:50.800 --> 00:03:58.175
+Several groups later repeated the calculation on much more recent data, and the results came out essentially the same.
+
+40
+00:03:58.775 --> 00:04:06.750
+From those families she built seventy-one phylogenetic trees and inferred the ancestral sequences — the internal nodes.
+
+41
+00:04:06.750 --> 00:04:15.025
+Then she counted substitutions: between an observed sequence and its predicted ancestor, or between ancestors at different levels.
+
+42
+00:04:15.025 --> 00:04:18.725
+The result is the substitution matrix on the right.
+
+43
+00:04:18.725 --> 00:04:23.600
+It is symmetric by construction, and the reason is worth understanding.
+
+44
+00:04:23.600 --> 00:04:30.400
+Nearly all the sequences come from species alive today, so you cannot tell which direction a mutation went.
+
+45
+00:04:30.400 --> 00:04:35.275
+The residue before the change cannot be distinguished from the residue after it.
+
+46
+00:04:35.275 --> 00:04:39.675
+The diagonal is left empty, because those are not mutations.
+
+47
+00:04:40.275 --> 00:04:48.550
+Next she worked out how often each of the twenty amino acids occurs: the count of that residue divided by the total number of residues.
+
+48
+00:04:48.550 --> 00:04:55.175
+The graph shows the result for her dataset, with a recent UniProt release alongside for comparison.
+
+49
+00:04:55.175 --> 00:04:59.875
+The point of the dashed line is that amino acids are not used at random.
+
+50
+00:04:59.875 --> 00:05:03.600
+If they were, each would appear five per cent of the time.
+
+51
+00:05:03.600 --> 00:05:05.200
+They do not.
+
+52
+00:05:05.800 --> 00:05:15.500
+Then the relative mutability of each residue: how often it was seen to change, divided by how often it appears at all — that is, how often it could have changed.
+
+53
+00:05:15.500 --> 00:05:19.525
+The numbers are scaled so that alanine comes out at a hundred.
+
+54
+00:05:19.525 --> 00:05:24.050
+The thing to notice is that mutability does not track frequency.
+
+55
+00:05:24.050 --> 00:05:30.575
+The residues are in the same order as the previous graph, where frequency fell steadily within each group.
+
+56
+00:05:30.575 --> 00:05:32.500
+Here it does not.
+
+57
+00:05:33.100 --> 00:05:36.825
+Now the mutation probability matrix at one PAM.
+
+58
+00:05:36.825 --> 00:05:42.625
+One PAM means an evolutionary distance at which one per cent of residues have changed.
+
+59
+00:05:42.625 --> 00:05:52.600
+Note that this is a measure of change, not of time: a conserved family like the dehydrogenases takes far longer to accumulate one per cent than the caseins do.
+
+60
+00:05:52.600 --> 00:05:58.275
+One PAM corresponds roughly to sequences that are eighty-five per cent identical.
+
+61
+00:05:58.275 --> 00:06:04.125
+The off-diagonal entries give the probability of one residue mutating into another.
+
+62
+00:06:04.125 --> 00:06:16.300
+The diagonal comes from a different argument: each column lists all twenty possible outcomes for a residue, it either stays or becomes one of the other nineteen, and those probabilities must sum to one.
+
+63
+00:06:16.300 --> 00:06:19.575
+So the diagonal is whatever is left over.
+
+64
+00:06:20.175 --> 00:06:25.300
+Part of the resulting PAM1 matrix, with its properties listed on the right.
+
+65
+00:06:25.300 --> 00:06:35.575
+It is not symmetric, even though the substitution counts were — because each amino acid has its own frequency, and dividing by different numbers breaks the symmetry.
+
+66
+00:06:35.575 --> 00:06:39.825
+There is a different symmetry instead, in the equation at the bottom.
+
+67
+00:06:40.425 --> 00:06:43.100
+The two extremes are worth seeing.
+
+68
+00:06:43.100 --> 00:06:52.575
+At zero evolutionary distance nothing has changed, so PAM0 is a diagonal matrix: every residue stays itself with probability one.
+
+69
+00:06:52.575 --> 00:07:00.475
+At infinite distance everything has changed, and the only thing left governing which residue you find is how common that residue is.
+
+70
+00:07:00.475 --> 00:07:06.975
+So every column becomes identical, and each is simply the frequencies of the twenty amino acids.
+
+71
+00:07:06.975 --> 00:07:11.150
+That is the background distribution, and we will use it shortly.
+
+72
+00:07:11.750 --> 00:07:17.950
+Now the trick that makes the whole family practical: PAM2 comes from PAM1 by multiplication.
+
+73
+00:07:17.950 --> 00:07:21.625
+Think of a system with three states — red, green, blue.
+
+74
+00:07:21.625 --> 00:07:26.200
+After one step, there is one way to still be red: nothing happened.
+
+75
+00:07:26.200 --> 00:07:30.650
+After two steps there is another way: it changed and changed back.
+
+76
+00:07:30.650 --> 00:07:39.875
+So the probability of being red after two steps is red-stays-red twice, plus red-to-green times green-to-red, plus red-to-blue times blue-to-red.
+
+77
+00:07:39.875 --> 00:07:46.325
+Sum over all the intermediate possibilities, for every entry, and you have matrix multiplication.
+
+78
+00:07:46.325 --> 00:07:49.325
+PAM2 is PAM1 times itself.
+
+79
+00:07:49.325 --> 00:07:51.975
+Multiply again for PAM3.
+
+80
+00:07:51.975 --> 00:07:55.925
+The PAM250 matrix was built exactly this way.
+
+81
+00:07:56.525 --> 00:08:00.025
+One more step turns probabilities into scores.
+
+82
+00:08:00.025 --> 00:08:06.050
+Statistics gives us the odds ratio: what was observed, divided by what chance would give.
+
+83
+00:08:06.050 --> 00:08:12.125
+If the ratio is one, the event is no more likely than chance and needs no explanation.
+
+84
+00:08:12.125 --> 00:08:16.425
+Below one it is rarer than chance, above one it is commoner.
+
+85
+00:08:16.425 --> 00:08:24.375
+Taking the logarithm is more convenient, because then "rarer than chance" is simply a negative number, whatever base you use.
+
+86
+00:08:24.375 --> 00:08:29.450
+The top of the slide shows the odds ratio for PAM matrices at any distance.
+
+87
+00:08:29.450 --> 00:08:39.125
+The bottom shows the PAM250 mutation matrix turned into the PAM250 log-odds matrix, with a factor of ten in front and logarithms base ten.
+
+88
+00:08:39.725 --> 00:08:42.700
+BLOSUM takes a different route.
+
+89
+00:08:42.700 --> 00:08:56.500
+The Henikoffs scanned the BLOCKS database for highly conserved regions of protein families — regions aligned without any gaps at all — and counted how often each residue occurred and how often each substitution did.
+
+90
+00:08:56.500 --> 00:09:01.700
+From that they computed a log-odds score for each of the two hundred and ten possible pairs.
+
+91
+00:09:01.700 --> 00:09:06.975
+The key difference: every BLOSUM matrix comes from observed alignments.
+
+92
+00:09:06.975 --> 00:09:09.475
+Nothing is extrapolated.
+
+93
+00:09:10.075 --> 00:09:13.650
+Four differences, then, and they are worth remembering.
+
+94
+00:09:13.650 --> 00:09:20.050
+PAM rests on an explicit model of evolution, counting replacements along the branches of a tree.
+
+95
+00:09:20.050 --> 00:09:25.400
+BLOSUM counts them straight from the alignment, with the model left implicit.
+
+96
+00:09:25.400 --> 00:09:32.000
+PAM counts mutations across a whole global alignment, conserved regions and variable regions alike.
+
+97
+00:09:32.000 --> 00:09:36.400
+BLOSUM uses only highly conserved, gap-free blocks.
+
+98
+00:09:36.400 --> 00:09:42.850
+PAM needs only one matrix derived explicitly; everything else is matrix multiplication.
+
+99
+00:09:42.850 --> 00:09:51.000
+Every BLOSUM matrix has to be derived separately — you cannot get BLOSUM80 from BLOSUM40.
+
+100
+00:09:51.000 --> 00:09:54.300
+And the numbering runs in opposite directions.
+
+101
+00:09:54.300 --> 00:09:58.475
+A higher PAM number means a greater evolutionary distance.
+
+102
+00:09:58.475 --> 00:10:03.950
+A higher BLOSUM number means greater similarity, and therefore less distance.
+
+103
+00:10:03.950 --> 00:10:12.950
+PAM150 is for more distant sequences than PAM100; BLOSUM62 is for closer sequences than BLOSUM50.
+
+104
+00:10:13.550 --> 00:10:20.800
+The most interesting question in this area is how much change can accumulate before homology stops being detectable.
+
+105
+00:10:20.800 --> 00:10:23.100
+The graph gives the answer.
+
+106
+00:10:23.100 --> 00:10:31.675
+Beyond about two hundred and fifty PAM, sequence identity falls below twenty per cent and alignments stop being statistically convincing.
+
+107
+00:10:31.675 --> 00:10:35.175
+Past that point, sequence alone is not enough.
+
+108
+00:10:35.175 --> 00:10:40.600
+You need profile hidden Markov models, or structure, and those come later in the course.
+
+109
+00:10:41.200 --> 00:10:43.875
+Which brings us to significance.
+
+110
+00:10:43.875 --> 00:10:49.225
+Once you have an alignment and a score, you need to know whether that score means anything.
+
+111
+00:10:49.225 --> 00:10:56.625
+The usual approach is to compare it against scores from sequences known not to be homologous — a background distribution.
+
+112
+00:10:56.625 --> 00:11:01.800
+You can build one by shuffling the residues of the original sequences at random.
+
+113
+00:11:01.800 --> 00:11:08.975
+If that background is genuinely random it follows a Gaussian distribution, with a mean and a standard deviation.
+
+114
+00:11:08.975 --> 00:11:12.400
+One technical note on the standard deviation.
+
+115
+00:11:12.400 --> 00:11:16.250
+If you have the entire population, you divide by N.
+
+116
+00:11:16.250 --> 00:11:25.650
+If you have only a sample, you divide by n minus one, which makes the spread slightly larger to reflect that a sample tells you less than the whole population does.
+

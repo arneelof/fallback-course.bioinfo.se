@@ -1,0 +1,320 @@
+1
+00:00:00,000 --> 00:00:07,400
+This is the protein structure lecture for KB8029, Bioinformatics, given by Petras Kundrotas.
+
+2
+00:00:07,400 --> 00:00:16,325
+It covers what a protein structure is and how it is described, how two structures are compared, how structures are predicted, and how they are classified.
+
+3
+00:00:16,925 --> 00:00:19,950
+This lecture is about protein structure.
+
+4
+00:00:19,950 --> 00:00:27,450
+Chapter thirteen of the Pevsner book covers the same ground and is worth reading, because some of the quiz questions come from it.
+
+5
+00:00:27,450 --> 00:00:29,325
+But not all of them.
+
+6
+00:00:29,325 --> 00:00:36,300
+There is material in this lecture that the book does not cover, and some quiz and exam questions will come only from here.
+
+7
+00:00:36,900 --> 00:00:43,350
+Lectures on protein structure traditionally begin with the four levels of structure, and this one will too.
+
+8
+00:00:43,350 --> 00:00:53,800
+The emphasis, though, is on how proteins are built: how atoms become the bricks of life, with the primary, secondary, tertiary and quaternary levels introduced along the way.
+
+9
+00:00:53,800 --> 00:01:01,800
+Protein atoms can be arranged in a great many ways, so the second part of the lecture asks how to measure whether two structures are similar.
+
+10
+00:01:01,800 --> 00:01:07,325
+Tertiary and quaternary structures need different answers, so they are treated separately.
+
+11
+00:01:07,325 --> 00:01:11,875
+The third part is about predicting those arrangements by computation.
+
+12
+00:01:11,875 --> 00:01:20,725
+It is a sketch rather than a treatment — the subject deserves a course of its own — and it covers the methods that came before artificial intelligence.
+
+13
+00:01:20,725 --> 00:01:23,925
+The modern approaches come later in this course.
+
+14
+00:01:23,925 --> 00:01:31,725
+The lecture closes with the main ways of classifying tertiary structures, and with the databases that hold structural information.
+
+15
+00:01:32,325 --> 00:01:34,825
+Start with what a protein is.
+
+16
+00:01:34,825 --> 00:01:38,450
+Intuitively, a protein is a large molecule.
+
+17
+00:01:38,450 --> 00:01:47,400
+The two on screen make the point: alcohol dehydrogenase has two thousand six hundred and forty-three atoms, insulin four hundred and eleven.
+
+18
+00:01:47,400 --> 00:01:51,850
+They span roughly sixty-five and thirty-four ångström across.
+
+19
+00:01:52,450 --> 00:01:57,475
+Zoom in, though, and colour the atoms by element, and something simpler appears.
+
+20
+00:01:57,475 --> 00:02:00,275
+There are only a few kinds of atom here.
+
+21
+00:02:00,875 --> 00:02:02,825
+Five, in fact.
+
+22
+00:02:02,825 --> 00:02:09,900
+For all their apparent complexity, proteins are built from carbon, nitrogen, oxygen, hydrogen and sulphur.
+
+23
+00:02:09,900 --> 00:02:11,875
+Each has a job.
+
+24
+00:02:11,875 --> 00:02:15,525
+Carbon and nitrogen form the long polymer chains.
+
+25
+00:02:15,525 --> 00:02:24,650
+Nitrogen, oxygen and hydrogen form hydrogen bonds and carry charge, which is one of the main things holding a three-dimensional structure together.
+
+26
+00:02:24,650 --> 00:02:28,700
+Sulphur forms disulphide bonds, which are stronger still.
+
+27
+00:02:28,700 --> 00:02:32,100
+Structures are often drawn without the hydrogens.
+
+28
+00:02:32,100 --> 00:02:37,625
+When that is done, the rest are called the heavy atoms — every atom except hydrogen.
+
+29
+00:02:38,225 --> 00:02:43,350
+The first thing to say about a protein is that it is a flexible polymer chain.
+
+30
+00:02:43,950 --> 00:02:46,500
+Take the word polymer first.
+
+31
+00:02:46,500 --> 00:02:51,900
+The lower picture shows a fragment of the chain, running from a nitrogen to a carbon.
+
+32
+00:02:51,900 --> 00:02:57,650
+That fragment is called a residue, and it can repeat as many times as a protein needs.
+
+33
+00:02:57,650 --> 00:03:00,250
+The chain it builds is the backbone.
+
+34
+00:03:00,250 --> 00:03:03,000
+One caution about vocabulary.
+
+35
+00:03:03,000 --> 00:03:08,600
+Residue is often used as a synonym for amino acid, and that is not quite right.
+
+36
+00:03:08,600 --> 00:03:13,100
+Notice the bond leaving the alpha carbon with nothing on the end of it.
+
+37
+00:03:13,100 --> 00:03:21,350
+Something is attached there — a side chain — and the repeating backbone fragment together with its side chain is what makes an amino acid.
+
+38
+00:03:21,950 --> 00:03:24,175
+Now the word flexible.
+
+39
+00:03:24,175 --> 00:03:29,650
+The chain can rotate about two angles, psi and phi, marked by the circular arrows.
+
+40
+00:03:29,650 --> 00:03:40,375
+These are called dihedral angles, and the animation shows what one of them does: how the position of a backbone nitrogen changes relative to the three atoms before it in the chain.
+
+41
+00:03:40,375 --> 00:03:46,900
+There is a third angle, omega, about the carbon–nitrogen bond, and that one barely rotates at all.
+
+42
+00:03:46,900 --> 00:03:51,275
+The reason lies in how the electrons are distributed in that bond.
+
+43
+00:03:51,275 --> 00:04:02,900
+In practice omega takes one of two values: a hundred and eighty degrees, the trans form, almost always, and zero degrees, the cis form, in about three tenths of a per cent of cases.
+
+44
+00:04:03,500 --> 00:04:07,725
+Here are the same two proteins again, drawn as backbone only.
+
+45
+00:04:07,725 --> 00:04:10,750
+A backbone alone is not a protein, though.
+
+46
+00:04:10,750 --> 00:04:14,475
+It is a skeleton: necessary, but not sufficient.
+
+47
+00:04:15,075 --> 00:04:20,375
+Add the side chains, drawn here as thin lines, and the skeleton gets its flesh.
+
+48
+00:04:20,375 --> 00:04:25,825
+Now it is a protein — a large molecule that does something in a living organism.
+
+49
+00:04:26,425 --> 00:04:33,975
+The amino acids fall into three groups, shown here with their full names and their three-letter and one-letter abbreviations.
+
+50
+00:04:33,975 --> 00:04:38,325
+The hydrophobic side chains are made almost entirely of carbon.
+
+51
+00:04:38,325 --> 00:04:44,150
+A carbon atom has a symmetric cloud of electrons, so it cannot form a hydrogen bond.
+
+52
+00:04:44,150 --> 00:04:56,900
+There are two apparent exceptions — the sulphur in methionine and the nitrogen in tryptophan — but neither can form hydrogen bonds either: the sulphur is surrounded by carbons, and the nitrogen sits inside a ring.
+
+53
+00:04:56,900 --> 00:05:00,200
+The polar and charged side chains are different.
+
+54
+00:05:00,200 --> 00:05:05,125
+They contain nitrogen and oxygen, and those can form hydrogen bonds.
+
+55
+00:05:05,725 --> 00:05:11,300
+The side chains divide first by whether they can make a hydrogen bond, and these cannot.
+
+56
+00:05:11,300 --> 00:05:18,525
+Leucine, isoleucine and methionine are plain hydrocarbon chains; phenylalanine is a ring of the same kind.
+
+57
+00:05:18,525 --> 00:05:27,525
+They have no partial charges worth speaking of, so water does not want them, and in a folded protein they are usually found pressed together in the core.
+
+58
+00:05:27,525 --> 00:05:32,350
+That one fact explains a great deal about what shapes a protein can take.
+
+59
+00:05:32,950 --> 00:05:41,500
+These can make a hydrogen bond, because each carries an oxygen, a nitrogen or a sulphur with a hydrogen attached or a lone pair to offer.
+
+60
+00:05:41,500 --> 00:05:58,225
+Tyrosine, asparagine, cysteine, histidine and serine are comfortable on the surface in contact with water, and they are also the residues that do most of the chemistry: a hydrogen bond donor or acceptor in the right place is what an active site is usually made of.
+
+61
+00:05:58,825 --> 00:06:03,525
+A third group goes further and carries a charge at the pH of a cell.
+
+62
+00:06:04,125 --> 00:06:10,800
+The acidic residues, aspartic acid and glutamic acid, lose a proton and become negative.
+
+63
+00:06:10,800 --> 00:06:15,600
+The basic ones, lysine and arginine, gain one and become positive.
+
+64
+00:06:15,600 --> 00:06:22,775
+Opposite charges attract across the surface of a protein and hold parts of it together, and like charges push apart.
+
+65
+00:06:22,775 --> 00:06:33,375
+This is also where a pH change does its work: shift the pH far enough and histidine in particular changes its charge, which is how a number of proteins switch behaviour.
+
+66
+00:06:33,975 --> 00:06:39,925
+Join amino acids together and you have a polypeptide chain, as long as it needs to be.
+
+67
+00:06:39,925 --> 00:06:44,250
+The order of the amino acids along it is the primary structure.
+
+68
+00:06:44,250 --> 00:06:47,050
+A chain on its own does nothing, though.
+
+69
+00:06:47,050 --> 00:06:55,925
+It only becomes a protein in water, and it is water that performs the trick: it turns a floppy chain into the structures we look at in PyMOL.
+
+70
+00:06:56,525 --> 00:07:03,025
+Switch PyMOL to the cartoon representation and parts of the structure are drawn differently from the rest.
+
+71
+00:07:03,025 --> 00:07:07,900
+Those parts are the rigid elements: alpha helices and beta strands.
+
+72
+00:07:08,500 --> 00:07:11,025
+Look closely at the first of them.
+
+73
+00:07:11,025 --> 00:07:21,325
+An alpha helix is drawn as a spiral in every viewer, and it is held together by hydrogen bonds between backbone nitrogen and backbone oxygen, four residues apart.
+
+74
+00:07:21,325 --> 00:07:23,550
+Note the word backbone.
+
+75
+00:07:23,550 --> 00:07:29,375
+The nitrogens and oxygens of the side chains take no part in holding a helix together.
+
+76
+00:07:29,975 --> 00:07:38,925
+The other rigid element is a stretch of backbone in an extended conformation, where the dihedral angles are all close to a hundred and eighty degrees.
+
+77
+00:07:38,925 --> 00:07:43,800
+That is a beta strand, and every viewer draws it as a thick flat arrow.
+
+78
+00:07:43,800 --> 00:07:46,325
+Strands do not occur alone.
+
+79
+00:07:46,325 --> 00:07:59,950
+They pair up into beta sheets, held together again by hydrogen bonds between backbone nitrogen and backbone oxygen — but this time between neighbouring strands, and it does not matter how many residues separate them along the chain.
+
+80
+00:07:59,950 --> 00:08:03,475
+As with the helix, the side chains take no part.
+

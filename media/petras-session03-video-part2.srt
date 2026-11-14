@@ -1,0 +1,980 @@
+1
+00:00:00,000 --> 00:00:04,850
+Expression here shows a Human Protein Atlas RNA-sequencing study.
+
+2
+00:00:04,850 --> 00:00:13,000
+The bars compare estimated RNA abundance across the tissues sampled, on the normalised measure named on the vertical axis.
+
+3
+00:00:13,000 --> 00:00:20,250
+Above the chart are links to the project record and the publication — where the data came from and how the study was done.
+
+4
+00:00:20,250 --> 00:00:24,400
+That is the part to follow if you intend to rely on the numbers.
+
+5
+00:00:24,400 --> 00:00:29,175
+This is the step people skip, and it is the one that matters for a paper.
+
+6
+00:00:29,175 --> 00:00:34,550
+An expression figure in a gene record is a summary of somebody's experiment.
+
+7
+00:00:34,550 --> 00:00:41,250
+The record links back to that experiment: the GEO series, its samples, its platform, its publication.
+
+8
+00:00:41,250 --> 00:00:45,900
+Two clicks takes you from a bar chart to the study design that produced it.
+
+9
+00:00:45,900 --> 00:00:51,600
+If you are going to say in writing that a gene is expressed in a tissue, follow that link first.
+
+10
+00:00:51,600 --> 00:00:55,700
+The summary is a convenience; the study is the evidence.
+
+11
+00:00:56,300 --> 00:00:59,750
+A gene record led us to expression data.
+
+12
+00:00:59,750 --> 00:01:03,625
+To find out what the protein does, we go to UniProt.
+
+13
+00:01:03,625 --> 00:01:07,450
+Three databases there, answering different questions.
+
+14
+00:01:07,450 --> 00:01:13,350
+UniProtKB holds protein sequences and annotations about function and structure.
+
+15
+00:01:13,350 --> 00:01:21,800
+Its Swiss-Prot section is reviewed by curators; TrEMBL is annotated automatically and has not been through manual review.
+
+16
+00:01:21,800 --> 00:01:32,125
+The review status tells you how the entry was produced — and to judge a particular statement, follow the evidence attached to that statement rather than trusting the entry as a whole.
+
+17
+00:01:32,125 --> 00:01:34,500
+UniParc is an archive.
+
+18
+00:01:34,500 --> 00:01:42,425
+It stores each distinct sequence once and links it to every record it has appeared in, which is how you trace where a sequence came from.
+
+19
+00:01:42,425 --> 00:01:52,350
+UniRef groups sequences into clusters at ninety, fifty or a hundred per cent identity — useful when you want a representative set rather than everything.
+
+20
+00:01:52,350 --> 00:01:55,425
+We want function, so UniProtKB.
+
+21
+00:01:55,425 --> 00:02:02,275
+UniProt is not one database, and the distinction between its parts decides how much you should trust an entry.
+
+22
+00:02:02,275 --> 00:02:09,725
+Swiss-Prot is the reviewed section: a curator has read the literature and the entry carries evidence for what it claims.
+
+23
+00:02:09,725 --> 00:02:16,350
+TrEMBL is the unreviewed section, produced automatically from translated coding sequences.
+
+24
+00:02:16,350 --> 00:02:27,725
+The sizes are not comparable — reviewed entries number in the hundreds of thousands, unreviewed in the hundreds of millions — and that ratio has only gone one way since sequencing became cheap.
+
+25
+00:02:27,725 --> 00:02:39,200
+UniRef is a different kind of thing again: clustered sequences, at ninety, fifty or a hundred per cent identity, used when you want a non-redundant set rather than every entry.
+
+26
+00:02:39,200 --> 00:02:45,900
+UniParc is the archive, which keeps every sequence ever seen even after the entry it came from has gone.
+
+27
+00:02:45,900 --> 00:02:49,900
+When somebody says "it is in UniProt", ask which part.
+
+28
+00:02:49,900 --> 00:02:57,550
+It is worth putting numbers on that ratio, because they are the clearest single statement about where molecular biology now is.
+
+29
+00:02:57,550 --> 00:03:07,450
+The reviewed section holds a few hundred thousand entries and has grown slowly for twenty years, because reading the literature for an entry takes a person a day or more.
+
+30
+00:03:07,450 --> 00:03:12,875
+The unreviewed section holds a few hundred million and grows with sequencing capacity.
+
+31
+00:03:12,875 --> 00:03:18,125
+So the reviewed fraction of UniProt is well under one per cent, and falling.
+
+32
+00:03:18,125 --> 00:03:22,650
+That is not a criticism of the curators; it is arithmetic.
+
+33
+00:03:22,650 --> 00:03:31,475
+What follows from it is a habit: when an annotation matters to your conclusion, check whether a person ever looked at it, because the odds are against it.
+
+34
+00:03:32,075 --> 00:03:38,500
+Select UniProtKB beside the search box and enter the same words we used at NCBI.
+
+35
+00:03:38,500 --> 00:03:42,750
+The collection you select decides what kind of record comes back.
+
+36
+00:03:42,750 --> 00:03:48,850
+Here each row is a protein entry, with fields like protein name and organism to choose by.
+
+37
+00:03:48,850 --> 00:03:58,100
+Searching within UniProtKB rather than from the front page, for the same reason as at NCBI: one kind of record, one meaning per column.
+
+38
+00:03:58,700 --> 00:04:04,275
+The query contains the word human, and the sidebar still offers zebrafish and mouse.
+
+39
+00:04:04,275 --> 00:04:07,250
+The word in the query is not a filter.
+
+40
+00:04:07,250 --> 00:04:10,625
+So select Human under popular organisms.
+
+41
+00:04:10,625 --> 00:04:18,775
+The status filter chooses reviewed or unreviewed entries, and for this we want one that has been curated by hand, so Reviewed.
+
+42
+00:04:18,775 --> 00:04:24,700
+Even then several human haemoglobin subunits remain, so we still have to read the names.
+
+43
+00:04:24,700 --> 00:04:29,725
+Two filters do most of the work, and they are on the left of every result page.
+
+44
+00:04:29,725 --> 00:04:32,750
+Organism narrows to one species.
+
+45
+00:04:32,750 --> 00:04:35,350
+Reviewed narrows to Swiss-Prot.
+
+46
+00:04:35,350 --> 00:04:43,625
+Applied together they usually take a result list of thousands down to a single entry, and that single entry is the one you want to cite.
+
+47
+00:04:43,625 --> 00:04:55,250
+This is also the point at which to notice how many unreviewed entries you have just discarded, because that number is a fair measure of how much of what is in the database has never been read by a person.
+
+48
+00:04:55,850 --> 00:05:01,650
+In the table, look for haemoglobin subunit beta and Homo sapiens on the same row.
+
+49
+00:05:01,650 --> 00:05:09,550
+The other rows are human haemoglobin subunits too — epsilon, delta — so the organism alone gets you only part of the way.
+
+50
+00:05:09,550 --> 00:05:17,825
+Open the entry and both fields are confirmed in the header, along with "Reviewed", which tells us the curation status of what we are reading.
+
+51
+00:05:17,825 --> 00:05:22,975
+Check the protein name and the organism, exactly as with the gene record.
+
+52
+00:05:22,975 --> 00:05:25,850
+Note the two identifiers at the top.
+
+53
+00:05:25,850 --> 00:05:32,000
+The accession, P68871, is stable: it will still point here in ten years.
+
+54
+00:05:32,000 --> 00:05:36,350
+The entry name, HBB_HUMAN, is readable but can change.
+
+55
+00:05:36,350 --> 00:05:39,900
+Cite the accession; say the entry name out loud.
+
+56
+00:05:40,500 --> 00:05:43,925
+We came here to find out what beta-globin does.
+
+57
+00:05:43,925 --> 00:05:49,325
+Under Function, the first annotation describes its role in oxygen transport.
+
+58
+00:05:49,325 --> 00:05:56,475
+Beside that statement is a label saying one publication, and it leads to a paper on a beta-globin variant.
+
+59
+00:05:56,475 --> 00:06:03,275
+Follow it and you can see what the authors actually did, and how their result relates to the sentence in the database.
+
+60
+00:06:03,275 --> 00:06:10,750
+That is the distinction worth taking away: finding a record is not the same as checking the evidence for a claim inside it.
+
+61
+00:06:10,750 --> 00:06:20,525
+The function section is the reason to come to UniProt rather than anywhere else, and the evidence tags beside each statement are the reason to read it carefully.
+
+62
+00:06:20,525 --> 00:06:30,525
+Every claim carries a code saying where it came from: inferred from experiment, from a publication, from sequence similarity, or from an automatic annotation.
+
+63
+00:06:30,525 --> 00:06:36,725
+Two statements sitting in the same paragraph in the same typeface can have entirely different standing.
+
+64
+00:06:36,725 --> 00:06:38,950
+Hover over the tags.
+
+65
+00:06:38,950 --> 00:06:47,425
+A function supported by a paper and a function propagated from a similar sequence are both worth knowing, and only one of them is a result.
+
+66
+00:06:47,425 --> 00:06:51,625
+One more thing about evidence codes before we leave UniProt.
+
+67
+00:06:51,625 --> 00:07:00,775
+They are hierarchical, and the distinction that matters most is between evidence from the protein itself and evidence transferred from something similar.
+
+68
+00:07:00,775 --> 00:07:05,200
+"Inferred from direct assay" means somebody measured this protein.
+
+69
+00:07:05,200 --> 00:07:13,250
+"Inferred from sequence similarity" means somebody measured a different protein and the annotation travelled here along an alignment.
+
+70
+00:07:13,250 --> 00:07:18,600
+Both are legitimate; only the first is a fact about the molecule in front of you.
+
+71
+00:07:18,600 --> 00:07:23,575
+Whole fields have been built on annotations that turned out to have travelled a long way.
+
+72
+00:07:24,175 --> 00:07:26,350
+We have searched by name.
+
+73
+00:07:26,350 --> 00:07:32,075
+Now we use the approved symbol, HBB, to connect records across databases.
+
+74
+00:07:32,075 --> 00:07:36,550
+HGNC is the HUGO Gene Nomenclature Committee.
+
+75
+00:07:36,550 --> 00:07:43,150
+It approves and maintains one standard symbol and one descriptive name for each human gene it names.
+
+76
+00:07:43,150 --> 00:07:50,550
+That shared vocabulary is what lets researchers refer to the same gene in a paper and find it again in a database.
+
+77
+00:07:50,550 --> 00:07:58,300
+The report shows the symbol HBB, the approved name haemoglobin subunit beta, and a nomenclature identifier.
+
+78
+00:07:58,300 --> 00:08:03,975
+That identifier stays stable even if the approved name or symbol later changes.
+
+79
+00:08:03,975 --> 00:08:07,525
+Now the same starting point from the other direction.
+
+80
+00:08:07,525 --> 00:08:14,575
+The official symbol is agreed — HBB — and what differs is what each resource calls the thing that symbol names.
+
+81
+00:08:15,175 --> 00:08:19,625
+This is the NCBI Gene record we reached earlier by name.
+
+82
+00:08:19,625 --> 00:08:24,400
+The number highlighted is its identifier within NCBI Gene.
+
+83
+00:08:24,400 --> 00:08:31,300
+The summary credits HGNC as the source of the approved symbol and links back to the nomenclature record.
+
+84
+00:08:31,300 --> 00:08:33,800
+It also links to Ensembl.
+
+85
+00:08:33,800 --> 00:08:41,650
+Those cross-references are how you confirm that two resources are describing the same gene while each uses its own identifier.
+
+86
+00:08:41,650 --> 00:08:48,525
+At NCBI the symbol leads to a Gene record with a numeric identifier, 3043.
+
+87
+00:08:48,525 --> 00:08:55,425
+The number is arbitrary and permanent, which is a good combination: it carries no meaning and it never moves.
+
+88
+00:08:56,025 --> 00:09:04,950
+Ensembl uses the same symbol for the same gene and gives its record an identifier beginning E-N-S-G, which marks an Ensembl gene.
+
+89
+00:09:04,950 --> 00:09:08,050
+Compare that with the NCBI number.
+
+90
+00:09:08,050 --> 00:09:11,925
+Both lead to a gene record; neither is more correct.
+
+91
+00:09:11,925 --> 00:09:17,275
+The description cites the same nomenclature identifier, which ties the two together.
+
+92
+00:09:17,275 --> 00:09:25,900
+This view also gives the location on chromosome eleven in the GRCh38 assembly, and links to the annotated transcripts.
+
+93
+00:09:25,900 --> 00:09:32,650
+The screenshot is from one particular Ensembl release, so check the live record for current annotation.
+
+94
+00:09:32,650 --> 00:09:40,800
+At EMBL-EBI, through Ensembl, the same gene is ENSG00000244734.
+
+95
+00:09:40,800 --> 00:09:49,850
+The prefix tells you the species and the kind of object before you look anything up, which is a property the NCBI number deliberately does not have.
+
+96
+00:09:50,450 --> 00:09:54,950
+The last magnifier highlights an accession in the Japanese archive.
+
+97
+00:09:54,950 --> 00:10:01,650
+Read the header and the definition: this is a submitted human beta-globin messenger RNA sequence.
+
+98
+00:10:01,650 --> 00:10:09,325
+The accession line gives the accession, and the version line adds a suffix — point one, the first version of that sequence.
+
+99
+00:10:09,325 --> 00:10:14,400
+The notebook retrieves the same record through NCBI and through ENA.
+
+100
+00:10:14,400 --> 00:10:19,975
+The partners share the submitted sequence and the accession, and only display it differently.
+
+101
+00:10:19,975 --> 00:10:26,425
+Contrast that with the gene records, where two resources have two different identifiers for one gene.
+
+102
+00:10:26,425 --> 00:10:32,800
+So before using an identifier, know which resource it belongs to and what kind of record it fetches.
+
+103
+00:10:32,800 --> 00:10:35,875
+Here, the header tells us it is mRNA.
+
+104
+00:10:35,875 --> 00:10:49,175
+And at DDBJ, as at the other two INSDC partners, the same sequence appears under an accession from the shared space — here V00497.1, one of the oldest records in the archive.
+
+105
+00:10:49,175 --> 00:10:52,725
+Three resources, three identifiers, one gene.
+
+106
+00:10:52,725 --> 00:10:58,175
+None of them is wrong, and none of them can be substituted for another in a methods section.
+
+107
+00:10:58,775 --> 00:11:05,525
+Suppose a colleague asks you to repeat an analysis and says, "I used HBB."  You recognise the gene.
+
+108
+00:11:05,525 --> 00:11:08,950
+You still do not know what went into the analysis.
+
+109
+00:11:08,950 --> 00:11:14,125
+The name is a starting point, and the search opens a whole collection of records.
+
+110
+00:11:14,125 --> 00:11:22,175
+Some describe the human gene in different resources — the nomenclature record, the NCBI record, the Ensembl record.
+
+111
+00:11:22,175 --> 00:11:29,375
+Others describe particular sequences, transcripts, proteins, variants, structures or families connected with it.
+
+112
+00:11:29,375 --> 00:11:36,800
+The collection is large because many resources organise different information around the same biological subject.
+
+113
+00:11:36,800 --> 00:11:39,525
+That feels like chaos at first.
+
+114
+00:11:39,525 --> 00:11:44,925
+It is the opposite: each identifier is a way to point at exactly one record.
+
+115
+00:11:44,925 --> 00:11:47,775
+This is the slide to photograph.
+
+116
+00:11:47,775 --> 00:12:02,750
+One approved symbol in the middle, and around it every identifier that symbol leads to: nomenclature, gene records at two resources, a genomic reference sequence, a clinical variant record, transcripts, proteins, a structure, a domain family.
+
+117
+00:12:02,750 --> 00:12:05,075
+They are not alternatives.
+
+118
+00:12:05,075 --> 00:12:12,375
+Each names a different object at a different level, and the lines between them are the cross-references we will follow in a moment.
+
+119
+00:12:12,975 --> 00:12:17,775
+So two questions have to be answered before the analysis can be repeated.
+
+120
+00:12:17,775 --> 00:12:20,125
+First, what kind of sequence?
+
+121
+00:12:20,125 --> 00:12:25,625
+A transcript study needs an mRNA; an amino-acid change needs a protein.
+
+122
+00:12:25,625 --> 00:12:32,650
+In RefSeq the prefix tells you which — N-M for a messenger RNA record, N-P for its protein product.
+
+123
+00:12:32,650 --> 00:12:35,750
+UniProt uses a different convention.
+
+124
+00:12:35,750 --> 00:12:44,150
+One accession identifies the entry, and for a protein with several isoforms a numbered suffix after a dash picks the isoform.
+
+125
+00:12:44,150 --> 00:12:50,675
+That dash-number means something quite different from RefSeq's version suffix, which is easy to confuse.
+
+126
+00:12:50,675 --> 00:13:03,050
+Variants can have their own identifiers beginning V-A-R, and processed chains identifiers beginning P-R-O — the mature beta-globin chain, after its initial methionine is removed, has one of those.
+
+127
+00:13:03,050 --> 00:13:07,475
+Those point at features inside the entry rather than at the entry.
+
+128
+00:13:07,475 --> 00:13:18,200
+Modifications such as phosphorylation are recorded by type and position, so identifying a modified form takes the accession plus the modification plus where it sits.
+
+129
+00:13:18,200 --> 00:13:20,800
+Second question: which version?
+
+130
+00:13:20,800 --> 00:13:24,500
+Which of them you use is decided by what you are claiming.
+
+131
+00:13:24,500 --> 00:13:29,650
+A coordinate claim needs the genomic sequence and the assembly it refers to.
+
+132
+00:13:29,650 --> 00:13:38,850
+A sequence claim needs the transcript accession with its version — the version, because the number without it names a record that has changed over time.
+
+133
+00:13:38,850 --> 00:13:42,025
+A function claim needs the protein entry.
+
+134
+00:13:42,025 --> 00:13:48,825
+A structural claim needs the PDB code and, increasingly, whether the structure was measured or predicted.
+
+135
+00:13:48,825 --> 00:13:57,100
+The common failure is to name the gene symbol and nothing else, which is the one identifier in this picture that names no sequence at all.
+
+136
+00:13:57,100 --> 00:14:05,050
+There is one more identifier on this picture worth singling out, because it was designed to solve exactly the problem the picture describes.
+
+137
+00:14:05,050 --> 00:14:15,300
+For most human genes, NCBI and EMBL-EBI have agreed on one transcript — the same sequence, the same coordinates, with a matching accession on each side.
+
+138
+00:14:15,300 --> 00:14:26,375
+That agreed transcript is the one to use when you need a single representative and do not have a reason to prefer another, and it is marked in the record rather than left for you to work out.
+
+139
+00:14:26,375 --> 00:14:35,450
+Before it existed, two groups analysing the same gene could reasonably choose different transcripts and get different answers about where a variant fell.
+
+140
+00:14:35,450 --> 00:14:39,500
+That is the kind of problem a shared identifier removes.
+
+141
+00:14:40,100 --> 00:14:45,525
+Once you know the resource, the first letters and the final characters tell you a great deal.
+
+142
+00:14:45,525 --> 00:14:49,875
+These are examples; every resource sets its own conventions.
+
+143
+00:14:49,875 --> 00:14:54,200
+RefSeq: N-M for messenger RNA, N-P for protein.
+
+144
+00:14:54,200 --> 00:15:01,025
+The number after the dot is the sequence version, and the mRNA and its protein have independent versions.
+
+145
+00:15:01,025 --> 00:15:04,075
+Keep both the accession and the version.
+
+146
+00:15:04,075 --> 00:15:12,350
+Ensembl: E-N-S-G for a gene, E-N-S-T for a transcript, E-N-S-P for a protein, with extra letters for other species.
+
+147
+00:15:12,350 --> 00:15:23,950
+The number after the dot is the version of that object, and Ensembl updates genes, transcripts and proteins by different rules — so a gene version is not a count of changes to its DNA.
+
+148
+00:15:23,950 --> 00:15:29,525
+In the read archives, three different prefixes mark runs originating at the three partners.
+
+149
+00:15:29,525 --> 00:15:37,200
+Because the partners exchange records, the prefix tells you where the data were deposited, not the only place you can get them.
+
+150
+00:15:37,200 --> 00:15:44,225
+GEO uses one prefix for a series, which groups the samples of a study, and another for an individual sample.
+
+151
+00:15:44,225 --> 00:15:50,650
+The patterns in this table are worth memorising, because they let you read an identifier before you look it up.
+
+152
+00:15:50,650 --> 00:16:01,375
+NM underscore is a curated messenger RNA; NP underscore is the protein it codes for; XM and XP are the same things predicted rather than curated.
+
+153
+00:16:01,375 --> 00:16:10,750
+The ENS prefixes split the same way — G for gene, T for transcript, P for protein — with the species written in for anything that is not human.
+
+154
+00:16:10,750 --> 00:16:18,275
+SRR, ERR and DRR are sequencing runs, and the first letter tells you which of the three archives took the submission.
+
+155
+00:16:18,275 --> 00:16:23,025
+GSE is a GEO series, GSM one sample within it.
+
+156
+00:16:23,025 --> 00:16:29,300
+A UniProt accession followed by a dash and a number is an isoform, not a separate protein.
+
+157
+00:16:29,300 --> 00:16:34,300
+RF numbers are RNA families, PF numbers protein families.
+
+158
+00:16:34,300 --> 00:16:36,725
+The point is not the trivia.
+
+159
+00:16:36,725 --> 00:16:44,175
+It is that an accession in a paper tells you what kind of claim is being made, and a surprising number of papers make the wrong one.
+
+160
+00:16:44,175 --> 00:16:48,425
+Two warnings about reading patterns, since we are encouraging it.
+
+161
+00:16:48,425 --> 00:16:54,225
+The first: a prefix tells you what kind of object a record is, not whether it is any good.
+
+162
+00:16:54,225 --> 00:17:04,725
+An XM accession is a predicted transcript, which may be perfectly correct; an NM accession is curated, which does not make it the right transcript for your question.
+
+163
+00:17:04,725 --> 00:17:09,575
+The second: versions are part of the identifier and are routinely dropped.
+
+164
+00:17:09,575 --> 00:17:13,550
+The suffix after the dot changes when the sequence changes.
+
+165
+00:17:13,550 --> 00:17:21,925
+A paper that cites the accession without it has named a record rather than a sequence, and nobody can reproduce the analysis exactly.
+
+166
+00:17:22,525 --> 00:17:30,950
+Now our colleague has told us exactly which record they used, and we can follow it outwards instead of starting a new name search at every site.
+
+167
+00:17:30,950 --> 00:17:39,325
+A cross-reference is a pointer from one record to related information somewhere else, usually shown as a clickable identifier.
+
+168
+00:17:39,325 --> 00:17:43,575
+Here the source is the UniProtKB beta-globin entry.
+
+169
+00:17:43,575 --> 00:17:48,875
+One cross-reference leads to the NCBI gene record — protein to gene.
+
+170
+00:17:48,875 --> 00:17:52,750
+Another leads to the RefSeq reference protein sequence.
+
+171
+00:17:52,750 --> 00:18:01,975
+A third leads to a Protein Data Bank entry: an experimentally determined haemoglobin complex containing both the alpha and the beta chains.
+
+172
+00:18:01,975 --> 00:18:05,675
+Notice those are three different kinds of destination.
+
+173
+00:18:05,675 --> 00:18:11,225
+Read the resource name and the relationship before you interpret where a link has taken you.
+
+174
+00:18:11,225 --> 00:18:16,050
+And when you find the record you want, keep the full identifier and its version.
+
+175
+00:18:16,050 --> 00:18:22,200
+A cross-reference is a promise that two records describe the same thing, made by somebody who checked.
+
+176
+00:18:22,200 --> 00:18:26,275
+That is what makes them worth following rather than searching again.
+
+177
+00:18:26,275 --> 00:18:37,775
+From the UniProt entry you reach the gene record, the reference protein sequence and the structure, without typing a name into another search box and without the risk that you land on the mouse version.
+
+178
+00:18:37,775 --> 00:18:44,500
+When you build a dossier on a protein — and that is what the lab after this lecture asks you to do — this is the route.
+
+179
+00:18:44,500 --> 00:18:51,225
+Start at one well-chosen record and follow its links, rather than starting a new search at every resource.
+
+180
+00:18:51,825 --> 00:18:55,575
+Identifiers and cross-references gave us the map.
+
+181
+00:18:55,575 --> 00:18:58,300
+Now the routes, and there are three of them.
+
+182
+00:18:58,300 --> 00:19:04,800
+The first is the record page itself — search, read the annotations, check the evidence, follow the links out.
+
+183
+00:19:04,800 --> 00:19:09,250
+We have been doing that for the last half hour, so we will not do it again.
+
+184
+00:19:09,250 --> 00:19:21,775
+The second is programmatic access: a command-line tool or a script asks the database directly, through an interface built for software rather than for people, and gets back something a program can work with.
+
+185
+00:19:21,775 --> 00:19:31,375
+The third is a genome browser, which draws everything at its position along a reference genome, so DNA, transcripts and proteins can be looked at together.
+
+186
+00:19:31,375 --> 00:19:34,325
+The rest of this part is about those two.
+
+187
+00:19:34,925 --> 00:19:39,025
+The simplest version is one command producing one file.
+
+188
+00:19:39,025 --> 00:19:43,650
+Wget fetches whatever a web address returns and saves it.
+
+189
+00:19:43,650 --> 00:19:52,275
+The address here identifies the UniProt entry for human haemoglobin beta, and the ending asks for it in FASTA format.
+
+190
+00:19:52,275 --> 00:19:55,375
+The file arrives named after the entry.
+
+191
+00:19:55,375 --> 00:19:57,900
+The second command prints it.
+
+192
+00:19:57,900 --> 00:20:08,650
+The first line begins with a greater-than sign and names the record, the protein and the organism; the amino-acid sequence follows, a hundred and forty-seven residues of it.
+
+193
+00:20:08,650 --> 00:20:14,725
+The dollar sign at the start of each command is the prompt your terminal shows you — you do not type it.
+
+194
+00:20:15,325 --> 00:20:18,700
+A file on disk is not always what you want.
+
+195
+00:20:18,700 --> 00:20:25,100
+Often you want a few fields out of the record, in a form your program can carry straight into the next step.
+
+196
+00:20:25,100 --> 00:20:31,500
+This asks for the same UniProt entry, but in JSON — structured text with named fields.
+
+197
+00:20:31,500 --> 00:20:34,625
+Same protein, different representation.
+
+198
+00:20:34,625 --> 00:20:39,725
+Reading down: import the requests library, build the address, send the request.
+
+199
+00:20:39,725 --> 00:20:50,325
+The timeout stops the script hanging forever on a server that never answers, and the status check turns a server error into an error you notice, rather than a file full of error page.
+
+200
+00:20:50,325 --> 00:20:58,475
+Then the response becomes ordinary Python data, and three fields come out of it — accession, organism, and the length of the sequence.
+
+201
+00:20:59,075 --> 00:21:04,275
+A genome browser adds the one thing a record page cannot give you: position.
+
+202
+00:21:04,275 --> 00:21:13,200
+Everything is drawn against a reference genome, each horizontal track a different collection of annotations, all sharing one set of coordinates.
+
+203
+00:21:13,200 --> 00:21:20,500
+This is the human HBB region at UCSC, with the GENCODE and RefSeq annotations switched on.
+
+204
+00:21:20,500 --> 00:21:27,750
+From here you can compare transcript structures, see what sits beside the gene, and follow links back to the records underneath.
+
+205
+00:21:27,750 --> 00:21:32,275
+Before any of that is useful, you have to be able to read the display.
+
+206
+00:21:32,275 --> 00:21:35,225
+That is what the next few slides are for.
+
+207
+00:21:35,825 --> 00:21:39,550
+Start with the header, because it tells you what you are looking at.
+
+208
+00:21:39,550 --> 00:21:46,825
+The organism is human and the assembly is GRCh38, which UCSC calls hg38.
+
+209
+00:21:46,825 --> 00:21:53,775
+The date is when that assembly was released; the annotations drawn on top of it get updated far more often.
+
+210
+00:21:53,775 --> 00:21:59,975
+The interval gives the stretch of chromosome eleven on screen — a little over two thousand bases.
+
+211
+00:21:59,975 --> 00:22:05,250
+Keep the assembly name together with the coordinates whenever you write a position down.
+
+212
+00:22:05,250 --> 00:22:09,000
+Coordinates on their own point at nothing in particular.
+
+213
+00:22:09,600 --> 00:22:18,800
+The ruler gives positions along chromosome eleven, increasing left to right, and the scale bar shows what a thousand bases looks like at this zoom.
+
+214
+00:22:18,800 --> 00:22:22,075
+Zooming changes how much fits on the screen.
+
+215
+00:22:22,075 --> 00:22:25,175
+It does not change the sequence underneath.
+
+216
+00:22:25,175 --> 00:22:29,750
+Below the ruler is the GENCODE label with a release number.
+
+217
+00:22:29,750 --> 00:22:38,475
+GENCODE is the project that works out where genes are and what transcripts they make, exon boundaries and coding regions included.
+
+218
+00:22:38,475 --> 00:22:43,875
+Its release number is its own and has nothing to do with the assembly named above it.
+
+219
+00:22:43,875 --> 00:22:48,125
+And the note saying six items were filtered out is worth reading.
+
+220
+00:22:48,125 --> 00:22:52,600
+Six transcript annotations in this region are not being drawn.
+
+221
+00:22:52,600 --> 00:22:55,000
+They are still in the database.
+
+222
+00:22:55,000 --> 00:23:00,175
+The browser is showing you a chosen subset, and it is useful to know when it is.
+
+223
+00:23:00,775 --> 00:23:05,900
+The broad light-blue row is one HBB transcript from GENCODE.
+
+224
+00:23:05,900 --> 00:23:16,375
+It describes a messenger RNA, and the browser has drawn it where its exons fall in genomic DNA — three blocks joined by lines, the blocks exons, the lines introns.
+
+225
+00:23:16,375 --> 00:23:28,950
+It is drawn prominently because it belongs to MANE Select: a set of representative transcripts where RefSeq and Ensembl agree, chosen so everyone describing a gene can describe the same transcript.
+
+226
+00:23:28,950 --> 00:23:31,600
+That is all the prominence means.
+
+227
+00:23:31,600 --> 00:23:36,050
+It says nothing about how much of this transcript the cell actually makes.
+
+228
+00:23:36,650 --> 00:23:45,500
+The large red feature beside it is a different kind of thing — a candidate transcript that GENCODE labels "to be experimentally confirmed".
+
+229
+00:23:45,500 --> 00:23:47,650
+Something was seen there.
+
+230
+00:23:47,650 --> 00:23:52,975
+What it is has not been settled, and UCSC draws that category in red.
+
+231
+00:23:52,975 --> 00:23:55,525
+Worth remembering in general.
+
+232
+00:23:55,525 --> 00:23:59,425
+A feature being in a database does not make it established.
+
+233
+00:23:59,425 --> 00:24:05,225
+Read what the annotation claims, and what supports it, before you build anything on top of it.
+
+234
+00:24:05,825 --> 00:24:11,400
+The green row is a different gene altogether, one that makes a long non-coding RNA.
+
+235
+00:24:11,400 --> 00:24:15,900
+It overlaps the HBB region but sits on the opposite strand.
+
+236
+00:24:15,900 --> 00:24:22,775
+The green block is a single exon, and the long line running right leads to the next one, outside this window.
+
+237
+00:24:22,775 --> 00:24:24,900
+There is no protein.
+
+238
+00:24:24,900 --> 00:24:32,525
+This is why context matters: the same stretch of chromosome carries annotations for more than one gene, on both strands.
+
+239
+00:24:32,525 --> 00:24:38,950
+But overlapping HBB does not by itself mean this RNA has anything to do with HBB.
+
+240
+00:24:39,550 --> 00:24:43,525
+The compressed dark-blue rows are more HBB transcripts.
+
+241
+00:24:43,525 --> 00:24:51,550
+Compare them and the differences show up — exon boundaries that do not line up, transcripts starting or ending in different places.
+
+242
+00:24:51,550 --> 00:24:58,525
+Some of those differences are in untranslated regions only, which means the protein can come out identical.
+
+243
+00:24:58,525 --> 00:25:01,725
+The rows are drawn short so more of them fit.
+
+244
+00:25:01,725 --> 00:25:06,800
+The height says nothing about abundance, and nothing about the size of the molecule.
+
+245
+00:25:06,800 --> 00:25:12,125
+One gene, several transcript records, each describing a particular RNA.
+

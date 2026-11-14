@@ -1,0 +1,67 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 5 Lab: Advanced Database Search &amp; Profile Methods</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 5 Lab: Advanced Database Search &amp; Profile Methods</h1>
+<p class='meta'>Preview without answers, from <code>labs/session05-blast-and-profiles.text2qti.md</code> (last change 2c399a07 2026-10-24). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='https://course.bioinfo.se/notebooks/session05-lab.ipynb' download>download session05-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>BLAST program types, PSI-BLAST/PSSMs, a real gene-identification task, and three real code exercises (Clustal Omega and a PSSM, an iterated jackhmmer search, a live Pfam domain search) from notebooks/session05-lab.ipynb. Every search in the notebook runs on EMBL-EBI&rsquo;s servers through their web APIs, so it runs on Colab from VS Code with nothing to install.</p>
+<div class='text'><h2>BLAST&#x27;s five programs</h2><p>BLAST comes in several programs, each defined by what <em>type</em> the query and database are (nucleotide, or protein) &ndash; <code>blastn</code> compares nucleotide sequences and <code>blastp</code> protein sequences. The other three translate in all 6 reading frames on the fly: <code>blastx</code> translates a nucleotide query and searches a protein database, <code>tblastn</code> searches a nucleotide database, translated, with a protein query, and <code>tblastx</code> translates both the nucleotide query and the nucleotide database.</p></div>
+<div class='q'><div class='qhead'>Question 1 · choose one · 1 point</div><p>Which BLAST program takes a nucleotide query, translates it in all 6 frames, and searches a protein database?</p>
+<ul><li><p>blastn</p></li><li><p>blastx</p></li><li><p>tblastn</p></li><li><p>tblastx</p></li></ul>
+</div>
+<div class='text'><h2>PSI-BLAST</h2><p>PSI-BLAST (Position-Specific Iterated BLAST) refines its own search matrix across rounds &ndash; see the Session 5 book page&rsquo;s &ldquo;From one sequence to many&rdquo; section.</p></div>
+<div class='q'><div class='qhead'>Question 2 · choose one · 1 point</div><p>In PSI-BLAST, what does convergence mean?</p>
+<ul><li><p>The search has reached the maximum allowed number of iterations</p></li><li><p>No new sequences above the E-value threshold are found in the latest round, so the PSSM has stabilized</p></li><li><p>The PSSM has become identical to the original substitution matrix</p></li><li><p>Every sequence in the database has been found</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 3 · choose one · 1 point</div><p>Before building a PSSM, real profile tools remove near-identical sequences or give them lower weights. Why?</p>
+<ul><li><p>To speed up the search by using fewer sequences</p></li><li><p>So one large cluster of near-identical sequences doesn&rsquo;t dominate the position-specific statistics, skewing the PSSM toward whatever happens to be overrepresented</p></li><li><p>Because BLAST cannot process sequences that are too similar to each other</p></li><li><p>To comply with database licensing limits on sequence redundancy</p></li></ul>
+</div>
+<div class='text'><h2>A real gene-identification task</h2><p>Identify a real gene from a raw sequence, the same way a real annotation task would start. Go to <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi">NCBI BLAST</a>, choose the right BLAST program for a nucleotide query against a nucleotide database, and search:</p>
+<pre><code>&gt;query
+GTCCTTTCCCTACCCAGAGCCAGGTTTGTTTATCTGTTTACAACCAGTATTTACCTAGCAAGTCTTCCATCAGATAGCATTTGGAGAGCTGGGGGTGTCACAGTGAACCACGACCTCTAGGCCAGTGGGAGAGTCAGTCACACAAACTGTGAGTCCATGACTTGGGGCTTAGCCAGCA
+</code></pre></div>
+<div class='q'><div class='qhead'>Question 4 · short answer · 1 point</div><p>What is the accession (with version) of the single best hit?</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · short answer · 1 point</div><p>Which gene does this sequence come from, and which organism? (gene symbol and species)</p>
+</div>
+<div class='q'><div class='qhead'>Question 6 · choose one · 0.5 points</div><p>This is the sixth real human globin-family gene this course has used, after HBB, HBA1, MB, NGB, and CYGB (Sessions 2-5). Which BLAST program was the correct choice here?</p>
+<ul><li><p>blastn (nucleotide query, nucleotide database)</p></li><li><p>blastp (protein query, protein database)</p></li><li><p>blastx (nucleotide query translated, protein database)</p></li><li><p>tblastn (protein query, nucleotide database translated)</p></li></ul>
+</div>
+<div class='text'><h2>Real code -- Clustal Omega and a PSSM</h2><p>Run Section 2 of <code>notebooks/session05-lab.ipynb</code>: a real Clustal Omega alignment (run on EBI&rsquo;s server) of five real globin-family proteins (HBB, HBA1, MB, NGB, CYGB), then a PSSM built from it by counting each amino acid&rsquo;s occurrences per real alignment column.</p></div>
+<div class='q'><div class='qhead'>Question 7 · number · 1 point</div><p>How many columns does the real Clustal Omega alignment have?</p>
+</div>
+<div class='q'><div class='qhead'>Question 8 · choose one · 1 point</div><p>Imagine one alignment column where all five sequences have leucine (background frequency about 9.9%) and another where all five have tryptophan (background about 1.3%). Ignoring pseudocounts, which column&rsquo;s conserved residue gets the higher log-odds score, and why?</p>
+<ul><li><p>Leucine, because it is the more common amino acid and so more reliable</p></li><li><p>Tryptophan: log2(1/0.013) is about 6.3 against log2(1/0.099) about 3.3, because the score measures enrichment over background, and seeing a rare residue conserved is more surprising</p></li><li><p>Both get the same score, because both columns are 100% conserved</p></li><li><p>Neither: a fully conserved column always scores zero</p></li></ul>
+</div>
+<div class='text'><h2>Real code -- an iterated profile search, round 1 vs. round 3</h2><p>Run Section 3 of the notebook: alpha-globin (UniProt P69905, the protein made by both HBA1 and HBA2) searched with jackhmmer, HMMER&rsquo;s iterated profile search and the HMM counterpart of PSI-BLAST, against every protein sequence in the PDB, through EBI&rsquo;s HMMER API. Report your own notebook&rsquo;s numbers: if EBI updates its copy of the PDB, they will drift a little, which is expected and not an error.</p></div>
+<div class='q'><div class='qhead'>Question 9 · number · 0.5 points</div><p>How many significant PDB chains did round 1 report?</p>
+</div>
+<div class='q'><div class='qhead'>Question 10 · number · 0.5 points</div><p>How many significant PDB chains did round 3 report?</p>
+</div>
+<div class='q'><div class='qhead'>Question 11 · choose one · 0.5 points</div><p>Round 3 reports more significant chains than round 1. What is the best interpretation?</p>
+<ul><li><p>The profile built in later rounds finds additional significant candidate homologs, more distant ones that the single-sequence first round misses; surprising late-round hits should still be checked, since profile drift can pull in false positives</p></li><li><p>Round 3 is simply re-counting the same hits round 1 already found, with no real difference</p></li><li><p>The PDB grew between round 1 and round 3 of the same search</p></li><li><p>jackhmmer becomes less accurate with more iterations</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 12 · choose one · 1 point</div><p>Look at the chains that are significant in round 3 but not in round 1. What kind of proteins are they?</p>
+<ul><li><p>Unrelated proteins that happen to have a similar amino-acid composition</p></li><li><p>More copies of human alpha- and beta-haemoglobin</p></li><li><p>More distant members of the globin family, such as neuroglobins, worm dehaloperoxidases, plant non-symbiotic haemoglobins and bacterial flavohaemoglobins</p></li><li><p>Fragments of the query sequence itself</p></li></ul>
+</div>
+<div class='text'><h2>Real code -- a live Pfam domain search</h2><p>Run Section 4 of the notebook: a live query to EBI&rsquo;s real InterPro API for HIV-1&rsquo;s Gag-Pol polyprotein (UniProt P04585), the same live API the Session 5 book page&rsquo;s own HBB worked example uses.</p></div>
+<div class='q'><div class='qhead'>Question 13 · choose one · 1 point</div><p>Look at the residue ranges, listed in order along the chain. What does this domain architecture tell you about the Gag-Pol polyprotein?</p>
+<ul><li><p>It is a chain of separate modules in a fixed order (Gag&rsquo;s matrix and capsid parts first, then protease, reverse transcriptase, RNase H and integrase), matching a polyprotein that is cut into separate functional proteins</p></li><li><p>All the domains overlap, so they are alternative predictions for the same region</p></li><li><p>The domains are scattered randomly, so the order carries no information</p></li><li><p>A protein can only have one Pfam domain, so the other hits are errors</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 14 · short answer · 1 point</div><p>Which domain has the most significant match (lowest E-value)?</p>
+</div>
+<div class='text'><h2>Last step -- the feedback survey</h2><p>Before the due date, fill in this lab&rsquo;s feedback survey, &ldquo;Session 5 Lab: feedback&rdquo;, in the same Canvas module. It is anonymous (Canvas records that you filled it in, not what you wrote), and the lab counts as done on time for the bonus points only when both this quiz and the survey are in. It asks for concrete suggestions: what was too long, what background was missing, errors, unclear instructions. Errors and suggestions can also be sent at any time with the <a href="https://bioinfo.se/internal/kb8029-feedback/">feedback form</a>.</p></div>
+</main></body></html>

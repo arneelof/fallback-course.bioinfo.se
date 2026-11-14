@@ -1,0 +1,924 @@
+1
+00:00:00,000 --> 00:00:02,300
+Welcome to Session eight.
+
+2
+00:00:02,300 --> 00:00:05,900
+Session seven asked what a model can represent.
+
+3
+00:00:05,900 --> 00:00:11,725
+One weighted sum draws one straight boundary; add a hidden layer and you can draw more than one.
+
+4
+00:00:11,725 --> 00:00:14,675
+That was a question about capability.
+
+5
+00:00:14,675 --> 00:00:21,225
+Today's question is different, and in practice it is the one that decides whether your work is worth anything.
+
+6
+00:00:21,225 --> 00:00:24,475
+You have trained a model and it produces numbers.
+
+7
+00:00:24,475 --> 00:00:27,325
+How do you know it learned anything useful?
+
+8
+00:00:27,325 --> 00:00:30,800
+How do you know it will work on data it has never seen?
+
+9
+00:00:30,800 --> 00:00:33,450
+And how would you know if it had not?
+
+10
+00:00:33,450 --> 00:00:36,800
+I want to be blunt about why this session exists.
+
+11
+00:00:36,800 --> 00:00:46,675
+Almost every serious mistake I see in this field, in student projects and in published papers, is a mistake of evaluation rather than a mistake of modelling.
+
+12
+00:00:46,675 --> 00:00:48,675
+The model is fine.
+
+13
+00:00:48,675 --> 00:00:58,000
+The number reported for it is wrong, usually in the optimistic direction, and usually for a reason that is completely invisible unless you know to look for it.
+
+14
+00:00:58,000 --> 00:01:00,450
+So today has three blocks.
+
+15
+00:01:00,450 --> 00:01:08,100
+First, how to pose a problem: supervised and unsupervised, regression and classification, and what follows from that choice.
+
+16
+00:01:08,100 --> 00:01:18,400
+Second, and this is the heart of it, how we know a model learned anything: three data sets, the metrics, and the ways that information leaks from your test set into your training.
+
+17
+00:01:18,400 --> 00:01:25,025
+Third, the practical move to PyTorch, so that from Session nine you can build and train networks properly.
+
+18
+00:01:25,025 --> 00:01:28,600
+By the end you should be suspicious in a useful way.
+
+19
+00:01:28,600 --> 00:01:30,625
+That is the skill.
+
+20
+00:01:30,625 --> 00:01:36,550
+Everything in this lecture is also written out in full on the Session eight page of the course book.
+
+21
+00:01:36,550 --> 00:01:44,775
+The page is the reference and this is the walk through it, so whenever a number or a name goes past too quickly, that is where to look it up.
+
+22
+00:01:44,775 --> 00:01:48,800
+I will say which part of the page we are in as each block starts.
+
+23
+00:01:49,400 --> 00:01:55,075
+Let me start with a demonstration, because it makes the point faster than any definition.
+
+24
+00:01:55,075 --> 00:01:58,775
+On this slide is one model, evaluated twice.
+
+25
+00:01:58,775 --> 00:02:04,125
+The model is one-nearest-neighbour, which is about the simplest thing you can call a model.
+
+26
+00:02:04,125 --> 00:02:12,850
+To predict the helix fraction of a protein, it looks through the training proteins, finds the one most similar to yours, and gives you that one's answer.
+
+27
+00:02:12,850 --> 00:02:16,050
+There is nothing to fit; it just remembers.
+
+28
+00:02:16,050 --> 00:02:19,950
+The middle panel evaluates it on the data it was built from.
+
+29
+00:02:19,950 --> 00:02:23,300
+Every point sits exactly on the diagonal.
+
+30
+00:02:23,300 --> 00:02:26,375
+R squared is one point zero zero.
+
+31
+00:02:26,375 --> 00:02:27,575
+Perfect.
+
+32
+00:02:27,575 --> 00:02:34,975
+Now, before you look at the right panel, predict: how well will this perfect model do on fourteen proteins it has never seen?
+
+33
+00:02:34,975 --> 00:02:38,725
+The right panel: R squared of nought point zero three.
+
+34
+00:02:38,725 --> 00:02:45,925
+Which, as we will discuss later, is essentially the same as having no model at all and always predicting the average.
+
+35
+00:02:45,925 --> 00:02:48,650
+And notice there is no bug here.
+
+36
+00:02:48,650 --> 00:02:51,400
+The middle panel is not a mistake.
+
+37
+00:02:51,400 --> 00:03:04,775
+One-nearest-neighbour genuinely does get every training protein right, for a completely uninteresting reason: when you look up the protein most similar to protein X and protein X is in the collection, you find protein X.
+
+38
+00:03:04,775 --> 00:03:09,650
+It finds itself, with perfect similarity, and returns its own answer.
+
+39
+00:03:09,650 --> 00:03:12,675
+That is the whole session in one slide.
+
+40
+00:03:12,675 --> 00:03:18,500
+The same model, the same code, two evaluations, and one of the two numbers is meaningless.
+
+41
+00:03:18,500 --> 00:03:23,375
+Everything we do today is machinery for making sure you report the right one.
+
+42
+00:03:23,975 --> 00:03:25,450
+Block one.
+
+43
+00:03:25,450 --> 00:03:27,350
+Posing the problem.
+
+44
+00:03:27,350 --> 00:03:31,200
+On the page, this block is the section "Posing the problem".
+
+45
+00:03:31,200 --> 00:03:43,450
+Before you can evaluate a model you have to decide what you are asking it to do, and that decision has consequences all the way down: which loss you use, which metrics mean anything, and how hard the problem is.
+
+46
+00:03:43,450 --> 00:03:48,100
+This block is about making that decision deliberately rather than by habit.
+
+47
+00:03:48,700 --> 00:03:54,300
+Two words to get out of the way first, because they divide up everything in machine learning.
+
+48
+00:03:54,300 --> 00:04:00,900
+Supervised learning means you have labelled examples: inputs where somebody already knows the right answer.
+
+49
+00:04:00,900 --> 00:04:07,700
+You fit the model so that its outputs match those known answers, and then you use it on inputs where nobody knows.
+
+50
+00:04:07,700 --> 00:04:12,450
+Session seven's perceptron fitted to known binding sites is supervised.
+
+51
+00:04:12,450 --> 00:04:16,125
+Almost everything we train in this course is supervised.
+
+52
+00:04:16,125 --> 00:04:19,875
+Unsupervised learning means you have no labels at all.
+
+53
+00:04:19,875 --> 00:04:25,100
+You are not fitting to known answers; you are looking for structure in the data itself.
+
+54
+00:04:25,100 --> 00:04:34,450
+Clustering sequences into families is the example you will see today: nobody tells the algorithm which family is which, it groups them by similarity.
+
+55
+00:04:34,450 --> 00:04:39,800
+The MMseqs2 clustering we use later in this session is unsupervised.
+
+56
+00:04:39,800 --> 00:04:45,875
+And there is an interesting case in between, which is worth noticing because you have already built one.
+
+57
+00:04:45,875 --> 00:04:51,000
+A position-specific scoring matrix from Session five is not quite either.
+
+58
+00:04:51,000 --> 00:04:57,350
+It is counted from a set of family members, not fitted to labelled positive and negative examples.
+
+59
+00:04:57,350 --> 00:05:00,625
+Nobody gave it negatives to push away from.
+
+60
+00:05:00,625 --> 00:05:06,800
+So it is not supervised in the sense we mean today, but it is not looking for unknown structure either.
+
+61
+00:05:06,800 --> 00:05:14,550
+Keep the distinction in mind mostly for one reason: the evaluation machinery in Block two is built for supervised learning.
+
+62
+00:05:14,550 --> 00:05:21,825
+Evaluating an unsupervised method is a harder and murkier business, because there is no right answer to compare with.
+
+63
+00:05:22,425 --> 00:05:29,075
+Within supervised learning there is a second fork, and it is decided entirely by what your label is.
+
+64
+00:05:29,075 --> 00:05:32,550
+If the label is a number, you are doing regression.
+
+65
+00:05:32,550 --> 00:05:36,375
+The model outputs a number, and you ask how close it is.
+
+66
+00:05:36,375 --> 00:05:42,600
+Examples from our field: the helix fraction of a protein, which is a number between nought and one.
+
+67
+00:05:42,600 --> 00:05:45,600
+The melting temperature of a protein.
+
+68
+00:05:45,600 --> 00:05:51,400
+The change in stability when you mutate a residue, which people write as delta delta G.
+
+69
+00:05:51,400 --> 00:05:53,425
+An expression level.
+
+70
+00:05:53,425 --> 00:05:55,525
+A binding affinity.
+
+71
+00:05:55,525 --> 00:05:59,525
+If the label is a category, you are doing classification.
+
+72
+00:05:59,525 --> 00:06:05,500
+The model outputs a class, or a probability for each class, and you ask how often it is right.
+
+73
+00:06:05,500 --> 00:06:09,550
+Examples: which compartment of the cell a protein goes to.
+
+74
+00:06:09,550 --> 00:06:12,750
+Is this variant pathogenic or benign.
+
+75
+00:06:12,750 --> 00:06:15,950
+Does this protein have a signal peptide.
+
+76
+00:06:15,950 --> 00:06:21,700
+And the per-residue one from Session seven: is this residue helix, strand or coil.
+
+77
+00:06:21,700 --> 00:06:34,250
+This is not a deep distinction, but it is a consequential one, because everything downstream follows from it: which loss function you can use, which metrics are meaningful, and even which model architectures make sense.
+
+78
+00:06:34,250 --> 00:06:37,250
+We will come back to that in a few slides.
+
+79
+00:06:37,850 --> 00:06:44,650
+And here is the thing that is worth pausing on: the same biology can usually be posed either way, and you choose.
+
+80
+00:06:44,650 --> 00:06:47,100
+Take protein stability.
+
+81
+00:06:47,100 --> 00:06:53,825
+You can ask the regression question: by how many kilojoules per mole does this mutation change the stability?
+
+82
+00:06:53,825 --> 00:07:01,175
+Or you can put a threshold on it and ask the classification question: is this mutation destabilising, yes or no?
+
+83
+00:07:01,175 --> 00:07:03,500
+Take our helix fraction.
+
+84
+00:07:03,500 --> 00:07:07,200
+Regression: what fraction of this protein is helical?
+
+85
+00:07:07,200 --> 00:07:11,425
+Classification: is this protein mostly helical or not?
+
+86
+00:07:11,425 --> 00:07:18,650
+Putting a threshold on a number turns regression into classification, and it almost always makes the problem easier.
+
+87
+00:07:18,650 --> 00:07:23,400
+The model no longer has to get the value right, only the side of the line.
+
+88
+00:07:23,400 --> 00:07:29,475
+If your data is noisy, or your labels are uncertain, that can be a genuinely good decision.
+
+89
+00:07:29,475 --> 00:07:32,375
+But be clear about what you paid for it.
+
+90
+00:07:32,375 --> 00:07:35,600
+You have thrown information away, twice over.
+
+91
+00:07:35,600 --> 00:07:51,275
+You threw it away in the labels: a protein at nought point four nine and a protein at nought point zero one are now both in the same class, and a protein at nought point four nine and one at nought point five one are now in different classes, although they are nearly identical.
+
+92
+00:07:51,275 --> 00:07:58,550
+And you threw it away in the output: the model can no longer tell you how helical something is, only which side it fell on.
+
+93
+00:07:58,550 --> 00:08:00,800
+So choose deliberately.
+
+94
+00:08:00,800 --> 00:08:09,025
+If the number matters to whoever will use your prediction, do not quietly turn it into a yes or no because yes or no is easier to score.
+
+95
+00:08:09,625 --> 00:08:14,350
+Here are both kinds, on real data, so you can see what each looks like.
+
+96
+00:08:14,350 --> 00:08:16,625
+On the left, a regression.
+
+97
+00:08:16,625 --> 00:08:19,600
+Fifty-five entries from the PDB.
+
+98
+00:08:19,600 --> 00:08:29,525
+On the horizontal axis, the fraction of residues in that protein which are so-called helix formers, the amino acids that statistically prefer to be in helices.
+
+99
+00:08:29,525 --> 00:08:34,150
+On the vertical axis, the actual helix fraction from the structure.
+
+100
+00:08:34,150 --> 00:08:39,600
+The points scatter around a rising line, with a correlation of nought point seven one.
+
+101
+00:08:39,600 --> 00:08:44,150
+Nought point seven one is a real relationship and not a strong one.
+
+102
+00:08:44,150 --> 00:08:52,375
+You can see the scatter with your own eyes: for a given helix-former content, the actual helix fraction varies over quite a range.
+
+103
+00:08:52,375 --> 00:08:59,100
+Keep that picture in mind, because in a few slides we will ask what nought point seven one is worth as a measure.
+
+104
+00:08:59,100 --> 00:09:01,675
+On the right, a classification.
+
+105
+00:09:01,675 --> 00:09:17,550
+Four hundred and eighty-eight secreted proteins and four hundred and ninety-seven nuclear proteins, each plotted by two numbers: how hydrophobic its N-terminus is, and how much lysine and arginine it contains, those being the two positively charged residues.
+
+106
+00:09:17,550 --> 00:09:20,100
+Look at the picture before the model.
+
+107
+00:09:20,100 --> 00:09:25,300
+The two classes separate almost by eye, into two blobs with some overlap.
+
+108
+00:09:25,300 --> 00:09:34,200
+The line drawn through them is logistic regression's decision boundary, placed where the estimated probability of being secreted is a half.
+
+109
+00:09:34,200 --> 00:09:38,925
+And that is a good habit in itself: plot the data before you model it.
+
+110
+00:09:38,925 --> 00:09:44,425
+If the classes separate by eye in two dimensions, you do not need a deep network.
+
+111
+00:09:44,425 --> 00:09:50,800
+If they do not separate at all, no model will rescue you, and you should go back and find better features.
+
+112
+00:09:51,400 --> 00:09:59,800
+Now a slide of history, because I want you to understand that the failure at the centre of this session is not a modern problem or a student problem.
+
+113
+00:09:59,800 --> 00:10:04,050
+It is as old as the field, and it happened to very good people.
+
+114
+00:10:04,050 --> 00:10:07,775
+First, the biology, since the whole session leans on it.
+
+115
+00:10:07,775 --> 00:10:16,675
+A signal peptide is a short stretch at the very beginning of a protein, typically fifteen to thirty residues, with a hydrophobic core in the middle.
+
+116
+00:10:16,675 --> 00:10:21,775
+It is an address label: it says send this chain into the secretory pathway.
+
+117
+00:10:21,775 --> 00:10:28,875
+In a eukaryotic cell that means into the endoplasmic reticulum; in bacteria, across the inner membrane.
+
+118
+00:10:28,875 --> 00:10:34,925
+Once the protein has been pushed through, the signal peptide is cut off by an enzyme and discarded.
+
+119
+00:10:34,925 --> 00:10:37,875
+You saw its motif in Session four.
+
+120
+00:10:37,875 --> 00:10:39,750
+Now the history.
+
+121
+00:10:39,750 --> 00:10:41,950
+Nineteen eighty-three.
+
+122
+00:10:41,950 --> 00:10:47,650
+Somebody derives a rule for where the cleavage site is, from seventy-eight known sequences.
+
+123
+00:10:47,650 --> 00:10:52,450
+On those seventy-eight sequences the rule is ninety-two per cent correct.
+
+124
+00:10:52,450 --> 00:10:55,950
+On new sequences, it is sixty-four per cent.
+
+125
+00:10:55,950 --> 00:10:58,725
+Look at those two numbers on the slide.
+
+126
+00:10:58,725 --> 00:11:01,275
+Ninety-two and sixty-four.
+
+127
+00:11:01,275 --> 00:11:02,875
+Same rule.
+
+128
+00:11:02,875 --> 00:11:08,350
+The gap is twenty-eight percentage points, and everything in Block two is about that gap.
+
+129
+00:11:08,350 --> 00:11:11,175
+Nineteen eighty-five, McGeoch.
+
+130
+00:11:11,175 --> 00:11:17,750
+Two features: the length of the uncharged stretch at the N-terminus, and the maximum hydrophobicity in it.
+
+131
+00:11:17,750 --> 00:11:23,200
+The boundary between the classes was drawn by hand, by a person looking at a plot.
+
+132
+00:11:23,200 --> 00:11:29,225
+And it worked rather well, which is worth knowing when you are tempted to reach for something complicated.
+
+133
+00:11:29,225 --> 00:11:31,375
+Nineteen ninety-one.
+
+134
+00:11:31,375 --> 00:11:37,650
+A neural network that fitted every single training protein correctly, and then failed on new ones.
+
+135
+00:11:37,650 --> 00:11:42,725
+That failure has a name, which we will use for the rest of the course: overfitting.
+
+136
+00:11:42,725 --> 00:11:47,175
+The model did not learn the biology; it memorised the examples.
+
+137
+00:11:47,175 --> 00:12:00,125
+And our own classifier, which we are about to look at, is deliberately the same two-feature idea as McGeoch's, except that we learn the boundary instead of drawing it by hand, and we test it on proteins it has never seen.
+
+138
+00:12:00,725 --> 00:12:04,900
+So here is our version, and it is a satisfying result.
+
+139
+00:12:04,900 --> 00:12:10,900
+Logistic regression, two input features, trained on that secreted-versus-nuclear data.
+
+140
+00:12:10,900 --> 00:12:18,125
+Ninety-three point five per cent correct on held-out proteins, that is, proteins it did not see during training.
+
+141
+00:12:18,125 --> 00:12:22,550
+Ninety-three and a half per cent, from two numbers per protein.
+
+142
+00:12:22,550 --> 00:12:25,975
+No deep network, no alignment, no structure.
+
+143
+00:12:25,975 --> 00:12:30,150
+Now look at the two weights the model learned, which are on the slide.
+
+144
+00:12:30,150 --> 00:12:34,525
+The weight on N-terminal hydrophobicity is four point two six.
+
+145
+00:12:34,525 --> 00:12:39,775
+The weight on lysine-plus-arginine content is minus nought point two zero.
+
+146
+00:12:39,775 --> 00:12:43,425
+Those two numbers are twenty times apart in size.
+
+147
+00:12:43,425 --> 00:12:46,650
+The model is, in effect, using one feature.
+
+148
+00:12:46,650 --> 00:12:55,600
+It has decided that N-terminal hydrophobicity is what matters, and that charge composition is almost irrelevant for this particular distinction.
+
+149
+00:12:55,600 --> 00:12:58,500
+And that is the biology, exactly.
+
+150
+00:12:58,500 --> 00:13:02,575
+The hydrophobic core of the signal peptide is the signal.
+
+151
+00:13:02,575 --> 00:13:13,550
+Nobody told the model that signal peptides exist; it was given two numbers and a label, and it put nearly all its weight on the one that corresponds to a real targeting mechanism.
+
+152
+00:13:13,550 --> 00:13:20,250
+This is a small example of something you will see repeatedly from here on: when a model works, look inside it.
+
+153
+00:13:20,250 --> 00:13:28,125
+The weights often tell you which of your features was doing the work, and sometimes, as here, that is itself a biological result.
+
+154
+00:13:28,725 --> 00:13:33,975
+This slide is how I would like you to report a classifier, so spend a moment on it.
+
+155
+00:13:33,975 --> 00:13:44,600
+Rather than a single accuracy number, it shows every held-out protein individually, plotted by the probability the model assigned to it, and grouped by what it actually is.
+
+156
+00:13:44,600 --> 00:13:48,575
+The secreted proteins cluster up at high probability.
+
+157
+00:13:48,575 --> 00:13:52,525
+The nuclear proteins cluster down at low probability.
+
+158
+00:13:52,525 --> 00:14:01,700
+And the handful that sit on the wrong side of nought point five are exactly the model's errors, and you can see how many there are and how badly wrong they are.
+
+159
+00:14:01,700 --> 00:14:05,950
+Two things this view gives you that an accuracy figure does not.
+
+160
+00:14:05,950 --> 00:14:08,050
+First, confidence.
+
+161
+00:14:08,050 --> 00:14:18,125
+A model that puts everything at nought point four nine or nought point five one would have the same accuracy and would be far less useful, because every call would be a coin flip.
+
+162
+00:14:18,125 --> 00:14:26,750
+Here the two groups are pushed apart, which means the model is confident, and you can choose a stricter threshold if you want fewer false positives.
+
+163
+00:14:26,750 --> 00:14:31,475
+Second, the errors are visible and countable, and you can go and look at them.
+
+164
+00:14:31,475 --> 00:14:35,100
+In real work that is where the next idea comes from.
+
+165
+00:14:35,100 --> 00:14:38,175
+Are the mistakes all membrane proteins?
+
+166
+00:14:38,175 --> 00:14:40,450
+All short sequences?
+
+167
+00:14:40,450 --> 00:14:45,400
+A good afternoon's work is often just reading your model's twenty worst errors.
+
+168
+00:14:46,000 --> 00:14:53,000
+Let me be precise about what logistic regression is, since we are using it as our baseline for the rest of the course.
+
+169
+00:14:53,000 --> 00:14:58,575
+Start with Session seven's perceptron: a weighted sum of the inputs, plus a bias.
+
+170
+00:14:58,575 --> 00:15:01,450
+That gives you z, any real number.
+
+171
+00:15:01,450 --> 00:15:06,125
+Then apply the sigmoid: one divided by one plus e to the minus z.
+
+172
+00:15:06,125 --> 00:15:12,725
+That squashes z into the range between nought and one, smoothly, passing through a half when z is zero.
+
+173
+00:15:12,725 --> 00:15:15,425
+That is logistic regression.
+
+174
+00:15:15,425 --> 00:15:20,250
+It really is a perceptron with a smooth output instead of a hard step.
+
+175
+00:15:20,250 --> 00:15:22,675
+Three things to keep straight.
+
+176
+00:15:22,675 --> 00:15:26,900
+First, despite the name, it is a classifier, not a regression.
+
+177
+00:15:26,900 --> 00:15:30,975
+The name is historical and it confuses everyone once.
+
+178
+00:15:30,975 --> 00:15:34,675
+Second, the decision boundary is still a straight line.
+
+179
+00:15:34,675 --> 00:15:45,250
+The sigmoid changes the output from a verdict to a number between nought and one, but it does not bend the boundary: the boundary is still where z equals zero, which is still flat.
+
+180
+00:15:45,250 --> 00:15:51,200
+Everything Session seven said about what one weighted sum can and cannot represent still applies.
+
+181
+00:15:51,200 --> 00:15:53,975
+Third, and this is the subtle one.
+
+182
+00:15:53,975 --> 00:16:03,950
+Because it is fitted with the right loss, which is the log-loss or cross-entropy, its output can be read as an estimate of the probability that this protein is secreted.
+
+183
+00:16:03,950 --> 00:16:06,975
+That is a genuinely useful property.
+
+184
+00:16:06,975 --> 00:16:10,625
+But do not over-read it, and here is the distinction.
+
+185
+00:16:10,625 --> 00:16:15,350
+The sigmoid is just a function that maps any number into zero to one.
+
+186
+00:16:15,350 --> 00:16:23,975
+If you apply a sigmoid to some arbitrary score you invented, the result is a number between nought and one and it is not a probability.
+
+187
+00:16:23,975 --> 00:16:31,825
+Logistic regression's output is a probability estimate because of how it was fitted, not because of the shape of the sigmoid.
+
+188
+00:16:31,825 --> 00:16:43,175
+And even then, whether the estimates are well calibrated, meaning that of the things it calls eighty per cent, about eighty per cent really are, is something you have to check on held-out data.
+
+189
+00:16:43,175 --> 00:16:45,450
+It is not guaranteed.
+
+190
+00:16:46,050 --> 00:16:52,750
+Now back to the regression-or-classification fork, because this slide is a reference card you will use all term.
+
+191
+00:16:52,750 --> 00:16:59,625
+If you chose regression, your model's final layer outputs a plain number, with no activation squashing it.
+
+192
+00:16:59,625 --> 00:17:06,125
+Your loss is the mean squared error, which is the squared-error loss of Session seven averaged over the data.
+
+193
+00:17:06,125 --> 00:17:12,500
+And the metrics that mean something are the root mean squared error, the Pearson correlation, and R squared.
+
+194
+00:17:12,500 --> 00:17:15,225
+We will go through all three shortly.
+
+195
+00:17:15,225 --> 00:17:24,625
+If you chose classification, your final layer outputs either a sigmoid, for two classes, or a softmax, for more than two, which we will meet in Block three.
+
+196
+00:17:24,625 --> 00:17:32,450
+Your loss is cross-entropy, which you met in Session one as a measure of surprise and which we will use from now on without ceremony.
+
+197
+00:17:32,450 --> 00:17:45,350
+And the metrics are a longer list, because classification goes wrong in more interesting ways: the confusion matrix, precision, recall, F1, the Matthews correlation coefficient, and the area under the ROC curve.
+
+198
+00:17:45,350 --> 00:17:48,425
+Everything on that list is in Block two.
+
+199
+00:17:48,425 --> 00:17:55,225
+The point of showing it now is that you should see how much follows automatically from one decision made at the start.
+
+200
+00:17:55,825 --> 00:18:01,000
+For Block two we need a problem small enough that nothing is hidden, and this is it.
+
+201
+00:18:01,000 --> 00:18:04,075
+Nine pixels, arranged three by three.
+
+202
+00:18:04,075 --> 00:18:11,150
+Five classes, each a simple pattern: a horizontal bar, a vertical bar, a diagonal, a cross, and so on.
+
+203
+00:18:11,150 --> 00:18:15,600
+Dark pixels count as plus one and light pixels as minus one.
+
+204
+00:18:15,600 --> 00:18:17,650
+Then we add noise.
+
+205
+00:18:17,650 --> 00:18:27,075
+Each pixel is jittered by a random amount with a standard deviation of nought point eight, which is substantial compared with the signal of plus or minus one.
+
+206
+00:18:27,075 --> 00:18:33,200
+So the patterns are recognisable but genuinely corrupted, and the problem is not trivially easy.
+
+207
+00:18:33,200 --> 00:18:35,775
+Why go to the trouble of a toy?
+
+208
+00:18:35,775 --> 00:18:44,700
+Because every number today can be computed, printed and checked by hand, and because the confusion structure is known in advance rather than discovered.
+
+209
+00:18:44,700 --> 00:18:47,625
+And that last point is the useful one.
+
+210
+00:18:47,625 --> 00:18:49,450
+Look at the cross.
+
+211
+00:18:49,450 --> 00:18:55,700
+The cross shares its middle row with the horizontal bar, and its middle column with the vertical bar.
+
+212
+00:18:55,700 --> 00:18:59,275
+It overlaps two other classes by construction.
+
+213
+00:18:59,275 --> 00:19:06,875
+So before training anything, we can predict where the mistakes will be: between cross and horizontal, and between cross and vertical.
+
+214
+00:19:06,875 --> 00:19:14,850
+When we look at a confusion matrix in a few slides and those are exactly the cells that light up, you will know you are reading it correctly.
+
+215
+00:19:14,850 --> 00:19:17,500
+That is why we start with a toy.
+
+216
+00:19:17,500 --> 00:19:19,200
+One aside.
+
+217
+00:19:19,200 --> 00:19:25,975
+Image classification is where deep learning first proved itself, and we come to that properly in Session ten.
+
+218
+00:19:25,975 --> 00:19:31,475
+Nine pixels is a long way from a photograph, but it is the same shape of problem.
+
+219
+00:19:32,075 --> 00:19:38,775
+And the model for it is deliberately the simplest thing that works, so that nothing in Block two is about the model.
+
+220
+00:19:38,775 --> 00:19:41,650
+Five perceptrons, one per class.
+
+221
+00:19:41,650 --> 00:19:47,850
+Each one is trained to output plus one for its own pattern and minus one for all four of the others.
+
+222
+00:19:47,850 --> 00:19:52,675
+That arrangement has a name you will meet in libraries: one-versus-rest.
+
+223
+00:19:52,675 --> 00:19:59,100
+To classify a new image, you run all five, and the class whose perceptron gave the highest score wins.
+
+224
+00:19:59,100 --> 00:20:01,525
+Notice what this is not.
+
+225
+00:20:01,525 --> 00:20:08,100
+There is no hidden layer, so there is no backpropagation involved and nothing from Session nine is needed.
+
+226
+00:20:08,100 --> 00:20:14,300
+Each perceptron is Session seven's single weighted sum, trained with Session seven's machinery.
+
+227
+00:20:14,300 --> 00:20:23,625
+And notice the limitation we are accepting on purpose: with no hidden layer, each of the five is drawing one flat boundary in nine-dimensional space.
+
+228
+00:20:23,625 --> 00:20:28,075
+We know from Session seven that there are patterns it cannot capture.
+
+229
+00:20:28,075 --> 00:20:29,850
+That is fine.
+
+230
+00:20:29,850 --> 00:20:32,800
+The point of this model is not to be good.
+
+231
+00:20:32,800 --> 00:20:39,050
+It is to be completely transparent, so that when we evaluate it, we are evaluating the evaluation.
+

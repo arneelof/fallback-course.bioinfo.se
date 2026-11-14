@@ -1,0 +1,804 @@
+1
+00:00:00,000 --> 00:00:00,880
+Block two.
+
+2
+00:00:00,880 --> 00:00:03,840
+Convolutional networks on biological sequences.
+
+3
+00:00:03,840 --> 00:00:09,120
+Everything in Block one was about shapes and counting, with pictures as the example.
+
+4
+00:00:09,120 --> 00:00:14,440
+Now we apply it to the data this course is actually about: DNA, and protein.
+
+5
+00:00:14,440 --> 00:00:20,120
+And we will do something in this block that you rarely get to do with a neural network.
+
+6
+00:00:20,120 --> 00:00:26,360
+We will open one up and look at what it learned, and find a piece of biology inside it that nobody put there.
+
+7
+00:00:26,960 --> 00:00:31,160
+First, a map of what happened, because it happened fast.
+
+8
+00:00:31,160 --> 00:00:33,480
+AlexNet was twenty twelve.
+
+9
+00:00:33,480 --> 00:00:41,080
+Look at the dates on this timeline: within three years, convolutional networks were in essentially every branch of computational biology.
+
+10
+00:00:41,080 --> 00:00:53,920
+On DNA, DeepBind in twenty fifteen, which learned the binding preferences of DNA-binding and RNA-binding proteins, and could display what it had learned as position weight matrices, which we come to on the next slide.
+
+11
+00:00:53,920 --> 00:01:01,760
+DeepSEA, also twenty fifteen, which read a thousand bases of sequence and predicted nine hundred and nineteen different chromatin features at once.
+
+12
+00:01:01,760 --> 00:01:13,000
+On images, U-Net in twenty fifteen, which became and remains the standard architecture for segmentation, that is, for saying which pixels belong to which cell or which tissue.
+
+13
+00:01:13,000 --> 00:01:23,560
+And ImageNet-pretrained networks fine-tuned on retinal photographs, skin lesions or pathology slides, reaching expert level on the specific tasks they were trained for.
+
+14
+00:01:23,560 --> 00:01:36,960
+And later work found something lovely, which we will see for ourselves in a few slides: many of the filters these networks learned matched known transcription-factor motifs, rediscovered from sequence alone, without anyone supplying them.
+
+15
+00:01:36,960 --> 00:01:44,040
+One limitation is already visible on this timeline, and it sets up Session eleven.
+
+16
+00:01:44,040 --> 00:01:51,120
+Reaching further along the sequence meant larger and larger receptive fields, and eventually that approach ran out.
+
+17
+00:01:51,120 --> 00:01:56,560
+What replaced it was the Transformer, which relates distant positions directly.
+
+18
+00:01:56,560 --> 00:01:58,840
+That is Session eleven's subject.
+
+19
+00:01:59,440 --> 00:02:05,680
+This slide is my favourite connection in the course, because it joins the newest thing we do to one of the oldest.
+
+20
+00:02:05,680 --> 00:02:10,920
+Think about what a first-layer filter on one-hot DNA actually is.
+
+21
+00:02:10,920 --> 00:02:13,680
+The input has four channels, one per base.
+
+22
+00:02:13,680 --> 00:02:16,320
+The kernel has some width k.
+
+23
+00:02:16,320 --> 00:02:23,880
+So the filter is a grid of four by k numbers: one weight for each base at each position of its window.
+
+24
+00:02:23,880 --> 00:02:25,520
+Now, what do you do with it?
+
+25
+00:02:25,520 --> 00:02:33,200
+You slide it along the sequence, and at each position you add up the weights corresponding to the bases that are actually there.
+
+26
+00:02:33,200 --> 00:02:34,960
+Go back to Session five.
+
+27
+00:02:34,960 --> 00:02:45,440
+A position weight matrix is a table with one row per base and one column per position in a motif, saying how much an A at position three counts for or against.
+
+28
+00:02:45,440 --> 00:02:50,080
+You score a sequence by sliding it along and adding up the entries that match.
+
+29
+00:02:50,080 --> 00:02:52,120
+Those are the same operation.
+
+30
+00:02:52,120 --> 00:02:54,520
+Not similar: the same.
+
+31
+00:02:54,520 --> 00:02:59,400
+A first-layer convolutional filter on DNA is a position weight matrix.
+
+32
+00:02:59,400 --> 00:03:03,520
+There is exactly one difference, and it is where it comes from.
+
+33
+00:03:03,520 --> 00:03:17,160
+The classical position weight matrix is counted: you take a set of known binding sites, line them up, count how often each base appears at each position, and turn those counts into log-odds scores.
+
+34
+00:03:17,160 --> 00:03:26,600
+The convolutional filter is learned: it starts random, and gradient descent adjusts it until it helps the network answer the question it is being trained on.
+
+35
+00:03:26,600 --> 00:03:34,200
+So the generation of methods you learned in the first half of this course and the generation you are learning now are not as far apart as they look.
+
+36
+00:03:34,200 --> 00:03:36,080
+The representation is identical.
+
+37
+00:03:36,080 --> 00:03:42,840
+What changed is where the numbers come from, and that you can stack many of them and put more layers on top.
+
+38
+00:03:43,440 --> 00:03:50,840
+DeepSEA is worth one slide on its own, because of one move it makes that is worth carrying with you.
+
+39
+00:03:50,840 --> 00:03:59,520
+What it does first is straightforward enough: it reads a thousand base pairs of sequence, and predicts nine hundred and nineteen chromatin features simultaneously.
+
+40
+00:03:59,520 --> 00:04:09,400
+Chromatin features here means things like whether a particular protein binds in this region, or whether the DNA is accessible, measured in a particular cell type.
+
+41
+00:04:09,400 --> 00:04:16,400
+So out of one sequence comes a profile of nine hundred and nineteen predictions about what happens there.
+
+42
+00:04:16,400 --> 00:04:18,320
+Now the move.
+
+43
+00:04:18,320 --> 00:04:26,000
+Suppose you have a variant, a single base change, that sits outside any gene, so it changes no protein at all.
+
+44
+00:04:26,000 --> 00:04:34,320
+Most of the variants associated with human disease are like this, and interpreting them is genuinely hard, because you cannot reason about an amino acid that changed.
+
+45
+00:04:34,320 --> 00:04:36,480
+What DeepSEA does is this.
+
+46
+00:04:36,480 --> 00:04:41,520
+Take the reference sequence, run it through, get nine hundred and nineteen numbers.
+
+47
+00:04:41,520 --> 00:04:47,520
+Take the same sequence with the variant in it, run it through, get nine hundred and nineteen numbers.
+
+48
+00:04:47,520 --> 00:04:49,920
+Compare them.
+
+49
+00:04:49,920 --> 00:04:53,200
+The difference is the predicted effect of that variant.
+
+50
+00:04:53,200 --> 00:04:55,120
+Think about what that means.
+
+51
+00:04:55,120 --> 00:05:00,800
+You have a trained model, so you can ask it what if.
+
+52
+00:05:00,800 --> 00:05:06,360
+You can make a change that nobody has ever observed in a patient, and get a prediction of what it would do.
+
+53
+00:05:06,360 --> 00:05:14,560
+That is a different kind of tool from a database lookup, and it is why sequence models matter beyond their accuracy numbers.
+
+54
+00:05:14,560 --> 00:05:16,600
+The quiz bank asks you exactly this.
+
+55
+00:05:16,600 --> 00:05:26,200
+The limitation is the one from the previous slide: a thousand bases is not very far along a chromosome, and regulatory elements can act from much further away.
+
+56
+00:05:26,200 --> 00:05:32,280
+Getting further needed larger receptive fields, and eventually Transformers.
+
+57
+00:05:32,880 --> 00:05:35,760
+Now let us build one ourselves, on the data you already know.
+
+58
+00:05:35,760 --> 00:05:45,240
+This is the same problem as Sessions eight and nine: given a protein's amino-acid sequence, predict which compartment of the cell it ends up in, out of five classes.
+
+59
+00:05:45,240 --> 00:06:04,720
+The same proteins, and, importantly, the same homology-aware split: four hundred and eighty-six proteins for training, a hundred and five for validation, a hundred and nine for testing, split by MMseqs2 clusters at thirty per cent identity so that close relatives cannot sit on both sides.
+
+60
+00:06:04,720 --> 00:06:13,960
+That matters, and Session eight explained why: if a protein in your test set has a close relative in training, you are measuring memory, not generalisation.
+
+61
+00:06:13,960 --> 00:06:16,960
+The architecture is small enough to describe in one breath.
+
+62
+00:06:16,960 --> 00:06:25,280
+Two convolutional layers, each with seven-residue filters, thirty-two filters in the first and sixty-four in the second, with max pooling between them.
+
+63
+00:06:25,280 --> 00:06:33,080
+Then global average pooling, which, as we established in Block one, throws position away and leaves one number per filter.
+
+64
+00:06:33,080 --> 00:06:35,960
+Then a linear layer to the five classes.
+
+65
+00:06:35,960 --> 00:06:44,240
+Nineteen thousand two hundred and thirty-seven weights, against the flat network's hundred and ninety-two thousand three hundred and eighty-nine.
+
+66
+00:06:44,240 --> 00:06:46,080
+A tenth.
+
+67
+00:06:46,080 --> 00:06:48,680
+Note what we have deliberately chosen.
+
+68
+00:06:48,680 --> 00:06:55,920
+Global average pooling means this network is position-invariant by construction.
+
+69
+00:06:55,920 --> 00:06:59,680
+We are telling it: tell me whether a feature occurred, not where.
+
+70
+00:06:59,680 --> 00:07:01,040
+Remember that choice.
+
+71
+00:07:01,040 --> 00:07:06,600
+In four slides it comes back to bite us, and that is the point of this block.
+
+72
+00:07:07,200 --> 00:07:14,160
+Before the result, one slide on how it trains, because the contrast with Session nine is instructive.
+
+73
+00:07:14,160 --> 00:07:22,560
+In Session nine, the flat network on this same data reached a training accuracy of one point zero zero zero within a few epochs.
+
+74
+00:07:22,560 --> 00:07:24,000
+One point zero.
+
+75
+00:07:24,000 --> 00:07:26,320
+It got every single training protein right.
+
+76
+00:07:26,320 --> 00:07:34,120
+And its validation accuracy peaked at nought point four eight six, in epoch five, and then got worse.
+
+77
+00:07:34,120 --> 00:07:39,880
+That pattern has a name: it is overfitting, in its purest form.
+
+78
+00:07:39,880 --> 00:07:51,600
+A hundred and ninety-two thousand free weights and four hundred and eighty-six training proteins is more than enough capacity to simply memorise the answers, and once the network has done that it has learned nothing transferable.
+
+79
+00:07:51,600 --> 00:07:53,560
+Now this network.
+
+80
+00:07:53,560 --> 00:08:02,480
+Its best validation accuracy is nought point six one nine, at epoch seventy-two, and at that point its training accuracy is nought point six six seven.
+
+81
+00:08:02,480 --> 00:08:10,160
+Look at those two numbers together: nought point six six seven on training, nought point six one nine on validation.
+
+82
+00:08:10,160 --> 00:08:13,440
+They are close.
+
+83
+00:08:13,440 --> 00:08:16,080
+The network is no longer memorising.
+
+84
+00:08:16,080 --> 00:08:24,520
+It cannot, because it does not have enough free parameters to memorise with, and what it does have is forced to be reused at every position.
+
+85
+00:08:24,520 --> 00:08:33,760
+Early stopping is what the curve on this slide shows: you watch validation accuracy while training, and you keep the weights from the epoch where it was best, rather than the weights you end up with.
+
+86
+00:08:33,760 --> 00:08:35,880
+Here, epoch seventy-two.
+
+87
+00:08:36,480 --> 00:08:38,920
+And here is the result.
+
+88
+00:08:38,920 --> 00:08:41,360
+Every metric, with a tenth of the weights.
+
+89
+00:08:41,360 --> 00:08:48,120
+Weights: nineteen thousand two hundred and thirty-seven, against a hundred and ninety-two thousand three hundred and eighty-nine.
+
+90
+00:08:48,120 --> 00:08:53,920
+Test accuracy: nought point five eight seven against nought point five one four.
+
+91
+00:08:53,920 --> 00:08:59,120
+F1: nought point five eight six against nought point four nine three.
+
+92
+00:08:59,120 --> 00:09:05,080
+Matthews correlation coefficient: nought point four eight four against nought point three nine four.
+
+93
+00:09:05,080 --> 00:09:11,200
+Area under the ROC curve: nought point eight six nine against nought point eight three one.
+
+94
+00:09:11,200 --> 00:09:14,920
+A word on that third one, since it is the one students ask about.
+
+95
+00:09:14,920 --> 00:09:21,240
+The Matthews correlation coefficient exists because accuracy alone misleads when the classes are unequal.
+
+96
+00:09:21,240 --> 00:09:30,800
+If ninety per cent of your proteins are cytoplasmic, answering cytoplasmic every time scores ninety per cent accuracy and has learned nothing.
+
+97
+00:09:30,800 --> 00:09:38,120
+MCC takes all classes into account and runs from minus one to one, where zero is what chance scores.
+
+98
+00:09:38,120 --> 00:09:42,680
+Nought point four eight is real signal on a genuinely hard problem.
+
+99
+00:09:42,680 --> 00:09:44,680
+Why does the smaller network win?
+
+100
+00:09:44,680 --> 00:09:51,560
+Because it builds in an assumption instead of learning a hundred and ninety-two thousand free weights from four hundred and eighty-six proteins.
+
+101
+00:09:51,560 --> 00:09:59,080
+The assumption is the one from the first slide: the same local pattern can be detected with the same weights wherever it occurs.
+
+102
+00:09:59,080 --> 00:10:06,800
+The flat network had to discover that from data, and with four hundred and eighty-six examples it could not.
+
+103
+00:10:06,800 --> 00:10:12,600
+Now one honest caveat, which I think is worth more to you than the result itself.
+
+104
+00:10:12,600 --> 00:10:21,240
+There is a third model on that table: plain logistic regression, the simplest classifier there is, which reaches nought point five six nine.
+
+105
+00:10:21,240 --> 00:10:25,320
+Our CNN reaches nought point five eight seven.
+
+106
+00:10:25,320 --> 00:10:26,760
+Is that a win?
+
+107
+00:10:26,760 --> 00:10:33,960
+Retraining the CNN from different random starting weights gives anywhere between nought point five six nine and nought point five eight seven.
+
+108
+00:10:33,960 --> 00:10:41,120
+So the margin over logistic regression is entirely inside the noise of a hundred-and-nine-protein test set.
+
+109
+00:10:41,120 --> 00:10:43,320
+Claiming it would be wrong.
+
+110
+00:10:43,320 --> 00:10:51,680
+The robust finding is the gap to the flat network: same data, same split, a tenth of the weights, better on every metric.
+
+111
+00:10:51,680 --> 00:10:53,840
+That is the claim that survives.
+
+112
+00:10:53,840 --> 00:10:59,400
+Being able to tell those two kinds of claim apart is most of what makes someone good at this.
+
+113
+00:11:00,000 --> 00:11:03,400
+Now the part I promised: we open the network up.
+
+114
+00:11:03,400 --> 00:11:07,120
+We can do this because of what a first-layer filter is.
+
+115
+00:11:07,120 --> 00:11:15,240
+We established it two slides into this block: each one is a twenty by seven matrix, one weight per amino acid per position in its window.
+
+116
+00:11:15,240 --> 00:11:19,160
+That is small enough to simply print and look at.
+
+117
+00:11:19,160 --> 00:11:26,840
+You cannot do this with a layer deep inside a large network, but the first layer sits directly on the data, so its weights are interpretable.
+
+118
+00:11:26,840 --> 00:11:34,400
+So: take the filter that responds most strongly and most selectively in secreted proteins, the proteins the cell exports, and draw it.
+
+119
+00:11:34,400 --> 00:11:37,120
+That is the left-hand panel on this slide.
+
+120
+00:11:37,120 --> 00:11:43,120
+The amino acids are ordered with the most hydrophobic, the most water-avoiding, at the top.
+
+121
+00:11:43,120 --> 00:11:45,720
+And look where the large positive weights are.
+
+122
+00:11:45,720 --> 00:11:47,440
+They are at the top.
+
+123
+00:11:47,440 --> 00:11:53,480
+This filter has learned to fire on a run of water-repelling amino acids.
+
+124
+00:11:53,480 --> 00:12:02,000
+Then the right-hand panel asks a different question: where along the sequence does this filter fire most strongly?
+
+125
+00:12:02,000 --> 00:12:06,040
+The two curves are secreted proteins, and all the other classes.
+
+126
+00:12:06,040 --> 00:12:10,800
+For secreted proteins, there is a clear peak very early in the sequence.
+
+127
+00:12:10,800 --> 00:12:13,280
+For the others, there is not.
+
+128
+00:12:13,280 --> 00:12:15,360
+Hold that thought for the next slide.
+
+129
+00:12:15,960 --> 00:12:21,880
+Let me now put numbers on what we just saw, because this is the slide where the biology appears.
+
+130
+00:12:21,880 --> 00:12:26,840
+Take the five filters that are most selective for secreted proteins.
+
+131
+00:12:26,840 --> 00:12:36,000
+Correlate each one's weights with the Kyte-Doolittle hydrophobicity scale, which is simply a table giving each amino acid a number for how strongly it avoids water.
+
+132
+00:12:36,000 --> 00:12:41,120
+The correlations are between nought point seven zero and nought point eight three.
+
+133
+00:12:41,120 --> 00:12:50,360
+To see that those five are special, compare: across all thirty-two filters in that layer, the mean correlation with hydrophobicity is nought point one two.
+
+134
+00:12:50,360 --> 00:12:53,400
+So most filters are doing something else entirely.
+
+135
+00:12:53,400 --> 00:12:58,200
+Five of them have independently become hydrophobicity detectors.
+
+136
+00:12:58,200 --> 00:13:00,200
+And where do those five fire?
+
+137
+00:13:00,200 --> 00:13:04,760
+At a median residue position of eleven to twelve in secreted proteins.
+
+138
+00:13:04,760 --> 00:13:09,200
+In the other four classes, between sixty-two and seventy-six.
+
+139
+00:13:09,200 --> 00:13:10,400
+Position eleven.
+
+140
+00:13:10,400 --> 00:13:12,480
+Right at the start of the protein.
+
+141
+00:13:12,480 --> 00:13:17,000
+Now, what sits at the start of a secreted protein?
+
+142
+00:13:17,000 --> 00:13:18,360
+A signal peptide.
+
+143
+00:13:18,360 --> 00:13:35,040
+It is a short stretch at the N-terminus, the end of the chain that is made first, with a hydrophobic core in the middle of it, and it works as a postal address: it tells the cell's machinery that this protein is to be pushed out through a membrane rather than left in the cytoplasm.
+
+144
+00:13:35,040 --> 00:13:39,240
+Nobody told this network that signal peptides exist.
+
+145
+00:13:39,240 --> 00:13:43,520
+There is no feature called signal peptide anywhere in its input.
+
+146
+00:13:43,520 --> 00:13:55,120
+It was given raw sequence and asked which compartment, and gradient descent, trying to reduce its error, built a detector for a hydrophobic stretch and learned to care about it specifically near the N-terminus.
+
+147
+00:13:55,120 --> 00:14:00,800
+This is the same thing that happened to the DNA filters that turned out to match known transcription-factor motifs.
+
+148
+00:14:00,800 --> 00:14:07,760
+When the architecture matches the structure of the problem, the things the network learns are often the things we already named.
+
+149
+00:14:08,360 --> 00:14:13,000
+Here is Block one's receptive field, arriving somewhere meaningful.
+
+150
+00:14:13,000 --> 00:14:15,360
+Let us compute it for our own network.
+
+151
+00:14:15,360 --> 00:14:20,800
+Layer one has a seven-residue window, so a layer-one unit sees seven residues.
+
+152
+00:14:20,800 --> 00:14:30,040
+Then there is two-times max pooling, which halves the length, so each position going into layer two now stands for two positions of the original sequence.
+
+153
+00:14:30,040 --> 00:14:33,400
+Then layer two has another seven-wide kernel.
+
+154
+00:14:33,400 --> 00:14:40,800
+Work it through: seven in layer one, then pooling doubles the effective step, then seven more at that doubled scale.
+
+155
+00:14:40,800 --> 00:14:47,000
+Each unit in the second layer depends on about twenty residues of the original protein.
+
+156
+00:14:47,000 --> 00:14:48,480
+Twenty residues.
+
+157
+00:14:48,480 --> 00:14:52,280
+And a signal peptide is roughly twenty residues long.
+
+158
+00:14:52,280 --> 00:14:55,200
+That is not a coincidence that the network arranged.
+
+159
+00:14:55,200 --> 00:15:00,960
+We chose the architecture, and that choice determined what length scale the second layer can see.
+
+160
+00:15:00,960 --> 00:15:11,120
+If we had used a three-residue window and no pooling, layer two would see five residues, and no unit anywhere in the network could ever see a whole signal peptide at once.
+
+161
+00:15:11,120 --> 00:15:15,840
+It would be able to see pieces of one, and nothing more.
+
+162
+00:15:15,840 --> 00:15:21,720
+This is the practical consequence of the receptive field, and it is why I asked you to hold on to it.
+
+163
+00:15:21,720 --> 00:15:30,680
+When you design one of these networks, you should be able to say what length of biological object your layers can see, and check that it matches the thing you are looking for.
+
+164
+00:15:30,680 --> 00:15:33,480
+The second discussion problem asks exactly this.
+
+165
+00:15:34,080 --> 00:15:37,760
+And now the bill arrives for the choice we made four slides ago.
+
+166
+00:15:37,760 --> 00:15:41,640
+Convolution assumes that a pattern can be detected the same way everywhere.
+
+167
+00:15:41,640 --> 00:15:45,640
+That is true, and it is what has been working for us all session.
+
+168
+00:15:45,640 --> 00:15:48,320
+But look carefully at what it does not assume.
+
+169
+00:15:48,320 --> 00:15:52,080
+It does not assume that the pattern means the same thing everywhere.
+
+170
+00:15:52,080 --> 00:15:56,200
+Those are different claims, and in proteins the second one is false.
+
+171
+00:15:56,200 --> 00:15:58,040
+Here is the biology.
+
+172
+00:15:58,040 --> 00:16:04,360
+A hydrophobic stretch at the N-terminus is a signal peptide: this protein is for export.
+
+173
+00:16:04,360 --> 00:16:14,480
+The very same hydrophobic stretch in the middle of a protein is probably a transmembrane helix: a piece that sits inside the greasy interior of a membrane, which is an entirely different fate.
+
+174
+00:16:14,480 --> 00:16:20,600
+And some targeting signals sit specifically at the C-terminus, the far end.
+
+175
+00:16:20,600 --> 00:16:22,120
+Same local pattern.
+
+176
+00:16:22,120 --> 00:16:25,920
+Three different meanings, decided by where it is.
+
+177
+00:16:25,920 --> 00:16:28,240
+Now recall what we built.
+
+178
+00:16:28,240 --> 00:16:37,040
+Our network ends with global average pooling, which averages each filter's feature map over every position and leaves one number per filter.
+
+179
+00:16:37,040 --> 00:16:42,800
+So our network knows that a hydrophobic stretch occurred somewhere in this protein.
+
+180
+00:16:42,800 --> 00:16:44,360
+That is all it knows.
+
+181
+00:16:44,360 --> 00:16:49,000
+It has thrown away precisely the information that distinguishes the three cases.
+
+182
+00:16:49,000 --> 00:16:58,240
+So the question for you, which is the open question this part of the session leaves you with: if position matters, what has the network lost, and how would you give it back?
+
+183
+00:16:58,240 --> 00:17:01,120
+There are several reasonable answers.
+
+184
+00:17:01,120 --> 00:17:07,640
+You could add more layers, so that a later unit sees enough of the sequence to tell the start from the middle.
+
+185
+00:17:07,640 --> 00:17:15,280
+You could add positional features explicitly, a channel that simply says how far along we are.
+
+186
+00:17:15,280 --> 00:17:21,560
+You could use a pooling operation that keeps some position information rather than averaging it all away.
+
+187
+00:17:21,560 --> 00:17:23,360
+All of those have been tried.
+
+188
+00:17:23,960 --> 00:17:33,200
+And this is how the field actually answered it, which is a good note to end the block on, because it is not a trick: it is the architecture of Session eleven, arriving early.
+
+189
+00:17:33,200 --> 00:17:42,840
+DeepLoc, from twenty seventeen, solves the same problem we have been working on, protein subcellular localisation, and it is built in two halves.
+
+190
+00:17:42,840 --> 00:17:50,920
+The first half is convolutional, exactly like ours: find the local patterns, the motifs, the hydrophobic stretches.
+
+191
+00:17:50,920 --> 00:17:55,160
+Convolution is good at that, and it is cheap, and it needs little data.
+
+192
+00:17:55,160 --> 00:17:58,360
+There is no reason to do that part any other way.
+
+193
+00:17:58,360 --> 00:18:02,680
+The second half is a bidirectional LSTM with attention.
+
+194
+00:18:02,680 --> 00:18:12,600
+We have not met those yet, so for now take this description: it is a model that reads the sequence in order, from both ends, and can decide which positions to pay attention to.
+
+195
+00:18:12,600 --> 00:18:14,680
+The important word is order.
+
+196
+00:18:14,680 --> 00:18:17,200
+It knows where it is in the sequence.
+
+197
+00:18:17,200 --> 00:18:25,200
+So the convolutions find what is there, and the order-aware half on top restores the position that pooling threw away.
+
+198
+00:18:25,200 --> 00:18:30,200
+The two halves do the two jobs that one architecture could not do alone.
+
+199
+00:18:30,200 --> 00:18:37,200
+Session eleven is where we build that second half: recurrent networks, LSTMs, attention and the Transformer.
+
+200
+00:18:37,200 --> 00:18:48,880
+And SignalP, which is the real tool for finding signal peptides, runs through that whole history, from a feed-forward network in nineteen ninety-five to a protein language model in twenty twenty-two.
+
+201
+00:18:48,880 --> 00:18:53,640
+So we will come back to this exact piece of biology, with better machinery.
+

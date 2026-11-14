@@ -1,0 +1,1176 @@
+1
+00:00:00,000 --> 00:00:01,475
+Block three.
+
+2
+00:00:01,475 --> 00:00:04,725
+Biology, and why representation matters.
+
+3
+00:00:04,725 --> 00:00:11,800
+On the page, this block is the sections "Biological analogues" and "Representation matters as much as the model".
+
+4
+00:00:11,800 --> 00:00:14,525
+Blocks one and two were about models.
+
+5
+00:00:14,525 --> 00:00:24,675
+This block is about inputs, and its claim is one that I think is the most useful thing in this session: what you feed a model matters at least as much as which model you choose.
+
+6
+00:00:24,675 --> 00:00:32,050
+We will see it four times, in four different decades, on four different problems, and it will be the same lesson every time.
+
+7
+00:00:32,050 --> 00:00:40,900
+We will also meet the biological problem that the rest of the session, the lab and your capstone project are built on: predicting secondary structure.
+
+8
+00:00:41,500 --> 00:00:45,150
+Let us start by showing that XOR is not a toy.
+
+9
+00:00:45,150 --> 00:00:51,350
+It is a real shape of problem in molecular biology, and here it is in protein-DNA binding.
+
+10
+00:00:51,350 --> 00:01:04,975
+In two thousand and two, Bulyk and colleagues used protein-binding microarrays to measure how strongly the zinc-finger protein Zif two six eight, and mutants of it, bound to all sixty-four possible central triplets of DNA.
+
+11
+00:01:04,975 --> 00:01:07,800
+So this is not a model of binding.
+
+12
+00:01:07,800 --> 00:01:11,000
+It is a measurement of all the combinations.
+
+13
+00:01:11,000 --> 00:01:16,225
+What they found is that the effect of one position depends on what is at the others.
+
+14
+00:01:16,225 --> 00:01:20,725
+A base that improves binding in one context makes it worse in another.
+
+15
+00:01:20,725 --> 00:01:25,700
+The slide shows a toy version of that, stripped down so you can see the logic.
+
+16
+00:01:25,700 --> 00:01:34,725
+Imagine a site of two positions, where binding is strong when one position is a purine and the other is a pyrimidine, and weak when they are the same kind.
+
+17
+00:01:34,725 --> 00:01:37,425
+There are sixteen possible sites.
+
+18
+00:01:37,425 --> 00:01:42,100
+Now look at panel b, the sequence logo built from the strong sites.
+
+19
+00:01:42,100 --> 00:01:46,625
+At each position, each base appears in two of the eight strong sites.
+
+20
+00:01:46,625 --> 00:01:48,800
+Equal frequencies.
+
+21
+00:01:48,800 --> 00:01:52,075
+The information content is zero bits.
+
+22
+00:01:52,075 --> 00:01:56,275
+The logo is completely flat, and it tells you nothing at all.
+
+23
+00:01:56,275 --> 00:02:00,600
+And yet panel c shows the pair determines binding completely.
+
+24
+00:02:00,600 --> 00:02:05,500
+The information is there; it is simply not in either position separately.
+
+25
+00:02:05,500 --> 00:02:07,725
+That is XOR.
+
+26
+00:02:07,725 --> 00:02:16,200
+Same structure, different costume: the answer depends on whether the two positions agree or differ, and no per-position score can express it.
+
+27
+00:02:16,200 --> 00:02:26,275
+And so a position weight matrix, which is a sum of per-position scores, and a consensus sequence, which is even cruder, both fail here, however carefully you build them.
+
+28
+00:02:26,275 --> 00:02:28,900
+Not because your counts were bad.
+
+29
+00:02:28,900 --> 00:02:33,375
+Because a sum of independent terms cannot express a dependency.
+
+30
+00:02:33,975 --> 00:02:39,875
+Now, Block two's answer to XOR was to make the model more powerful: add a hidden layer.
+
+31
+00:02:39,875 --> 00:02:44,525
+There is a second answer, and it is the one this block is really about.
+
+32
+00:02:44,525 --> 00:02:47,875
+Leave the model linear, and change the input.
+
+33
+00:02:47,875 --> 00:02:55,250
+Take XOR, and give the model a third input: x one times x two, the product of the two original inputs.
+
+34
+00:02:55,250 --> 00:02:58,125
+Now a plain weighted sum can do it.
+
+35
+00:02:58,125 --> 00:03:04,025
+The weights one, one and minus two, with a bias of zero, reproduce XOR exactly.
+
+36
+00:03:04,025 --> 00:03:11,200
+Check it: at one, one, the sum is one plus one minus two times one, which is zero, so the output is zero.
+
+37
+00:03:11,200 --> 00:03:15,950
+At one, zero, the product is zero, so the sum is one, output one.
+
+38
+00:03:15,950 --> 00:03:17,650
+And so on.
+
+39
+00:03:17,650 --> 00:03:20,250
+The model did not change at all.
+
+40
+00:03:20,250 --> 00:03:23,800
+It is still one weighted sum, still picture one.
+
+41
+00:03:23,800 --> 00:03:28,775
+We changed what we fed it, and an impossible problem became a trivial one.
+
+42
+00:03:28,775 --> 00:03:32,075
+So why is this not the universal solution?
+
+43
+00:03:32,075 --> 00:03:39,275
+Because of one word in what I just said: someone had to know that the product of the two inputs was the useful thing to add.
+
+44
+00:03:39,275 --> 00:03:44,150
+For XOR that is easy, because the problem is tiny and we can see it.
+
+45
+00:03:44,150 --> 00:03:51,675
+For real binding sites, or for secondary structure, nobody knows in advance which combinations of which positions matter.
+
+46
+00:03:51,675 --> 00:03:59,900
+If you have thirteen residues of sequence, there are an enormous number of possible interaction terms, and almost all of them are useless.
+
+47
+00:03:59,900 --> 00:04:03,350
+That is precisely what a hidden layer buys you.
+
+48
+00:04:03,350 --> 00:04:10,400
+A hidden unit computes some combination of the inputs, and training decides which combinations are worth computing.
+
+49
+00:04:10,400 --> 00:04:15,325
+You are not supplying the features; you are supplying the capacity to find them.
+
+50
+00:04:15,325 --> 00:04:17,900
+Keep both halves of this slide.
+
+51
+00:04:17,900 --> 00:04:20,675
+Better model, or better input.
+
+52
+00:04:20,675 --> 00:04:26,400
+The rest of this block is the same choice, played out in the history of a real prediction problem.
+
+53
+00:04:27,000 --> 00:04:29,325
+So let us meet the problem.
+
+54
+00:04:29,325 --> 00:04:31,950
+Secondary structure prediction.
+
+55
+00:04:31,950 --> 00:04:37,125
+A protein chain folds into a three-dimensional shape, which was Session six.
+
+56
+00:04:37,125 --> 00:04:47,050
+Secondary structure is a coarser description than that: it is the local shape of the backbone, in short stretches, without saying how those stretches are arranged in space.
+
+57
+00:04:47,050 --> 00:04:51,825
+There are three classes, and they are defined by patterns of hydrogen bonds.
+
+58
+00:04:51,825 --> 00:05:00,475
+A helix, usually an alpha helix: the backbone coils, and each residue makes a hydrogen bond to the residue four positions along the chain.
+
+59
+00:05:00,475 --> 00:05:06,325
+That regular spacing is what makes it a spiral with about three and a half residues per turn.
+
+60
+00:05:06,325 --> 00:05:15,325
+A strand, part of a beta sheet: the backbone is extended, almost straight, and it hydrogen bonds sideways to another strand lying next to it.
+
+61
+00:05:15,325 --> 00:05:23,275
+Note the difference: helix bonds go along the chain, strand bonds go between chains or between distant parts of the same chain.
+
+62
+00:05:23,275 --> 00:05:26,100
+And coil, which is everything else.
+
+63
+00:05:26,100 --> 00:05:30,025
+Turns, loops, and everything that is neither of the other two.
+
+64
+00:05:30,025 --> 00:05:33,800
+Coil is not disorder; it is simply not regular.
+
+65
+00:05:33,800 --> 00:05:40,550
+The prediction task is then: given the sequence, assign one of those three labels to every single residue.
+
+66
+00:05:40,550 --> 00:05:43,225
+Not one answer per protein.
+
+67
+00:05:43,225 --> 00:05:46,900
+One answer per position, hundreds per protein.
+
+68
+00:05:46,900 --> 00:05:52,700
+The example on the slide is ubiquitin, chosen because it contains all three classes.
+
+69
+00:05:52,700 --> 00:06:03,825
+Our usual running example, the beta chain of haemoglobin, is almost entirely helix with no strands at all, which makes it a poor illustration here even though we come back to it later.
+
+70
+00:06:04,425 --> 00:06:11,500
+The first methods for this are from the nineteen seventies, and here is the one worth knowing, because it is picture one.
+
+71
+00:06:11,500 --> 00:06:15,700
+The GOR method, from nineteen seventy-eight, works like this.
+
+72
+00:06:15,700 --> 00:06:23,025
+To label one residue, look at a window around it: the residue itself and eight on each side, seventeen in total.
+
+73
+00:06:23,025 --> 00:06:31,125
+Every residue in that window contributes a value to each of three running totals, one for helix, one for strand, one for coil.
+
+74
+00:06:31,125 --> 00:06:36,800
+How much it contributes depends on which amino acid it is and where in the window it sits.
+
+75
+00:06:36,800 --> 00:06:41,750
+Add it all up, and whichever of the three totals is largest is your prediction.
+
+76
+00:06:41,750 --> 00:06:44,450
+Now look at that description again.
+
+77
+00:06:44,450 --> 00:06:50,425
+Each position contributes a value depending on which residue it is, and the values are summed.
+
+78
+00:06:50,425 --> 00:06:54,500
+That is three weighted sums over a seventeen-residue window.
+
+79
+00:06:54,500 --> 00:07:01,125
+It is three perceptrons without the activation, with the weights derived from statistics rather than learned.
+
+80
+00:07:01,125 --> 00:07:07,575
+It is picture one, in nineteen seventy-eight, fifteen years before anyone called this machine learning.
+
+81
+00:07:07,575 --> 00:07:19,650
+For context on accuracy: Chou and Fasman, from nineteen seventy-four, used per-residue propensities plus rules about where helices start and stop, and reached roughly fifty to sixty per cent.
+
+82
+00:07:19,650 --> 00:07:25,025
+GOR, by summing information over a window, reached about sixty-five per cent.
+
+83
+00:07:25,025 --> 00:07:39,050
+Both are worth knowing as baselines, and both are reasonable things to compare your capstone project against, because if your neural network cannot beat a method from nineteen seventy-eight, something is wrong with your pipeline rather than with the method.
+
+84
+00:07:39,650 --> 00:07:43,800
+And then, for about fifteen years, that number barely moved.
+
+85
+00:07:43,800 --> 00:07:46,275
+People tried better rules.
+
+86
+00:07:46,275 --> 00:07:48,825
+People tried bigger windows.
+
+87
+00:07:48,825 --> 00:08:01,250
+And people tried neural networks, properly: in nineteen eighty-eight, Qian and Sejnowski trained a network with a hidden layer on windows of single sequence, which is exactly picture two applied to this problem.
+
+88
+00:08:01,250 --> 00:08:03,875
+They reached sixty-four per cent.
+
+89
+00:08:03,875 --> 00:08:05,375
+Sixty-four.
+
+90
+00:08:05,375 --> 00:08:11,850
+Slightly worse than GOR's sixty-five, from a method with a hidden layer, trained by backpropagation.
+
+91
+00:08:11,850 --> 00:08:14,975
+A more powerful model bought nothing at all.
+
+92
+00:08:14,975 --> 00:08:28,100
+And their conclusion is worth quoting in spirit, because it was an honest and correct reading of their own result: they concluded that no method based only on local single-sequence information was likely to do much better.
+
+93
+00:08:28,100 --> 00:08:30,500
+Think about what that means.
+
+94
+00:08:30,500 --> 00:08:33,375
+They were not saying their network was bad.
+
+95
+00:08:33,375 --> 00:08:36,375
+They were saying the ceiling was not in the model.
+
+96
+00:08:36,375 --> 00:08:38,800
+The ceiling was in the input.
+
+97
+00:08:38,800 --> 00:08:48,775
+The information needed to decide the answer was not present in what they were feeding it, and no amount of model capacity can recover information that is not there.
+
+98
+00:08:48,775 --> 00:08:53,775
+Then in nineteen ninety-three, PHD reached about seventy-one per cent.
+
+99
+00:08:53,775 --> 00:08:58,375
+A jump of six or seven points after fifteen years of stagnation.
+
+100
+00:08:58,375 --> 00:09:00,525
+So: what changed?
+
+101
+00:09:00,525 --> 00:09:03,275
+Hold that question for three slides.
+
+102
+00:09:03,875 --> 00:09:08,250
+Here is why single sequences hit a ceiling, in one example.
+
+103
+00:09:08,250 --> 00:09:16,800
+On the slide is a ten-residue stretch: glutamine, glycine, threonine, alanine, valine, valine, valine, serine, alanine, alanine.
+
+104
+00:09:16,800 --> 00:09:21,575
+The same ten letters, in the same order, in two different real proteins.
+
+105
+00:09:21,575 --> 00:09:26,950
+In a malate oxidoreductase, structure one V L six, that stretch is a helix.
+
+106
+00:09:26,950 --> 00:09:33,075
+In an antibody heavy chain, structure four J B nine, the same stretch is strand and coil.
+
+107
+00:09:33,075 --> 00:09:35,175
+Identical input.
+
+108
+00:09:35,175 --> 00:09:37,175
+Opposite answers.
+
+109
+00:09:37,175 --> 00:09:43,025
+So ask yourself: how could any method that sees only this window possibly get both right?
+
+110
+00:09:43,025 --> 00:09:44,525
+It cannot.
+
+111
+00:09:44,525 --> 00:09:48,975
+Not a better network, not a bigger window, not more training data.
+
+112
+00:09:48,975 --> 00:09:55,675
+The function it is being asked to learn is not a function at all: the same input maps to two different outputs.
+
+113
+00:09:55,675 --> 00:10:03,125
+That is what a ceiling looks like from the inside, and it is why the Qian and Sejnowski result was not a failure of effort.
+
+114
+00:10:03,125 --> 00:10:11,325
+So the real question is the next one: what else do we know about each of these two proteins, beyond this window, that distinguishes them?
+
+115
+00:10:11,325 --> 00:10:13,875
+And the answer is: its family.
+
+116
+00:10:13,875 --> 00:10:16,100
+We know its relatives.
+
+117
+00:10:16,100 --> 00:10:19,825
+Which is the subject of the whole first half of this course.
+
+118
+00:10:20,425 --> 00:10:28,200
+Before the answer, one practical slide that you will need in every remaining session: how do you turn letters into numbers at all?
+
+119
+00:10:28,200 --> 00:10:31,725
+The wrong way first, because it is the tempting way.
+
+120
+00:10:31,725 --> 00:10:37,300
+Number the amino acids: alanine is one, cysteine is two, and so on to twenty.
+
+121
+00:10:37,300 --> 00:10:39,050
+Do not do this.
+
+122
+00:10:39,050 --> 00:10:46,850
+It tells the model that cysteine is twice alanine, and that tryptophan is nineteen more than alanine, and that there is an order.
+
+123
+00:10:46,850 --> 00:10:52,400
+None of that is true, and the model will dutifully learn from the false structure you handed it.
+
+124
+00:10:52,400 --> 00:10:55,325
+The right way is one-hot encoding.
+
+125
+00:10:55,325 --> 00:11:02,975
+Each residue becomes twenty numbers: nineteen zeros, and a single one in the slot for the amino acid that is there.
+
+126
+00:11:02,975 --> 00:11:08,400
+No order is implied, and every pair of amino acids is equally far apart.
+
+127
+00:11:08,400 --> 00:11:10,450
+The cost is size.
+
+128
+00:11:10,450 --> 00:11:18,800
+A window of thirteen residues, one-hot encoded, is two hundred and sixty input numbers, for thirteen residues of information.
+
+129
+00:11:18,800 --> 00:11:22,850
+That is how the input counts grow so quickly in these models.
+
+130
+00:11:22,850 --> 00:11:25,825
+And then the one that matters for the next slide.
+
+131
+00:11:25,825 --> 00:11:27,250
+A profile.
+
+132
+00:11:27,250 --> 00:11:38,100
+Instead of one sequence, take a multiple alignment of the protein and its homologs, and for each column, record the proportion of each amino acid across the aligned sequences.
+
+133
+00:11:38,100 --> 00:11:42,900
+That is, in effect, the average of the aligned sequences' one-hot vectors.
+
+134
+00:11:42,900 --> 00:11:53,200
+So a profile column is still twenty numbers per position, but now they carry fractions rather than a single one, and those fractions describe a family rather than an individual.
+
+135
+00:11:53,200 --> 00:11:56,950
+Two other options worth naming, since you will meet them.
+
+136
+00:11:56,950 --> 00:12:04,575
+Physicochemical properties: encode each residue by a handful of numbers such as hydrophobicity, size and charge.
+
+137
+00:12:04,575 --> 00:12:10,600
+And learned embeddings, where the numbers are themselves learned from data, which is Session eleven.
+
+138
+00:12:10,600 --> 00:12:17,750
+A footnote for the curious: an embedding layer in a library is nothing but a linear layer applied to a one-hot vector.
+
+139
+00:12:17,750 --> 00:12:23,150
+Multiplying a one-hot vector by a matrix picks out one row of that matrix.
+
+140
+00:12:23,150 --> 00:12:26,725
+So there is less novelty there than the name suggests.
+
+141
+00:12:27,325 --> 00:12:30,825
+And here is the answer to the question I left hanging.
+
+142
+00:12:30,825 --> 00:12:39,400
+PHD, by Burkhard Rost and Chris Sander in nineteen ninety-three, took the accuracy from about sixty-five per cent to about seventy-one.
+
+143
+00:12:39,400 --> 00:12:41,450
+What did they change?
+
+144
+00:12:41,450 --> 00:12:43,200
+Not the model.
+
+145
+00:12:43,200 --> 00:12:49,675
+The model was a network with a hidden layer, which Qian and Sejnowski had already used five years earlier.
+
+146
+00:12:49,675 --> 00:12:51,875
+They changed the input.
+
+147
+00:12:51,875 --> 00:13:00,850
+Instead of feeding the network a window of one sequence, they fed it a window of a profile: the multiple alignment of that protein with its homologs.
+
+148
+00:13:00,850 --> 00:13:11,425
+In their own words, the new key aspect is the use of evolutionary information in the form of multiple sequence alignments, used as input in place of single sequences.
+
+149
+00:13:11,425 --> 00:13:14,075
+Now, why does that help so much?
+
+150
+00:13:14,075 --> 00:13:18,925
+Because of a fact about evolution that is the backbone of this whole course.
+
+151
+00:13:18,925 --> 00:13:22,500
+Structure is conserved more strongly than sequence.
+
+152
+00:13:22,500 --> 00:13:28,400
+Structural cores evolve something like three to ten times more slowly than the sequence does.
+
+153
+00:13:28,400 --> 00:13:37,250
+So when you look at a family of homologous proteins, the variation you see is not random: it is the variation that the structure tolerated.
+
+154
+00:13:37,250 --> 00:13:41,875
+A position in the middle of a helix varies in the ways a helix allows.
+
+155
+00:13:41,875 --> 00:13:46,050
+A position in a tight turn varies in the ways a turn allows.
+
+156
+00:13:46,050 --> 00:13:49,275
+One sequence tells you what this protein is.
+
+157
+00:13:49,275 --> 00:13:55,550
+A family tells you what this position is allowed to be, and that is a far stronger hint about structure.
+
+158
+00:13:55,550 --> 00:14:01,850
+Go back two slides, to the ten residues that were a helix in one protein and a strand in another.
+
+159
+00:14:01,850 --> 00:14:04,000
+Their families differ.
+
+160
+00:14:04,000 --> 00:14:08,625
+The profiles differ, even though the single sequences are identical.
+
+161
+00:14:08,625 --> 00:14:15,650
+The ambiguity that was unresolvable in the input is resolved, not by a better model, but by a better input.
+
+162
+00:14:16,250 --> 00:14:23,625
+PHD is worth one more slide, because the architecture is a nice example of picture two used three times over.
+
+163
+00:14:23,625 --> 00:14:25,250
+Level one.
+
+164
+00:14:25,250 --> 00:14:35,075
+Take a window of thirteen residues of the profile, feed it to a network with a hidden layer, and get three numbers out: how much this looks like helix, strand and coil.
+
+165
+00:14:35,075 --> 00:14:36,750
+Level two.
+
+166
+00:14:36,750 --> 00:14:43,625
+Now take the outputs of level one for seventeen consecutive positions, and feed those to another network.
+
+167
+00:14:43,625 --> 00:14:45,525
+What is this for?
+
+168
+00:14:45,525 --> 00:14:55,925
+Level one labels each residue independently, and so it produces things that cannot exist: a single helix residue between two coils, or a helix of length two.
+
+169
+00:14:55,925 --> 00:15:02,775
+Level two looks at a stretch of predictions and cleans them up, because it can learn what plausible segments look like.
+
+170
+00:15:02,775 --> 00:15:06,325
+In effect it learns that structure comes in runs.
+
+171
+00:15:06,325 --> 00:15:08,050
+Level three.
+
+172
+00:15:08,050 --> 00:15:12,675
+A jury: several networks, trained differently, and their outputs averaged.
+
+173
+00:15:12,675 --> 00:15:21,375
+This is the same idea as the ensemble that got ResNet its best ImageNet score, and it reliably buys a point or two for almost no thought.
+
+174
+00:15:21,375 --> 00:15:27,975
+PHD also reports a reliability index for each residue, which says how confident it is there.
+
+175
+00:15:27,975 --> 00:15:30,975
+That is a good habit and still too rare.
+
+176
+00:15:30,975 --> 00:15:41,250
+And the summary of the whole thing: a better input, which is the profile, plus a flexible model, which is picture two, did what additive scores on single sequences could not.
+
+177
+00:15:41,850 --> 00:15:46,025
+Let us ground this in the protein we have been following all course.
+
+178
+00:15:46,025 --> 00:15:51,075
+This is chain B of haemoglobin, the beta chain, structure two H H B.
+
+179
+00:15:51,075 --> 00:15:56,725
+A hundred and forty-six residues, of which a hundred and seventeen are in helices.
+
+180
+00:15:56,725 --> 00:16:03,975
+No strands at all, which is why it is a poor example for showing all three classes but a good one for everything else.
+
+181
+00:16:03,975 --> 00:16:13,225
+On the slide, every residue carries its label, and you can see the helices as long runs of the same letter, separated by short coil stretches.
+
+182
+00:16:13,225 --> 00:16:21,150
+This is what the prediction target actually looks like: not a property of the protein, but a string of labels as long as the sequence.
+
+183
+00:16:21,150 --> 00:16:31,425
+The haem group, the iron-containing ring that carries oxygen, sits in a pocket between the helices, held by histidine sixty-three above it and histidine ninety-two below.
+
+184
+00:16:31,425 --> 00:16:41,250
+Highlighted in orange is the thirteen-residue window centred on histidine sixty-three: the six residues before it, the histidine itself, and the six after.
+
+185
+00:16:41,250 --> 00:16:46,825
+That is exactly what PHD sees when it decides the label of that one residue.
+
+186
+00:16:46,825 --> 00:16:54,625
+It does not see the haem, and it does not see histidine ninety-two, which is twenty-nine residues away and right next to it in space.
+
+187
+00:16:54,625 --> 00:16:59,775
+That is worth noticing, because it tells you what these methods can and cannot know.
+
+188
+00:17:00,375 --> 00:17:05,850
+The same two-step story, on a second biological problem, in less than two minutes.
+
+189
+00:17:05,850 --> 00:17:12,050
+A signal peptide is a short stretch at the start of a protein that marks it for export out of the cell.
+
+190
+00:17:12,050 --> 00:17:14,875
+You met the motif in Session four.
+
+191
+00:17:14,875 --> 00:17:17,950
+Nineteen eighty-six, Gunnar von Heijne.
+
+192
+00:17:17,950 --> 00:17:23,675
+A weight matrix covering positions minus thirteen to plus two around the cleavage site.
+
+193
+00:17:23,675 --> 00:17:30,175
+You slide it along the first forty residues of the protein and put the cleavage site where the sum is highest.
+
+194
+00:17:30,175 --> 00:17:33,150
+That is one weighted sum per window.
+
+195
+00:17:33,150 --> 00:17:34,800
+Picture one.
+
+196
+00:17:34,800 --> 00:17:39,175
+And like every profile, it treats the positions as independent.
+
+197
+00:17:39,175 --> 00:17:42,750
+Nineteen ninety-seven, SignalP version one.
+
+198
+00:17:42,750 --> 00:17:45,725
+Neural networks on sliding windows.
+
+199
+00:17:45,725 --> 00:17:55,775
+Two of them, in fact: one that scores whether each position is inside a signal peptide, and one that recognises the cleavage site itself, with the two combined.
+
+200
+00:17:55,775 --> 00:17:57,375
+Picture two.
+
+201
+00:17:57,375 --> 00:18:09,500
+And because it has a hidden layer, it can learn things the weight matrix cannot express, for instance that a good cleavage site only counts as good if there is a hydrophobic stretch some distance upstream of it.
+
+202
+00:18:09,500 --> 00:18:15,400
+That is a dependency between positions, which is the Bulyk lesson from the start of this block.
+
+203
+00:18:15,400 --> 00:18:18,750
+One caution, which Session eight will make formal.
+
+204
+00:18:18,750 --> 00:18:29,625
+The early networks here were trained on a few dozen sequences, and with that little data a model with a hidden layer will cheerfully memorise its training set and look far better than it is.
+
+205
+00:18:29,625 --> 00:18:35,900
+That failure has a name, overfitting, and the techniques for detecting it are Session eight's subject.
+
+206
+00:18:35,900 --> 00:18:42,425
+And in Session eleven we return to signal peptides a third time, with a protein language model.
+
+207
+00:18:43,025 --> 00:18:47,900
+Now to your lab, and to the experiment that makes this block's claim testable.
+
+208
+00:18:47,900 --> 00:18:51,250
+Two views of the same protein are on the slide.
+
+209
+00:18:51,250 --> 00:19:00,875
+The top view is PHD's: the sequence in order, with a label for every residue, and the window the method reads to decide the label of histidine sixty-three.
+
+210
+00:19:00,875 --> 00:19:05,925
+The bottom view is the one your lab uses: the amino-acid composition.
+
+211
+00:19:05,925 --> 00:19:13,500
+Twenty numbers for the whole protein, saying what fraction of its residues are alanine, what fraction are cysteine, and so on.
+
+212
+00:19:13,500 --> 00:19:21,300
+And one target for the whole protein: the fraction of residues that are in a helix, which for this protein is nought point eight zero.
+
+213
+00:19:21,300 --> 00:19:28,900
+Before the next slide, the question: which of those two views keeps the information you need to say what histidine sixty-three is doing?
+
+214
+00:19:28,900 --> 00:19:31,675
+Composition keeps counts only.
+
+215
+00:19:31,675 --> 00:19:35,325
+It knows how much of each amino acid is present.
+
+216
+00:19:35,325 --> 00:19:38,800
+The window keeps order, and neighbours, and position.
+
+217
+00:19:38,800 --> 00:19:43,675
+Think about what that difference must mean for what each view can possibly predict.
+
+218
+00:19:44,275 --> 00:19:49,150
+And here is the result from the lab, which is the punchline of the whole session.
+
+219
+00:19:49,150 --> 00:19:56,925
+On the composition data, predicting helix fraction, a linear model and a multilayer perceptron score essentially the same.
+
+220
+00:19:56,925 --> 00:19:58,000
+A tie.
+
+221
+00:19:58,000 --> 00:20:01,875
+Now, after everything in Block two, that should surprise you.
+
+222
+00:20:01,875 --> 00:20:05,525
+The multilayer perceptron is strictly more powerful.
+
+223
+00:20:05,525 --> 00:20:10,075
+It can represent everything the linear model can and a great deal more.
+
+224
+00:20:10,075 --> 00:20:12,725
+How can more power buy nothing?
+
+225
+00:20:12,725 --> 00:20:17,350
+The answer is in the input, and here is the cleanest way to see it.
+
+226
+00:20:17,350 --> 00:20:23,650
+Take any protein and scramble its sequence: shuffle the residues into a completely random order.
+
+227
+00:20:23,650 --> 00:20:29,925
+The three- dimensional structure is destroyed; the helix fraction of the scrambled thing is meaningless.
+
+228
+00:20:29,925 --> 00:20:36,875
+But the composition vector is identical, because composition is just counts and counts do not care about order.
+
+229
+00:20:36,875 --> 00:20:44,750
+So every model that takes composition as input must give the scrambled protein exactly the same prediction as the real one.
+
+230
+00:20:44,750 --> 00:20:46,450
+Every model.
+
+231
+00:20:46,450 --> 00:20:51,700
+The linear one, the multilayer perceptron, and any deep network you care to build.
+
+232
+00:20:51,700 --> 00:20:59,925
+The information about order has been destroyed before the model ever sees the data, and no model recovers what is not in its input.
+
+233
+00:20:59,925 --> 00:21:03,575
+That is the sentence to take away from Session seven.
+
+234
+00:21:03,575 --> 00:21:18,575
+And notice that it is now the fourth time this morning: the sequence logo that was flat while the pair determined binding; XOR made easy by adding one product term; PHD's jump from profiles rather than from a better network; and now your own lab.
+
+235
+00:21:18,575 --> 00:21:21,000
+Same lesson, four times.
+
+236
+00:21:21,600 --> 00:21:27,625
+Which brings us to your capstone project, because the project is exactly this question asked of you.
+
+237
+00:21:27,625 --> 00:21:30,825
+Build your own secondary-structure predictor.
+
+238
+00:21:30,825 --> 00:21:35,200
+Three decisions, and the slide lists them in the order of importance.
+
+239
+00:21:35,200 --> 00:21:37,575
+First, what is your input?
+
+240
+00:21:37,575 --> 00:21:43,375
+Single sequence, a profile from an alignment, or an embedding from a protein language model?
+
+241
+00:21:43,375 --> 00:21:48,450
+After this block you should expect that choice to matter more than anything else you decide.
+
+242
+00:21:48,450 --> 00:21:50,450
+Second, which model?
+
+243
+00:21:50,450 --> 00:21:56,700
+Logistic regression, a network with a hidden layer, something convolutional after Session ten.
+
+244
+00:21:56,700 --> 00:22:02,825
+And third, the question most students get wrong, and the one I care about most: how do you test it?
+
+245
+00:22:02,825 --> 00:22:12,650
+Specifically, is your test set made of proteins the model has never seen, in the sense that matters, which is that they are not homologs of anything in your training set?
+
+246
+00:22:12,650 --> 00:22:19,475
+If a close relative of a test protein sat in your training data, your reported accuracy is measuring memory.
+
+247
+00:22:19,475 --> 00:22:26,725
+That is Session eight's subject, and it is the single most common way that published results in our field turn out to be wrong.
+
+248
+00:22:26,725 --> 00:22:35,100
+For calibration: Chou-Fasman and GOR, which we met earlier, are around fifty to sixty-five per cent and are good baselines to beat.
+
+249
+00:22:35,100 --> 00:22:43,475
+Modern methods that combine profiles or language models with deep networks reach roughly eighty-five per cent on standard benchmarks.
+
+250
+00:22:43,475 --> 00:22:47,325
+You will not reach eighty-five, and you are not expected to.
+
+251
+00:22:47,325 --> 00:22:54,300
+You are expected to make a defensible choice of input, model and test, and to report honestly what you got.
+
+252
+00:22:54,900 --> 00:23:01,200
+One last piece of evidence, from the present day, because this is today's lesson in its strongest form.
+
+253
+00:23:01,200 --> 00:23:14,475
+ProtTrans is a family of protein language models: networks trained on hundreds of millions of protein sequences, with no labels, to produce a vector of numbers for each residue that captures something about its context.
+
+254
+00:23:14,475 --> 00:23:17,625
+We build these properly in Session eleven.
+
+255
+00:23:17,625 --> 00:23:23,375
+For now, treat such a model as a very sophisticated replacement for one-hot encoding.
+
+256
+00:23:23,375 --> 00:23:31,700
+Now take plain logistic regression, which is one weighted sum and a sigmoid, picture one, the simplest model in this entire course.
+
+257
+00:23:31,700 --> 00:23:36,225
+Put it on top of those embeddings, with no alignment of any kind.
+
+258
+00:23:36,225 --> 00:23:44,075
+It reaches between seventy-four point three and seventy-nine point three per cent three-state accuracy across several test sets.
+
+259
+00:23:44,075 --> 00:23:51,750
+Compare that to PHD's seventy point eight per cent, which took a multiple alignment, three levels of networks and a jury.
+
+260
+00:23:51,750 --> 00:24:02,925
+The comparison is indicative rather than exact, because PHD's number is on its own nineteen ninety-three test set and these are on modern ones, so do not quote it as a head-to-head.
+
+261
+00:24:02,925 --> 00:24:10,675
+But the size of the thing is clear: picture one, on a good enough input, is competitive with a careful nineteen-nineties pipeline.
+
+262
+00:24:10,675 --> 00:24:12,700
+Go a little further.
+
+263
+00:24:12,700 --> 00:24:24,675
+Put a small convolutional network, Session ten's subject, on top of better embeddings, and you reach eighty-four point three per cent, which equals a method that uses full multiple sequence alignments.
+
+264
+00:24:24,675 --> 00:24:29,175
+So the question the slide asks is a real one, not a rhetorical one.
+
+265
+00:24:29,175 --> 00:24:33,425
+If the input is good enough, how much model do you actually need?
+
+266
+00:24:33,425 --> 00:24:39,575
+And the honest answer is: less than you think, but the good input took an enormous model to produce.
+
+267
+00:24:39,575 --> 00:24:41,975
+The work did not disappear.
+
+268
+00:24:41,975 --> 00:24:43,525
+It moved.
+
+269
+00:24:44,125 --> 00:24:48,075
+Back to the slide from the beginning, and the question I promised.
+
+270
+00:24:48,075 --> 00:24:52,750
+What changed between the two pictures, and why does that allow XOR?
+
+271
+00:24:52,750 --> 00:24:58,350
+Let me answer it, and if you can already answer it yourself, this session has done its job.
+
+272
+00:24:58,350 --> 00:25:01,425
+Picture one is a single weighted sum.
+
+273
+00:25:01,425 --> 00:25:07,950
+Whatever its weights, it draws one straight boundary, and it decides by which side of that boundary you are on.
+
+274
+00:25:07,950 --> 00:25:13,150
+That is enough for AND, for OR, for NAND, and for a great many real problems.
+
+275
+00:25:13,150 --> 00:25:22,350
+It is not enough for XOR, because XOR's two positive cases sit on opposite corners and no straight line separates them from the other two.
+
+276
+00:25:22,350 --> 00:25:29,575
+Picture two has a layer of units in the middle, each drawing its own straight boundary, and an output unit that combines them.
+
+277
+00:25:29,575 --> 00:25:34,825
+Two boundaries can carve out a band, which is not something one boundary can do.
+
+278
+00:25:34,825 --> 00:25:37,675
+That is why it can do XOR.
+
+279
+00:25:37,675 --> 00:25:45,250
+And the essential detail, the one people forget: it only works because there is a non-linear activation between the layers.
+
+280
+00:25:45,250 --> 00:25:51,775
+Without it, the layers collapse into a single weighted sum and you are back in picture one with extra steps.
+
+281
+00:25:51,775 --> 00:25:57,225
+Then the third thing, which is not on either picture and is the reason Block three exists.
+
+282
+00:25:57,225 --> 00:26:00,800
+Both pictures can only use what is in their input.
+
+283
+00:26:00,800 --> 00:26:04,875
+A hidden layer finds combinations of the features you gave it.
+
+284
+00:26:04,875 --> 00:26:09,525
+It cannot find combinations of features you destroyed before it saw them.
+
+285
+00:26:09,525 --> 00:26:12,200
+Model, activation, input.
+
+286
+00:26:12,200 --> 00:26:13,725
+Those three.
+
+287
+00:26:14,325 --> 00:26:16,550
+That is Session seven.
+
+288
+00:26:16,550 --> 00:26:23,475
+Session eight takes the thing you built today and asks the question we have been carefully avoiding: how do you know it works?
+
+289
+00:26:23,475 --> 00:26:36,600
+Training, validation and test sets, what the different evaluation numbers actually measure, and the trap that catches almost everyone in our field, which is a test set full of proteins that are close relatives of the training set.
+
+290
+00:26:36,600 --> 00:26:43,350
+It also hands you PyTorch properly, so that you stop writing training loops by hand and start writing models.
+
+291
+00:26:43,350 --> 00:26:48,225
+And it begins with blood cells, which will be our example for three sessions.
+
+292
+00:26:48,225 --> 00:26:57,150
+The Session seven page has all of this written out, and its "Check your understanding" section at the end is the fastest way to find out whether it stuck.
+
+293
+00:26:57,150 --> 00:27:01,200
+The course notebook is linked in the box under the page's title.
+
+294
+00:27:01,200 --> 00:27:02,825
+See you there.
+

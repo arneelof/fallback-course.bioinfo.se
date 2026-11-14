@@ -1,0 +1,562 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.400
+Block two.
+
+2
+00:00:01.400 --> 00:00:05.025
+Not what a database stores, but who stands behind it.
+
+3
+00:00:05.625 --> 00:00:11.100
+Here is the distinction this whole block rests on, and it is subtler than it first appears.
+
+4
+00:00:11.100 --> 00:00:16.375
+These four words describe *sources of a claim*, not kinds of record.
+
+5
+00:00:16.375 --> 00:00:20.400
+That matters, because one record routinely mixes them.
+
+6
+00:00:20.400 --> 00:00:28.425
+A single Swiss-Prot entry contains curated statements, experimental observations and predicted features on the same page.
+
+7
+00:00:28.425 --> 00:00:33.025
+A PDB entry is both submitted and experimental at once.
+
+8
+00:00:33.025 --> 00:00:35.350
+Taking them one at a time.
+
+9
+00:00:35.350 --> 00:00:39.000
+Submitted means INSDC as deposited.
+
+10
+00:00:39.000 --> 00:00:42.450
+Somebody sent this in, and it is stored as sent.
+
+11
+00:00:42.450 --> 00:00:49.975
+Quality varies enormously, and there is a great deal of redundancy, because nothing is removed when something better arrives.
+
+12
+00:00:49.975 --> 00:00:55.950
+Predicted means a program inferred it, from a genome or from similarity to something else.
+
+13
+00:00:55.950 --> 00:01:01.450
+Curated means staff read the evidence, weighed it, and merged records accordingly.
+
+14
+00:01:01.450 --> 00:01:06.750
+That is expensive, which is why there is so much less of it than of the alternatives.
+
+15
+00:01:06.750 --> 00:01:09.825
+Experimental means somebody measured it.
+
+16
+00:01:09.825 --> 00:01:15.550
+The summary sentence: databases differ less in what they store than in who vouches for it.
+
+17
+00:01:15.550 --> 00:01:20.550
+When you open an unfamiliar database, that is the question to ask first.
+
+18
+00:01:20.550 --> 00:01:27.400
+A word about why curation is rarer than you might expect, since it is obviously the most reliable of the four.
+
+19
+00:01:27.400 --> 00:01:32.375
+Curation is a person reading the literature and deciding what it supports.
+
+20
+00:01:32.375 --> 00:01:40.425
+That takes an expert an appreciable amount of time per entry, and the number of experts does not grow when the number of sequences does.
+
+21
+00:01:40.425 --> 00:01:47.250
+Swiss-Prot has been curated continuously since nineteen eighty-six and holds a few hundred thousand entries.
+
+22
+00:01:47.250 --> 00:01:51.625
+In the same period, sequencing has produced hundreds of millions.
+
+23
+00:01:51.625 --> 00:01:56.775
+So the fraction of our data that anybody has read is falling, and will keep falling.
+
+24
+00:01:56.775 --> 00:02:00.875
+That is not a criticism of anyone; it is arithmetic.
+
+25
+00:02:00.875 --> 00:02:08.650
+It does mean that "somebody has checked this" is an increasingly strong claim about a record, and worth noticing when it is true.
+
+26
+00:02:09.250 --> 00:02:11.575
+Four claims on the slide.
+
+27
+00:02:11.575 --> 00:02:15.750
+For each one, decide which of the four sources stands behind it.
+
+28
+00:02:15.750 --> 00:02:20.000
+The sequence of that predicted protein record: predicted.
+
+29
+00:02:20.000 --> 00:02:23.600
+And the record says so — MODEL REFSEQ.
+
+30
+00:02:23.600 --> 00:02:29.325
+The atom positions in two H H B: experimental, from X-ray diffraction.
+
+31
+00:02:29.325 --> 00:02:34.725
+But also submitted, because the depositors sent in the coordinates they refined.
+
+32
+00:02:34.725 --> 00:02:37.425
+Both labels are correct at once.
+
+33
+00:02:37.425 --> 00:02:42.225
+The function text in the Swiss-Prot entry for beta-globin: curated.
+
+34
+00:02:42.225 --> 00:02:47.925
+A person read the literature and wrote that sentence, and there is a citation attached to it.
+
+35
+00:02:47.925 --> 00:02:52.725
+A sequence as deposited in ENA: submitted, and nothing more.
+
+36
+00:02:52.725 --> 00:02:56.600
+Nobody has vouched for it beyond the person who sent it.
+
+37
+00:02:56.600 --> 00:03:00.975
+The second one is the interesting case, and I want to underline it.
+
+38
+00:03:00.975 --> 00:03:05.550
+A record being experimental does not stop it being submitted.
+
+39
+00:03:05.550 --> 00:03:10.375
+These categories overlap, and a claim can have more than one kind of backing.
+
+40
+00:03:10.375 --> 00:03:18.150
+Asking "which one is it?" is the wrong question; asking "what is behind this, and how much does that support it?" is the right one.
+
+41
+00:03:18.750 --> 00:03:25.525
+UniProt's knowledgebase has two sections, and the difference between them matters every single time you use it.
+
+42
+00:03:25.525 --> 00:03:28.225
+Swiss-Prot is the reviewed section.
+
+43
+00:03:28.225 --> 00:03:35.000
+Curators check the function, the domains and the literature, and there is exactly one entry per protein.
+
+44
+00:03:35.000 --> 00:03:39.125
+If two submissions describe the same protein, they are merged.
+
+45
+00:03:39.125 --> 00:03:42.300
+TrEMBL is the unreviewed section.
+
+46
+00:03:42.300 --> 00:03:49.125
+Entries are annotated automatically, and most of them are translations of predicted coding sequences.
+
+47
+00:03:49.125 --> 00:03:51.325
+Nobody has read them.
+
+48
+00:03:51.325 --> 00:03:56.600
+One thing people consistently get wrong: these are not a subset and a superset.
+
+49
+00:03:56.600 --> 00:04:00.175
+An entry sits in one or the other, never both.
+
+50
+00:04:00.175 --> 00:04:04.775
+When a TrEMBL entry is reviewed, it *moves* into Swiss-Prot.
+
+51
+00:04:04.775 --> 00:04:07.925
+And the sizes are not remotely comparable.
+
+52
+00:04:07.925 --> 00:04:13.550
+Reviewed entries number in the hundreds of thousands; unreviewed in the hundreds of millions.
+
+53
+00:04:13.550 --> 00:04:23.475
+That ratio has only ever moved in one direction since sequencing became cheap, and it will keep moving, because curation is done by people and sequencing is not.
+
+54
+00:04:23.475 --> 00:04:29.125
+So when somebody says "it is in UniProt", the useful follow-up question is: which part?
+
+55
+00:04:29.725 --> 00:04:40.950
+UniProt also grades how confident it is that the protein exists at all — which is a question most people never think to ask, and which has a surprising number of interesting answers.
+
+56
+00:04:40.950 --> 00:04:44.600
+Every entry carries a protein existence level.
+
+57
+00:04:44.600 --> 00:04:53.175
+Level one means protein-level evidence: somebody has detected the protein itself, by mass spectrometry or antibody or structure.
+
+58
+00:04:53.175 --> 00:04:59.100
+Level two means transcript-level evidence — the RNA was seen, the protein inferred.
+
+59
+00:04:59.100 --> 00:05:02.225
+Level three is inferred from homology.
+
+60
+00:05:02.225 --> 00:05:04.775
+Level four is predicted.
+
+61
+00:05:04.775 --> 00:05:07.375
+Level five is uncertain.
+
+62
+00:05:07.375 --> 00:05:15.525
+Beta-globin is level one, as you would hope for a protein that has been studied since the nineteen-fifties and crystallised hundreds of times.
+
+63
+00:05:15.525 --> 00:05:24.975
+But for a protein from a newly sequenced genome, the level may well be four, and then the word "protein" in that record is doing a lot of optimistic work.
+
+64
+00:05:24.975 --> 00:05:29.925
+It means: a gene-finding program thinks there is an open reading frame here.
+
+65
+00:05:29.925 --> 00:05:32.425
+Nobody has seen the product.
+
+66
+00:05:32.425 --> 00:05:35.175
+Why does this matter in practice?
+
+67
+00:05:35.175 --> 00:05:38.950
+Because the existence level is a filter you can use.
+
+68
+00:05:38.950 --> 00:05:50.625
+If you are building a reference set of proteins — to train something, to count something, to compare organisms — including level four and five entries means including things that may not exist.
+
+69
+00:05:50.625 --> 00:05:53.300
+For some questions that is fine.
+
+70
+00:05:53.300 --> 00:06:03.750
+For others it will systematically inflate your numbers, in a way that correlates with how well studied the organism is, which is exactly the kind of bias that is hard to see afterwards.
+
+71
+00:06:03.750 --> 00:06:06.625
+UniProt lets you filter on it.
+
+72
+00:06:06.625 --> 00:06:09.950
+Most people never do, and most people should.
+
+73
+00:06:10.550 --> 00:06:14.450
+If you have a protein and one question about it, start here.
+
+74
+00:06:14.450 --> 00:06:33.350
+The Swiss-Prot entry for beta-globin — accession P six eight eight seven one — gives you the function, the disease variants including sickle-cell anaemia, the post-translational modifications, the sequence features, and links out to essentially everything else: the gene, the transcripts, the structures, the families, the interactions.
+
+75
+00:06:33.350 --> 00:06:40.625
+That makes it the best single entry point for a protein-level question, and it is where I would start nine times out of ten.
+
+76
+00:06:40.625 --> 00:06:43.425
+One component we have not mentioned.
+
+77
+00:06:43.425 --> 00:06:52.600
+UniProt has a third part, UniParc, which stores every unique protein sequence exactly once, under an identifier that is never reused.
+
+78
+00:06:52.600 --> 00:06:55.125
+It is not somewhere you browse.
+
+79
+00:06:55.125 --> 00:07:04.375
+It is how you recognise that a record in one database and a record in another hold literally the same sequence, even when neither of them cites the other.
+
+80
+00:07:04.375 --> 00:07:12.300
+One more feature worth knowing about, because it saves an enormous amount of time: the evidence attached to individual statements.
+
+81
+00:07:12.300 --> 00:07:16.875
+A Swiss-Prot entry does not simply assert that a protein does something.
+
+82
+00:07:16.875 --> 00:07:25.050
+Beside each annotation there is a note of where that came from — a publication, an experiment, a similarity, an automatic rule.
+
+83
+00:07:25.050 --> 00:07:27.575
+You can click through to the paper.
+
+84
+00:07:27.575 --> 00:07:32.400
+So when you need to cite a protein's function, you do not cite the database.
+
+85
+00:07:32.400 --> 00:07:38.725
+You follow the evidence to the paper and cite that, having checked that it says what the annotation claims.
+
+86
+00:07:38.725 --> 00:07:45.350
+That is the difference between using a database and quoting it, and it is the habit this whole block is aiming at.
+
+87
+00:07:45.950 --> 00:07:51.300
+Protein families are hierarchical, and InterPro is where you see the hierarchy.
+
+88
+00:07:51.300 --> 00:08:00.375
+For beta-globin there are five nested entries, running from the globin superfamily at the top down to the beta-type globins specifically at the bottom.
+
+89
+00:08:00.375 --> 00:08:09.175
+Which level you want depends entirely on your question — "is this a globin?" and "is this a beta-globin?" are different questions with different answers.
+
+90
+00:08:09.175 --> 00:08:21.325
+The signatures come from about a dozen member databases, and InterPro's job is to reconcile them: where several member databases describe the same family, InterPro merges them into one entry.
+
+91
+00:08:21.325 --> 00:08:30.200
+Most of those signatures are profile hidden Markov models, which is Session five's subject, so you will understand what is underneath them in two weeks.
+
+92
+00:08:30.200 --> 00:08:34.875
+A piece of recent history worth knowing, because old links are everywhere.
+
+93
+00:08:34.875 --> 00:08:40.350
+Pfam's own website was retired in twenty twenty-three and merged into InterPro.
+
+94
+00:08:40.350 --> 00:08:43.400
+If you have a bookmark, it now sends you here.
+
+95
+00:08:43.400 --> 00:08:56.300
+And for non-coding RNA, Rfam plays the equivalent role, using covariance models — which score base pairing together with the sequence, because for RNA the structure is often more conserved than the bases.
+
+96
+00:08:56.300 --> 00:09:00.250
+Beta-globin has no Rfam entry, being a protein.
+
+97
+00:09:00.250 --> 00:09:07.450
+Rfam's transfer RNA family is R F zero zero zero zero five, if you want to see what one looks like.
+
+98
+00:09:08.050 --> 00:09:12.750
+A structure, and a number that describes the experiment rather than the model.
+
+99
+00:09:12.750 --> 00:09:22.000
+Two H H B is human deoxyhaemoglobin, determined by X-ray diffraction, at a resolution of one point seven four ångström.
+
+100
+00:09:22.000 --> 00:09:24.950
+Smaller numbers mean finer detail.
+
+101
+00:09:24.950 --> 00:09:29.725
+Now, resolution is widely misunderstood, so let me be precise.
+
+102
+00:09:29.725 --> 00:09:36.325
+It describes the *data*: how much detail the diffraction measurements could resolve.
+
+103
+00:09:36.325 --> 00:09:41.900
+It does not describe the correctness of the atomic model that was built into those data.
+
+104
+00:09:41.900 --> 00:09:56.775
+A model at one point seven four ångström is built on good data, and it can still have errors in it — particularly in flexible regions, in side chains at the surface, and in anything the crystallographer had to interpret rather than read off.
+
+105
+00:09:56.775 --> 00:10:01.175
+So resolution tells you what was possible, not what was achieved.
+
+106
+00:10:01.175 --> 00:10:07.950
+Beta-globin appears in hundreds of PDB entries, at various resolutions and in various states.
+
+107
+00:10:07.950 --> 00:10:17.175
+Session six treats coordinates like these as data to be analysed, which is the right frame of mind: they are measurements with uncertainty, not facts.
+
+108
+00:10:17.175 --> 00:10:22.725
+Two more things about a PDB entry that are easy to miss and change how you read it.
+
+109
+00:10:22.725 --> 00:10:29.375
+The first is that what is deposited is a *model* fitted to data, plus the data themselves.
+
+110
+00:10:29.375 --> 00:10:32.300
+The coordinates are an interpretation.
+
+111
+00:10:32.300 --> 00:10:38.575
+For most of a well-resolved structure that interpretation is not in doubt; at the edges it can be.
+
+112
+00:10:38.575 --> 00:10:40.950
+The second is the crystal.
+
+113
+00:10:40.950 --> 00:10:50.825
+A protein in a crystal is at high concentration, often at low temperature, frequently with additives that helped it crystallise, and packed against copies of itself.
+
+114
+00:10:50.825 --> 00:10:53.750
+Most of the time this does not matter.
+
+115
+00:10:53.750 --> 00:11:01.825
+Occasionally it does — a loop is held in place by a neighbouring molecule, or a conformation is selected that is rare in solution.
+
+116
+00:11:01.825 --> 00:11:11.550
+So a structure is a snapshot of one state under one set of conditions, which is exactly the point Session six returns to with haemoglobin's T and R forms.
+
+117
+00:11:12.150 --> 00:11:16.325
+And here is the same protein, predicted rather than measured.
+
+118
+00:11:16.325 --> 00:11:25.000
+The AlphaFold database entry carries a confidence score called pLDDT, given per residue on a scale from zero to a hundred.
+
+119
+00:11:25.000 --> 00:11:30.200
+It is the model's own estimate of how right it is about each part of the structure.
+
+120
+00:11:30.200 --> 00:11:35.950
+The bands are worth memorising, because you will use them constantly from Session twelve onwards.
+
+121
+00:11:35.950 --> 00:11:40.475
+Above ninety, the model is accurate down to the side-chain positions.
+
+122
+00:11:40.475 --> 00:11:45.025
+Above seventy, the backbone is usually right even if details are not.
+
+123
+00:11:45.025 --> 00:11:55.200
+Below fifty, confidence is very low — and one common reason for that is intrinsic disorder, where the protein may have no single structure for the model to be right about.
+
+124
+00:11:55.200 --> 00:12:02.200
+A low pLDDT is sometimes a correct statement about biology rather than a failure of prediction.
+
+125
+00:12:02.200 --> 00:12:07.000
+AlphaFold DB covers essentially every protein in UniProt.
+
+126
+00:12:07.000 --> 00:12:11.350
+That is a sentence that would have been science fiction in twenty nineteen.
+
+127
+00:12:11.950 --> 00:12:16.900
+Both are numbers attached to a structure, and they mean entirely different things.
+
+128
+00:12:16.900 --> 00:12:22.300
+I labour this because the two get put side by side in tables, and they should not be.
+
+129
+00:12:22.300 --> 00:12:28.575
+Resolution is a property of experimental data — a statement about an instrument and a crystal.
+
+130
+00:12:28.575 --> 00:12:35.250
+pLDDT is a model's opinion of itself — a statement about a neural network's confidence.
+
+131
+00:12:35.250 --> 00:12:42.225
+They are not comparable, they are not convertible, and a structure with a good pLDDT has not been measured at all.
+
+132
+00:12:42.225 --> 00:12:50.625
+For beta-globin, with hundreds of experimental structures available, the predicted model adds very little; you would use the experiment.
+
+133
+00:12:50.625 --> 00:12:57.925
+AlphaFold DB matters most for the enormous number of proteins that have no structure at all, which is most of them.
+
+134
+00:12:57.925 --> 00:13:05.725
+There is a third number you will meet alongside these, and it is worth naming now so it does not confuse you later: the B-factor.
+
+135
+00:13:05.725 --> 00:13:12.775
+In an experimental structure it describes how much an atom moves, or how poorly it is pinned down by the data.
+
+136
+00:13:12.775 --> 00:13:19.500
+In an AlphaFold model, the field in the file that would hold the B-factor holds the pLDDT instead.
+
+137
+00:13:19.500 --> 00:13:26.350
+So the same column of the same file format means two unrelated things depending on where the file came from.
+
+138
+00:13:26.350 --> 00:13:33.225
+Software that averages them together will produce a number that means nothing at all, and such software exists.
+
+139
+00:13:33.225 --> 00:13:35.000
+Read the header.
+
+140
+00:13:35.000 --> 00:13:37.425
+The file says which it is.
+

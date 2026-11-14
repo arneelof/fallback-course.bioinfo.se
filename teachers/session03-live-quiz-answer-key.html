@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>Session 3 — Live quiz answer key</title>
+<style>
+    body { font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+      max-width: 1080px; margin: 2.5em auto; padding: 0 1.25em; color: #1b1f2a; line-height: 1.55; }
+    h1 { font-size: 1.8em; line-height: 1.25; margin-bottom: 0.25em; }
+    h2 { font-size: 1.3em; margin-top: 1.8em; }
+    h3 { font-size: 1.1em; margin-top: 1.5em; }
+    .subtitle { color: #666; margin-top: 0; }
+    a { color: #2e86ab; text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 0.8em 0 1.25em; }
+    table.timetable { min-width: 760px; }
+    caption { text-align: left; font-weight: 600; margin-bottom: 0.5em; }
+    th, td { padding: 0.65em 0.8em; border-bottom: 1px solid #e0e3e8; text-align: left; vertical-align: top; }
+    thead th { background: #f3f4f6; }
+    .clock, .minutes { white-space: nowrap; }
+    .break { background: #f8f9fb; color: #555; }
+    li { margin: 0.35em 0; }
+    @media print { body { max-width: none; margin: 0; font-size: 10pt; }
+      .table-wrap { overflow: visible; } table.timetable { min-width: 0; }
+      h2, h3 { break-after: avoid; } tr { break-inside: avoid; } }
+  </style>
+</head><body>
+<nav aria-label="Teacher resources"><a href="index.html#session03">Session 3 teacher resources</a> · <a href="../session03.html">Student reading</a></nav>
+<h1>Session 3: live quiz answer key</h1>
+<p class="subtitle">Proposed 2027 review · 13 November 2026 · Ten conceptual checks</p>
+<p>The <a href="live-quiz/session03.md" download>quiz source</a> uses quizbinf’s four-choice format with <code>mode: once</code>. Correct-answer positions are balanced and randomized, and the distractor order is shuffled reproducibly with seed <code>20261113</code>. This is a locally prepared quiz, not a change to the running service.</p>
+<p>For the final 5–10 minutes, select five questions in advance: <strong>1, 4, 5, 8 and 10</strong> cover shared records, evidence, sequence choice, queries and AI claims. Keep question 1 first. The other five are substitutions or material for a longer session; asking all ten with explanations is likely to take 15–20 minutes. Project aggregate results and allow time to think.</p>
+<div class="table-wrap"><table><caption>Answers and teaching explanations</caption><thead><tr><th>Question</th><th>Answer</th><th>Explanation</th><th>Goal</th></tr></thead><tbody><tr><th scope="row">1. Shared archival records</th><td><strong>B</strong>: Two access routes to one shared archival record</td><td>INSDC partners exchange public records under shared accessions. Seeing the same submitted record through two interfaces does not provide independent experimental evidence.</td><td>1</td></tr>
+<tr><th scope="row">2. Identifiers and sequence versions</th><td><strong>B</strong>: NM_000518.5</td><td>NM_ identifies a RefSeq mRNA record, and .5 is its sequence version. HBB is a gene symbol, 3043 a gene record identifier, and NP_000509.1 a protein accession.</td><td>1</td></tr>
+<tr><th scope="row">3. Sequence versus expression</th><td><strong>A</strong>: Expression measurements from the relevant sample or condition</td><td>A sequence record describes which sequence is represented. Estimating abundance requires expression measurements and their sample or condition metadata.</td><td>1</td></tr>
+<tr><th scope="row">4. Claim-level evidence</th><td><strong>D</strong>: Inspect the evidence attached to the claim and its linked references</td><td>Reviewed status describes curation. Individual annotations can have different kinds of support, so assess the evidence for the particular statement.</td><td>1</td></tr>
+<tr><th scope="row">5. Choosing a sequence type</th><td><strong>C</strong>: The genomic span containing the exons and intervening introns</td><td>The genomic span retains introns. A mature spliced transcript joins exons, the coding sequence omits introns and untranslated regions, and a protein sequence contains amino acids.</td><td>2</td></tr>
+<tr><th scope="row">6. Tracks and genomic context</th><td><strong>C</strong>: Display the ClinVar and transcript annotation tracks on the same assembly and interval</td><td>Tracks align features to a shared coordinate system. Keep the assembly and interval consistent, then follow the feature links to inspect its source and evidence.</td><td>2</td></tr>
+<tr><th scope="row">7. Programmatic access</th><td><strong>B</strong>: A script using a documented programmatic interface, with record checks and saved retrieval details</td><td>Programmatic access supports repeated retrieval and processing. A useful script checks returned identifiers and fields and records requests and retrieval dates; automation alone does not ensure accuracy.</td><td>2</td></tr>
+<tr><th scope="row">8. Building efficient queries</th><td><strong>C</strong>: (HBB OR &quot;beta globin&quot;) AND splicing</td><td>Parentheses group the alternative names before combining them with splicing. Without that grouping, one branch can retrieve HBB records without requiring splicing. Search syntax and phrase handling still need checking in the chosen service.</td><td>3</td></tr>
+<tr><th scope="row">9. Citation versus full text</th><td><strong>D</strong>: Full-text availability must be checked separately through the record links, a repository or university access</td><td>PubMed principally provides publication records and abstracts. A full-text link may lead to an open repository or a publisher, where university access may be needed.</td><td>3</td></tr>
+<tr><th scope="row">10. Checking an AI-attributed claim</th><td><strong>A</strong>: The summary changes an RNA measurement into a percentage of corrected cells</td><td>Verify both the publication and the claimed finding. The measurement concerns correctly spliced RNA in a cell model; it does not by itself quantify corrected cells or demonstrate clinical benefit.</td><td>3</td></tr></tbody></table></div>
+<h2>Sources to reopen during explanation</h2>
+<ul><li><a href="https://www.ncbi.nlm.nih.gov/genbank/submit/" target="_blank" rel="noopener noreferrer">NCBI: submitting to an INSDC partner</a>; <a href="https://www.ncbi.nlm.nih.gov/nuccore/NM_000518.5" target="_blank" rel="noopener noreferrer">HBB transcript NM_000518.5</a>.</li><li><a href="https://www.uniprot.org/help/evidences" target="_blank" rel="noopener noreferrer">UniProt evidence documentation</a>; inspect support for the individual claim.</li><li><a href="https://genome.ucsc.edu/goldenPath/help/hgTracksHelp.html" target="_blank" rel="noopener noreferrer">UCSC browser and sequence-export guide</a>.</li><li><a href="https://pubmed.ncbi.nlm.nih.gov/help/" target="_blank" rel="noopener noreferrer">PubMed User Guide</a>; query interpretation and access to full text.</li><li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6529457/" target="_blank" rel="noopener noreferrer">Nualkaew and colleagues (2019)</a>, Figure 3A–B: the 8.25% example concerns correctly spliced RNA in a cultured-cell model, not a percentage of corrected cells.</li></ul>
+<p>The question 10 summary is a <strong>teaching contrast</strong>, not a claim that this exact wording was recorded from an AI tool. The documented historical AI errors remain separate optional cases in the reading.</p>
+<p><a href="session03-lecture-plan-proposal.html">Proposed lecture plan</a></p>
+</body></html>

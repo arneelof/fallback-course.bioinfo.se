@@ -1,0 +1,798 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.325
+Welcome to Session nine.
+
+2
+00:00:02.325 --> 00:00:06.350
+Three sessions form one arc, and this is the last of them.
+
+3
+00:00:06.350 --> 00:00:14.225
+Session seven asked what a network can represent: one weighted sum draws one straight boundary, and a hidden layer draws more.
+
+4
+00:00:14.225 --> 00:00:21.650
+Session eight asked how we would know whether it generalises: three data sets, honest metrics, and a split that does not leak.
+
+5
+00:00:21.650 --> 00:00:29.900
+Today asks the question we have been putting off since Session seven: how do you actually train one, and why does training so often not work?
+
+6
+00:00:29.900 --> 00:00:33.375
+And I want to be honest about the balance of this session.
+
+7
+00:00:33.375 --> 00:00:36.525
+Maybe a quarter of it is how training works.
+
+8
+00:00:36.525 --> 00:00:41.375
+The rest is how training fails, which is where your time will actually go.
+
+9
+00:00:41.375 --> 00:00:44.875
+Everybody can call dot backward and dot step.
+
+10
+00:00:44.875 --> 00:01:03.150
+The skill that distinguishes somebody who can use these tools from somebody who cannot is recognising the shape of a failure: knowing, when a loss curve sits flat, whether the problem is your initialisation, your activation function, your learning rate, your data, or the fact that you are asking for something impossible.
+
+11
+00:01:03.150 --> 00:01:07.525
+We use four datasets today, deliberately different from each other.
+
+12
+00:01:07.525 --> 00:01:11.150
+Breast-cancer biopsies for the training loop itself.
+
+13
+00:01:11.150 --> 00:01:18.675
+A protein fitness landscape called GB1 for the failures, and for seeing when a hidden layer actually pays for itself.
+
+14
+00:01:18.675 --> 00:01:22.375
+Session eight's localisation data for overfitting.
+
+15
+00:01:22.375 --> 00:01:25.225
+And blood-cell images in your lab.
+
+16
+00:01:25.225 --> 00:01:26.850
+Three blocks.
+
+17
+00:01:26.850 --> 00:01:29.850
+From an untrained network to a trained one.
+
+18
+00:01:29.850 --> 00:01:32.025
+Why training fails.
+
+19
+00:01:32.025 --> 00:01:36.700
+And overfitting, with the question of whether an improvement you see is real.
+
+20
+00:01:36.700 --> 00:01:42.675
+Everything in this lecture is also written out in full on the Session nine page of the course book.
+
+21
+00:01:42.675 --> 00:01:50.900
+The page is the reference and this is the walk through it, so whenever a number or a name goes past too quickly, that is where to look it up.
+
+22
+00:01:50.900 --> 00:01:54.925
+I will say which part of the page we are in as each block starts.
+
+23
+00:01:55.525 --> 00:01:58.950
+Let us pick up exactly where Session eight stopped.
+
+24
+00:01:58.950 --> 00:02:07.400
+At the end of that session we built the localisation network, pushed one batch through it to check the shapes, and evaluated it with random weights.
+
+25
+00:02:07.400 --> 00:02:15.275
+Accuracy nought point one eight one, MCC minus nought point zero two seven, AUROC nought point four seven four.
+
+26
+00:02:15.275 --> 00:02:17.375
+All three are chance.
+
+27
+00:02:17.375 --> 00:02:24.200
+That is the honest starting point of every network: a pile of random numbers that computes something arbitrary.
+
+28
+00:02:24.200 --> 00:02:29.100
+Everything that makes it useful is the training procedure, and that is today.
+
+29
+00:02:29.100 --> 00:02:39.675
+The picture on this slide is the arc of the three sessions, and I put it up because the three questions really are separate, and confusing them causes most of the trouble I see in projects.
+
+30
+00:02:39.675 --> 00:02:42.850
+What can this model represent, in principle?
+
+31
+00:02:42.850 --> 00:02:45.425
+Would I know if it generalised?
+
+32
+00:02:45.425 --> 00:02:48.375
+And is my training actually working?
+
+33
+00:02:48.375 --> 00:02:52.125
+A model can be perfectly capable and badly trained.
+
+34
+00:02:52.125 --> 00:02:55.875
+It can be well trained and useless because it has memorised.
+
+35
+00:02:55.875 --> 00:03:00.700
+It can be capable and well trained and still be evaluated dishonestly.
+
+36
+00:03:00.700 --> 00:03:04.950
+Three questions, three sessions, and you need all three answers.
+
+37
+00:03:05.550 --> 00:03:07.025
+Block one.
+
+38
+00:03:07.025 --> 00:03:10.025
+From an untrained network to a trained one.
+
+39
+00:03:10.025 --> 00:03:19.400
+On the page, this block is the sections "From an untrained network to a trained network", "How backpropagation finds every gradient" and "Which loss to minimise".
+
+40
+00:03:19.400 --> 00:03:25.025
+This block is the mechanics, and it is the shortest and least treacherous part of the session.
+
+41
+00:03:25.025 --> 00:03:36.325
+Five lines of code that run over and over; what backpropagation computes and why it is cheap; mini-batches; and the loss function, where there is one choice that matters more than people expect.
+
+42
+00:03:36.925 --> 00:03:42.500
+First the data, because I would rather teach the loop on something real than on random numbers.
+
+43
+00:03:42.500 --> 00:03:46.175
+Five hundred and sixty-nine fine-needle biopsies.
+
+44
+00:03:46.175 --> 00:03:52.375
+A fine-needle aspiration takes a small sample of cells from a breast lump with a thin needle.
+
+45
+00:03:52.375 --> 00:04:02.425
+The cells are photographed under a microscope, and software measures properties of the cell nuclei: radius, texture, perimeter, smoothness, concavity, and so on.
+
+46
+00:04:02.425 --> 00:04:04.950
+Thirty numbers per biopsy.
+
+47
+00:04:04.950 --> 00:04:08.775
+The label is whether that lump was benign or malignant.
+
+48
+00:04:08.775 --> 00:04:21.525
+So it is a two-class classification problem with thirty features, and it is a real clinical question, although I should say clearly that this is a teaching dataset from the nineteen nineties and not a diagnostic tool.
+
+49
+00:04:21.525 --> 00:04:27.050
+Our network: thirty inputs, a hidden layer of sixteen ReLU units, one output.
+
+50
+00:04:27.050 --> 00:04:30.375
+Five hundred and thirteen weights altogether.
+
+51
+00:04:30.375 --> 00:04:33.950
+Small, by design, so that everything is visible.
+
+52
+00:04:33.950 --> 00:04:37.350
+One detail that is easy to skip and matters.
+
+53
+00:04:37.350 --> 00:04:46.850
+The features are standardised, meaning each is shifted and scaled to have mean zero and standard deviation one, because they arrive in wildly different units.
+
+54
+00:04:46.850 --> 00:04:52.325
+And the mean and standard deviation used for that are computed from the training set only.
+
+55
+00:04:52.325 --> 00:04:59.200
+If you compute them from all the data, information about your test set has entered your model before you started.
+
+56
+00:04:59.200 --> 00:05:05.600
+That is Session eight's preprocessing leak, and it is one of the most common real mistakes in published work.
+
+57
+00:05:06.200 --> 00:05:08.475
+Here is the training loop.
+
+58
+00:05:08.475 --> 00:05:19.150
+It is five lines, and it is the same five lines in essentially every PyTorch program ever written, from this one to the ones that train models with billions of parameters.
+
+59
+00:05:19.150 --> 00:05:22.925
+Line one: optimiser dot zero underscore grad.
+
+60
+00:05:22.925 --> 00:05:26.225
+This clears the gradients from the previous step.
+
+61
+00:05:26.225 --> 00:05:28.575
+Why does that need saying?
+
+62
+00:05:28.575 --> 00:05:35.375
+Because PyTorch accumulates gradients by default: it adds new gradients to whatever is already stored.
+
+63
+00:05:35.375 --> 00:05:46.425
+That is deliberate and occasionally useful, and if you forget this line your updates are computed from the sum of every batch so far, and your training quietly does something incoherent.
+
+64
+00:05:46.425 --> 00:05:48.950
+Line two: the forward pass.
+
+65
+00:05:48.950 --> 00:05:54.925
+Push the batch through the model and get the outputs, which, as Session eight insisted, are raw logits.
+
+66
+00:05:54.925 --> 00:05:57.450
+Line three: the criterion.
+
+67
+00:05:57.450 --> 00:06:01.975
+Compare those outputs with the true labels and get one number, the loss.
+
+68
+00:06:01.975 --> 00:06:04.600
+Line four: loss dot backward.
+
+69
+00:06:04.600 --> 00:06:06.900
+This is backpropagation.
+
+70
+00:06:06.900 --> 00:06:12.075
+It computes the gradient of the loss with respect to every single weight in the model.
+
+71
+00:06:12.075 --> 00:06:15.350
+We will look at what it does on the next slide but one.
+
+72
+00:06:15.350 --> 00:06:18.375
+Line five: optimiser dot step.
+
+73
+00:06:18.375 --> 00:06:22.350
+Take each weight and move it a little way against its gradient.
+
+74
+00:06:22.350 --> 00:06:26.775
+Session seven's update rule, applied to all the weights at once.
+
+75
+00:06:26.775 --> 00:06:33.000
+And then you do that again, for the next batch, and the next, until the data runs out, which is one epoch.
+
+76
+00:06:33.000 --> 00:06:35.525
+And then you do the epochs again.
+
+77
+00:06:35.525 --> 00:06:37.200
+That is it.
+
+78
+00:06:37.200 --> 00:06:39.200
+There is nothing else.
+
+79
+00:06:39.200 --> 00:06:45.425
+In the lab you write this loop yourself, once, so that every framework you meet later is recognisable.
+
+80
+00:06:46.025 --> 00:06:49.525
+And here is what those five lines do when you run them.
+
+81
+00:06:49.525 --> 00:06:54.200
+On the left, the loss per epoch, two curves: training and validation.
+
+82
+00:06:54.200 --> 00:06:56.700
+Both fall steeply at first.
+
+83
+00:06:56.700 --> 00:07:04.675
+The validation loss reaches its lowest point at epoch fifty-two and then stops improving, while the training loss keeps going down.
+
+84
+00:07:04.675 --> 00:07:09.000
+Remember that divergence; it is Block three's whole subject.
+
+85
+00:07:09.000 --> 00:07:12.800
+On the right, the predictions themselves, before and after.
+
+86
+00:07:12.800 --> 00:07:17.425
+Before training, every single prediction sits near nought point five.
+
+87
+00:07:17.425 --> 00:07:20.350
+The network has no idea and says so.
+
+88
+00:07:20.350 --> 00:07:26.475
+The numbers: validation loss nought point six five one, accuracy nought point six five nine.
+
+89
+00:07:26.475 --> 00:07:29.325
+And notice what that accuracy is.
+
+90
+00:07:29.325 --> 00:07:33.500
+It is roughly the proportion of benign biopsies in the data.
+
+91
+00:07:33.500 --> 00:07:44.625
+The network is effectively answering benign every time, which is Session eight's point about accuracy on unbalanced data, appearing here as the natural behaviour of an untrained model.
+
+92
+00:07:44.625 --> 00:07:53.350
+After training: the benign cases have moved down towards zero and the malignant ones up towards one, with a clear gap between the two clouds.
+
+93
+00:07:53.350 --> 00:07:58.800
+Validation loss nought point one zero nine, accuracy nought point nine five three.
+
+94
+00:07:58.800 --> 00:08:10.425
+That is the whole of machine learning in one picture: a pile of random numbers became a function that separates two clinical categories, by doing five lines of arithmetic a few thousand times.
+
+95
+00:08:11.025 --> 00:08:15.575
+And then, as Session eight insisted, we look at the test set once.
+
+96
+00:08:15.575 --> 00:08:18.450
+Accuracy nought point nine five three.
+
+97
+00:08:18.450 --> 00:08:21.600
+MCC nought point nine zero zero.
+
+98
+00:08:21.600 --> 00:08:24.525
+AUROC nought point nine eight four.
+
+99
+00:08:24.525 --> 00:08:27.775
+Eighty-six test biopsies, four mistakes.
+
+100
+00:08:27.775 --> 00:08:30.625
+Two false alarms and two missed.
+
+101
+00:08:30.625 --> 00:08:36.725
+Let me dwell on those four, because the split matters clinically and it is a good habit to think this way.
+
+102
+00:08:36.725 --> 00:08:45.475
+Two false alarms means two benign lumps were called malignant: those patients get a frightening phone call and a further test that comes back clear.
+
+103
+00:08:45.475 --> 00:08:50.875
+Two missed means two malignant lumps were called benign: those patients are sent home.
+
+104
+00:08:50.875 --> 00:08:58.450
+Those two errors are not interchangeable, and which one you would rather make is a question for a clinician, not for a statistician.
+
+105
+00:08:58.450 --> 00:09:10.800
+It is the precision-versus-recall decision from Session eight, and in a real deployment you would move the threshold away from nought point five deliberately to make the misses rarer, accepting more false alarms.
+
+106
+00:09:10.800 --> 00:09:13.425
+The model gives you a probability.
+
+107
+00:09:13.425 --> 00:09:16.350
+Where you cut it is a value judgement.
+
+108
+00:09:16.950 --> 00:09:24.150
+Now a question I want you to be in the habit of asking about your own models, and the answer here is a good lesson in modesty.
+
+109
+00:09:24.150 --> 00:09:26.525
+Was the hidden layer needed?
+
+110
+00:09:26.525 --> 00:09:34.650
+Take the same data and fit plain logistic regression: one weighted sum, thirty-one weights instead of five hundred and thirteen.
+
+111
+00:09:34.650 --> 00:09:36.525
+Same accuracy.
+
+112
+00:09:36.525 --> 00:09:40.650
+The network, with sixteen times the parameters, bought nothing.
+
+113
+00:09:40.650 --> 00:09:41.475
+Why?
+
+114
+00:09:41.475 --> 00:09:44.500
+Because this data is nearly additive.
+
+115
+00:09:44.500 --> 00:09:52.950
+Malignant and benign nuclei differ mainly in being bigger and more irregular, and those thirty measurements mostly just point the same way.
+
+116
+00:09:52.950 --> 00:09:57.975
+A weighted sum of them separates the classes about as well as anything can.
+
+117
+00:09:57.975 --> 00:10:04.550
+There is no interaction between features for a hidden layer to discover, so the hidden layer has nothing to do.
+
+118
+00:10:04.550 --> 00:10:07.800
+One methodological note on how we checked.
+
+119
+00:10:07.800 --> 00:10:17.425
+We used cross-validation for this comparison, not a single split, because eighty-six test biopsies is far too few to distinguish two models that are close.
+
+120
+00:10:17.425 --> 00:10:22.175
+That is Session eight's lesson about split-to-split variability, applied.
+
+121
+00:10:22.175 --> 00:10:25.300
+And do not read this as a general result.
+
+122
+00:10:25.300 --> 00:10:32.725
+Block two uses a dataset where the hidden layer emphatically does pay off, and the comparison between the two is the point.
+
+123
+00:10:33.325 --> 00:10:39.700
+Now the question at the heart of the session: when the loss is too high, which weights should change, and by how much?
+
+124
+00:10:39.700 --> 00:10:46.475
+The answer is the chain rule, which you met in Session one, applied systematically from the loss backwards.
+
+125
+00:10:46.475 --> 00:10:49.200
+That is what backpropagation is.
+
+126
+00:10:49.200 --> 00:10:55.800
+It is not a separate algorithm with its own ideas; it is the chain rule plus one piece of bookkeeping.
+
+127
+00:10:55.800 --> 00:11:05.275
+Take a tiny network: an input goes through a weight to a hidden unit, the hidden unit goes through another weight to the output, and the output goes into the loss.
+
+128
+00:11:05.275 --> 00:11:17.550
+To know how the loss responds to the first weight, you multiply three things: how the loss responds to the output, how the output responds to the hidden unit, and how the hidden unit responds to that weight.
+
+129
+00:11:17.550 --> 00:11:20.275
+Three derivatives, multiplied.
+
+130
+00:11:20.275 --> 00:11:24.900
+Now here is the bookkeeping, which is the thing that makes it practical.
+
+131
+00:11:24.900 --> 00:11:31.200
+That first factor, how the loss responds to the output, is needed for every weight in the network.
+
+132
+00:11:31.200 --> 00:11:34.025
+So you compute it once and keep it.
+
+133
+00:11:34.025 --> 00:11:42.350
+Then you multiply by the next factor to get the error signal at the hidden layer, and that is shared by every weight feeding into that hidden unit.
+
+134
+00:11:42.350 --> 00:11:45.325
+And so on, backwards, layer by layer.
+
+135
+00:11:45.325 --> 00:11:55.900
+Because every layer's error signal is computed once and reused for all of its weights, getting the gradient of every weight in the network costs about as much as one forward pass.
+
+136
+00:11:55.900 --> 00:11:59.550
+Not one pass per weight: one pass in total.
+
+137
+00:11:59.550 --> 00:12:03.100
+That is the whole reason deep learning is possible.
+
+138
+00:12:03.100 --> 00:12:12.650
+If you had to compute each weight's gradient separately, a model with a million weights would need a million passes per step, and nobody would ever have trained anything.
+
+139
+00:12:13.250 --> 00:12:16.975
+And here is the demonstration that it is not magic.
+
+140
+00:12:16.975 --> 00:12:22.225
+The notebook takes a tiny network with five weights, and differentiates it by hand.
+
+141
+00:12:22.225 --> 00:12:28.100
+Writes out the chain rule for each weight, and evaluates it, with arithmetic you could do on paper.
+
+142
+00:12:28.100 --> 00:12:33.675
+Then it calls loss dot backward on the same network and prints what PyTorch computed.
+
+143
+00:12:33.675 --> 00:12:36.550
+They agree to eight decimal places.
+
+144
+00:12:36.550 --> 00:12:43.000
+I think it is worth doing this once in your life, and the notebook does it so that you can see it without the work.
+
+145
+00:12:43.000 --> 00:12:55.850
+After that, you use autograd and stop thinking about it, which is correct: the library is not approximating anything, it is applying the same chain rule you would, with perfect bookkeeping and no arithmetic slips.
+
+146
+00:12:55.850 --> 00:13:00.600
+What it does not do is save you from understanding what the gradient means.
+
+147
+00:13:00.600 --> 00:13:07.175
+Block two is entirely about situations where the gradient is computed perfectly and is useless.
+
+148
+00:13:07.775 --> 00:13:11.000
+One practical piece before the loss function.
+
+149
+00:13:11.000 --> 00:13:14.675
+You do not compute the gradient on all the data at once.
+
+150
+00:13:14.675 --> 00:13:22.150
+You shuffle the training set, cut it into batches of, say, thirty-two biopsies, and update the weights after every batch.
+
+151
+00:13:22.150 --> 00:13:27.375
+This is stochastic gradient descent, which you heard named in Session seven.
+
+152
+00:13:27.375 --> 00:13:28.200
+Why?
+
+153
+00:13:28.200 --> 00:13:30.975
+Trading accuracy for frequency.
+
+154
+00:13:30.975 --> 00:13:37.300
+The gradient from thirty-two examples is a noisy estimate of the true gradient over all the data.
+
+155
+00:13:37.300 --> 00:13:46.250
+But you get it for a thirty-second of the cost, so in the time one exact step would take, you take many approximate ones, and you get much further downhill.
+
+156
+00:13:46.250 --> 00:13:54.700
+The noise turns out to be mildly helpful too, since it can shake the model out of poor solutions, though that argument is easy to over-tell.
+
+157
+00:13:54.700 --> 00:13:57.000
+Two practical details.
+
+158
+00:13:57.000 --> 00:14:03.000
+Shuffle every epoch, not once, so the model never sees the same sequence of batches twice.
+
+159
+00:14:03.000 --> 00:14:06.350
+In PyTorch a DataLoader does this for you.
+
+160
+00:14:06.350 --> 00:14:12.625
+And measure the validation loss after every epoch, keeping the weights from whichever epoch was best.
+
+161
+00:14:12.625 --> 00:14:19.400
+That is early stopping, which is already a regularisation method, and we will come back to it in Block three.
+
+162
+00:14:19.400 --> 00:14:23.450
+For our breast-cancer network, the best epoch was fifty-two.
+
+163
+00:14:24.050 --> 00:14:29.375
+Now the loss function, where there is one decision that matters more than people expect.
+
+164
+00:14:29.375 --> 00:14:32.475
+For classification, use cross-entropy.
+
+165
+00:14:32.475 --> 00:14:38.525
+The formula is simple: minus the logarithm of the probability your model gave to the true class.
+
+166
+00:14:38.525 --> 00:14:41.925
+Put numbers in, and the shape of it becomes clear.
+
+167
+00:14:41.925 --> 00:14:49.825
+If the model gives the true class a probability of nought point nine, the cost is nought point one zero five: nearly nothing.
+
+168
+00:14:49.825 --> 00:14:56.800
+If it gives the true class nought point zero one, meaning it was confidently wrong, the cost is four point six.
+
+169
+00:14:56.800 --> 00:14:59.200
+Forty times the penalty.
+
+170
+00:14:59.200 --> 00:15:05.750
+And it keeps going: as the probability of the true class approaches zero, the cost goes to infinity.
+
+171
+00:15:05.750 --> 00:15:09.600
+So cross-entropy is not just measuring whether you were wrong.
+
+172
+00:15:09.600 --> 00:15:16.075
+It is measuring how confidently you were wrong, and punishing confident mistakes very harshly indeed.
+
+173
+00:15:16.075 --> 00:15:18.075
+That is a feature.
+
+174
+00:15:18.075 --> 00:15:22.700
+It is what pushes a model towards being honest about its uncertainty.
+
+175
+00:15:22.700 --> 00:15:25.925
+And it is Session one's material, returning.
+
+176
+00:15:25.925 --> 00:15:31.975
+Cross-entropy is surprise: the surprise of seeing the true answer, given what the model believed.
+
+177
+00:15:31.975 --> 00:15:40.850
+Averaged over a dataset, it is the negative log-likelihood, so minimising cross-entropy is exactly maximum likelihood estimation.
+
+178
+00:15:40.850 --> 00:15:46.375
+If you liked Session one's statistics, that connection is worth a minute of your own time.
+
+179
+00:15:46.375 --> 00:15:52.550
+For regression, use the mean squared error instead, for the same reason you did in Session seven.
+
+180
+00:15:52.550 --> 00:16:06.700
+And the PyTorch note from Session eight, repeated because it still catches people: BCEWithLogitsLoss for two classes and CrossEntropyLoss for more combine the sigmoid or log-softmax with the loss in one numerically stable step.
+
+181
+00:16:06.700 --> 00:16:09.400
+Your model outputs raw logits.
+
+182
+00:16:09.400 --> 00:16:12.375
+Do not apply the activation yourself.
+
+183
+00:16:12.975 --> 00:16:18.625
+And here is what happens when you get that choice wrong, which the lab makes you see for yourself.
+
+184
+00:16:18.625 --> 00:16:22.650
+Same network, same data, eight classes of blood cell.
+
+185
+00:16:22.650 --> 00:16:25.450
+Only the loss function changes.
+
+186
+00:16:25.450 --> 00:16:31.800
+With mean squared error, after twenty epochs, the network predicts only five of the eight classes.
+
+187
+00:16:31.800 --> 00:16:34.750
+With mean absolute error, only four.
+
+188
+00:16:34.750 --> 00:16:40.250
+Three or four classes have simply been abandoned: the network never predicts them at all.
+
+189
+00:16:40.250 --> 00:16:43.200
+With cross-entropy, it uses all eight.
+
+190
+00:16:43.200 --> 00:16:44.025
+Why?
+
+191
+00:16:44.025 --> 00:16:49.475
+Think about what mean squared error does to a confident mistake in a classification problem.
+
+192
+00:16:49.475 --> 00:16:57.450
+The outputs are bounded, so the worst possible error is bounded too, and squaring a number smaller than one makes it smaller still.
+
+193
+00:16:57.450 --> 00:17:00.100
+A confident mistake is cheap.
+
+194
+00:17:00.100 --> 00:17:10.225
+So the gradient pushing the classes apart is weak, and the easiest way to reduce the loss is to hedge towards the common classes and quietly give up on the rare ones.
+
+195
+00:17:10.225 --> 00:17:14.450
+Cross-entropy's unbounded penalty is what prevents that.
+
+196
+00:17:14.450 --> 00:17:21.025
+The model cannot afford to be confidently wrong about a rare class, so it has to keep that class alive.
+
+197
+00:17:21.025 --> 00:17:24.825
+The practical rule: classification, cross-entropy.
+
+198
+00:17:24.825 --> 00:17:27.175
+Regression, squared error.
+
+199
+00:17:27.175 --> 00:17:29.725
+It is not a matter of taste.
+

@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>Session 2 — Working like a computational biologist in Python – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+<script crossorigin="anonymous" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta content="../" name="quarto:offset"/>
+<link href="../session03.html" rel="next"/>
+<link href="../session02.html" rel="prev"/>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="../site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script crossorigin="anonymous" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="js/quiz-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<link href="../session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../notebooks/session02-working-in-python.html">Session 2 — Notebook</a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="../">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="../KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="../references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#scientific-python-objects" href="#scientific-python-objects" id="toc-scientific-python-objects">1. Scientific Python objects</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#looking-ahead-tensors-and-autograd" href="#looking-ahead-tensors-and-autograd" id="toc-looking-ahead-tensors-and-autograd">Looking ahead: tensors and autograd</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#exploring-a-biological-dataset" href="#exploring-a-biological-dataset" id="toc-exploring-a-biological-dataset">2. Exploring a biological dataset</a></li>
+<li><a class="nav-link" data-scroll-target="#seeing-the-data" href="#seeing-the-data" id="toc-seeing-the-data">3. Seeing the data</a></li>
+<li><a class="nav-link" data-scroll-target="#asking-quantitative-questions" href="#asking-quantitative-questions" id="toc-asking-quantitative-questions">4. Asking quantitative questions</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#existing-tools-for-standard-questions" href="#existing-tools-for-standard-questions" id="toc-existing-tools-for-standard-questions">Existing tools for standard questions</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#biological-objects" href="#biological-objects" id="toc-biological-objects">5. Biological objects</a></li>
+<li><a class="nav-link" data-scroll-target="#your-own-objects-classes" href="#your-own-objects-classes" id="toc-your-own-objects-classes">6. Your own objects: classes</a>
+<ul class="collapse">
+<li><a class="nav-link" data-scroll-target="#looking-ahead-a-pytorch-model-is-a-class" href="#looking-ahead-a-pytorch-model-is-a-class" id="toc-looking-ahead-a-pytorch-model-is-a-class">Looking ahead: a PyTorch model is a class</a></li>
+</ul></li>
+<li><a class="nav-link" data-scroll-target="#data-coming-from-somewhere" href="#data-coming-from-somewhere" id="toc-data-coming-from-somewhere">7. Data coming from somewhere</a></li>
+<li><a class="nav-link" data-scroll-target="#when-you-dont-know-how-to-do-something" href="#when-you-dont-know-how-to-do-something" id="toc-when-you-dont-know-how-to-do-something">8. When you don’t know how to do something</a></li>
+<li><a class="nav-link" data-scroll-target="#mini-challenge-a-small-analysis-start-to-finish" href="#mini-challenge-a-small-analysis-start-to-finish" id="toc-mini-challenge-a-small-analysis-start-to-finish">9. Mini challenge: a small analysis, start to finish</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title">Session 2 — Working like a computational biologist in Python</h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<p><a href="https://colab.research.google.com/github/ElofssonLab/kb8029-book/blob/main/notebooks/session02-working-in-python.ipynb" style="display:inline-block;padding:10px 18px;background-color:#F9AB00;color:#000000;font-weight:bold;text-decoration:none;border-radius:6px;font-family:sans-serif;font-size:14px;">▶  Open in Google Colab</a></p>
+<p>This notebook follows the Session 2 page section by section. Four ideas run through it: <strong>represent</strong> data with the right object, <strong>explore</strong> it before trusting any number, <strong>use existing tools</strong>, and <strong>get unstuck</strong> when code does not work. It uses one real dataset (mouse liver RNA-seq, Becares et al. 2019) and one real gene family (the human globins).</p>
+<p>Run it on Colab, from VS Code or in the browser (see the Setup page). Sections 7 and 9 fetch records from NCBI, so they need an internet connection.</p>
+<div class="cell" data-execution_count="1" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:10.502440Z","iopub.status.busy":"2026-10-09T09:16:10.502328Z","iopub.status.idle":"2026-10-09T09:16:10.509268Z","shell.execute_reply":"2026-10-09T09:16:10.508590Z"}}' id="cb9fcd11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a aria-hidden="true" href="#cb1-1" tabindex="-1"></a><span class="co"># Install the libraries Colab does not come with (does nothing if they are already installed)</span></span>
+<span id="cb1-2"><a aria-hidden="true" href="#cb1-2" tabindex="-1"></a><span class="im">import</span> importlib.util, subprocess, sys</span>
+<span id="cb1-3"><a aria-hidden="true" href="#cb1-3" tabindex="-1"></a><span class="cf">for</span> module, package <span class="kw">in</span> [(<span class="st">"Bio"</span>, <span class="st">"biopython"</span>)]:</span>
+<span id="cb1-4"><a aria-hidden="true" href="#cb1-4" tabindex="-1"></a>    <span class="cf">if</span> importlib.util.find_spec(module) <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb1-5"><a aria-hidden="true" href="#cb1-5" tabindex="-1"></a>        subprocess.run([sys.executable, <span class="st">"-m"</span>, <span class="st">"pip"</span>, <span class="st">"install"</span>, <span class="st">"-q"</span>, package], check<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+</div>
+<div class="cell" data-execution_count="2" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:10.511704Z","iopub.status.busy":"2026-10-09T09:16:10.511487Z","iopub.status.idle":"2026-10-09T09:16:12.837789Z","shell.execute_reply":"2026-10-09T09:16:12.836984Z"}}' id="0f6c2a22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a aria-hidden="true" href="#cb2-1" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a aria-hidden="true" href="#cb2-2" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a aria-hidden="true" href="#cb2-3" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-4"><a aria-hidden="true" href="#cb2-4" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb2-5"><a aria-hidden="true" href="#cb2-5" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> stats</span>
+<span id="cb2-6"><a aria-hidden="true" href="#cb2-6" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb2-7"><a aria-hidden="true" href="#cb2-7" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-8"><a aria-hidden="true" href="#cb2-8" tabindex="-1"></a>FIGS <span class="op">=</span> <span class="st">"../figs"</span> <span class="cf">if</span> os.path.isdir(<span class="st">"../figs"</span>) <span class="cf">else</span> <span class="st">"."</span></span>
+<span id="cb2-9"><a aria-hidden="true" href="#cb2-9" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"pandas"</span>, pd.__version__, <span class="st">"| torch"</span>, torch.__version__)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>pandas 3.0.0 | torch 2.5.1</code></pre>
+</div>
+</div>
+<section class="level2" id="scientific-python-objects">
+<h2 class="anchored" data-anchor-id="scientific-python-objects">1. Scientific Python objects</h2>
+<p>The same three transcript lengths in a list, a NumPy array and a pandas DataFrame. Each object gives the operations that make sense for its kind of data.</p>
+<div class="cell" data-execution_count="3" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:12.840227Z","iopub.status.busy":"2026-10-09T09:16:12.839967Z","iopub.status.idle":"2026-10-09T09:16:12.849665Z","shell.execute_reply":"2026-10-09T09:16:12.848984Z"}}' id="f2ea6f5f">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a aria-hidden="true" href="#cb4-1" tabindex="-1"></a>lengths <span class="op">=</span> [<span class="dv">628</span>, <span class="dv">577</span>, <span class="dv">576</span>]                  <span class="co"># HBB, HBA1, HBA2 mRNA lengths (nt)</span></span>
+<span id="cb4-2"><a aria-hidden="true" href="#cb4-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"list * 2:        "</span>, lengths <span class="op">*</span> <span class="dv">2</span>, <span class="st">" &lt;- repeats the list"</span>)</span>
+<span id="cb4-3"><a aria-hidden="true" href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a aria-hidden="true" href="#cb4-4" tabindex="-1"></a>arr <span class="op">=</span> np.array(lengths)</span>
+<span id="cb4-5"><a aria-hidden="true" href="#cb4-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"array * 2:       "</span>, arr <span class="op">*</span> <span class="dv">2</span>, <span class="st">" mean:"</span>, <span class="bu">round</span>(arr.mean(), <span class="dv">2</span>), <span class="st">" shape:"</span>, arr.shape)</span>
+<span id="cb4-6"><a aria-hidden="true" href="#cb4-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"boolean mask:    "</span>, arr <span class="op">&gt;</span> <span class="dv">600</span>, <span class="st">"-&gt;"</span>, arr[arr <span class="op">&gt;</span> <span class="dv">600</span>])</span>
+<span id="cb4-7"><a aria-hidden="true" href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a aria-hidden="true" href="#cb4-8" tabindex="-1"></a>genes <span class="op">=</span> pd.DataFrame({<span class="st">"gene"</span>: [<span class="st">"HBB"</span>, <span class="st">"HBA1"</span>, <span class="st">"HBA2"</span>], <span class="st">"length"</span>: lengths})</span>
+<span id="cb4-9"><a aria-hidden="true" href="#cb4-9" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">DataFrame, rows with length &gt; 600:"</span>)</span>
+<span id="cb4-10"><a aria-hidden="true" href="#cb4-10" tabindex="-1"></a><span class="bu">print</span>(genes[genes[<span class="st">"length"</span>] <span class="op">&gt;</span> <span class="dv">600</span>])</span>
+<span id="cb4-11"><a aria-hidden="true" href="#cb4-11" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">column types:</span><span class="ch">\n</span><span class="st">"</span>, genes.dtypes)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>list * 2:         [628, 577, 576, 628, 577, 576]  &lt;- repeats the list
+array * 2:        [1256 1154 1152]  mean: 593.67  shape: (3,)
+boolean mask:     [ True False False] -&gt; [628]
+
+DataFrame, rows with length &gt; 600:
+  gene  length
+0  HBB     628
+
+column types:
+ gene        str
+length    int64
+dtype: object</code></pre>
+</div>
+</div>
+<section class="level3" id="looking-ahead-tensors-and-autograd">
+<h3 class="anchored" data-anchor-id="looking-ahead-tensors-and-autograd">Looking ahead: tensors and autograd</h3>
+<p>A PyTorch tensor is an array that can live on a GPU and remember how it was computed. <code>.backward()</code> applies the chain rule automatically: here it reproduces Session 1’s gradient practice problem and a tensor version of the dot product.</p>
+<div class="cell" data-execution_count="4" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:12.852139Z","iopub.status.busy":"2026-10-09T09:16:12.851978Z","iopub.status.idle":"2026-10-09T09:16:12.972100Z","shell.execute_reply":"2026-10-09T09:16:12.971425Z"}}' id="4da0f46f">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a aria-hidden="true" href="#cb6-1" tabindex="-1"></a>x0 <span class="op">=</span> torch.tensor(<span class="fl">1.</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-2"><a aria-hidden="true" href="#cb6-2" tabindex="-1"></a>x1 <span class="op">=</span> torch.tensor(<span class="fl">2.</span>, requires_grad<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-3"><a aria-hidden="true" href="#cb6-3" tabindex="-1"></a>f <span class="op">=</span> <span class="dv">3</span> <span class="op">*</span> x0<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> x0 <span class="op">*</span> x1</span>
+<span id="cb6-4"><a aria-hidden="true" href="#cb6-4" tabindex="-1"></a>f.backward()</span>
+<span id="cb6-5"><a aria-hidden="true" href="#cb6-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"gradient of 3*x0^2 + 2*x0*x1 at (1, 2):"</span>, (x0.grad.item(), x1.grad.item()), <span class="st">" (Session 1: (10, 2))"</span>)</span>
+<span id="cb6-6"><a aria-hidden="true" href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a aria-hidden="true" href="#cb6-7" tabindex="-1"></a>a <span class="op">=</span> torch.tensor([<span class="fl">2.</span>, <span class="op">-</span><span class="fl">1.</span>, <span class="fl">3.</span>])<span class="op">;</span> b <span class="op">=</span> torch.tensor([<span class="fl">1.</span>, <span class="fl">4.</span>, <span class="fl">0.</span>])</span>
+<span id="cb6-8"><a aria-hidden="true" href="#cb6-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"dot product (2,-1,3).(1,4,0):"</span>, torch.dot(a, b).item(), <span class="st">" (Session 1: -2)"</span>)</span>
+<span id="cb6-9"><a aria-hidden="true" href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a aria-hidden="true" href="#cb6-10" tabindex="-1"></a><span class="co"># a tensor is shaped like an array: 4 DNA sequences x 8 positions, bases coded 0-3</span></span>
+<span id="cb6-11"><a aria-hidden="true" href="#cb6-11" tabindex="-1"></a>seqs <span class="op">=</span> torch.tensor([[<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>], [<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>], [<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>], [<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">3</span>,<span class="dv">3</span>]])</span>
+<span id="cb6-12"><a aria-hidden="true" href="#cb6-12" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"tensor shape:"</span>, <span class="bu">tuple</span>(seqs.shape), <span class="st">" first two sequences, first four bases:</span><span class="ch">\n</span><span class="st">"</span>, seqs[:<span class="dv">2</span>, :<span class="dv">4</span>])</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>gradient of 3*x0^2 + 2*x0*x1 at (1, 2): (10.0, 2.0)  (Session 1: (10, 2))
+dot product (2,-1,3).(1,4,0): -2.0  (Session 1: -2)
+tensor shape: (4, 8)  first two sequences, first four bases:
+ tensor([[0, 1, 2, 3],
+        [3, 3, 2, 2]])</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section class="level2" id="exploring-a-biological-dataset">
+<h2 class="anchored" data-anchor-id="exploring-a-biological-dataset">2. Exploring a biological dataset</h2>
+<p>Mouse liver RNA-seq, LXRα-S196A mutant against wild-type mice, both on a high-fat/high-cholesterol diet (Becares et al. 2019), analysed with DESeq2 and shared as example data by VolcaNoseR. First look at the table, before computing anything.</p>
+<div class="cell" data-execution_count="5" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:12.974694Z","iopub.status.busy":"2026-10-09T09:16:12.974544Z","iopub.status.idle":"2026-10-09T09:16:13.013774Z","shell.execute_reply":"2026-10-09T09:16:13.013104Z"}}' id="32eb6e93">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a aria-hidden="true" href="#cb8-1" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JoachimGoedhart/VolcaNoseR/master/Becares-diffgenes_HFHC.csv"</span></span>
+<span id="cb8-2"><a aria-hidden="true" href="#cb8-2" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(url)</span>
+<span id="cb8-3"><a aria-hidden="true" href="#cb8-3" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"shape:"</span>, df.shape)</span>
+<span id="cb8-4"><a aria-hidden="true" href="#cb8-4" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"columns:"</span>, <span class="bu">list</span>(df.columns))</span>
+<span id="cb8-5"><a aria-hidden="true" href="#cb8-5" tabindex="-1"></a>df.head()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>shape: (3001, 9)
+columns: ['Gene', 'baseMean', 'log2_FoldChange', 'FC', 'lfcSE', 'stat', 'pvalue', 'padj', 'minus_log10_pvalue']</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Gene</th>
+<th data-quarto-table-cell-role="th">baseMean</th>
+<th data-quarto-table-cell-role="th">log2_FoldChange</th>
+<th data-quarto-table-cell-role="th">FC</th>
+<th data-quarto-table-cell-role="th">lfcSE</th>
+<th data-quarto-table-cell-role="th">stat</th>
+<th data-quarto-table-cell-role="th">pvalue</th>
+<th data-quarto-table-cell-role="th">padj</th>
+<th data-quarto-table-cell-role="th">minus_log10_pvalue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>A1bg</td>
+<td>39.181235</td>
+<td>1.251613</td>
+<td>2.381075</td>
+<td>0.298637</td>
+<td>4.191087</td>
+<td>0.000028</td>
+<td>0.001705</td>
+<td>4.555955</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>A1cf</td>
+<td>1183.059641</td>
+<td>0.744592</td>
+<td>1.675500</td>
+<td>0.191677</td>
+<td>3.884628</td>
+<td>0.000102</td>
+<td>0.004557</td>
+<td>3.989331</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Aadac</td>
+<td>3195.974860</td>
+<td>0.687958</td>
+<td>1.611002</td>
+<td>0.156578</td>
+<td>4.393708</td>
+<td>0.000011</td>
+<td>0.000817</td>
+<td>4.954677</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Aadat</td>
+<td>1481.451788</td>
+<td>0.603443</td>
+<td>1.519338</td>
+<td>0.181387</td>
+<td>3.326831</td>
+<td>0.000878</td>
+<td>0.023207</td>
+<td>3.056310</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Aaed1</td>
+<td>432.155737</td>
+<td>0.421805</td>
+<td>1.339603</td>
+<td>0.192979</td>
+<td>2.185759</td>
+<td>0.028833</td>
+<td>0.234806</td>
+<td>1.540107</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="6" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:13.015213Z","iopub.status.busy":"2026-10-09T09:16:13.015053Z","iopub.status.idle":"2026-10-09T09:16:13.029188Z","shell.execute_reply":"2026-10-09T09:16:13.028573Z"}}' id="32a67703">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a aria-hidden="true" href="#cb10-1" tabindex="-1"></a>df[[<span class="st">"baseMean"</span>, <span class="st">"log2_FoldChange"</span>, <span class="st">"pvalue"</span>, <span class="st">"padj"</span>]].describe().<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">baseMean</th>
+<th data-quarto-table-cell-role="th">log2_FoldChange</th>
+<th data-quarto-table-cell-role="th">pvalue</th>
+<th data-quarto-table-cell-role="th">padj</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">count</th>
+<td>3001.000</td>
+<td>3001.000</td>
+<td>3001.000</td>
+<td>3001.000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">mean</th>
+<td>2217.760</td>
+<td>-0.071</td>
+<td>0.039</td>
+<td>0.226</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">std</th>
+<td>19582.573</td>
+<td>0.583</td>
+<td>0.037</td>
+<td>0.165</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">min</th>
+<td>10.126</td>
+<td>-2.165</td>
+<td>0.000</td>
+<td>0.000</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25%</th>
+<td>98.839</td>
+<td>-0.529</td>
+<td>0.004</td>
+<td>0.063</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50%</th>
+<td>328.715</td>
+<td>-0.267</td>
+<td>0.027</td>
+<td>0.224</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">75%</th>
+<td>1115.481</td>
+<td>0.410</td>
+<td>0.069</td>
+<td>0.382</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">max</th>
+<td>954963.992</td>
+<td>2.387</td>
+<td>0.120</td>
+<td>0.499</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>Look at the maxima.</strong> The largest p-value is 0.12 and the largest adjusted p-value 0.50. Genome-wide p-values range up to 1, so this file is a pre-filtered list of genes with <span class="math inline">\(p &lt; 0.12\)</span>, not all genes.</p>
+<div class="cell" data-execution_count="7" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:13.031233Z","iopub.status.busy":"2026-10-09T09:16:13.031081Z","iopub.status.idle":"2026-10-09T09:16:13.042239Z","shell.execute_reply":"2026-10-09T09:16:13.041457Z"}}' id="39dbe063">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a aria-hidden="true" href="#cb11-1" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"largest p-value in the file:"</span>, <span class="bu">round</span>(df[<span class="st">"pvalue"</span>].<span class="bu">max</span>(), <span class="dv">3</span>))</span>
+<span id="cb11-2"><a aria-hidden="true" href="#cb11-2" tabindex="-1"></a></span>
+<span id="cb11-3"><a aria-hidden="true" href="#cb11-3" tabindex="-1"></a>significant <span class="op">=</span> df[df[<span class="st">"padj"</span>] <span class="op">&lt;</span> <span class="fl">0.05</span>]</span>
+<span id="cb11-4"><a aria-hidden="true" href="#cb11-4" tabindex="-1"></a>strong <span class="op">=</span> df[(df[<span class="st">"padj"</span>] <span class="op">&lt;</span> <span class="fl">0.05</span>) <span class="op">&amp;</span> (df[<span class="st">"log2_FoldChange"</span>].<span class="bu">abs</span>() <span class="op">&gt;</span> <span class="dv">1</span>)]</span>
+<span id="cb11-5"><a aria-hidden="true" href="#cb11-5" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"padj &lt; 0.05: </span><span class="sc">{</span><span class="bu">len</span>(significant)<span class="sc">}</span><span class="ss"> genes"</span>)</span>
+<span id="cb11-6"><a aria-hidden="true" href="#cb11-6" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"padj &lt; 0.05 and |log2 FC| &gt; 1: </span><span class="sc">{</span><span class="bu">len</span>(strong)<span class="sc">}</span><span class="ss"> genes "</span></span>
+<span id="cb11-7"><a aria-hidden="true" href="#cb11-7" tabindex="-1"></a>      <span class="ss">f"(</span><span class="sc">{</span>(strong[<span class="st">'log2_FoldChange'</span>] <span class="op">&gt;</span> <span class="dv">0</span>)<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss"> up, </span><span class="sc">{</span>(strong[<span class="st">'log2_FoldChange'</span>] <span class="op">&lt;</span> <span class="dv">0</span>)<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss"> down)"</span>)</span>
+<span id="cb11-8"><a aria-hidden="true" href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a aria-hidden="true" href="#cb11-9" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">most significant genes:"</span>)</span>
+<span id="cb11-10"><a aria-hidden="true" href="#cb11-10" tabindex="-1"></a><span class="bu">print</span>(df.sort_values(<span class="st">"padj"</span>).head(<span class="dv">5</span>)[[<span class="st">"Gene"</span>, <span class="st">"log2_FoldChange"</span>, <span class="st">"padj"</span>]].to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb11-11"><a aria-hidden="true" href="#cb11-11" tabindex="-1"></a>top_up <span class="op">=</span> significant.sort_values(<span class="st">"log2_FoldChange"</span>, ascending<span class="op">=</span><span class="va">False</span>).iloc[<span class="dv">0</span>]</span>
+<span id="cb11-12"><a aria-hidden="true" href="#cb11-12" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">largest increase among significant genes: </span><span class="sc">{</span>top_up[<span class="st">'Gene'</span>]<span class="sc">}</span><span class="ss"> "</span></span>
+<span id="cb11-13"><a aria-hidden="true" href="#cb11-13" tabindex="-1"></a>      <span class="ss">f"(log2 FC </span><span class="sc">{</span>top_up[<span class="st">'log2_FoldChange'</span>]<span class="sc">:.2f}</span><span class="ss"> = </span><span class="sc">{</span><span class="dv">2</span> <span class="op">**</span> top_up[<span class="st">'log2_FoldChange'</span>]<span class="sc">:.1f}</span><span class="ss">-fold)"</span>)</span>
+<span id="cb11-14"><a aria-hidden="true" href="#cb11-14" tabindex="-1"></a></span>
+<span id="cb11-15"><a aria-hidden="true" href="#cb11-15" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">mean expression: min </span><span class="sc">{</span>df[<span class="st">'baseMean'</span>]<span class="sc">.</span><span class="bu">min</span>()<span class="sc">:.0f}</span><span class="ss">, median </span><span class="sc">{</span>df[<span class="st">'baseMean'</span>]<span class="sc">.</span>median()<span class="sc">:.0f}</span><span class="ss">, "</span></span>
+<span id="cb11-16"><a aria-hidden="true" href="#cb11-16" tabindex="-1"></a>      <span class="ss">f"max </span><span class="sc">{</span>df[<span class="st">'baseMean'</span>]<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.0f}</span><span class="ss"> (</span><span class="sc">{</span>df<span class="sc">.</span>loc[df[<span class="st">'baseMean'</span>].idxmax(), <span class="st">'Gene'</span>]<span class="sc">}</span><span class="ss">)"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>largest p-value in the file: 0.12
+padj &lt; 0.05: 656 genes
+padj &lt; 0.05 and |log2 FC| &gt; 1: 171 genes (46 up, 125 down)
+
+most significant genes:
+   Gene  log2_FoldChange         padj
+ Osbpl3        -1.634422 8.070000e-18
+   Spp1        -1.927235 9.060000e-15
+ Syngr1        -2.164693 1.810000e-14
+ Cyp2b9         1.648193 1.810000e-14
+Cyp2c69         2.387006 1.810000e-14
+
+largest increase among significant genes: Cyp2c69 (log2 FC 2.39 = 5.2-fold)
+
+mean expression: min 10, median 329, max 954964 (Alb)</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="seeing-the-data">
+<h2 class="anchored" data-anchor-id="seeing-the-data">3. Seeing the data</h2>
+<p>Three questions, three plots: the distribution of fold changes (histogram), fold change against expression (scatter, log axis), and effect size against significance (volcano plot, with seaborn colouring by a column). This cell draws the page’s figure.</p>
+<div class="cell" data-execution_count="8" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:13.044207Z","iopub.status.busy":"2026-10-09T09:16:13.044011Z","iopub.status.idle":"2026-10-09T09:16:14.143809Z","shell.execute_reply":"2026-10-09T09:16:14.143052Z"}}' id="82c09a9e">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a aria-hidden="true" href="#cb13-1" tabindex="-1"></a>df[<span class="st">"significant"</span>] <span class="op">=</span> df[<span class="st">"padj"</span>] <span class="op">&lt;</span> <span class="fl">0.05</span></span>
+<span id="cb13-2"><a aria-hidden="true" href="#cb13-2" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="fl">4.5</span>))</span>
+<span id="cb13-3"><a aria-hidden="true" href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a aria-hidden="true" href="#cb13-4" tabindex="-1"></a>axes[<span class="dv">0</span>].hist(df[<span class="st">"log2_FoldChange"</span>], bins<span class="op">=</span><span class="dv">50</span>, color<span class="op">=</span><span class="st">"#5b8def"</span>)</span>
+<span id="cb13-5"><a aria-hidden="true" href="#cb13-5" tabindex="-1"></a>axes[<span class="dv">0</span>].axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"k"</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb13-6"><a aria-hidden="true" href="#cb13-6" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"log2 fold change (mutant vs wild type)"</span>)<span class="op">;</span> axes[<span class="dv">0</span>].set_ylabel(<span class="st">"number of genes"</span>)</span>
+<span id="cb13-7"><a aria-hidden="true" href="#cb13-7" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Distribution of fold changes"</span>)</span>
+<span id="cb13-8"><a aria-hidden="true" href="#cb13-8" tabindex="-1"></a></span>
+<span id="cb13-9"><a aria-hidden="true" href="#cb13-9" tabindex="-1"></a>axes[<span class="dv">1</span>].scatter(df[<span class="st">"baseMean"</span>], df[<span class="st">"log2_FoldChange"</span>], s<span class="op">=</span><span class="dv">4</span>, alpha<span class="op">=</span><span class="fl">0.4</span>, color<span class="op">=</span><span class="st">"#555"</span>)</span>
+<span id="cb13-10"><a aria-hidden="true" href="#cb13-10" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xscale(<span class="st">"log"</span>)<span class="op">;</span> axes[<span class="dv">1</span>].axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"k"</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb13-11"><a aria-hidden="true" href="#cb13-11" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"mean expression (normalized counts, log scale)"</span>)<span class="op">;</span> axes[<span class="dv">1</span>].set_ylabel(<span class="st">"log2 fold change"</span>)</span>
+<span id="cb13-12"><a aria-hidden="true" href="#cb13-12" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"Fold change against expression"</span>)</span>
+<span id="cb13-13"><a aria-hidden="true" href="#cb13-13" tabindex="-1"></a></span>
+<span id="cb13-14"><a aria-hidden="true" href="#cb13-14" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"log2_FoldChange"</span>, y<span class="op">=</span><span class="st">"minus_log10_pvalue"</span>, hue<span class="op">=</span><span class="st">"significant"</span>,</span>
+<span id="cb13-15"><a aria-hidden="true" href="#cb13-15" tabindex="-1"></a>                palette<span class="op">=</span>{<span class="va">True</span>: <span class="st">"#c14e3a"</span>, <span class="va">False</span>: <span class="st">"#b8bec8"</span>}, s<span class="op">=</span><span class="dv">8</span>, linewidth<span class="op">=</span><span class="dv">0</span>, ax<span class="op">=</span>axes[<span class="dv">2</span>])</span>
+<span id="cb13-16"><a aria-hidden="true" href="#cb13-16" tabindex="-1"></a>axes[<span class="dv">2</span>].set_xlabel(<span class="st">"log2 fold change"</span>)<span class="op">;</span> axes[<span class="dv">2</span>].set_ylabel(<span class="st">"-log10(p)"</span>)</span>
+<span id="cb13-17"><a aria-hidden="true" href="#cb13-17" tabindex="-1"></a>axes[<span class="dv">2</span>].set_title(<span class="st">"Volcano plot"</span>)<span class="op">;</span> axes[<span class="dv">2</span>].legend(title<span class="op">=</span><span class="st">"padj &lt; 0.05"</span>, fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb13-18"><a aria-hidden="true" href="#cb13-18" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.savefig(<span class="ss">f"</span><span class="sc">{</span>FIGS<span class="sc">}</span><span class="ss">/session02-explore.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>, bbox_inches<span class="op">=</span><span class="st">"tight"</span>)<span class="op">;</span> plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session02-working-in-python_files/figure-html/cell-9-output-1.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Notice the empty band around zero</strong> in the left and middle panels: the pre-filtering again. Genes whose expression barely changed rarely reach <span class="math inline">\(p &lt; 0.12\)</span>, so they are not in the file.</p>
+<p>For comparison: the middle panel on a linear axis. Almost every gene is squeezed against the left edge by a few extremely highly expressed ones.</p>
+<div class="cell" data-execution_count="9" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.145614Z","iopub.status.busy":"2026-10-09T09:16:14.145460Z","iopub.status.idle":"2026-10-09T09:16:14.221317Z","shell.execute_reply":"2026-10-09T09:16:14.220521Z"}}' id="db60f70f">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a aria-hidden="true" href="#cb14-1" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="fl">3.5</span>))</span>
+<span id="cb14-2"><a aria-hidden="true" href="#cb14-2" tabindex="-1"></a>ax.scatter(df[<span class="st">"baseMean"</span>], df[<span class="st">"log2_FoldChange"</span>], s<span class="op">=</span><span class="dv">4</span>, alpha<span class="op">=</span><span class="fl">0.4</span>, color<span class="op">=</span><span class="st">"#555"</span>)</span>
+<span id="cb14-3"><a aria-hidden="true" href="#cb14-3" tabindex="-1"></a>ax.set_xlabel(<span class="st">"mean expression (linear scale)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"log2 fold change"</span>)</span>
+<span id="cb14-4"><a aria-hidden="true" href="#cb14-4" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session02-working-in-python_files/figure-html/cell-10-output-1.png"/></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section class="level2" id="asking-quantitative-questions">
+<h2 class="anchored" data-anchor-id="asking-quantitative-questions">4. Asking quantitative questions</h2>
+<p>Plot first, test second. The raw-scale Pearson correlation misses the relationship the log-scale plot shows; a test that fits the plot finds it.</p>
+<div class="cell" data-execution_count="10" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.222916Z","iopub.status.busy":"2026-10-09T09:16:14.222776Z","iopub.status.idle":"2026-10-09T09:16:14.229553Z","shell.execute_reply":"2026-10-09T09:16:14.228864Z"}}' id="e2ae25e0">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a aria-hidden="true" href="#cb15-1" tabindex="-1"></a>abs_fc <span class="op">=</span> df[<span class="st">"log2_FoldChange"</span>].<span class="bu">abs</span>()</span>
+<span id="cb15-2"><a aria-hidden="true" href="#cb15-2" tabindex="-1"></a>r, p <span class="op">=</span> stats.pearsonr(df[<span class="st">"baseMean"</span>], abs_fc)</span>
+<span id="cb15-3"><a aria-hidden="true" href="#cb15-3" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Pearson, raw expression:     r = </span><span class="sc">{</span>r<span class="sc">:.2f}</span><span class="ss">, p = </span><span class="sc">{</span>p<span class="sc">:.2f}</span><span class="ss">   &lt;- 'no relationship'?"</span>)</span>
+<span id="cb15-4"><a aria-hidden="true" href="#cb15-4" tabindex="-1"></a>r, p <span class="op">=</span> stats.pearsonr(np.log10(df[<span class="st">"baseMean"</span>]), abs_fc)</span>
+<span id="cb15-5"><a aria-hidden="true" href="#cb15-5" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Pearson, log10 expression:   r = </span><span class="sc">{</span>r<span class="sc">:.2f}</span><span class="ss">, p = </span><span class="sc">{</span>p<span class="sc">:.0e}</span><span class="ss">"</span>)</span>
+<span id="cb15-6"><a aria-hidden="true" href="#cb15-6" tabindex="-1"></a>rho, p <span class="op">=</span> stats.spearmanr(df[<span class="st">"baseMean"</span>], abs_fc)</span>
+<span id="cb15-7"><a aria-hidden="true" href="#cb15-7" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Spearman (ranks):            rho = </span><span class="sc">{</span>rho<span class="sc">:.2f}</span><span class="ss">, p = </span><span class="sc">{</span>p<span class="sc">:.0e}</span><span class="ss">"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Pearson, raw expression:     r = -0.01, p = 0.43   &lt;- 'no relationship'?
+Pearson, log10 expression:   r = -0.30, p = 2e-64
+Spearman (ranks):            rho = -0.42, p = 2e-129</code></pre>
+</div>
+</div>
+<section class="level3" id="existing-tools-for-standard-questions">
+<h3 class="anchored" data-anchor-id="existing-tools-for-standard-questions">Existing tools for standard questions</h3>
+<p>Session 1’s Welch t-test, the hierarchical clustering behind Session 4’s guide tree, and a scikit-learn model: each is one function call.</p>
+<div class="cell" data-execution_count="11" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.231037Z","iopub.status.busy":"2026-10-09T09:16:14.230894Z","iopub.status.idle":"2026-10-09T09:16:14.451919Z","shell.execute_reply":"2026-10-09T09:16:14.451204Z"}}' id="9e9b0f86">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a aria-hidden="true" href="#cb17-1" tabindex="-1"></a>control <span class="op">=</span> [<span class="fl">5.1</span>, <span class="fl">4.9</span>, <span class="fl">5.3</span>, <span class="fl">5.0</span>]</span>
+<span id="cb17-2"><a aria-hidden="true" href="#cb17-2" tabindex="-1"></a>treatment <span class="op">=</span> [<span class="fl">7.2</span>, <span class="fl">6.8</span>, <span class="fl">7.5</span>, <span class="fl">7.0</span>]</span>
+<span id="cb17-3"><a aria-hidden="true" href="#cb17-3" tabindex="-1"></a>t, p <span class="op">=</span> stats.ttest_ind(control, treatment, equal_var<span class="op">=</span><span class="va">False</span>)       <span class="co"># Welch's t-test</span></span>
+<span id="cb17-4"><a aria-hidden="true" href="#cb17-4" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Welch t-test: t = </span><span class="sc">{</span>t<span class="sc">:.1f}</span><span class="ss">, p = </span><span class="sc">{</span>p<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb17-5"><a aria-hidden="true" href="#cb17-5" tabindex="-1"></a></span>
+<span id="cb17-6"><a aria-hidden="true" href="#cb17-6" tabindex="-1"></a><span class="im">from</span> scipy.cluster.hierarchy <span class="im">import</span> linkage, dendrogram</span>
+<span id="cb17-7"><a aria-hidden="true" href="#cb17-7" tabindex="-1"></a>top20 <span class="op">=</span> df.sort_values(<span class="st">"padj"</span>).head(<span class="dv">20</span>)</span>
+<span id="cb17-8"><a aria-hidden="true" href="#cb17-8" tabindex="-1"></a>tree <span class="op">=</span> linkage(top20[[<span class="st">"log2_FoldChange"</span>, <span class="st">"minus_log10_pvalue"</span>]], method<span class="op">=</span><span class="st">"average"</span>)</span>
+<span id="cb17-9"><a aria-hidden="true" href="#cb17-9" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">2.8</span>))</span>
+<span id="cb17-10"><a aria-hidden="true" href="#cb17-10" tabindex="-1"></a>dendrogram(tree, labels<span class="op">=</span>top20[<span class="st">"Gene"</span>].tolist(), leaf_rotation<span class="op">=</span><span class="dv">90</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb17-11"><a aria-hidden="true" href="#cb17-11" tabindex="-1"></a>ax.set_title(<span class="st">"Hierarchical clustering of the 20 most significant genes (fold change, significance)"</span>)</span>
+<span id="cb17-12"><a aria-hidden="true" href="#cb17-12" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span>
+<span id="cb17-13"><a aria-hidden="true" href="#cb17-13" tabindex="-1"></a></span>
+<span id="cb17-14"><a aria-hidden="true" href="#cb17-14" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb17-15"><a aria-hidden="true" href="#cb17-15" tabindex="-1"></a>model <span class="op">=</span> LinearRegression().fit(np.log10(df[[<span class="st">"baseMean"</span>]]), abs_fc)</span>
+<span id="cb17-16"><a aria-hidden="true" href="#cb17-16" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"scikit-learn: |log2 FC| = </span><span class="sc">{</span>model<span class="sc">.</span>intercept_<span class="sc">:.2f}</span><span class="ss"> - </span><span class="sc">{</span><span class="bu">abs</span>(model.coef_[<span class="dv">0</span>])<span class="sc">:.2f}</span><span class="ss"> * log10(expression)"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Welch t-test: t = -11.9, p = 0.0001</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session02-working-in-python_files/figure-html/cell-12-output-2.png"/></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>scikit-learn: |log2 FC| = 0.78 - 0.10 * log10(expression)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section class="level2" id="biological-objects">
+<h2 class="anchored" data-anchor-id="biological-objects">5. Biological objects</h2>
+<p><code>Seq</code> knows biology; a <code>SeqRecord</code> adds what the database knows about the sequence.</p>
+<div class="cell" data-execution_count="12" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.454008Z","iopub.status.busy":"2026-10-09T09:16:14.453726Z","iopub.status.idle":"2026-10-09T09:16:14.480460Z","shell.execute_reply":"2026-10-09T09:16:14.479725Z"}}' id="4b0d90f1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a aria-hidden="true" href="#cb20-1" tabindex="-1"></a><span class="im">from</span> Bio.Seq <span class="im">import</span> Seq</span>
+<span id="cb20-2"><a aria-hidden="true" href="#cb20-2" tabindex="-1"></a><span class="im">from</span> Bio.SeqUtils <span class="im">import</span> gc_fraction</span>
+<span id="cb20-3"><a aria-hidden="true" href="#cb20-3" tabindex="-1"></a></span>
+<span id="cb20-4"><a aria-hidden="true" href="#cb20-4" tabindex="-1"></a>hbb <span class="op">=</span> Seq(<span class="st">"ATGGTGCATCTGACTCCTGAGGAGAAGTCT"</span>)     <span class="co"># first ten codons of HBB (NM_000518.5)</span></span>
+<span id="cb20-5"><a aria-hidden="true" href="#cb20-5" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"length:            "</span>, <span class="bu">len</span>(hbb))</span>
+<span id="cb20-6"><a aria-hidden="true" href="#cb20-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"GC fraction:       "</span>, gc_fraction(hbb))</span>
+<span id="cb20-7"><a aria-hidden="true" href="#cb20-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"reverse complement:"</span>, hbb.reverse_complement())</span>
+<span id="cb20-8"><a aria-hidden="true" href="#cb20-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"translated:        "</span>, hbb.translate())</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>length:             30
+GC fraction:        0.5
+reverse complement: AGACTTCTCCTCAGGAGTCAGATGCACCAT
+translated:         MVHLTPEEKS</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="your-own-objects-classes">
+<h2 class="anchored" data-anchor-id="your-own-objects-classes">6. Your own objects: classes</h2>
+<p>A <strong>class</strong> is a blueprint; each <strong>object</strong> made from it carries its own data (<strong>attributes</strong>) and the functions that act on that data (<strong>methods</strong>). <code>__init__</code> runs once, when an object is created, and <code>self</code> is the object a method was called on.</p>
+<div class="cell" data-execution_count="13" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.482189Z","iopub.status.busy":"2026-10-09T09:16:14.482049Z","iopub.status.idle":"2026-10-09T09:16:14.487484Z","shell.execute_reply":"2026-10-09T09:16:14.486844Z"}}' id="293826b2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a aria-hidden="true" href="#cb22-1" tabindex="-1"></a><span class="im">from</span> Bio.SeqUtils <span class="im">import</span> molecular_weight</span>
+<span id="cb22-2"><a aria-hidden="true" href="#cb22-2" tabindex="-1"></a></span>
+<span id="cb22-3"><a aria-hidden="true" href="#cb22-3" tabindex="-1"></a><span class="kw">class</span> Protein:</span>
+<span id="cb22-4"><a aria-hidden="true" href="#cb22-4" tabindex="-1"></a>    <span class="co">"""A protein: a name and an amino-acid sequence."""</span></span>
+<span id="cb22-5"><a aria-hidden="true" href="#cb22-5" tabindex="-1"></a></span>
+<span id="cb22-6"><a aria-hidden="true" href="#cb22-6" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name, sequence):</span>
+<span id="cb22-7"><a aria-hidden="true" href="#cb22-7" tabindex="-1"></a>        <span class="va">self</span>.name <span class="op">=</span> name                    <span class="co"># attributes: the data each object carries</span></span>
+<span id="cb22-8"><a aria-hidden="true" href="#cb22-8" tabindex="-1"></a>        <span class="va">self</span>.sequence <span class="op">=</span> sequence</span>
+<span id="cb22-9"><a aria-hidden="true" href="#cb22-9" tabindex="-1"></a></span>
+<span id="cb22-10"><a aria-hidden="true" href="#cb22-10" tabindex="-1"></a>    <span class="kw">def</span> length(<span class="va">self</span>):                       <span class="co"># a method: a function that uses the object's own data</span></span>
+<span id="cb22-11"><a aria-hidden="true" href="#cb22-11" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">len</span>(<span class="va">self</span>.sequence)</span>
+<span id="cb22-12"><a aria-hidden="true" href="#cb22-12" tabindex="-1"></a></span>
+<span id="cb22-13"><a aria-hidden="true" href="#cb22-13" tabindex="-1"></a>    <span class="kw">def</span> composition(<span class="va">self</span>, residues):</span>
+<span id="cb22-14"><a aria-hidden="true" href="#cb22-14" tabindex="-1"></a>        <span class="co">"""The fraction of the sequence made of the given residues."""</span></span>
+<span id="cb22-15"><a aria-hidden="true" href="#cb22-15" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">sum</span>(<span class="va">self</span>.sequence.count(aa) <span class="cf">for</span> aa <span class="kw">in</span> residues) <span class="op">/</span> <span class="va">self</span>.length()</span>
+<span id="cb22-16"><a aria-hidden="true" href="#cb22-16" tabindex="-1"></a></span>
+<span id="cb22-17"><a aria-hidden="true" href="#cb22-17" tabindex="-1"></a>    <span class="kw">def</span> weight(<span class="va">self</span>):</span>
+<span id="cb22-18"><a aria-hidden="true" href="#cb22-18" tabindex="-1"></a>        <span class="co">"""Molecular weight in daltons, from Biopython."""</span></span>
+<span id="cb22-19"><a aria-hidden="true" href="#cb22-19" tabindex="-1"></a>        <span class="cf">return</span> molecular_weight(<span class="va">self</span>.sequence, seq_type<span class="op">=</span><span class="st">"protein"</span>)</span>
+<span id="cb22-20"><a aria-hidden="true" href="#cb22-20" tabindex="-1"></a></span>
+<span id="cb22-21"><a aria-hidden="true" href="#cb22-21" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__len__</span>(<span class="va">self</span>):                      <span class="co"># a special method: makes len(protein) work</span></span>
+<span id="cb22-22"><a aria-hidden="true" href="#cb22-22" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.length()</span>
+<span id="cb22-23"><a aria-hidden="true" href="#cb22-23" tabindex="-1"></a></span>
+<span id="cb22-24"><a aria-hidden="true" href="#cb22-24" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):                     <span class="co"># ... and this one decides how the object is printed</span></span>
+<span id="cb22-25"><a aria-hidden="true" href="#cb22-25" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f"Protein(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">!r}</span><span class="ss">, </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>length()<span class="sc">}</span><span class="ss"> aa)"</span></span>
+<span id="cb22-26"><a aria-hidden="true" href="#cb22-26" tabindex="-1"></a></span>
+<span id="cb22-27"><a aria-hidden="true" href="#cb22-27" tabindex="-1"></a></span>
+<span id="cb22-28"><a aria-hidden="true" href="#cb22-28" tabindex="-1"></a><span class="co"># human beta-globin (UniProt P68871)</span></span>
+<span id="cb22-29"><a aria-hidden="true" href="#cb22-29" tabindex="-1"></a>beta <span class="op">=</span> Protein(<span class="st">"HBB"</span>, <span class="st">"MVHLTPEEKSAVTALWGKVNVDEVGGEALGRLLVVYPWTQRFFESFGDLSTPDAVMGNPKVKAHGKKVLGAFSDGLAHLDNLKGTFATLSELHCDKLHVDPENFRLLGNVLVCVLAHHFGKEFTPPVQAAYQKVVAGVANALAHKYH"</span>)</span>
+<span id="cb22-30"><a aria-hidden="true" href="#cb22-30" tabindex="-1"></a><span class="bu">print</span>(beta)</span>
+<span id="cb22-31"><a aria-hidden="true" href="#cb22-31" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"length:           "</span>, beta.length(), <span class="st">"| len():"</span>, <span class="bu">len</span>(beta))</span>
+<span id="cb22-32"><a aria-hidden="true" href="#cb22-32" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"hydrophobic AVLIMFWC:"</span>, <span class="bu">round</span>(beta.composition(<span class="st">"AVLIMFWC"</span>), <span class="dv">3</span>))</span>
+<span id="cb22-33"><a aria-hidden="true" href="#cb22-33" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"molecular weight: "</span>, <span class="bu">round</span>(beta.weight()), <span class="st">"Da"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Protein('HBB', 147 aa)
+length:            147 | len(): 147
+hydrophobic AVLIMFWC: 0.442
+molecular weight:  15998 Da</code></pre>
+</div>
+</div>
+<p><strong>Inheritance.</strong> A subclass gets everything its parent class has and adds to it. Its <code>__init__</code> first calls the parent’s with <code>super().__init__(...)</code>, so that the parent’s attributes are set up too.</p>
+<div class="cell" data-execution_count="14" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.489374Z","iopub.status.busy":"2026-10-09T09:16:14.489243Z","iopub.status.idle":"2026-10-09T09:16:14.493156Z","shell.execute_reply":"2026-10-09T09:16:14.492492Z"}}' id="054eac1e">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a aria-hidden="true" href="#cb24-1" tabindex="-1"></a><span class="kw">class</span> Enzyme(Protein):</span>
+<span id="cb24-2"><a aria-hidden="true" href="#cb24-2" tabindex="-1"></a>    <span class="co">"""A protein that also has an EC number."""</span></span>
+<span id="cb24-3"><a aria-hidden="true" href="#cb24-3" tabindex="-1"></a></span>
+<span id="cb24-4"><a aria-hidden="true" href="#cb24-4" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name, sequence, ec_number):</span>
+<span id="cb24-5"><a aria-hidden="true" href="#cb24-5" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(name, sequence)      <span class="co"># let Protein set name and sequence</span></span>
+<span id="cb24-6"><a aria-hidden="true" href="#cb24-6" tabindex="-1"></a>        <span class="va">self</span>.ec_number <span class="op">=</span> ec_number</span>
+<span id="cb24-7"><a aria-hidden="true" href="#cb24-7" tabindex="-1"></a></span>
+<span id="cb24-8"><a aria-hidden="true" href="#cb24-8" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__repr__</span>(<span class="va">self</span>):</span>
+<span id="cb24-9"><a aria-hidden="true" href="#cb24-9" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f"Enzyme(</span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>name<span class="sc">!r}</span><span class="ss">, EC </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>ec_number<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span><span class="va">self</span><span class="sc">.</span>length()<span class="sc">}</span><span class="ss"> aa)"</span></span>
+<span id="cb24-10"><a aria-hidden="true" href="#cb24-10" tabindex="-1"></a></span>
+<span id="cb24-11"><a aria-hidden="true" href="#cb24-11" tabindex="-1"></a></span>
+<span id="cb24-12"><a aria-hidden="true" href="#cb24-12" tabindex="-1"></a><span class="co"># human lysozyme (UniProt P61626), the mature chain without its signal peptide</span></span>
+<span id="cb24-13"><a aria-hidden="true" href="#cb24-13" tabindex="-1"></a>lyz <span class="op">=</span> Enzyme(<span class="st">"LYZ"</span>, <span class="st">"KVFERCELARTLKRLGMDGYRGISLANWMCLAKWESGYNTRATNYNAGDRSTDYGIFQINSRYWCNDGKTPGAVNACHLSCSALLQDNIADAVACAKRVVRDPQGIRAWVAWRNRCQNRDVRQYVQGCGV"</span>, <span class="st">"3.2.1.17"</span>)</span>
+<span id="cb24-14"><a aria-hidden="true" href="#cb24-14" tabindex="-1"></a><span class="bu">print</span>(lyz)</span>
+<span id="cb24-15"><a aria-hidden="true" href="#cb24-15" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"inherited method, weight():"</span>, <span class="bu">round</span>(lyz.weight()), <span class="st">"Da"</span>)</span>
+<span id="cb24-16"><a aria-hidden="true" href="#cb24-16" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"an Enzyme is also a Protein:"</span>, <span class="bu">isinstance</span>(lyz, Protein))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Enzyme('LYZ', EC 3.2.1.17, 130 aa)
+inherited method, weight(): 14701 Da
+an Enzyme is also a Protein: True</code></pre>
+</div>
+</div>
+<section class="level3" id="looking-ahead-a-pytorch-model-is-a-class">
+<h3 class="anchored" data-anchor-id="looking-ahead-a-pytorch-model-is-a-class">Looking ahead: a PyTorch model is a class</h3>
+<p>Session 8 writes neural networks in exactly this shape: a class that inherits from <code>nn.Module</code>, creates its layers as attributes in <code>__init__</code>, and describes the computation in <code>forward</code>. Calling the object, <code>model(x)</code>, runs the special method <code>__call__</code>, which <code>nn.Module</code> defines to do some bookkeeping and then call <code>forward</code>.</p>
+<div class="cell" data-execution_count="15" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.494650Z","iopub.status.busy":"2026-10-09T09:16:14.494522Z","iopub.status.idle":"2026-10-09T09:16:14.500442Z","shell.execute_reply":"2026-10-09T09:16:14.499863Z"}}' id="025c5f08">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a aria-hidden="true" href="#cb26-1" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb26-2"><a aria-hidden="true" href="#cb26-2" tabindex="-1"></a></span>
+<span id="cb26-3"><a aria-hidden="true" href="#cb26-3" tabindex="-1"></a><span class="kw">class</span> TinyNet(nn.Module):</span>
+<span id="cb26-4"><a aria-hidden="true" href="#cb26-4" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb26-5"><a aria-hidden="true" href="#cb26-5" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()                  <span class="co"># nn.Module sets itself up first</span></span>
+<span id="cb26-6"><a aria-hidden="true" href="#cb26-6" tabindex="-1"></a>        <span class="va">self</span>.layer <span class="op">=</span> nn.Linear(<span class="dv">3</span>, <span class="dv">1</span>)        <span class="co"># a layer is an attribute</span></span>
+<span id="cb26-7"><a aria-hidden="true" href="#cb26-7" tabindex="-1"></a></span>
+<span id="cb26-8"><a aria-hidden="true" href="#cb26-8" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb26-9"><a aria-hidden="true" href="#cb26-9" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.layer(x)</span>
+<span id="cb26-10"><a aria-hidden="true" href="#cb26-10" tabindex="-1"></a></span>
+<span id="cb26-11"><a aria-hidden="true" href="#cb26-11" tabindex="-1"></a></span>
+<span id="cb26-12"><a aria-hidden="true" href="#cb26-12" tabindex="-1"></a>torch.manual_seed(<span class="dv">0</span>)</span>
+<span id="cb26-13"><a aria-hidden="true" href="#cb26-13" tabindex="-1"></a>model <span class="op">=</span> TinyNet()</span>
+<span id="cb26-14"><a aria-hidden="true" href="#cb26-14" tabindex="-1"></a>x <span class="op">=</span> torch.ones(<span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb26-15"><a aria-hidden="true" href="#cb26-15" tabindex="-1"></a><span class="bu">print</span>(model)</span>
+<span id="cb26-16"><a aria-hidden="true" href="#cb26-16" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"model(x)        :"</span>, model(x).item())</span>
+<span id="cb26-17"><a aria-hidden="true" href="#cb26-17" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"model.forward(x):"</span>, model.forward(x).item(), <span class="st">"(the same: model(x) calls forward)"</span>)</span>
+<span id="cb26-18"><a aria-hidden="true" href="#cb26-18" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"weights to learn:"</span>, <span class="bu">sum</span>(p.numel() <span class="cf">for</span> p <span class="kw">in</span> model.parameters()))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TinyNet(
+  (layer): Linear(in_features=3, out_features=1, bias=True)
+)
+model(x)        : -0.5946866273880005
+model.forward(x): -0.5946866273880005 (the same: model(x) calls forward)
+weights to learn: 4</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section class="level2" id="data-coming-from-somewhere">
+<h2 class="anchored" data-anchor-id="data-coming-from-somewhere">7. Data coming from somewhere</h2>
+<p>Everything arrives through a file handle, opened with <code>with</code> so it is closed automatically. First NCBI (remote), then the same records written to and read back from a local FASTA file, and a compressed one.</p>
+<div class="cell" data-execution_count="16" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.501964Z","iopub.status.busy":"2026-10-09T09:16:14.501833Z","iopub.status.idle":"2026-10-09T09:16:14.878697Z","shell.execute_reply":"2026-10-09T09:16:14.877955Z"}}' id="9e84ddaa">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a aria-hidden="true" href="#cb28-1" tabindex="-1"></a><span class="im">from</span> Bio <span class="im">import</span> Entrez, SeqIO</span>
+<span id="cb28-2"><a aria-hidden="true" href="#cb28-2" tabindex="-1"></a>Entrez.email <span class="op">=</span> <span class="st">"your.name@student.su.se"</span>      <span class="co"># replace with your own address: NCBI requires one</span></span>
+<span id="cb28-3"><a aria-hidden="true" href="#cb28-3" tabindex="-1"></a></span>
+<span id="cb28-4"><a aria-hidden="true" href="#cb28-4" tabindex="-1"></a><span class="cf">with</span> Entrez.efetch(db<span class="op">=</span><span class="st">"nuccore"</span>, <span class="bu">id</span><span class="op">=</span><span class="st">"NM_000518.5"</span>, rettype<span class="op">=</span><span class="st">"gb"</span>, retmode<span class="op">=</span><span class="st">"text"</span>) <span class="im">as</span> handle:</span>
+<span id="cb28-5"><a aria-hidden="true" href="#cb28-5" tabindex="-1"></a>    hbb_record <span class="op">=</span> SeqIO.read(handle, <span class="st">"genbank"</span>)</span>
+<span id="cb28-6"><a aria-hidden="true" href="#cb28-6" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"id:         "</span>, hbb_record.<span class="bu">id</span>)</span>
+<span id="cb28-7"><a aria-hidden="true" href="#cb28-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"description:"</span>, hbb_record.description)</span>
+<span id="cb28-8"><a aria-hidden="true" href="#cb28-8" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"length:     "</span>, <span class="bu">len</span>(hbb_record.seq))</span>
+<span id="cb28-9"><a aria-hidden="true" href="#cb28-9" tabindex="-1"></a>cds <span class="op">=</span> [f <span class="cf">for</span> f <span class="kw">in</span> hbb_record.features <span class="cf">if</span> f.<span class="bu">type</span> <span class="op">==</span> <span class="st">"CDS"</span>][<span class="dv">0</span>]</span>
+<span id="cb28-10"><a aria-hidden="true" href="#cb28-10" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CDS:        "</span>, cds.location, <span class="st">"-&gt;"</span>, cds.qualifiers[<span class="st">"translation"</span>][<span class="dv">0</span>][:<span class="dv">20</span>], <span class="st">"..."</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>id:          NM_000518.5
+description: Homo sapiens hemoglobin subunit beta (HBB), mRNA
+length:      628
+CDS:         [50:494](+) -&gt; MVHLTPEEKSAVTALWGKVN ...</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="17" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.881080Z","iopub.status.busy":"2026-10-09T09:16:14.880912Z","iopub.status.idle":"2026-10-09T09:16:14.887581Z","shell.execute_reply":"2026-10-09T09:16:14.886721Z"}}' id="ee345cda">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a aria-hidden="true" href="#cb30-1" tabindex="-1"></a><span class="im">import</span> gzip</span>
+<span id="cb30-2"><a aria-hidden="true" href="#cb30-2" tabindex="-1"></a><span class="co"># write the record to a local FASTA file, and a gzip-compressed copy</span></span>
+<span id="cb30-3"><a aria-hidden="true" href="#cb30-3" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"hbb.fasta"</span>, <span class="st">"w"</span>) <span class="im">as</span> out:</span>
+<span id="cb30-4"><a aria-hidden="true" href="#cb30-4" tabindex="-1"></a>    SeqIO.write(hbb_record, out, <span class="st">"fasta"</span>)</span>
+<span id="cb30-5"><a aria-hidden="true" href="#cb30-5" tabindex="-1"></a><span class="cf">with</span> gzip.<span class="bu">open</span>(<span class="st">"hbb.fasta.gz"</span>, <span class="st">"wt"</span>) <span class="im">as</span> out:</span>
+<span id="cb30-6"><a aria-hidden="true" href="#cb30-6" tabindex="-1"></a>    SeqIO.write(hbb_record, out, <span class="st">"fasta"</span>)</span>
+<span id="cb30-7"><a aria-hidden="true" href="#cb30-7" tabindex="-1"></a></span>
+<span id="cb30-8"><a aria-hidden="true" href="#cb30-8" tabindex="-1"></a><span class="co"># read them back: the code is the same, only the way the file is opened differs</span></span>
+<span id="cb30-9"><a aria-hidden="true" href="#cb30-9" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"hbb.fasta"</span>) <span class="im">as</span> handle:</span>
+<span id="cb30-10"><a aria-hidden="true" href="#cb30-10" tabindex="-1"></a>    local <span class="op">=</span> SeqIO.read(handle, <span class="st">"fasta"</span>)</span>
+<span id="cb30-11"><a aria-hidden="true" href="#cb30-11" tabindex="-1"></a><span class="cf">with</span> gzip.<span class="bu">open</span>(<span class="st">"hbb.fasta.gz"</span>, <span class="st">"rt"</span>) <span class="im">as</span> handle:</span>
+<span id="cb30-12"><a aria-hidden="true" href="#cb30-12" tabindex="-1"></a>    compressed <span class="op">=</span> SeqIO.read(handle, <span class="st">"fasta"</span>)</span>
+<span id="cb30-13"><a aria-hidden="true" href="#cb30-13" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"local FASTA:     "</span>, local.<span class="bu">id</span>, <span class="bu">len</span>(local.seq))</span>
+<span id="cb30-14"><a aria-hidden="true" href="#cb30-14" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"compressed FASTA:"</span>, compressed.<span class="bu">id</span>, <span class="bu">len</span>(compressed.seq), <span class="st">"| same sequence:"</span>, local.seq <span class="op">==</span> compressed.seq)</span>
+<span id="cb30-15"><a aria-hidden="true" href="#cb30-15" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> [<span class="st">"hbb.fasta"</span>, <span class="st">"hbb.fasta.gz"</span>]:</span>
+<span id="cb30-16"><a aria-hidden="true" href="#cb30-16" tabindex="-1"></a>    os.remove(f)                                <span class="co"># keep the folder tidy</span></span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>local FASTA:      NM_000518.5 628
+compressed FASTA: NM_000518.5 628 | same sequence: True</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="when-you-dont-know-how-to-do-something">
+<h2 class="anchored" data-anchor-id="when-you-dont-know-how-to-do-something">8. When you don’t know how to do something</h2>
+<p>Three real failures, and how the routine <em>read → inspect → documentation → AI → verify</em> resolves each. The errors are caught with <code>try</code>/<code>except</code> so the notebook keeps running; normally you would just see the message.</p>
+<div class="cell" data-execution_count="18" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.889500Z","iopub.status.busy":"2026-10-09T09:16:14.889334Z","iopub.status.idle":"2026-10-09T09:16:14.893856Z","shell.execute_reply":"2026-10-09T09:16:14.893104Z"}}' id="83ea4294">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a aria-hidden="true" href="#cb32-1" tabindex="-1"></a><span class="co"># 1. KeyError: a column that doesn't exist</span></span>
+<span id="cb32-2"><a aria-hidden="true" href="#cb32-2" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb32-3"><a aria-hidden="true" href="#cb32-3" tabindex="-1"></a>    df[<span class="st">"log2FC"</span>].mean()</span>
+<span id="cb32-4"><a aria-hidden="true" href="#cb32-4" tabindex="-1"></a><span class="cf">except</span> <span class="pp">KeyError</span> <span class="im">as</span> e:</span>
+<span id="cb32-5"><a aria-hidden="true" href="#cb32-5" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"KeyError:"</span>, e)</span>
+<span id="cb32-6"><a aria-hidden="true" href="#cb32-6" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"inspect -&gt; df.columns contains:"</span>, [c <span class="cf">for</span> c <span class="kw">in</span> df.columns <span class="cf">if</span> <span class="st">"log2"</span> <span class="kw">in</span> c.lower()])</span>
+<span id="cb32-7"><a aria-hidden="true" href="#cb32-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"fixed:"</span>, <span class="bu">round</span>(df[<span class="st">"log2_FoldChange"</span>].mean(), <span class="dv">3</span>))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>KeyError: 'log2FC'
+inspect -&gt; df.columns contains: ['log2_FoldChange']
+fixed: -0.071</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="19" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.895540Z","iopub.status.busy":"2026-10-09T09:16:14.895414Z","iopub.status.idle":"2026-10-09T09:16:14.899419Z","shell.execute_reply":"2026-10-09T09:16:14.898677Z"}}' id="5b46be1d">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a aria-hidden="true" href="#cb34-1" tabindex="-1"></a><span class="co"># 2. ImportError: an outdated suggestion (old tutorials, and AI assistants trained on them)</span></span>
+<span id="cb34-2"><a aria-hidden="true" href="#cb34-2" tabindex="-1"></a><span class="im">import</span> Bio</span>
+<span id="cb34-3"><a aria-hidden="true" href="#cb34-3" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb34-4"><a aria-hidden="true" href="#cb34-4" tabindex="-1"></a>    <span class="im">from</span> Bio.SeqUtils <span class="im">import</span> GC</span>
+<span id="cb34-5"><a aria-hidden="true" href="#cb34-5" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ImportError</span> <span class="im">as</span> e:</span>
+<span id="cb34-6"><a aria-hidden="true" href="#cb34-6" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"ImportError (Biopython </span><span class="sc">{</span>Bio<span class="sc">.</span>__version__<span class="sc">}</span><span class="ss">):"</span>, e)</span>
+<span id="cb34-7"><a aria-hidden="true" href="#cb34-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"documentation -&gt; the replacement is gc_fraction:"</span>, gc_fraction(hbb))</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ImportError (Biopython 1.86): cannot import name 'GC' from 'Bio.SeqUtils' (/home/arnee/miniforge3/envs/ekman-teaching/lib/python3.11/site-packages/Bio/SeqUtils/__init__.py)
+documentation -&gt; the replacement is gc_fraction: 0.5</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="20" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.901282Z","iopub.status.busy":"2026-10-09T09:16:14.901083Z","iopub.status.idle":"2026-10-09T09:16:14.907475Z","shell.execute_reply":"2026-10-09T09:16:14.906773Z"}}' id="3eec0619">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a aria-hidden="true" href="#cb36-1" tabindex="-1"></a><span class="co"># 3. Code that runs but may be wrong: test your assumptions</span></span>
+<span id="cb36-2"><a aria-hidden="true" href="#cb36-2" tabindex="-1"></a><span class="cf">assert</span> df[<span class="st">"pvalue"</span>].between(<span class="dv">0</span>, <span class="dv">1</span>).<span class="bu">all</span>(), <span class="st">"p-values must lie between 0 and 1"</span></span>
+<span id="cb36-3"><a aria-hidden="true" href="#cb36-3" tabindex="-1"></a><span class="cf">assert</span> <span class="kw">not</span> df[<span class="st">"Gene"</span>].duplicated().<span class="bu">any</span>(), <span class="st">"one row per gene"</span></span>
+<span id="cb36-4"><a aria-hidden="true" href="#cb36-4" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(hbb_record.seq) <span class="op">==</span> <span class="dv">628</span>, <span class="st">"HBB mRNA should be 628 nt"</span></span>
+<span id="cb36-5"><a aria-hidden="true" href="#cb36-5" tabindex="-1"></a><span class="co"># a check with a known answer: the provided -log10(p) column should match our own computation</span></span>
+<span id="cb36-6"><a aria-hidden="true" href="#cb36-6" tabindex="-1"></a><span class="cf">assert</span> np.allclose(<span class="op">-</span>np.log10(df[<span class="st">"pvalue"</span>]), df[<span class="st">"minus_log10_pvalue"</span>], rtol<span class="op">=</span><span class="fl">1e-3</span>)</span>
+<span id="cb36-7"><a aria-hidden="true" href="#cb36-7" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"all assumptions hold"</span>)</span>
+<span id="cb36-8"><a aria-hidden="true" href="#cb36-8" tabindex="-1"></a></span>
+<span id="cb36-9"><a aria-hidden="true" href="#cb36-9" tabindex="-1"></a><span class="co"># inspecting an unfamiliar object</span></span>
+<span id="cb36-10"><a aria-hidden="true" href="#cb36-10" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(hbb_record), <span class="st">"| attributes include:"</span>, [a <span class="cf">for</span> a <span class="kw">in</span> <span class="bu">dir</span>(hbb_record) <span class="cf">if</span> <span class="kw">not</span> a.startswith(<span class="st">"_"</span>)][:<span class="dv">8</span>])</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>all assumptions hold
+&lt;class 'Bio.SeqRecord.SeqRecord'&gt; | attributes include: ['annotations', 'count', 'dbxrefs', 'description', 'features', 'format', 'id', 'islower']</code></pre>
+</div>
+</div>
+<p><strong>The notebook trap.</strong> Run the next two cells, then run the second one again several times without the first. The number keeps climbing, because <code>counter</code> lives in memory, not on the page. <strong>Restart and Run All</strong> resets it.</p>
+<p><strong>Before submitting or sharing a notebook: Restart Kernel → Run All.</strong></p>
+<div class="cell" data-execution_count="21" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.909735Z","iopub.status.busy":"2026-10-09T09:16:14.909609Z","iopub.status.idle":"2026-10-09T09:16:14.912466Z","shell.execute_reply":"2026-10-09T09:16:14.911828Z"}}' id="6d504222">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a aria-hidden="true" href="#cb38-1" tabindex="-1"></a>counter <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb38-2"><a aria-hidden="true" href="#cb38-2" tabindex="-1"></a><span class="bu">print</span>(counter)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="22" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.914552Z","iopub.status.busy":"2026-10-09T09:16:14.914416Z","iopub.status.idle":"2026-10-09T09:16:14.917455Z","shell.execute_reply":"2026-10-09T09:16:14.916688Z"}}' id="56d26d47">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a aria-hidden="true" href="#cb40-1" tabindex="-1"></a>counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb40-2"><a aria-hidden="true" href="#cb40-2" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"counter is now:"</span>, counter)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>counter is now: 1</code></pre>
+</div>
+</div>
+</section>
+<section class="level2" id="mini-challenge-a-small-analysis-start-to-finish">
+<h2 class="anchored" data-anchor-id="mini-challenge-a-small-analysis-start-to-finish">9. Mini challenge: a small analysis, start to finish</h2>
+<p>Fetch the six human globin mRNAs, represent them as a DataFrame, calculate how much of each is coding, plot protein length against mRNA length, and explain the result. (Try it yourself before reading the solution below.)</p>
+<div class="cell" data-execution_count="23" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:14.919542Z","iopub.status.busy":"2026-10-09T09:16:14.919271Z","iopub.status.idle":"2026-10-09T09:16:15.561404Z","shell.execute_reply":"2026-10-09T09:16:15.560692Z"}}' id="652b1125">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a aria-hidden="true" href="#cb42-1" tabindex="-1"></a>accessions <span class="op">=</span> {<span class="st">"HBB"</span>: <span class="st">"NM_000518.5"</span>, <span class="st">"HBA1"</span>: <span class="st">"NM_000558.5"</span>, <span class="st">"HBA2"</span>: <span class="st">"NM_000517.6"</span>,</span>
+<span id="cb42-2"><a aria-hidden="true" href="#cb42-2" tabindex="-1"></a>              <span class="st">"MB"</span>: <span class="st">"NM_001382809.1"</span>, <span class="st">"NGB"</span>: <span class="st">"NM_021257.4"</span>, <span class="st">"CYGB"</span>: <span class="st">"NM_134268.5"</span>}</span>
+<span id="cb42-3"><a aria-hidden="true" href="#cb42-3" tabindex="-1"></a></span>
+<span id="cb42-4"><a aria-hidden="true" href="#cb42-4" tabindex="-1"></a><span class="co"># one request for all six records, rather than six requests in a loop</span></span>
+<span id="cb42-5"><a aria-hidden="true" href="#cb42-5" tabindex="-1"></a><span class="cf">with</span> Entrez.efetch(db<span class="op">=</span><span class="st">"nuccore"</span>, <span class="bu">id</span><span class="op">=</span><span class="st">","</span>.join(accessions.values()), rettype<span class="op">=</span><span class="st">"gb"</span>, retmode<span class="op">=</span><span class="st">"text"</span>) <span class="im">as</span> handle:</span>
+<span id="cb42-6"><a aria-hidden="true" href="#cb42-6" tabindex="-1"></a>    records <span class="op">=</span> <span class="bu">list</span>(SeqIO.parse(handle, <span class="st">"genbank"</span>))</span>
+<span id="cb42-7"><a aria-hidden="true" href="#cb42-7" tabindex="-1"></a></span>
+<span id="cb42-8"><a aria-hidden="true" href="#cb42-8" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb42-9"><a aria-hidden="true" href="#cb42-9" tabindex="-1"></a><span class="cf">for</span> gene, record <span class="kw">in</span> <span class="bu">zip</span>(accessions, records):</span>
+<span id="cb42-10"><a aria-hidden="true" href="#cb42-10" tabindex="-1"></a>    cds <span class="op">=</span> [f <span class="cf">for</span> f <span class="kw">in</span> record.features <span class="cf">if</span> f.<span class="bu">type</span> <span class="op">==</span> <span class="st">"CDS"</span>][<span class="dv">0</span>]</span>
+<span id="cb42-11"><a aria-hidden="true" href="#cb42-11" tabindex="-1"></a>    protein <span class="op">=</span> cds.qualifiers[<span class="st">"translation"</span>][<span class="dv">0</span>]</span>
+<span id="cb42-12"><a aria-hidden="true" href="#cb42-12" tabindex="-1"></a>    rows.append({<span class="st">"gene"</span>: gene, <span class="st">"accession"</span>: record.<span class="bu">id</span>, <span class="st">"mrna_length"</span>: <span class="bu">len</span>(record.seq),</span>
+<span id="cb42-13"><a aria-hidden="true" href="#cb42-13" tabindex="-1"></a>                 <span class="st">"gc"</span>: <span class="bu">round</span>(gc_fraction(record.seq), <span class="dv">2</span>), <span class="st">"protein_length"</span>: <span class="bu">len</span>(protein),</span>
+<span id="cb42-14"><a aria-hidden="true" href="#cb42-14" tabindex="-1"></a>                 <span class="st">"untranslated"</span>: <span class="bu">len</span>(record.seq) <span class="op">-</span> <span class="bu">len</span>(cds.extract(record.seq))})</span>
+<span id="cb42-15"><a aria-hidden="true" href="#cb42-15" tabindex="-1"></a>globins <span class="op">=</span> pd.DataFrame(rows)</span>
+<span id="cb42-16"><a aria-hidden="true" href="#cb42-16" tabindex="-1"></a>globins[<span class="st">"coding_fraction"</span>] <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> globins[<span class="st">"untranslated"</span>] <span class="op">/</span> globins[<span class="st">"mrna_length"</span>]).<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb42-17"><a aria-hidden="true" href="#cb42-17" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">list</span>(globins[<span class="st">"accession"</span>]) <span class="op">==</span> <span class="bu">list</span>(accessions.values()), <span class="st">"records came back in a different order"</span></span>
+<span id="cb42-18"><a aria-hidden="true" href="#cb42-18" tabindex="-1"></a>globins</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<div>
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">gene</th>
+<th data-quarto-table-cell-role="th">accession</th>
+<th data-quarto-table-cell-role="th">mrna_length</th>
+<th data-quarto-table-cell-role="th">gc</th>
+<th data-quarto-table-cell-role="th">protein_length</th>
+<th data-quarto-table-cell-role="th">untranslated</th>
+<th data-quarto-table-cell-role="th">coding_fraction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>HBB</td>
+<td>NM_000518.5</td>
+<td>628</td>
+<td>0.51</td>
+<td>147</td>
+<td>184</td>
+<td>0.71</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>HBA1</td>
+<td>NM_000558.5</td>
+<td>577</td>
+<td>0.64</td>
+<td>142</td>
+<td>148</td>
+<td>0.74</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>HBA2</td>
+<td>NM_000517.6</td>
+<td>576</td>
+<td>0.64</td>
+<td>142</td>
+<td>147</td>
+<td>0.74</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>MB</td>
+<td>NM_001382809.1</td>
+<td>1286</td>
+<td>0.55</td>
+<td>154</td>
+<td>821</td>
+<td>0.36</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>NGB</td>
+<td>NM_021257.4</td>
+<td>1778</td>
+<td>0.62</td>
+<td>151</td>
+<td>1322</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>CYGB</td>
+<td>NM_134268.5</td>
+<td>1962</td>
+<td>0.62</td>
+<td>190</td>
+<td>1389</td>
+<td>0.29</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="24" data-quarto-private-1='{"key":"execution","value":{"iopub.execute_input":"2026-10-09T09:16:15.563572Z","iopub.status.busy":"2026-10-09T09:16:15.563331Z","iopub.status.idle":"2026-10-09T09:16:15.697010Z","shell.execute_reply":"2026-10-09T09:16:15.696349Z"}}' id="465c655c">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a aria-hidden="true" href="#cb43-1" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb43-2"><a aria-hidden="true" href="#cb43-2" tabindex="-1"></a>ax.scatter(globins[<span class="st">"mrna_length"</span>], globins[<span class="st">"protein_length"</span>], color<span class="op">=</span><span class="st">"#c14e3a"</span>)</span>
+<span id="cb43-3"><a aria-hidden="true" href="#cb43-3" tabindex="-1"></a><span class="cf">for</span> _, row <span class="kw">in</span> globins.iterrows():</span>
+<span id="cb43-4"><a aria-hidden="true" href="#cb43-4" tabindex="-1"></a>    ax.annotate(row[<span class="st">"gene"</span>], (row[<span class="st">"mrna_length"</span>], row[<span class="st">"protein_length"</span>]), xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">3</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb43-5"><a aria-hidden="true" href="#cb43-5" tabindex="-1"></a>ax.set_xlabel(<span class="st">"mRNA length (nt)"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"protein length (aa)"</span>)</span>
+<span id="cb43-6"><a aria-hidden="true" href="#cb43-6" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="dv">220</span>)<span class="op">;</span> ax.set_title(<span class="st">"Six human globins"</span>)</span>
+<span id="cb43-7"><a aria-hidden="true" href="#cb43-7" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span>
+<span id="cb43-8"><a aria-hidden="true" href="#cb43-8" tabindex="-1"></a></span>
+<span id="cb43-9"><a aria-hidden="true" href="#cb43-9" tabindex="-1"></a>r, p <span class="op">=</span> stats.pearsonr(globins[<span class="st">"mrna_length"</span>], globins[<span class="st">"protein_length"</span>])</span>
+<span id="cb43-10"><a aria-hidden="true" href="#cb43-10" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Pearson r = </span><span class="sc">{</span>r<span class="sc">:.2f}</span><span class="ss">, p = </span><span class="sc">{</span>p<span class="sc">:.2f}</span><span class="ss"> (n = </span><span class="sc">{</span><span class="bu">len</span>(globins)<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb43-11"><a aria-hidden="true" href="#cb43-11" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"untranslated sequence: </span><span class="sc">{</span>globins[<span class="st">'untranslated'</span>]<span class="sc">.</span><span class="bu">min</span>()<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>globins[<span class="st">'untranslated'</span>]<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss"> nt"</span>)</span></code></pre></div><button class="code-copy-button" title="Copy to Clipboard"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="session02-working-in-python_files/figure-html/cell-25-output-1.png"/></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Pearson r = 0.78, p = 0.07 (n = 6)
+untranslated sequence: 147-1389 nt</code></pre>
+</div>
+</div>
+<p><strong>What we found.</strong> The proteins are all about the same size (142-190 amino acids, one globin fold each), but the mRNAs differ more than threefold; the difference is almost all untranslated sequence (UTRs). A transcript’s length says little about its protein. With only six genes, a correlation of <span class="math inline">\(r = 0.78\)</span> has <span class="math inline">\(p = 0.07\)</span>: a strong-looking correlation from few points is weak evidence.</p>
+<p>The lab continues from here.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="Session 2: Working like a computational biologist in Python" class="pagination-link" href="../session02.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="Session 3: Biological Databases" class="pagination-link" href="../session03.html">
+<span class="nav-page-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

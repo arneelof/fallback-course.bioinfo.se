@@ -1,0 +1,876 @@
+1
+00:00:00,000 --> 00:00:01,475
+Block three.
+
+2
+00:00:01,475 --> 00:00:05,900
+Interactions, putting the pieces together, and how to search properly.
+
+3
+00:00:06,500 --> 00:00:13,575
+Interaction databases differ in how direct their evidence is, and the range is wider than most people assume.
+
+4
+00:00:13,575 --> 00:00:22,925
+At the most direct end: a curated record of a physical interaction that somebody measured, by co-immunoprecipitation or two-hybrid or structure.
+
+5
+00:00:22,925 --> 00:00:35,500
+At the least direct end: an association inferred from indirect signals — the two proteins are co-expressed, or co-mentioned in the literature, or their genes sit next to each other in many bacterial genomes.
+
+6
+00:00:35,500 --> 00:00:41,300
+IntAct, part of the IMEx consortium, holds curated experimental interactions.
+
+7
+00:00:41,300 --> 00:00:51,200
+STRING answers a deliberately broader question — which proteins are functionally associated — by combining experimental and predicted evidence into a single score.
+
+8
+00:00:51,200 --> 00:01:00,425
+FunCoup, built here at Stockholm University, constructs a comparable network by a different route, and a later course in the programme covers it properly.
+
+9
+00:01:00,425 --> 00:01:03,050
+The thing to carry away is this.
+
+10
+00:01:03,050 --> 00:01:11,075
+A line between two proteins in a network diagram can mean somebody watched them bind, or it can mean they appear in the same papers.
+
+11
+00:01:11,075 --> 00:01:15,300
+Those are very different claims, and the picture looks identical.
+
+12
+00:01:15,300 --> 00:01:19,000
+Always check which you are looking at before you build on it.
+
+13
+00:01:19,600 --> 00:01:29,850
+Here is the complex itself, described as a curated record rather than as coordinates: two alpha-globin chains, two beta-globin chains, and four haem groups.
+
+14
+00:01:29,850 --> 00:01:39,250
+That is precisely the same object that two H H B shows you as atoms, described instead as a composition — what it is made of, in what ratio.
+
+15
+00:01:39,250 --> 00:01:48,650
+The Complex Portal curates these, and it is the right place to look when your question is "what is the actual functional unit?" rather than "where are the atoms?".
+
+16
+00:01:48,650 --> 00:01:53,800
+For contrast, IntAct lists twenty interaction records for beta-globin.
+
+17
+00:01:53,800 --> 00:02:03,675
+One of them is with haemoglobin subunit zeta, which is an embryonic chain — and that tells you something real: this protein's partners change over development.
+
+18
+00:02:03,675 --> 00:02:07,325
+A single complex record would not have shown you that.
+
+19
+00:02:07,325 --> 00:02:13,650
+It is worth pausing on why a complex needs its own record at all, when the structure already exists.
+
+20
+00:02:13,650 --> 00:02:18,525
+A structure is one experiment on one sample under one set of conditions.
+
+21
+00:02:18,525 --> 00:02:26,350
+The complex record is a statement about biology: this is the functional unit, these are its components, in these proportions.
+
+22
+00:02:26,350 --> 00:02:33,425
+It is assembled from many structures and many papers, and it survives when any individual structure is superseded.
+
+23
+00:02:33,425 --> 00:02:39,100
+That distinction matters whenever you are reasoning about function rather than geometry.
+
+24
+00:02:39,100 --> 00:02:44,000
+If you want to know what haemoglobin is, the complex record answers you.
+
+25
+00:02:44,000 --> 00:02:47,775
+If you want to know where its atoms are, the structure does.
+
+26
+00:02:48,375 --> 00:02:51,875
+Here is the whole thread of the lecture in one picture.
+
+27
+00:02:51,875 --> 00:03:00,550
+Each row is a different database's record of the same underlying biology — the gene, the transcript, the protein, the structure, the complex.
+
+28
+00:03:00,550 --> 00:03:06,325
+And each one is reached from the row above it by following a cross-reference, not by searching again.
+
+29
+00:03:06,325 --> 00:03:10,675
+That is the practical demonstration of the first of our two habits.
+
+30
+00:03:10,675 --> 00:03:13,275
+You type a name once, at the top.
+
+31
+00:03:13,275 --> 00:03:16,325
+Everything after that is navigation.
+
+32
+00:03:16,325 --> 00:03:25,500
+The notebook fetches every one of these records live, so what you see on the slide is what the databases say today, not what they said when the slide was made.
+
+33
+00:03:25,500 --> 00:03:30,850
+If something has changed since this was recorded, the notebook will show you the change.
+
+34
+00:03:30,850 --> 00:03:35,200
+The lab ends with a dossier of your own, for human myoglobin.
+
+35
+00:03:35,800 --> 00:03:40,275
+A practical point about searching that will save you a great deal of time.
+
+36
+00:03:40,275 --> 00:03:52,175
+An everything-at-once search — the single box on a database's front page — returns genome records, gene records, transcript records, protein records and literature, mixed together in one list.
+
+37
+00:03:52,175 --> 00:03:58,000
+You then have to sort them out by eye, and the categories are not always obvious from the titles.
+
+38
+00:03:58,000 --> 00:04:06,025
+The same words typed into NCBI Gene, or into UniProt specifically, give you a short list of exactly one kind of thing.
+
+39
+00:04:06,025 --> 00:04:12,250
+So the habit is: decide which biological level you want *before* you search, not after.
+
+40
+00:04:12,250 --> 00:04:16,375
+It turns a page of mixed results into a handful of candidates.
+
+41
+00:04:16,375 --> 00:04:21,125
+There is a second reason to narrow before you search, beyond saving time.
+
+42
+00:04:21,125 --> 00:04:25,975
+A specific collection lets you filter in ways the general search cannot.
+
+43
+00:04:25,975 --> 00:04:29,825
+In NCBI Gene you can restrict to an organism.
+
+44
+00:04:29,825 --> 00:04:33,425
+In UniProt you can restrict to reviewed entries.
+
+45
+00:04:33,425 --> 00:04:40,125
+Those filters do not exist on the front page, because the front page does not know what kind of thing you are looking for.
+
+46
+00:04:40,125 --> 00:04:43,425
+And a warning about the word "human" in a query.
+
+47
+00:04:43,425 --> 00:04:53,875
+Typing it does not filter by organism — it searches for the word, which appears in the descriptions of records from every organism that has ever been compared to a human one.
+
+48
+00:04:53,875 --> 00:04:56,025
+You will get zebrafish.
+
+49
+00:04:56,025 --> 00:04:58,600
+Use the organism filter.
+
+50
+00:04:59,200 --> 00:05:03,425
+And here is the version of all this that you can actually repeat.
+
+51
+00:05:03,425 --> 00:05:12,275
+NCBI's E-utilities, reached through Bio dot Entrez in Biopython; the UniProt REST API; the PDB REST API.
+
+52
+00:05:12,275 --> 00:05:19,450
+All three let you fetch records from a script, and the course notebook builds the entire beta-globin dossier that way.
+
+53
+00:05:19,450 --> 00:05:23,200
+Two advantages over clicking, and they are both large.
+
+54
+00:05:23,200 --> 00:05:26,000
+The first is reproducibility.
+
+55
+00:05:26,000 --> 00:05:29,125
+The script *is* the record of what you did.
+
+56
+00:05:29,125 --> 00:05:34,600
+There is no ambiguity about which record you fetched or when, because the code says so.
+
+57
+00:05:34,600 --> 00:05:36,675
+The second is scale.
+
+58
+00:05:36,675 --> 00:05:40,950
+The same four lines that fetch one protein fetch four hundred.
+
+59
+00:05:40,950 --> 00:05:50,025
+Clicking does not scale at all, and the moment your question involves more than a handful of records, the script is not the harder route — it is the easier one.
+
+60
+00:05:50,625 --> 00:05:55,925
+The literature, briefly, because you will search it constantly for the rest of your career.
+
+61
+00:05:55,925 --> 00:05:58,250
+PubMed is the index.
+
+62
+00:05:58,250 --> 00:06:06,500
+It is built on MEDLINE, which goes back to nineteen seventy-one, and it holds citations and abstracts — not full text.
+
+63
+00:06:06,500 --> 00:06:12,975
+PubMed Central is a different resource with a confusingly similar name: it holds free full text.
+
+64
+00:06:12,975 --> 00:06:15,000
+It is much smaller.
+
+65
+00:06:15,000 --> 00:06:22,975
+Only a fraction of what PubMed indexes has a PMC copy, so finding a paper in PubMed does not mean you can read it.
+
+66
+00:06:22,975 --> 00:06:30,100
+If there is no PMC copy and no institutional access, try bioRxiv or the other preprint servers.
+
+67
+00:06:30,100 --> 00:06:38,100
+Many authors now deposit a preprint to establish priority without waiting for peer review, and that copy is free to anybody.
+
+68
+00:06:38,100 --> 00:06:43,625
+It is not identical to the published version, which is worth remembering when you quote it.
+
+69
+00:06:44,225 --> 00:06:53,675
+Boolean operators in a search box are exactly set operations, and if you picture them that way you will predict the result instead of being surprised by it.
+
+70
+00:06:53,675 --> 00:06:57,475
+AND is the intersection — the overlap of the two sets.
+
+71
+00:06:57,475 --> 00:07:01,475
+OR is the union, which is A plus B minus the overlap.
+
+72
+00:07:01,475 --> 00:07:06,050
+Note the subtraction: records matching both are not counted twice.
+
+73
+00:07:06,050 --> 00:07:08,725
+NOT is A minus the overlap.
+
+74
+00:07:08,725 --> 00:07:11,925
+The numbers on this slide check out exactly.
+
+75
+00:07:11,925 --> 00:07:25,875
+Four hundred and nine thousand five hundred and sixty-one equals two hundred and eighty-eight thousand five hundred and seventy-seven, plus a hundred and twenty-five thousand four hundred and forty-two, minus four thousand four hundred and fifty-eight.
+
+76
+00:07:25,875 --> 00:07:37,050
+And two hundred and eighty-four thousand one hundred and nineteen equals two hundred and eighty-eight thousand five hundred and seventy-seven minus four thousand four hundred and fifty-eight.
+
+77
+00:07:37,050 --> 00:07:43,775
+The notebook does that arithmetic in code, so you can see it is not approximately true but exactly true.
+
+78
+00:07:43,775 --> 00:07:48,450
+The operator that catches people is NOT, because it is not symmetric.
+
+79
+00:07:48,450 --> 00:07:57,900
+A NOT B and B NOT A are different queries with different answers, and if you have ever typed one meaning the other, you will have been quietly misled rather than given an error.
+
+80
+00:07:58,500 --> 00:08:01,800
+A smaller trap, and an extremely common one.
+
+81
+00:08:01,800 --> 00:08:09,850
+Two words typed with a space between them are treated as an AND: find records containing both, anywhere in the record, in any order.
+
+82
+00:08:09,850 --> 00:08:17,525
+The same two words inside quotation marks are a phrase: find records where they appear together, in that order, adjacent.
+
+83
+00:08:17,525 --> 00:08:22,825
+The difference in result size is usually large, and occasionally it is enormous.
+
+84
+00:08:22,825 --> 00:08:27,450
+Before you press enter, predict which of the two will give fewer results.
+
+85
+00:08:27,450 --> 00:08:37,375
+If your prediction is wrong, you have learned something about how the search engine works — which is useful, and much better learned now than in the middle of a systematic review.
+
+86
+00:08:37,375 --> 00:08:42,675
+One more wrinkle, specific to PubMed and worth knowing because it surprises people.
+
+87
+00:08:42,675 --> 00:08:51,125
+PubMed normally expands your terms: it maps them onto MeSH subject headings and searches for synonyms as well as the words you typed.
+
+88
+00:08:51,125 --> 00:08:55,975
+That expansion is usually helpful and occasionally not what you wanted.
+
+89
+00:08:55,975 --> 00:08:59,225
+Quotation marks switch the expansion off.
+
+90
+00:08:59,225 --> 00:09:06,125
+So quoting a phrase does two things at once — it demands adjacency, and it disables the synonym mapping.
+
+91
+00:09:06,125 --> 00:09:13,675
+If a quoted search returns far fewer results than you expected, that second effect is often the reason, not the first.
+
+92
+00:09:13,675 --> 00:09:17,750
+The search details panel shows you what PubMed actually ran.
+
+93
+00:09:17,750 --> 00:09:24,250
+Look at it when a result surprises you; it is the single most useful diagnostic the site offers.
+
+94
+00:09:24,850 --> 00:09:31,825
+There is a second way into the literature, and pretending otherwise would be silly: you are all going to ask a chatbot.
+
+95
+00:09:31,825 --> 00:09:34,075
+So let us do it properly.
+
+96
+00:09:34,075 --> 00:09:41,600
+The useful thing to notice is that three different prompts get you three different kinds of answer, and only one of them is checkable.
+
+97
+00:09:41,600 --> 00:09:47,250
+Ask how intronic variants affect splicing in HBB and you get an explanation.
+
+98
+00:09:47,250 --> 00:09:55,400
+That is worth something — it tells you the mechanism to look for and the words people use for it — but there is nothing in it you can verify.
+
+99
+00:09:55,400 --> 00:10:01,050
+Ask for two primary studies that measured the effect and the answer has to name papers.
+
+100
+00:10:01,050 --> 00:10:04,150
+Now it can be wrong in a way you can detect.
+
+101
+00:10:04,150 --> 00:10:16,775
+Ask for the PMID, what was measured and which figure shows it, and you have three handles: an identifier that either resolves or does not, a method that either matches the claim or does not, and a figure to open.
+
+102
+00:10:16,775 --> 00:10:23,550
+One more thing matters, and it is easy to forget to ask: what did the assistant actually have in front of it?
+
+103
+00:10:23,550 --> 00:10:31,125
+Text it learned during training, a database record it retrieved just now, or a paper you pasted into the conversation.
+
+104
+00:10:31,125 --> 00:10:37,025
+Those are three very different bases for an answer, and only you can tell which one you are getting.
+
+105
+00:10:37,625 --> 00:10:40,225
+Here is the part people skip.
+
+106
+00:10:40,225 --> 00:10:44,300
+Checking a citation answers the question "which paper is this?".
+
+107
+00:10:44,300 --> 00:10:48,675
+Reading the paper answers "what does this paper actually support?".
+
+108
+00:10:48,675 --> 00:10:55,400
+They are separate achievements, and doing the first one well feels so much like diligence that it is easy to stop there.
+
+109
+00:10:55,400 --> 00:10:58,025
+The first check is mechanical.
+
+110
+00:10:58,025 --> 00:11:05,625
+Does the title match, do the authors match, does the year match, does the DOI or the PMID resolve to that same record.
+
+111
+00:11:05,625 --> 00:11:07,225
+Two minutes.
+
+112
+00:11:07,225 --> 00:11:10,150
+The second check is the actual work.
+
+113
+00:11:10,150 --> 00:11:15,250
+Which cells, which comparison, what was measured, and where in the paper is the number.
+
+114
+00:11:15,250 --> 00:11:22,200
+The abstract will not do: abstracts are written to sell the result, and the Results section is written to report it.
+
+115
+00:11:22,200 --> 00:11:28,850
+And keep this sentence somewhere: a working link proves nothing whatsoever about the sentence sitting next to it.
+
+116
+00:11:28,850 --> 00:11:31,825
+We will see exactly that in a moment.
+
+117
+00:11:32,425 --> 00:11:36,725
+Both of these are documented cases, published in the literature.
+
+118
+00:11:36,725 --> 00:11:40,175
+I am not telling you stories about what might go wrong.
+
+119
+00:11:40,175 --> 00:11:43,550
+The first is a reference that does not exist.
+
+120
+00:11:43,550 --> 00:12:00,125
+A group published the raw ChatGPT output they had generated in April twenty twenty-three, and its first reference was a twenty twenty-one review by Chen and colleagues on sunscreen and skin cancer — with a journal, a volume, an issue, page numbers and a PubMed identifier.
+
+121
+00:12:00,125 --> 00:12:03,100
+Everything a reference normally has.
+
+122
+00:12:03,100 --> 00:12:05,425
+The PMID is real.
+
+123
+00:12:05,425 --> 00:12:11,550
+It belongs to a paper about iron-oxide microspheres for enriching histidine-rich proteins.
+
+124
+00:12:11,550 --> 00:12:15,175
+Not the same field, not the same decade of your life.
+
+125
+00:12:15,175 --> 00:12:20,925
+So a student who clicks the link, sees that it works, and moves on, has checked nothing at all.
+
+126
+00:12:20,925 --> 00:12:26,225
+The second case is harder, because the paper is real and the citation is correct.
+
+127
+00:12:26,225 --> 00:12:33,375
+A model was asked to summarise a named trial of saline against albumin in patients with traumatic brain injury.
+
+128
+00:12:33,375 --> 00:12:37,175
+It reported no significant difference in mortality.
+
+129
+00:12:37,175 --> 00:12:45,825
+The paper reports thirty-three point two per cent against twenty point four per cent at twenty-four months, with a p value of nought point nought nought three.
+
+130
+00:12:45,825 --> 00:12:48,900
+The central finding had not been garbled.
+
+131
+00:12:48,900 --> 00:12:51,000
+It had been deleted.
+
+132
+00:12:51,600 --> 00:12:56,925
+Let me finish this part with the opposite of a failure: a real paper, read properly.
+
+133
+00:12:56,925 --> 00:13:07,175
+Nualkaew and colleagues, PMID thirty-one one one three nine nine six, tested an engineered U seven RNA against a splicing defect in beta-globin.
+
+134
+00:13:07,175 --> 00:13:17,100
+The cells were erythroid cells cultured from patients carrying the variant, compared against untreated cells, a vector control and a scrambled-sequence control.
+
+135
+00:13:17,100 --> 00:13:27,425
+The measurement was RT-PCR, in figure three, panels A and B, and the number is a mean of eight point two five per cent correctly spliced beta-globin RNA at day ten.
+
+136
+00:13:27,425 --> 00:13:32,000
+Now read that number carefully, because it is a percentage of RNA.
+
+137
+00:13:32,000 --> 00:13:37,975
+It is not the percentage of cells that were corrected, and it is certainly not a treatment that works.
+
+138
+00:13:37,975 --> 00:13:47,500
+The honest one-sentence version is: in cultured patient-derived cells carrying this variant, an engineered RNA partly restored correct splicing.
+
+139
+00:13:47,500 --> 00:13:51,175
+Every qualifier in that sentence is doing a job.
+
+140
+00:13:51,175 --> 00:14:01,075
+Take any one of them out and you have written something the experiment does not support — which, as we just saw, is the most common way a true statement becomes a false one.
+
+141
+00:14:01,675 --> 00:14:07,000
+Which generalises into a habit worth having at every database, not just PubMed.
+
+142
+00:14:07,000 --> 00:14:08,850
+Predict the count.
+
+143
+00:14:08,850 --> 00:14:10,650
+Run the query.
+
+144
+00:14:10,650 --> 00:14:13,175
+Check that the answer makes sense.
+
+145
+00:14:13,175 --> 00:14:20,700
+If you expected a few hundred and got two million, something is wrong with the query — not with the field, and not with biology.
+
+146
+00:14:20,700 --> 00:14:28,350
+If you expected thousands and got six, likewise: probably a typo, a wrong field, or quotation marks you did not mean.
+
+147
+00:14:28,350 --> 00:14:35,550
+The prediction costs five seconds and catches most mistakes before they turn into results you then have to explain.
+
+148
+00:14:35,550 --> 00:14:42,450
+It is the same instinct as estimating an answer before doing the arithmetic, and it works for the same reason.
+
+149
+00:14:42,450 --> 00:14:48,475
+This habit has a name in other fields: a sanity check, or an order-of-magnitude estimate.
+
+150
+00:14:48,475 --> 00:14:53,000
+The reason it works is that errors in queries tend to be large errors.
+
+151
+00:14:53,000 --> 00:15:00,800
+A misplaced quotation mark or a wrong field does not shift a count by ten per cent; it shifts it by a factor of a thousand.
+
+152
+00:15:00,800 --> 00:15:04,075
+So even a very rough prediction catches them.
+
+153
+00:15:04,075 --> 00:15:07,325
+It also protects against a subtler failure.
+
+154
+00:15:07,325 --> 00:15:18,600
+If you run a query, get a plausible-looking number, and never form an expectation, you will accept whatever you get — including the result of a query that quietly did not mean what you thought.
+
+155
+00:15:18,600 --> 00:15:23,425
+The prediction is what turns a silent wrong answer into a visible surprise.
+
+156
+00:15:24,025 --> 00:15:29,175
+A short list of resources this course does not use, but which you will run into.
+
+157
+00:15:29,175 --> 00:15:36,750
+They are here so that the names are familiar when they appear — in a paper, in a seminar, in somebody else's methods section.
+
+158
+00:15:36,750 --> 00:15:44,125
+Variant databases, cancer genomics resources, proteomics repositories, pathway and model databases.
+
+159
+00:15:44,125 --> 00:15:48,025
+Each one answers a question we do not ask in this course.
+
+160
+00:15:48,025 --> 00:15:50,750
+You are not expected to learn them now.
+
+161
+00:15:50,750 --> 00:15:54,300
+You are expected not to be startled by them later.
+
+162
+00:15:54,300 --> 00:15:58,400
+Let me name a few, so that the words are not strange when you meet them.
+
+163
+00:15:58,400 --> 00:16:09,000
+For variants: dbSNP catalogues them, ClinVar records their clinical interpretation, and the GWAS Catalog collects associations with traits.
+
+164
+00:16:09,000 --> 00:16:12,075
+For cancer: TCGA and COSMIC.
+
+165
+00:16:12,075 --> 00:16:14,425
+For proteomics: PRIDE.
+
+166
+00:16:14,425 --> 00:16:18,475
+For pathways and models: Reactome and BioModels.
+
+167
+00:16:18,475 --> 00:16:27,625
+Each answers a question this course does not ask, and each has its own identifiers, its own conventions and its own notion of who vouches for a claim.
+
+168
+00:16:27,625 --> 00:16:35,650
+When you do need one, the habits from today transfer unchanged — find out what kind of record you are holding, and what is behind it.
+
+169
+00:16:36,250 --> 00:16:41,125
+The lab takes the same path on a different protein: human myoglobin.
+
+170
+00:16:41,125 --> 00:16:43,550
+The same five questions.
+
+171
+00:16:43,550 --> 00:16:46,275
+The same five kinds of record.
+
+172
+00:16:46,275 --> 00:16:51,225
+Followed the same way, by cross-reference rather than by repeated searching.
+
+173
+00:16:51,225 --> 00:17:01,450
+The one addition is that for each record you also have to say what kind of information it holds, and who vouches for it — submitted, predicted, curated or experimental.
+
+174
+00:17:01,450 --> 00:17:05,150
+That last part is the actual point of the exercise.
+
+175
+00:17:05,150 --> 00:17:09,350
+Fetching records is easy, and it gets easier every year.
+
+176
+00:17:09,350 --> 00:17:15,075
+Knowing what you have fetched, and how much weight it will bear, is the skill that does not go out of date.
+
+177
+00:17:15,075 --> 00:17:19,550
+Myoglobin is a deliberate choice rather than an arbitrary one.
+
+178
+00:17:19,550 --> 00:17:28,675
+It is a globin, so everything you have learned about beta-globin transfers — the same families, the same kinds of record, the same structural literature.
+
+179
+00:17:28,675 --> 00:17:37,575
+But it is a single chain rather than part of a tetramer, it carries oxygen in muscle rather than in blood, and its database footprint is smaller.
+
+180
+00:17:37,575 --> 00:17:45,300
+So it is familiar enough that you are not starting from nothing, and different enough that you cannot simply copy the answers from the lecture.
+
+181
+00:17:45,300 --> 00:17:52,275
+When you build the dossier, keep the accessions with their versions as you go, rather than reconstructing them at the end.
+
+182
+00:17:52,275 --> 00:17:55,400
+Reconstructing is where mistakes happen.
+
+183
+00:17:56,000 --> 00:18:02,350
+One last set of numbers, because they have changed the field underneath us within your lifetimes as students.
+
+184
+00:18:02,350 --> 00:18:11,750
+The Protein Data Bank holds about two hundred and sixty thousand measured structures, accumulated over more than fifty years of work by thousands of people.
+
+185
+00:18:11,750 --> 00:18:17,050
+AlphaFold DB holds over two hundred and fourteen million predicted structures.
+
+186
+00:18:17,050 --> 00:18:21,500
+The ESM Atlas holds over six hundred and seventeen million.
+
+187
+00:18:21,500 --> 00:18:23,275
+Do the division.
+
+188
+00:18:23,275 --> 00:18:29,700
+More than ninety-nine point nine per cent of the structures you can look up today were never measured by anybody.
+
+189
+00:18:29,700 --> 00:18:33,475
+Which brings this session's question back with real force.
+
+190
+00:18:33,475 --> 00:18:36,375
+Who vouches for a predicted record?
+
+191
+00:18:36,375 --> 00:18:39,250
+Not a curator — nobody read it.
+
+192
+00:18:39,250 --> 00:18:42,250
+Not an experiment — nothing was measured.
+
+193
+00:18:42,250 --> 00:18:46,100
+A model vouches for it, with a confidence score attached.
+
+194
+00:18:46,100 --> 00:18:48,975
+That is not a reason to distrust them.
+
+195
+00:18:48,975 --> 00:18:51,575
+The good ones are genuinely good.
+
+196
+00:18:51,575 --> 00:18:57,850
+It is a reason to know which kind of thing you are holding, which is what this entire session has been about.
+
+197
+00:18:57,850 --> 00:19:02,875
+Session twelve is where we find out what that confidence score is actually worth.
+
+198
+00:19:03,475 --> 00:19:07,650
+To close, the four habits this session has been building towards.
+
+199
+00:19:07,650 --> 00:19:10,075
+None of them is difficult.
+
+200
+00:19:10,075 --> 00:19:15,350
+All of them are the difference between work somebody else can repeat and work they cannot.
+
+201
+00:19:15,350 --> 00:19:16,300
+One.
+
+202
+00:19:16,300 --> 00:19:21,325
+Follow cross-references between records rather than searching again by name.
+
+203
+00:19:21,325 --> 00:19:22,250
+Two.
+
+204
+00:19:22,250 --> 00:19:27,650
+Report accession point version, and report coordinates with their genome build.
+
+205
+00:19:27,650 --> 00:19:28,625
+Three.
+
+206
+00:19:28,625 --> 00:19:34,350
+Ask where each claim comes from: submitted, predicted, curated or experimental.
+
+207
+00:19:34,350 --> 00:19:35,200
+Four.
+
+208
+00:19:35,200 --> 00:19:38,100
+Predict the count before you run the query.
+
+209
+00:19:38,100 --> 00:19:49,900
+If you do those four things consistently, you will avoid most of the errors that this field actually makes — which are not sophisticated algorithmic errors, but fetching the wrong record and not noticing.
+
+210
+00:19:49,900 --> 00:19:54,050
+I want to finish with the reason these habits matter more than they sound.
+
+211
+00:19:54,050 --> 00:19:59,100
+The errors that damage computational biology are rarely sophisticated.
+
+212
+00:19:59,100 --> 00:20:05,050
+They are not subtle bugs in alignment algorithms or deep misunderstandings of statistics.
+
+213
+00:20:05,050 --> 00:20:15,475
+Overwhelmingly, they are somebody using the wrong record: the wrong transcript, the wrong genome build, the wrong organism, an annotation that was predicted and treated as measured.
+
+214
+00:20:15,475 --> 00:20:23,850
+Those errors are invisible, because the analysis runs perfectly well on the wrong input and produces a confident, plausible answer.
+
+215
+00:20:23,850 --> 00:20:28,550
+The four habits on this slide are cheap precisely because they are not clever.
+
+216
+00:20:28,550 --> 00:20:30,425
+They are bookkeeping.
+
+217
+00:20:30,425 --> 00:20:36,075
+And bookkeeping is what stands between a result that holds up and one that quietly does not.
+
+218
+00:20:36,675 --> 00:20:39,450
+Next time: sequence alignment.
+
+219
+00:20:39,450 --> 00:20:50,300
+Given two sequences, which residues correspond to which — and how do you find the best answer without trying every possibility, when the number of possibilities is astronomical?
+

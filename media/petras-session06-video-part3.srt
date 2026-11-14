@@ -1,0 +1,288 @@
+1
+00:00:00,000 --> 00:00:05,100
+And here is the range of the score, with what the different values mean in practice.
+
+2
+00:00:05,700 --> 00:00:13,700
+Measures built for tertiary structures can be stretched to quaternary ones, by treating every chain in an assembly as a single long chain.
+
+3
+00:00:13,700 --> 00:00:21,950
+The trouble is that you then cannot tell which part of the difference comes from the chains themselves and which from how they are placed relative to each other.
+
+4
+00:00:21,950 --> 00:00:34,750
+So there are measures meant specifically for quaternary structure, and they divide into two cases: when you know which residue corresponds to which — two docking models built from the same monomers, say — and when you do not.
+
+5
+00:00:35,350 --> 00:00:37,350
+Take the first case.
+
+6
+00:00:37,350 --> 00:00:40,725
+The usual measure is ligand RMSD.
+
+7
+00:00:40,725 --> 00:00:46,200
+The difference from ordinary RMSD is what you superimpose and what you measure.
+
+8
+00:00:46,200 --> 00:00:53,775
+You superimpose on the receptors — the larger proteins — because even identical receptors may sit anywhere in space.
+
+9
+00:00:53,775 --> 00:01:00,825
+That gives you a translation vector and a rotation matrix, and you apply those to the ligand, the smaller protein.
+
+10
+00:01:00,825 --> 00:01:07,025
+Then you measure the RMSD between the transformed ligand and the ligand in the reference complex.
+
+11
+00:01:07,025 --> 00:01:12,050
+That is ligand RMSD: aligned on the receptor, measured on the ligand.
+
+12
+00:01:12,650 --> 00:01:19,950
+If you keep only the interface residues of the reference structure and measure over those, you get interface RMSD.
+
+13
+00:01:19,950 --> 00:01:23,325
+The outline of the calculation is on the slide.
+
+14
+00:01:23,925 --> 00:01:31,650
+There are also measures that need no superposition at all: the fraction of native contacts and the fraction of non-native contacts.
+
+15
+00:01:31,650 --> 00:01:35,625
+One thing to notice is that the two do not add up to one.
+
+16
+00:01:35,625 --> 00:01:40,875
+The denominators are different, which is counterintuitive the first time you meet it.
+
+17
+00:01:40,875 --> 00:01:46,300
+At the bottom of the slide is how those three quantities together classify a comparison.
+
+18
+00:01:46,300 --> 00:01:50,275
+High quality means the two structures are nearly identical.
+
+19
+00:01:50,275 --> 00:01:54,925
+Incorrect means the ligand is in quite the wrong place against the receptor.
+
+20
+00:01:55,525 --> 00:02:03,750
+Finally the DockQ score, which takes the rather complicated CAPRI criteria and combines them empirically into a single number.
+
+21
+00:02:03,750 --> 00:02:10,375
+It is here because you will meet it again when the course discusses AI-based modelling of protein complexes.
+
+22
+00:02:10,975 --> 00:02:18,425
+Now the harder case: complexes made of different proteins, where there is no obvious correspondence between residues.
+
+23
+00:02:18,425 --> 00:02:21,900
+The two examples on screen are of that kind.
+
+24
+00:02:22,500 --> 00:02:26,900
+The trick is to stop comparing atoms and compare a frame instead.
+
+25
+00:02:26,900 --> 00:02:33,425
+Each complex is represented by fourteen points: seven for the receptor and seven for the ligand.
+
+26
+00:02:33,425 --> 00:02:36,975
+The first point of each set is the centre of mass.
+
+27
+00:02:36,975 --> 00:02:47,625
+The other six sit a few ångström away along the x, y and z directions — their coordinates come straight from the centre of mass by adding or subtracting a fixed amount.
+
+28
+00:02:48,225 --> 00:02:54,925
+Superimpose the second receptor onto the first, and those fourteen points land in particular positions.
+
+29
+00:02:54,925 --> 00:02:58,450
+Those are the positions marked with the subscript R.
+
+30
+00:02:59,050 --> 00:03:03,250
+Now superimpose the second ligand onto the first instead.
+
+31
+00:03:03,250 --> 00:03:06,475
+The same fourteen points land somewhere else.
+
+32
+00:03:06,475 --> 00:03:09,900
+Those are the positions marked with the subscript L.
+
+33
+00:03:10,500 --> 00:03:22,075
+The interaction RMSD is measured between those two sets of positions: the fourteen points as the receptor alignment puts them, against the fourteen points as the ligand alignment puts them.
+
+34
+00:03:22,675 --> 00:03:30,825
+And this is how interaction RMSD relates to ligand and interface RMSD, measured on a limited set of CAPRI targets.
+
+35
+00:03:30,825 --> 00:03:38,250
+The correlation is good, which is the point: a measure that needs no residue correspondence still tracks the ones that do.
+
+36
+00:03:38,850 --> 00:03:40,825
+Now to prediction.
+
+37
+00:03:40,825 --> 00:03:52,550
+The Protein Data Bank may look large, but the number of proteins that exist is vastly larger, and the prevailing view is that what a protein does is largely set by its three-dimensional structure.
+
+38
+00:03:52,550 --> 00:03:56,375
+So the structures that elude experiment have to be modelled.
+
+39
+00:03:56,375 --> 00:04:02,800
+For a long time, methods for modelling a single protein came in two kinds, shown at the top of the slide.
+
+40
+00:04:02,800 --> 00:04:12,275
+Around two thousand a third appeared, predicting physical contacts between amino acids from evolutionary information in a multiple sequence alignment.
+
+41
+00:04:12,275 --> 00:04:20,175
+And in twenty twenty the AI-based methods arrived, predicting tertiary structure with an accuracy nobody had seen before.
+
+42
+00:04:20,175 --> 00:04:28,775
+That led to claims that the problem is solved, and the AlphaFold database now holds something like six hundred million models of single proteins.
+
+43
+00:04:28,775 --> 00:04:32,200
+This lecture covers the methods that came before.
+
+44
+00:04:32,200 --> 00:04:43,600
+Two reasons they are still worth knowing: the contact-based methods are an essential part of the AI pipelines, and all three older approaches are built into those pipelines in one form or another.
+
+45
+00:04:43,600 --> 00:04:48,075
+Understanding them sketchily helps in understanding what came after.
+
+46
+00:04:48,675 --> 00:04:56,650
+This is ab initio modelling in outline: build the structure from the sequence and from physical principles, with no example to copy.
+
+47
+00:04:57,250 --> 00:05:04,475
+And this is template-based modelling, which uses structures already determined for proteins with similar sequences.
+
+48
+00:05:04,475 --> 00:05:14,975
+Textbooks usually split this in two — homology modelling when the target and template sequences are homologous, threading when they are merely similar — but here they are treated as one thing.
+
+49
+00:05:15,575 --> 00:05:20,275
+Before methods for quaternary structure, a word about vocabulary.
+
+50
+00:05:20,275 --> 00:05:27,075
+"Predicting protein–protein interactions" is used loosely and means two different things, as the slide shows.
+
+51
+00:05:27,075 --> 00:05:30,450
+One is whether two proteins interact at all.
+
+52
+00:05:30,450 --> 00:05:35,300
+The other is how they interact — the three-dimensional structure of the complex.
+
+53
+00:05:35,300 --> 00:05:40,075
+This lecture is about the second, which is usually called protein docking.
+
+54
+00:05:40,675 --> 00:05:46,525
+Docking methods divide the same three ways: template-free, template-based, and deep learning.
+
+55
+00:05:46,525 --> 00:05:49,650
+There is one difference from the tertiary case.
+
+56
+00:05:49,650 --> 00:05:57,900
+For complexes, the similarity between target and template can be assessed on two levels, sequence and structure, not just sequence.
+
+57
+00:05:58,500 --> 00:06:09,550
+In template-free docking you start from the structures of the two proteins, generate as many candidate arrangements as you can — decoys — and then pick one or a few as the final models.
+
+58
+00:06:10,150 --> 00:06:14,300
+And this is the assumption that template-based docking rests on.
+
+59
+00:06:14,900 --> 00:06:19,975
+Here is the algorithm for template-based docking using sequence similarity.
+
+60
+00:06:19,975 --> 00:06:25,625
+Notice what it does: it models the tertiary and quaternary structures at the same time.
+
+61
+00:06:25,625 --> 00:06:28,475
+This is the fold-and-dock approach.
+
+62
+00:06:29,075 --> 00:06:33,850
+And this is template-based docking using structure similarity instead.
+
+63
+00:06:33,850 --> 00:06:41,900
+Here the two are separate — fold first, then dock — so modelling the individual structures and modelling the complex are independent of each other.
+
+64
+00:06:42,500 --> 00:06:49,350
+The last part of the lecture is about classifying structures, and the databases that hold the classifications.
+
+65
+00:06:49,350 --> 00:06:52,225
+First, though, what a protein domain is.
+
+66
+00:06:52,825 --> 00:06:55,500
+And what a structural motif is.
+
+67
+00:06:56,100 --> 00:06:59,600
+This is the classification scheme in common use.
+
+68
+00:07:00,200 --> 00:07:03,050
+These are the older databases.
+
+69
+00:07:03,050 --> 00:07:10,250
+They are no longer the first place to look, but they come up constantly in the literature, so it is worth knowing the names.
+
+70
+00:07:10,850 --> 00:07:18,825
+And these are the newer ones, covering experimentally determined structures, with a recent extension to AlphaFold models.
+
+71
+00:07:19,425 --> 00:07:23,675
+This is the classification scheme that newer database uses.
+
+72
+00:07:24,275 --> 00:07:33,100
+That is the lecture: from atoms to proteins, how to measure whether two structures are alike, how structures are predicted, and how they are classified.
+

@@ -1,0 +1,808 @@
+1
+00:00:00,000 --> 00:00:03,925
+Welcome to Session twelve, the last lecture of the course.
+
+2
+00:00:03,925 --> 00:00:11,025
+Session six treated protein structure as something you look up: here is a structure, here is what you can measure on it.
+
+3
+00:00:11,025 --> 00:00:13,700
+Today we ask the other question.
+
+4
+00:00:13,700 --> 00:00:17,225
+Given only the sequence, can we predict the structure?
+
+5
+00:00:17,225 --> 00:00:23,900
+And then, having answered that, can we go further and design sequences that fold into structures we choose?
+
+6
+00:00:23,900 --> 00:00:28,375
+This is the session where everything in the course arrives in one place.
+
+7
+00:00:28,375 --> 00:00:31,250
+Session four and five's alignments.
+
+8
+00:00:31,250 --> 00:00:33,925
+Session seven's hidden layers.
+
+9
+00:00:33,925 --> 00:00:36,575
+Session nine's backpropagation.
+
+10
+00:00:36,575 --> 00:00:41,175
+Session ten's residual convolutional networks on contact maps.
+
+11
+00:00:41,175 --> 00:00:43,625
+Session eleven's attention.
+
+12
+00:00:43,625 --> 00:00:49,050
+All of them are components of AlphaFold2, and I will point at each as it appears.
+
+13
+00:00:49,050 --> 00:00:50,675
+Three blocks.
+
+14
+00:00:50,675 --> 00:00:57,850
+First, where long-range structural information comes from, which is the question the whole field was stuck on for fifty years.
+
+15
+00:00:57,850 --> 00:01:05,600
+Second, how AlphaFold2 combines the course's ideas, and, just as importantly, how much you should trust what it gives you.
+
+16
+00:01:05,600 --> 00:01:11,525
+Third, complexes, generative models, and protein design, which is where the field is now.
+
+17
+00:01:11,525 --> 00:01:20,425
+And the thread running through all three, which I would like you to carry out of this course: a model is a hypothesis with a confidence estimate attached.
+
+18
+00:01:20,425 --> 00:01:22,825
+It is not an experiment.
+
+19
+00:01:22,825 --> 00:01:28,900
+Everything in this lecture is also written out in full on the Session twelve page of the course book.
+
+20
+00:01:28,900 --> 00:01:37,125
+The page is the reference and this is the walk through it, so whenever a number or a name goes past too quickly, that is where to look it up.
+
+21
+00:01:37,125 --> 00:01:41,150
+I will say which part of the page we are in as each block starts.
+
+22
+00:01:41,750 --> 00:01:46,350
+Look at this slide, which lists what each session contributes to today.
+
+23
+00:01:46,350 --> 00:01:50,600
+And then the question written on it, which is the question of Block one.
+
+24
+00:01:50,600 --> 00:01:56,975
+If we try to predict a residue's structure from its local sequence alone, what information is missing?
+
+25
+00:01:56,975 --> 00:02:04,225
+Think back to Session seven, where we had a ten-residue stretch that was a helix in one protein and a strand in another.
+
+26
+00:02:04,225 --> 00:02:07,725
+Identical local sequence, opposite answers.
+
+27
+00:02:07,725 --> 00:02:12,425
+What is missing is the contacts with residues far away in the sequence.
+
+28
+00:02:12,425 --> 00:02:20,925
+Whether this stretch forms a helix depends on what it is packed against, and what it is packed against may be two hundred residues away along the chain.
+
+29
+00:02:20,925 --> 00:02:29,250
+That is the whole problem of structure prediction in one sentence, and Block one is the fifty-year story of trying to get at that information.
+
+30
+00:02:29,850 --> 00:02:31,325
+Block one.
+
+31
+00:02:31,325 --> 00:02:34,900
+Where does long-range structural information come from?
+
+32
+00:02:34,900 --> 00:02:40,525
+On the page, this block is the section "Where does long-range structural information come from?".
+
+33
+00:02:40,525 --> 00:02:55,975
+We start from the biophysics, so that everyone is on the same footing, then the two classic observations that define the problem, then what people actually did before deep learning, and then the idea that broke it open: that residues in contact evolve together.
+
+34
+00:02:56,575 --> 00:03:02,450
+First, what folding is, briefly, because Session six covered structure rather than folding.
+
+35
+00:03:02,450 --> 00:03:06,075
+A protein is made as a line of amino acids.
+
+36
+00:03:06,075 --> 00:03:13,350
+In water, it folds into a specific three-dimensional shape, and it does so for reasons that are mostly understandable.
+
+37
+00:03:13,350 --> 00:03:16,750
+The main driver is the hydrophobic effect.
+
+38
+00:03:16,750 --> 00:03:25,325
+Some side chains are greasy and do not mix with water, so the chain arranges itself to bury those on the inside, away from the solvent.
+
+39
+00:03:25,325 --> 00:03:28,650
+That single tendency does most of the work.
+
+40
+00:03:28,650 --> 00:03:37,500
+Then the backbone forms hydrogen bonds with itself, and the regular ways of doing that are the helices and strands of Session seven's secondary structure.
+
+41
+00:03:37,500 --> 00:03:46,100
+And then the core packs tightly, which constrains which residues can sit next to which, since a large side chain cannot occupy a small space.
+
+42
+00:03:46,100 --> 00:03:56,725
+The conventional four levels: primary structure is the sequence, secondary is helices and strands, tertiary is the fold of one chain, quaternary is several chains together.
+
+43
+00:03:56,725 --> 00:04:03,700
+One thing worth knowing about the result: the folded state is only slightly more stable than the unfolded chain.
+
+44
+00:04:03,700 --> 00:04:10,200
+The whole structure hangs on a small energy difference, which is why a single mutation can matter so much.
+
+45
+00:04:10,200 --> 00:04:23,225
+The classic example is in our own running protein: in beta-globin, glutamate six changed to valine puts a hydrophobic residue on the surface, the molecules stick to each other, and that is sickle-cell disease.
+
+46
+00:04:23,225 --> 00:04:27,175
+And finally, the economics that make prediction worth doing.
+
+47
+00:04:27,175 --> 00:04:31,375
+UniProt holds about a hundred and fifty million sequences.
+
+48
+00:04:31,375 --> 00:04:35,700
+The PDB holds about two hundred and sixty thousand structures.
+
+49
+00:04:35,700 --> 00:04:38,450
+Fewer than one in five hundred.
+
+50
+00:04:38,450 --> 00:04:47,400
+Sequencing is cheap and fast; solving a structure by X-ray crystallography, NMR or cryo-electron microscopy takes months to years.
+
+51
+00:04:47,400 --> 00:04:50,250
+Prediction is how you fill that gap.
+
+52
+00:04:50,850 --> 00:04:57,450
+Two results from the nineteen sixties and seventies define the problem, and they pull in opposite directions.
+
+53
+00:04:57,450 --> 00:04:59,950
+The first is Anfinsen's.
+
+54
+00:04:59,950 --> 00:05:07,125
+He took ribonuclease, unfolded it completely with urea and a reducing agent, and then removed those.
+
+55
+00:05:07,125 --> 00:05:16,075
+It refolded, by itself, into its working structure, forming the correct four disulphide bonds out of a hundred and five possible pairings.
+
+56
+00:05:16,075 --> 00:05:17,525
+No cell.
+
+57
+00:05:17,525 --> 00:05:19,250
+No template.
+
+58
+00:05:19,250 --> 00:05:21,050
+No machinery.
+
+59
+00:05:21,050 --> 00:05:24,150
+Just the sequence and the right conditions.
+
+60
+00:05:24,150 --> 00:05:30,125
+That is the result that makes this field possible, because it says the information is in the sequence.
+
+61
+00:05:30,125 --> 00:05:36,725
+If the sequence determines the structure, then predicting the structure from the sequence is possible in principle.
+
+62
+00:05:36,725 --> 00:05:40,950
+Anfinsen received the Nobel Prize in nineteen seventy-two.
+
+63
+00:05:40,950 --> 00:05:45,725
+With caveats, which matter in practice: not every protein does this.
+
+64
+00:05:45,725 --> 00:05:47,850
+Some need chaperones.
+
+65
+00:05:47,850 --> 00:05:50,975
+Some only fold when bound to a partner.
+
+66
+00:05:50,975 --> 00:05:53,425
+Some switch between states.
+
+67
+00:05:53,425 --> 00:05:57,750
+And some regions never fold at all, which we will come back to.
+
+68
+00:05:57,750 --> 00:06:02,275
+The second observation is Levinthal's, and it pulls the other way.
+
+69
+00:06:02,275 --> 00:06:08,100
+Take a protein of a hundred residues, and allow just three possible states per residue.
+
+70
+00:06:08,100 --> 00:06:13,800
+That is three to the hundred, about five times ten to the forty-seven conformations.
+
+71
+00:06:13,800 --> 00:06:21,000
+If you could try ten to the thirteen per second, you would need five times ten to the thirty-four seconds to try them all.
+
+72
+00:06:21,000 --> 00:06:25,525
+The universe is about four times ten to the seventeen seconds old.
+
+73
+00:06:25,525 --> 00:06:29,600
+And yet real proteins fold in microseconds to seconds.
+
+74
+00:06:29,600 --> 00:06:32,675
+So folding cannot be a random search.
+
+75
+00:06:32,675 --> 00:06:44,300
+The resolution is the folding funnel: local structure forms quickly, and every step that buries hydrophobic groups lowers the free energy, so the chain is guided downhill rather than wandering.
+
+76
+00:06:44,300 --> 00:06:54,750
+And the lesson for us, which is why I show it in a computational course: every method, whether it simulates physics or not, needs a smarter search than trying everything.
+
+77
+00:06:54,750 --> 00:06:58,750
+There is not enough time in the universe for the brute-force version.
+
+78
+00:06:59,350 --> 00:07:06,250
+Four approaches dominated before deep learning, and each is still worth knowing because each captures something real.
+
+79
+00:07:06,250 --> 00:07:09,325
+Homology modelling: copy a relative.
+
+80
+00:07:09,325 --> 00:07:19,950
+Find a protein of known structure that is homologous to yours, align the sequences using Sessions four and five, and copy the coordinates across, adjusting where they differ.
+
+81
+00:07:19,950 --> 00:07:27,750
+This works because, as Chothia and Lesk showed in nineteen eighty-six, structure is conserved far more strongly than sequence.
+
+82
+00:07:27,750 --> 00:07:31,600
+It works well above about thirty per cent identity.
+
+83
+00:07:31,600 --> 00:07:38,075
+And its quality is limited by your alignment: a model is only as good as the alignment it was built from.
+
+84
+00:07:38,075 --> 00:07:41,275
+With no template, you have nothing to copy.
+
+85
+00:07:41,275 --> 00:07:44,000
+Threading: find a fold that fits.
+
+86
+00:07:44,000 --> 00:07:56,575
+Instead of searching for a similar sequence, take every known fold and ask how well your sequence could sit on it, scoring whether hydrophobic residues end up buried and whether contacting residues are compatible.
+
+87
+00:07:56,575 --> 00:08:00,000
+This finds templates that sequence search misses.
+
+88
+00:08:00,000 --> 00:08:05,200
+It later gave way largely to profile-profile searching, which is Session five.
+
+89
+00:08:05,200 --> 00:08:08,175
+Fragment assembly, which is Rosetta.
+
+90
+00:08:08,175 --> 00:08:14,550
+Local sequence biases local structure, which is Session seven's secondary-structure prediction.
+
+91
+00:08:14,550 --> 00:08:25,600
+So take three-residue and nine-residue pieces of known structures that match your local sequence, and assemble them by Monte Carlo search scored with a knowledge-based energy function.
+
+92
+00:08:25,600 --> 00:08:29,550
+Make thousands of candidate structures, keep the best-scoring.
+
+93
+00:08:29,550 --> 00:08:34,600
+This could produce genuinely new folds, but mostly for small proteins.
+
+94
+00:08:34,600 --> 00:08:41,000
+It grew into protein design, and David Baker shared the twenty twenty-four Nobel Prize for that.
+
+95
+00:08:41,000 --> 00:08:44,350
+Molecular dynamics: simulate the physics.
+
+96
+00:08:44,350 --> 00:08:48,150
+Newton's laws, with time steps of two femtoseconds.
+
+97
+00:08:48,150 --> 00:08:56,800
+It is the most principled approach and the slowest by a very long way: folding needs something like ten to the nine to ten to the fifteen steps.
+
+98
+00:08:56,800 --> 00:09:05,400
+In twenty eleven, the special-purpose Anton machine folded twelve small proteins, which was a landmark and is still nowhere near routine.
+
+99
+00:09:05,400 --> 00:09:07,675
+And what did all four share?
+
+100
+00:09:07,675 --> 00:09:12,450
+They all struggled with the same thing: getting the long-range contacts right.
+
+101
+00:09:13,050 --> 00:09:17,125
+Let me make that explicit, because it is the hinge of the block.
+
+102
+00:09:17,125 --> 00:09:23,400
+Session seven showed you ten residues that were a helix in one protein and a strand in another.
+
+103
+00:09:23,400 --> 00:09:27,700
+Identical sequence; we called them chameleon sequences.
+
+104
+00:09:27,700 --> 00:09:31,975
+No method that looks only at a local window can get both right.
+
+105
+00:09:31,975 --> 00:09:41,700
+That is not a limitation of the method, it is a property of the problem: the same input genuinely has two different answers, and what distinguishes them is elsewhere.
+
+106
+00:09:41,700 --> 00:09:44,225
+Elsewhere means the contacts.
+
+107
+00:09:44,225 --> 00:09:51,625
+What this stretch is packed against decides what it becomes, and those partners can be hundreds of residues away along the chain.
+
+108
+00:09:51,625 --> 00:10:00,325
+So the question for the rest of this block is: where could information about those long-range contacts possibly come from, given only the sequence?
+
+109
+00:10:00,325 --> 00:10:05,175
+And the answer, which took the field twenty years to make work, is evolution.
+
+110
+00:10:05,775 --> 00:10:11,675
+This slide is the shape of the field over fifty years, and it is worth seeing before the details.
+
+111
+00:10:11,675 --> 00:10:17,225
+The first generation is physics and templates: the four approaches on the previous slide.
+
+112
+00:10:17,225 --> 00:10:23,175
+Steady, incremental progress for proteins that had a template, and very little for the rest.
+
+113
+00:10:23,175 --> 00:10:28,175
+If your protein had no relative with a known structure, you were largely stuck.
+
+114
+00:10:28,175 --> 00:10:36,100
+The second generation is coevolution plus deep learning, which is the rest of this block and which arrived around twenty sixteen.
+
+115
+00:10:36,100 --> 00:10:40,500
+The third is AlphaFold2 and what followed, which is Block two.
+
+116
+00:10:40,500 --> 00:10:50,200
+And the thing that distinguishes them is exactly what we have been discussing: the first generation had no source of long-range information, and the second found one.
+
+117
+00:10:50,800 --> 00:10:53,850
+Here is the idea, and it is beautiful.
+
+118
+00:10:53,850 --> 00:10:57,850
+Take two residues that touch each other in the folded structure.
+
+119
+00:10:57,850 --> 00:11:01,275
+Suppose one of them mutates to something larger.
+
+120
+00:11:01,275 --> 00:11:07,400
+If the protein is to keep working, the partner it touches often has to become smaller to make room.
+
+121
+00:11:07,400 --> 00:11:14,600
+Or a positive charge that loses its negative partner is bad, so when one changes the other tends to change with it.
+
+122
+00:11:14,600 --> 00:11:22,550
+Now look not at one protein but at a large family of homologs, a multiple sequence alignment with thousands of sequences.
+
+123
+00:11:22,550 --> 00:11:28,350
+Evolution has been running this experiment for us, independently, in every lineage.
+
+124
+00:11:28,350 --> 00:11:37,075
+Positions that are in contact will show correlated changes down the alignment, while positions that never touch will vary independently.
+
+125
+00:11:37,075 --> 00:11:41,675
+So: find the correlated pairs of columns, and you have found the contacts.
+
+126
+00:11:41,675 --> 00:11:47,975
+And contacts are exactly the long-range information that everything in the previous slides was missing.
+
+127
+00:11:47,975 --> 00:11:57,450
+This was noticed in nineteen ninety-four, by two groups around Chris Sander at EMBL: one with Göbel and Valencia, one with Shindyalov and Kolchanov.
+
+128
+00:11:57,450 --> 00:12:03,425
+And they found a real signal: the most correlated pairs were in contact more often than chance.
+
+129
+00:12:03,425 --> 00:12:05,575
+And then it did not work.
+
+130
+00:12:05,575 --> 00:12:11,200
+Most predicted pairs were wrong, and the signal was far too weak to fold a protein with.
+
+131
+00:12:11,200 --> 00:12:15,575
+The idea sat there, correct and useless, for about two decades.
+
+132
+00:12:15,575 --> 00:12:18,525
+The next slide is the main reason why.
+
+133
+00:12:19,125 --> 00:12:24,225
+Simple correlation has two problems, and the second one is the serious one.
+
+134
+00:12:24,225 --> 00:12:26,575
+The first is phylogeny.
+
+135
+00:12:26,575 --> 00:12:32,650
+Sequences in an alignment are related to each other by descent, not drawn independently.
+
+136
+00:12:32,650 --> 00:12:43,525
+Two positions can appear correlated simply because a group of closely related sequences happens to share both residues, inherited together, with no structural meaning at all.
+
+137
+00:12:43,525 --> 00:12:48,650
+The second is indirect coupling, and it is the one that really spoils things.
+
+138
+00:12:48,650 --> 00:12:53,450
+Suppose residue A touches residue B, and residue B touches residue C.
+
+139
+00:12:53,450 --> 00:12:56,600
+A and B are coupled, B and C are coupled.
+
+140
+00:12:56,600 --> 00:13:03,275
+Now look at A and C: they will appear correlated too, through B, even though A and C never touch each other.
+
+141
+00:13:03,275 --> 00:13:13,425
+And in a protein, where every residue in the core touches several others, these indirect chains are everywhere, which is why the correlated pairs were mostly not contacts.
+
+142
+00:13:13,425 --> 00:13:18,025
+The fix is direct coupling analysis, and the key word is global.
+
+143
+00:13:18,025 --> 00:13:30,325
+Instead of looking at each pair of columns on its own, fit a single model to the whole alignment at once: a field for each residue at each position, and a coupling for each pair of residues at each pair of positions.
+
+144
+00:13:30,325 --> 00:13:40,925
+Because the parameters are fitted together, the A-to-B and B-to-C couplings already account for the apparent A-to-C correlation, so the fitted A-to-C coupling stays near zero.
+
+145
+00:13:40,925 --> 00:13:45,500
+It separates the direct from the indirect, which is what the name says.
+
+146
+00:13:45,500 --> 00:13:56,350
+On CheY, the protein we will look at next, precision rises from nought point four nine with simple mutual information to nought point seven three with direct coupling analysis.
+
+147
+00:13:56,350 --> 00:13:58,075
+Two footnotes.
+
+148
+00:13:58,075 --> 00:14:07,475
+Technically this fits the maximum-entropy model that reproduces the single-column and column-pair frequencies of the alignment, which is Session one's material.
+
+149
+00:14:07,475 --> 00:14:16,625
+Physicists call the same object a Potts model, a generalisation of the Ising model to more than two states, and you will meet that name in the literature.
+
+150
+00:14:16,625 --> 00:14:32,400
+Fitting it exactly is out of reach, so implementations approximate: mean-field methods invert a covariance matrix, while p-l-m-D-C-A and GREMLIN maximise a pseudo-likelihood instead, which is slower and better, and is what most later work uses.
+
+151
+00:14:32,400 --> 00:14:56,300
+And a nice piece of history: Lapedes and colleagues at Los Alamos identified both problems, phylogeny and indirect couplings, in nineteen ninety-nine, in a statistics lecture-note series that almost no biologist read, and fitted this model to protein alignments in a two thousand and two manuscript that was only posted to arXiv in twenty twelve, after direct coupling analysis had made the idea famous.
+
+152
+00:14:56,300 --> 00:14:59,725
+Being right early is not the same as being heard.
+
+153
+00:14:59,725 --> 00:15:10,875
+And one connection worth carrying away: because these couplings capture how positions depend on each other, the same model also predicts mutation effects better than an independent profile does.
+
+154
+00:15:10,875 --> 00:15:21,650
+That is EVmutation, and it is exactly the epistasis we measured in GB1 in Session nine, learned from an alignment instead of from twenty thousand measured variants.
+
+155
+00:15:22,250 --> 00:15:27,325
+Here are all of those methods on one protein, which makes the progress concrete.
+
+156
+00:15:27,325 --> 00:15:32,825
+CheY, a hundred and twenty-eight residues, PDB entry three C H Y.
+
+157
+00:15:32,825 --> 00:15:42,600
+An alignment of eleven thousand and eighty-four sequences, with an effective number of about eight thousand nine hundred and twenty after accounting for redundancy.
+
+158
+00:15:42,600 --> 00:15:51,025
+We take each method's top hundred and twenty-eight predicted contacts and plot them on the real contact map, blue for correct and red for wrong.
+
+159
+00:15:51,025 --> 00:15:56,550
+Mutual information, which is plain correlation: precision nought point four nine.
+
+160
+00:15:56,550 --> 00:15:59,125
+Half of its predictions are wrong.
+
+161
+00:15:59,125 --> 00:16:07,750
+And look at where the red is: the false positives cluster in blocks, which is the signature of phylogeny and conservation rather than structure.
+
+162
+00:16:07,750 --> 00:16:11,500
+Direct coupling analysis: nought point seven three.
+
+163
+00:16:11,500 --> 00:16:19,950
+The red that remains is scattered rather than clustered, which tells you the systematic artefact has been removed and what is left is noise.
+
+164
+00:16:19,950 --> 00:16:25,025
+Deep learning, here a contact head from ESM-2: nought point eight nine.
+
+165
+00:16:25,025 --> 00:16:28,950
+And an AlphaFold2 model: nought point nine nine.
+
+166
+00:16:28,950 --> 00:16:35,125
+Nought point four nine to nought point nine nine, over about twenty-five years, on the same alignment.
+
+167
+00:16:35,125 --> 00:16:38,725
+The information was in that alignment the whole time.
+
+168
+00:16:38,725 --> 00:16:42,200
+What improved was our ability to extract it.
+
+169
+00:16:42,200 --> 00:16:56,450
+One note on the method: the ESM-2 contact head stands in for the dedicated contact predictors of twenty seventeen to twenty nineteen, whose software no longer installs, which is itself a small lesson about research software.
+
+170
+00:16:57,050 --> 00:17:02,850
+Now the step that turns a good contact predictor into a very good one, and it is Session ten.
+
+171
+00:17:02,850 --> 00:17:06,475
+A contact map is not a random scatter of dots.
+
+172
+00:17:06,475 --> 00:17:10,625
+Contacts come in patterns, because structure comes in patterns.
+
+173
+00:17:10,625 --> 00:17:14,000
+A helix gives a thick band along the diagonal.
+
+174
+00:17:14,000 --> 00:17:22,100
+A pair of beta strands gives a line, running parallel to the diagonal if they are parallel, and perpendicular if they are antiparallel.
+
+175
+00:17:22,100 --> 00:17:28,375
+So if you know that one pair of residues is in contact, you know something about its neighbours in the map.
+
+176
+00:17:28,375 --> 00:17:30,575
+Here is that measured.
+
+177
+00:17:30,575 --> 00:17:35,125
+Take three-by-three windows around real contacts in eight structures.
+
+178
+00:17:35,125 --> 00:17:42,725
+Of the two hundred and fifty-six possible on-off patterns such a window could show, only a hundred and forty-six ever occur.
+
+179
+00:17:42,725 --> 00:17:52,425
+And if the centre pair is in contact, a neighbouring pair is in contact between twenty-three and forty-two per cent of the time, against a base rate of three per cent.
+
+180
+00:17:52,425 --> 00:18:07,250
+So the map has strong local structure, which means a network that looks at a neighbourhood of the map can clean up a noisy coevolution signal: filling in the gaps of a half-detected strand pairing, removing isolated dots that no real fold would produce.
+
+181
+00:18:07,250 --> 00:18:18,050
+And a network that looks at a local neighbourhood of a two-dimensional grid is a convolution, Session ten, exactly as that session promised when it said a contact map is an image.
+
+182
+00:18:18,050 --> 00:18:25,250
+This is also, in essence, what a learned pair representation does inside AlphaFold2, which is Block two.
+
+183
+00:18:25,850 --> 00:18:32,900
+One refinement before AlphaFold2, and it is a good example of making a problem easier by asking for more.
+
+184
+00:18:32,900 --> 00:18:48,475
+Instead of predicting a yes-or-no contact, predict a distance distribution for every pair of residues: not "these two touch" but "the distance between these two is probably between eight and ten ångström, possibly twelve, almost certainly not thirty".
+
+185
+00:18:48,475 --> 00:18:51,450
+That is more informative in two ways.
+
+186
+00:18:51,450 --> 00:18:58,525
+It carries a confidence, since a sharp distribution means the model is sure and a broad one means it is not.
+
+187
+00:18:58,525 --> 00:19:05,900
+And it distinguishes close from very close, which a binary contact at an eight-ångström threshold throws away.
+
+188
+00:19:05,900 --> 00:19:14,625
+Then you fold the protein by finding the coordinates that best satisfy all those distributions at once, which is a numerical optimisation.
+
+189
+00:19:14,625 --> 00:19:27,975
+AlphaFold, the first version, and trRosetta, between twenty eighteen and twenty twenty, both did this with deep residual convolutional networks, which is Session ten's architecture doing real structural biology.
+
+190
+00:19:27,975 --> 00:19:36,300
+trRosetta also predicted orientations between residues, not just distances, which constrains the geometry further.
+
+191
+00:19:36,900 --> 00:19:41,050
+And here is the whole of Block one, as one series of numbers.
+
+192
+00:19:41,050 --> 00:19:51,450
+CASP, which you met in Session six, is the blind test: structures that have been solved but not published, predictions collected, scored when the experiments come out.
+
+193
+00:19:51,450 --> 00:19:59,300
+The number here is the precision of the best group's long-range contact predictions on the hardest targets, the ones with no template.
+
+194
+00:19:59,300 --> 00:20:04,350
+Twenty ten to twenty fourteen: between twenty and twenty-seven per cent.
+
+195
+00:20:04,350 --> 00:20:07,150
+Essentially flat for five years.
+
+196
+00:20:07,150 --> 00:20:10,350
+Twenty sixteen: forty-seven per cent.
+
+197
+00:20:10,350 --> 00:20:13,775
+That is deep learning on coevolution arriving.
+
+198
+00:20:13,775 --> 00:20:16,900
+Twenty eighteen: above seventy per cent.
+
+199
+00:20:16,900 --> 00:20:27,900
+Twenty twenty: contacts are no longer even reported as the interesting quantity, because AlphaFold2 predicts structures directly and contacts fall out as a by-product.
+
+200
+00:20:27,900 --> 00:20:30,500
+Look at the shape of that series.
+
+201
+00:20:30,500 --> 00:20:34,475
+Flat, flat, flat, and then a step change in four years.
+
+202
+00:20:34,475 --> 00:20:41,075
+This is one of the few places in biology where you can point at a date and say the problem changed character.
+

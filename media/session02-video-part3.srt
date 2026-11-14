@@ -1,0 +1,628 @@
+1
+00:00:00,000 --> 00:00:01,475
+Block three.
+
+2
+00:00:01,475 --> 00:00:03,800
+When code does not work.
+
+3
+00:00:03,800 --> 00:00:10,550
+On the page, this block is the sections "When you don't know how to do something", "Remember" and "How to use chatbots".
+
+4
+00:00:10,550 --> 00:00:14,250
+Everything so far has been about getting things right.
+
+5
+00:00:14,250 --> 00:00:22,125
+This block is about what to do when you have not, which is most of the time, and it is the most practically useful half-hour in the course.
+
+6
+00:00:22,125 --> 00:00:29,325
+A routine, five steps, and then three specific traps: the documentation, the AI assistant, and the notebook.
+
+7
+00:00:29,925 --> 00:00:34,025
+Experienced programmers are not people who make fewer mistakes.
+
+8
+00:00:34,025 --> 00:00:40,425
+They are people who have a routine for getting out of them, so that being stuck is a procedure rather than a mood.
+
+9
+00:00:40,425 --> 00:00:42,125
+Five steps.
+
+10
+00:00:42,125 --> 00:00:45,250
+One: read the error, properly, from the bottom.
+
+11
+00:00:45,250 --> 00:00:50,650
+Two: inspect the objects you have, rather than relying on what you believe they contain.
+
+12
+00:00:50,650 --> 00:00:54,775
+Three: check the documentation for your version of the library.
+
+13
+00:00:54,775 --> 00:00:59,000
+Four: ask for help well, whether from a person or an assistant.
+
+14
+00:00:59,000 --> 00:01:05,650
+Five: verify what you are given, and this last step matters most when the code came from an AI assistant.
+
+15
+00:01:05,650 --> 00:01:10,625
+Notice that the first two cost nothing and solve a large fraction of problems.
+
+16
+00:01:10,625 --> 00:01:17,425
+The temptation when something breaks is to change a line and run it again, and change another line and run it again.
+
+17
+00:01:17,425 --> 00:01:20,675
+That is guessing, and it is slower than it feels.
+
+18
+00:01:21,275 --> 00:01:26,675
+Python tracebacks are printed in an unhelpful order, so here is how to read one.
+
+19
+00:01:26,675 --> 00:01:28,925
+Start at the last line.
+
+20
+00:01:28,925 --> 00:01:33,000
+That is the error type and the message: what actually went wrong.
+
+21
+00:01:33,000 --> 00:01:37,175
+Then look upwards for the arrow pointing at a line of your own code.
+
+22
+00:01:37,175 --> 00:01:43,150
+The traceback includes frames from inside the library, which are usually not where your problem is.
+
+23
+00:01:43,150 --> 00:01:47,825
+Learn the common error types, because each one means something specific.
+
+24
+00:01:47,825 --> 00:01:55,650
+A KeyError on a DataFrame means there is no column with that name, which is usually a typo or a different spelling than you remember.
+
+25
+00:01:55,650 --> 00:02:02,775
+An AttributeError means the object does not have the thing you asked for, which usually means it is not the type you think it is.
+
+26
+00:02:02,775 --> 00:02:05,825
+An IndexError means you have gone off the end.
+
+27
+00:02:05,825 --> 00:02:09,775
+A TypeError means you combined two incompatible things.
+
+28
+00:02:09,775 --> 00:02:16,550
+The thing to resist is reading the first line and panicking because it mentions a file deep inside pandas.
+
+29
+00:02:16,550 --> 00:02:19,175
+The last line is the message.
+
+30
+00:02:19,175 --> 00:02:21,000
+Read it first.
+
+31
+00:02:21,600 --> 00:02:26,400
+Second step, and this is the one that separates fast debugging from slow.
+
+32
+00:02:26,400 --> 00:02:29,500
+When something is wrong, look at the object.
+
+33
+00:02:29,500 --> 00:02:32,475
+Do not remember the object; look at it.
+
+34
+00:02:32,475 --> 00:02:35,325
+Five things answer most questions.
+
+35
+00:02:35,325 --> 00:02:38,625
+type of x, to find out what it actually is.
+
+36
+00:02:38,625 --> 00:02:41,625
+The shape, for an array or DataFrame.
+
+37
+00:02:41,625 --> 00:02:46,000
+The columns, for a DataFrame, which tells you what the names really are.
+
+38
+00:02:46,000 --> 00:02:47,200
+The length.
+
+39
+00:02:47,200 --> 00:02:50,750
+And simply printing the first few elements, or head.
+
+40
+00:02:50,750 --> 00:02:56,875
+The reason this works is that most bugs are a mismatch between what you believe you have and what you have.
+
+41
+00:02:56,875 --> 00:03:00,650
+You believe it is a DataFrame; it is a Series.
+
+42
+00:03:00,650 --> 00:03:05,850
+You believe the column is called g c; it is g c underscore content.
+
+43
+00:03:05,850 --> 00:03:10,525
+You believe you have a thousand rows; a filter removed most of them.
+
+44
+00:03:10,525 --> 00:03:13,375
+Five seconds of looking resolves it.
+
+45
+00:03:13,375 --> 00:03:19,050
+Minutes of reasoning about what it should be does not, because you are reasoning from the wrong premise.
+
+46
+00:03:19,650 --> 00:03:22,375
+Third step, and a specific trap.
+
+47
+00:03:22,375 --> 00:03:24,350
+Libraries change.
+
+48
+00:03:24,350 --> 00:03:27,900
+Functions are renamed, deprecated, removed.
+
+49
+00:03:27,900 --> 00:03:32,225
+The example on the slide: Biopython's GC function.
+
+50
+00:03:32,225 --> 00:03:35,575
+Hundreds of tutorials on the web still use it.
+
+51
+00:03:35,575 --> 00:03:45,325
+It no longer exists; it is called gc underscore fraction now, and it returns a fraction rather than a percentage, so even the meaning of the number changed.
+
+52
+00:03:45,325 --> 00:03:47,800
+Where will you meet the old name?
+
+53
+00:03:47,800 --> 00:04:01,325
+In old tutorials, in old StackOverflow answers, in blog posts, and, importantly, from AI assistants, which were trained on all of that text and will cheerfully give you code using a function that was removed three years ago.
+
+54
+00:04:01,325 --> 00:04:06,600
+So the authority is the documentation for the version you actually have installed.
+
+55
+00:04:06,600 --> 00:04:10,250
+Not the tutorial, not the assistant, not your memory.
+
+56
+00:04:10,250 --> 00:04:13,275
+And you can check your version in one line.
+
+57
+00:04:13,275 --> 00:04:22,600
+This is a small thing that costs a surprising amount of time, because the error message, name is not defined, does not tell you that the function used to exist.
+
+58
+00:04:23,200 --> 00:04:27,425
+Fourth and fifth steps, together, since you will all use these tools.
+
+59
+00:04:27,425 --> 00:04:29,400
+How to ask well.
+
+60
+00:04:29,400 --> 00:04:32,700
+Give the assistant what you would give a human helper.
+
+61
+00:04:32,700 --> 00:04:35,850
+The full error message, not your paraphrase.
+
+62
+00:04:35,850 --> 00:04:38,975
+A sample of the data, df dot head.
+
+63
+00:04:38,975 --> 00:04:41,450
+The versions of the libraries.
+
+64
+00:04:41,450 --> 00:04:45,150
+What you expected to happen, and what you already tried.
+
+65
+00:04:45,150 --> 00:04:48,250
+And never ask only "fix my code".
+
+66
+00:04:48,250 --> 00:04:50,900
+Say what the code is supposed to do.
+
+67
+00:04:50,900 --> 00:05:01,300
+An assistant that does not know your intent will make the error disappear, which is not the same as making the code correct, and those two diverge exactly in the cases that matter.
+
+68
+00:05:01,300 --> 00:05:04,175
+Then verify, which is not optional.
+
+69
+00:05:04,175 --> 00:05:07,775
+Run it on a tiny example where you know the answer.
+
+70
+00:05:07,775 --> 00:05:11,450
+Check the shapes and the ranges of whatever comes out.
+
+71
+00:05:11,450 --> 00:05:17,250
+Look up any function you have not seen before, in the documentation, because it may not exist.
+
+72
+00:05:17,250 --> 00:05:24,575
+And the specific danger, which is this session's theme again: an assistant is very good at producing code that runs.
+
+73
+00:05:24,575 --> 00:05:27,200
+Kind one mistakes get fixed.
+
+74
+00:05:27,200 --> 00:05:35,200
+Kinds two and three do not, and a confident explanation attached to a wrong analysis is harder to doubt than your own code would have been.
+
+75
+00:05:35,800 --> 00:05:41,075
+A small habit that pays for itself: write your assumptions down as assertions.
+
+76
+00:05:41,075 --> 00:05:45,050
+You believe your DataFrame has three thousand and one rows.
+
+77
+00:05:45,050 --> 00:05:46,550
+Assert it.
+
+78
+00:05:46,550 --> 00:05:50,250
+You believe every p-value is between nought and one.
+
+79
+00:05:50,250 --> 00:05:51,750
+Assert it.
+
+80
+00:05:51,750 --> 00:05:56,650
+You believe no protein in your table is longer than a thousand residues.
+
+81
+00:05:56,650 --> 00:05:58,150
+Assert it.
+
+82
+00:05:58,150 --> 00:06:05,525
+An assert is one line, and it turns a belief into a check that stops the notebook, loudly, at the moment it stops being true.
+
+83
+00:06:05,525 --> 00:06:09,750
+The value is not in the first run, where you already know it holds.
+
+84
+00:06:09,750 --> 00:06:16,300
+It is six weeks later, when you have changed the filtering upstream and quietly broken something downstream.
+
+85
+00:06:16,300 --> 00:06:20,925
+Without the assertion, that breakage flows into your results silently.
+
+86
+00:06:20,925 --> 00:06:24,100
+With it, you get an error at the exact line.
+
+87
+00:06:24,100 --> 00:06:31,800
+This is how you convert kind two and kind three mistakes into kind one mistakes, which is the best trade available to you.
+
+88
+00:06:32,400 --> 00:06:37,550
+A trap that is specific to notebooks and that catches everyone at least once.
+
+89
+00:06:37,550 --> 00:06:42,000
+A notebook's memory and the notebook you can see are two different things.
+
+90
+00:06:42,000 --> 00:06:44,650
+You can run cells out of order.
+
+91
+00:06:44,650 --> 00:06:47,025
+You can run a cell twice.
+
+92
+00:06:47,025 --> 00:06:49,925
+You can edit a cell after running it.
+
+93
+00:06:49,925 --> 00:06:53,775
+You can delete a cell whose variables are still defined.
+
+94
+00:06:53,775 --> 00:06:59,200
+In every one of those cases, the state in memory does not match the code on the page.
+
+95
+00:06:59,200 --> 00:07:08,050
+The demonstration in the notebook: a cell that adds one to a counter gives a different answer every time you run it, although its code never changes.
+
+96
+00:07:08,050 --> 00:07:13,500
+So the result you are looking at may not be the result that your code, as written, would produce.
+
+97
+00:07:13,500 --> 00:07:17,300
+It may depend on something you deleted twenty minutes ago.
+
+98
+00:07:17,300 --> 00:07:25,250
+The discipline: before you trust a result, and always before you share a notebook, restart the kernel and run all cells from the top.
+
+99
+00:07:25,250 --> 00:07:28,650
+If it does not survive that, it was not a result.
+
+100
+00:07:29,250 --> 00:07:35,100
+And version control, briefly, because it is the other half of being able to trust your own work.
+
+101
+00:07:35,100 --> 00:07:38,400
+Git keeps a history of snapshots of your files.
+
+102
+00:07:38,400 --> 00:07:41,075
+The practical advice is short.
+
+103
+00:07:41,075 --> 00:07:46,175
+Commit small, working steps rather than one enormous change at the end of the week.
+
+104
+00:07:46,175 --> 00:07:49,175
+Write messages that say why, not what.
+
+105
+00:07:49,175 --> 00:07:53,925
+The diff already shows what changed; what it cannot show is the reason.
+
+106
+00:07:53,925 --> 00:07:58,325
+And never commit large data, passwords or API keys.
+
+107
+00:07:58,325 --> 00:08:00,550
+Put them in gitignore.
+
+108
+00:08:00,550 --> 00:08:08,350
+A key committed once is in the history for ever, even if you delete the file afterwards, and this happens distressingly often.
+
+109
+00:08:08,350 --> 00:08:11,200
+One practical point for this course.
+
+110
+00:08:11,200 --> 00:08:18,825
+Cloning the course repository on your laptop gives you all the notebooks; open them in VS Code and run them on a Colab machine.
+
+111
+00:08:18,825 --> 00:08:28,575
+And keep the two places straight in your head: git works on the files on your laptop, while anything a notebook writes while it runs is on the Colab machine and disappears with it.
+
+112
+00:08:29,175 --> 00:08:34,400
+Now something for you to do, and I recommend trying it before reading the solution.
+
+113
+00:08:34,400 --> 00:08:48,425
+The six globins again, done properly this time: fetch them, tabulate them, and produce the untranslated-region figure from the live coding, with the protein lengths computed from the CDS features rather than from the mRNA length.
+
+114
+00:08:48,425 --> 00:08:54,175
+That is a complete small analysis: get data, structure it, compute, plot, interpret.
+
+115
+00:08:54,175 --> 00:08:59,550
+The accession numbers are on the slide, and the worked solution is in the course notebook.
+
+116
+00:08:59,550 --> 00:09:08,900
+The reason to try before reading is that the solution will look obvious when you see it, and obvious-when-seen is a very poor measure of whether you could have written it.
+
+117
+00:09:09,500 --> 00:09:13,200
+And the lab, which has three stages of decreasing help.
+
+118
+00:09:13,200 --> 00:09:17,800
+Fill in: the code is written, with pieces missing, marked with a to-do.
+
+119
+00:09:17,800 --> 00:09:20,000
+You supply the pieces.
+
+120
+00:09:20,000 --> 00:09:25,375
+Adapt: working code for a related problem, which you change to do what is asked.
+
+121
+00:09:25,375 --> 00:09:28,175
+Solve: a question, and you write it.
+
+122
+00:09:28,175 --> 00:09:31,950
+One warning about the adapt stage, which is deliberate.
+
+123
+00:09:31,950 --> 00:09:37,925
+Of the three bugs you have to find there, one runs without any error at all and gives a wrong answer.
+
+124
+00:09:37,925 --> 00:09:44,850
+That is a kind two mistake, planted on purpose, and if you only check whether the code runs you will not find it.
+
+125
+00:09:44,850 --> 00:09:53,125
+There are also three optional extras if you have time: fetching leptin with Entrez, some seaborn plotting, and a Mann-Whitney comparison.
+
+126
+00:09:53,725 --> 00:09:59,825
+One last slide before the summary, and it is the question I would like you to carry out of this session.
+
+127
+00:09:59,825 --> 00:10:03,600
+AI assistants no longer only suggest snippets.
+
+128
+00:10:03,600 --> 00:10:11,300
+Agents now take a question, retrieve tools and data, plan an analysis, write the code, run it, read the errors and try again.
+
+129
+00:10:11,300 --> 00:10:24,000
+Biomni, from Stanford in twenty twenty-five, is one example: a hundred and fifty biomedical tools, a hundred and five software packages, fifty-nine databases, driven from a question in English.
+
+130
+00:10:24,000 --> 00:10:30,575
+Now apply this session's taxonomy to that, because it tells you exactly what changes and what does not.
+
+131
+00:10:30,575 --> 00:10:33,875
+Kind one mistakes, Python errors, stop the run.
+
+132
+00:10:33,875 --> 00:10:38,975
+The agent sees them and fixes them, often better and faster than you would.
+
+133
+00:10:38,975 --> 00:10:42,425
+Kind two, a wrong analysis, runs silently.
+
+134
+00:10:42,425 --> 00:10:45,900
+The axes are swapped, and nothing is reported.
+
+135
+00:10:45,900 --> 00:10:49,900
+Kind three, biologically nonsensical, runs silently.
+
+136
+00:10:49,900 --> 00:10:55,850
+The six-hundred-and-fifty-four-residue globin appears in the table, and nothing is reported.
+
+137
+00:10:55,850 --> 00:11:02,400
+So automation removes the easy kind of mistake and leaves both hard kinds exactly where they were.
+
+138
+00:11:02,400 --> 00:11:10,750
+And the habits from this session, plot first, check a case you know, assert your assumptions, are precisely the checks that such a result still needs.
+
+139
+00:11:10,750 --> 00:11:16,575
+Then the question on the slide: who is responsible for a result that no human ever looked at?
+
+140
+00:11:16,575 --> 00:11:19,100
+I will not answer that for you.
+
+141
+00:11:19,100 --> 00:11:28,150
+I will note that the course rules are unambiguous: AI-written labs and reports are not allowed, and the reason is that the checking is the skill being taught.
+
+142
+00:11:28,750 --> 00:11:32,325
+The summary, back to the four ideas from the beginning.
+
+143
+00:11:32,325 --> 00:11:40,450
+Represent: choose the object that fits your data, because the object decides which operations you get and which mistakes are possible.
+
+144
+00:11:40,450 --> 00:11:43,225
+Explore: look before you compute.
+
+145
+00:11:43,225 --> 00:11:45,375
+Describe and plot.
+
+146
+00:11:45,375 --> 00:11:51,050
+The pre-filtered p-values and the gap in the histogram were the same fact, found two ways.
+
+147
+00:11:51,050 --> 00:11:58,225
+Use what exists: standard questions have standard functions, written by people who thought about the edge cases.
+
+148
+00:11:58,225 --> 00:12:01,325
+Get unstuck: a routine, not guessing.
+
+149
+00:12:01,325 --> 00:12:07,400
+Read the error from the bottom, inspect the object, check the documentation, ask well, verify.
+
+150
+00:12:07,400 --> 00:12:15,225
+And the one rule, which is the sentence I asked you to leave with: code running without an error does not mean the analysis is correct.
+
+151
+00:12:15,225 --> 00:12:19,650
+Every session after this one builds models that produce numbers.
+
+152
+00:12:19,650 --> 00:12:23,025
+This session is about whether you should believe them.
+
+153
+00:12:23,625 --> 00:12:25,750
+That is Session two.
+
+154
+00:12:25,750 --> 00:12:38,225
+Session three is biological databases: what is actually in UniProt, GenBank, the PDB and the rest, how they relate to each other, and how to get things out of them in a way that will still work next year.
+
+155
+00:12:38,225 --> 00:12:48,025
+The lab follows one gene, HBB, from its sequence to its structure, its interactions and its literature, which is the dossier a real project starts with.
+
+156
+00:12:48,025 --> 00:12:57,325
+The Session two page has all of this written out, including the mini challenge and the chatbot rules, and the course notebook is linked in the box under its title.
+
+157
+00:12:57,325 --> 00:12:58,950
+See you there.
+

@@ -1,0 +1,362 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:08.500
+The density function looks awkward, but the cumulative function — the probability of scoring below some threshold — comes out far simpler.
+
+2
+00:00:09.100 --> 00:00:17.525
+Written in terms of actual scores rather than normalised ones, it takes this form, with lambda the inverse of the standard deviation.
+
+3
+00:00:18.125 --> 00:00:23.425
+And for BLAST alignments, the peak of that distribution is given by this expression.
+
+4
+00:00:23.425 --> 00:00:26.625
+The derivation is in the original paper.
+
+5
+00:00:27.225 --> 00:00:33.075
+Which brings us to the E value — an estimate of how many false positives a search will return.
+
+6
+00:00:33.075 --> 00:00:37.800
+It depends on the score, and on lambda, which scales the scoring system.
+
+7
+00:00:37.800 --> 00:00:44.475
+It depends on the length of the query and the size of the database, because both make chance matches more likely.
+
+8
+00:00:44.475 --> 00:00:52.300
+And it depends on K, which accounts for something easy to miss: alignments starting at different places are not independent.
+
+9
+00:00:52.300 --> 00:00:59.150
+A high-scoring alignment starting at residues one and one implies a decent score starting at two and two as well.
+
+10
+00:00:59.150 --> 00:01:04.325
+K is usually around nought point one, and it matters less than the other terms.
+
+11
+00:01:04.325 --> 00:01:08.300
+K and lambda together are the Karlin-Altschul statistics.
+
+12
+00:01:08.900 --> 00:01:14.375
+A BLAST report gives you three numbers: the E value, the raw score, and the bit score.
+
+13
+00:01:14.375 --> 00:01:22.150
+The raw score comes straight from the substitution matrix and the gap penalties, so it is unitless and means very little on its own.
+
+14
+00:01:22.150 --> 00:01:34.525
+The bit score is the raw score normalised by the statistics of the scoring system, and that is what makes it useful — bit scores can be compared between searches, even searches that used different matrices.
+
+15
+00:01:34.525 --> 00:01:40.625
+They also connect the two: if you know the size of the search space, the bit score gives you the E value.
+
+16
+00:01:40.625 --> 00:01:44.225
+The difference between the two is worth holding on to.
+
+17
+00:01:44.225 --> 00:01:48.800
+The E value is how many alignments this good you would expect by chance.
+
+18
+00:01:48.800 --> 00:01:54.950
+The bit score is a measure of the alignment itself, independent of how big the database was.
+
+19
+00:01:54.950 --> 00:01:59.775
+Higher is better, and below about fifty is generally not to be trusted.
+
+20
+00:02:00.375 --> 00:02:08.850
+The size of the search space is the query length times the database length — every place the query could sit against anything in the database.
+
+21
+00:02:08.850 --> 00:02:11.450
+BLAST adjusts that slightly.
+
+22
+00:02:11.450 --> 00:02:21.300
+An alignment of average length cannot start right at the end of a sequence, so the average alignment length is subtracted from both terms, giving the effective search space.
+
+23
+00:02:21.900 --> 00:02:27.825
+Now the second part of the lecture: PSI-BLAST, position-specific iterated BLAST.
+
+24
+00:02:27.825 --> 00:02:31.250
+The idea is to use what the first search found.
+
+25
+00:02:31.250 --> 00:02:40.175
+Run an ordinary BLAST search, take the high-scoring hits, align them, and build a scoring matrix that is specific to each position of that alignment.
+
+26
+00:02:40.175 --> 00:02:43.525
+Then search again with that matrix, and repeat.
+
+27
+00:02:43.525 --> 00:02:50.000
+Everything underneath is ordinary BLAST — the same words, the same extension, the same statistics.
+
+28
+00:02:50.000 --> 00:02:51.925
+Two things change.
+
+29
+00:02:51.925 --> 00:02:59.750
+The fixed substitution matrix is replaced by a position-specific one, and the search becomes iterative instead of single-pass.
+
+30
+00:02:59.750 --> 00:03:05.225
+What you gain is sensitivity to distant relatives, which a single search misses.
+
+31
+00:03:05.225 --> 00:03:11.775
+What you risk is that one wrong sequence entering the profile pulls in more wrong sequences on the next round.
+
+32
+00:03:11.775 --> 00:03:15.200
+The iteration is powerful and it needs watching.
+
+33
+00:03:15.800 --> 00:03:19.475
+So, how is that position-specific matrix built?
+
+34
+00:03:19.475 --> 00:03:23.000
+Start from a multiple sequence alignment of the hits.
+
+35
+00:03:23.000 --> 00:03:27.625
+At each position, count how often each of the twenty residues occurs.
+
+36
+00:03:27.625 --> 00:03:35.500
+At the first position you might see six alanines, two lysines, a leucine and a glutamate, in an alignment of ten sequences.
+
+37
+00:03:35.500 --> 00:03:42.050
+Then add pseudocounts — small amounts added to every residue, not only the ones that came out zero.
+
+38
+00:03:42.050 --> 00:03:44.950
+We will see shortly why that matters.
+
+39
+00:03:44.950 --> 00:03:47.625
+Turn the counts into frequencies.
+
+40
+00:03:47.625 --> 00:03:58.975
+Compare each against the background frequency of that residue, which is simply how often it occurs in proteins generally: around eight per cent for alanine, one and a half for tryptophan.
+
+41
+00:03:58.975 --> 00:04:02.950
+Finally take the logarithm of that ratio, in base two.
+
+42
+00:04:02.950 --> 00:04:11.625
+A score of plus one means the residue is twice as likely here as by chance; plus three means eight times; minus one means half as likely.
+
+43
+00:04:11.625 --> 00:04:17.250
+Base two is conventional, and it keeps the numbers in a range you can read at a glance.
+
+44
+00:04:17.250 --> 00:04:24.925
+Arrange those scores in a table — positions down, residues across — and that is the position-specific scoring matrix.
+
+45
+00:04:25.525 --> 00:04:30.025
+Here is a worked example: five sequences, five positions.
+
+46
+00:04:30.025 --> 00:04:33.150
+First the raw counts, without pseudocounts.
+
+47
+00:04:33.150 --> 00:04:38.150
+Residues that never occur at all are left out of the table to keep it readable.
+
+48
+00:04:38.750 --> 00:04:42.075
+Now add a pseudocount of one to every cell.
+
+49
+00:04:42.675 --> 00:04:50.975
+With the alignment in hand, the first step is simply counting: at each position, how many times each residue appears down the column.
+
+50
+00:04:51.575 --> 00:04:54.200
+And here is why that matters.
+
+51
+00:04:54.200 --> 00:05:03.950
+Without pseudocounts, a residue that is naturally rare — and not the dominant residue in the alignment either — can end up dominating the sequence that scores highest.
+
+52
+00:05:03.950 --> 00:05:10.850
+The matrix becomes confident about something it has barely seen, and identifying homologues gets ambiguous.
+
+53
+00:05:11.450 --> 00:05:19.775
+The same point, with the consensus sequence alongside — the sequence you get by taking a majority vote at each position of the alignment.
+
+54
+00:05:20.375 --> 00:05:26.525
+Those counts become frequencies — each count divided by the number of sequences in the alignment.
+
+55
+00:05:27.125 --> 00:05:30.700
+Read a column and you can see what the family tolerates.
+
+56
+00:05:30.700 --> 00:05:37.625
+A column that is glycine in every sequence has a frequency of one for glycine and zero for everything else.
+
+57
+00:05:38.225 --> 00:05:46.600
+A column with several residues spreads its frequency between them, and that spread is the information the profile adds over a single sequence.
+
+58
+00:05:47.200 --> 00:05:50.825
+Now the harder case: an alignment with gaps in it.
+
+59
+00:05:51.425 --> 00:05:54.225
+Frequencies are not yet scores.
+
+60
+00:05:54.225 --> 00:06:05.275
+A score has to say how much more often a residue appears here than it would by chance, and that is a ratio: the observed frequency divided by the background frequency of that residue.
+
+61
+00:06:05.875 --> 00:06:09.975
+Take the logarithm of that ratio and you have a log-odds score.
+
+62
+00:06:09.975 --> 00:06:19.150
+Positive means the residue is enriched at this position, negative means it is rarer than chance, and zero means the position says nothing about it.
+
+63
+00:06:19.750 --> 00:06:24.150
+The matrix is filled in one position at a time, column by column.
+
+64
+00:06:24.750 --> 00:06:30.925
+A conserved position produces one large positive score and a row of large negative ones.
+
+65
+00:06:31.525 --> 00:06:39.575
+A variable position produces scores near zero across the board, which is the matrix saying that this column does not discriminate.
+
+66
+00:06:40.175 --> 00:06:47.775
+And a position never observed with a given residue produces minus infinity, which is the problem the next slides fix.
+
+67
+00:06:48.375 --> 00:06:51.575
+Minus infinity is too strong a claim.
+
+68
+00:06:51.575 --> 00:06:59.350
+It says the residue is impossible here, when all the alignment really showed is that it was not seen in a handful of sequences.
+
+69
+00:06:59.950 --> 00:07:09.325
+The remedy is a pseudocount: a small number added to every count before the frequencies are worked out, as though each residue had been seen a fraction of a time.
+
+70
+00:07:09.925 --> 00:07:17.150
+With pseudocounts, no score is infinite, and the matrix generalises to sequences the alignment never contained.
+
+71
+00:07:17.750 --> 00:07:20.650
+The size of the pseudocount matters.
+
+72
+00:07:20.650 --> 00:07:27.775
+Too small and the profile is brittle; too large and it washes out the conservation that made the profile worth building.
+
+73
+00:07:28.375 --> 00:07:32.650
+The third part of the lecture: profile hidden Markov models.
+
+74
+00:07:32.650 --> 00:07:42.925
+A profile HMM is a statistical model of a family of sequences, built from a multiple alignment, which captures both the conserved parts and the variable ones.
+
+75
+00:07:42.925 --> 00:07:45.400
+It has three kinds of state.
+
+76
+00:07:45.400 --> 00:07:50.875
+Match states are the conserved positions, where particular residues turn up reliably.
+
+77
+00:07:50.875 --> 00:07:55.625
+Insert states are extra residues that are not part of the conserved core.
+
+78
+00:07:55.625 --> 00:08:00.900
+Delete states are positions where a sequence has nothing, where the core has something.
+
+79
+00:08:00.900 --> 00:08:02.475
+Why hidden?
+
+80
+00:08:02.475 --> 00:08:05.675
+Because you cannot read the state off the sequence.
+
+81
+00:08:05.675 --> 00:08:11.200
+Given a residue, you cannot tell whether it belongs to a match state or an insert state.
+
+82
+00:08:11.200 --> 00:08:16.800
+Given a gap, you cannot tell whether it is a genuine deletion or just a poor alignment.
+
+83
+00:08:16.800 --> 00:08:20.650
+The states are inferred from probabilities, not observed.
+
+84
+00:08:20.650 --> 00:08:26.175
+Match and insert states emit residues, with a probability for each of the twenty.
+
+85
+00:08:26.175 --> 00:08:30.275
+Delete states emit nothing — that is what deleting means.
+
+86
+00:08:30.275 --> 00:08:32.925
+And then there are the transitions.
+
+87
+00:08:32.925 --> 00:08:39.325
+From a match state you can go to the next match state, to an insert state, or skip ahead to a delete state.
+
+88
+00:08:39.325 --> 00:08:44.925
+From an insert state you can insert again — that is the self-loop — or return to matching.
+
+89
+00:08:44.925 --> 00:08:48.875
+From a delete state you can keep deleting or rejoin.
+
+90
+00:08:48.875 --> 00:08:54.400
+Those transitions are what let the model handle insertions and deletions of any length.
+

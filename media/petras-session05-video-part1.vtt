@@ -1,0 +1,386 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.925
+This is the advanced database search lecture for KB8029, Bioinformatics, given by Petras Kundrotas.
+
+2
+00:00:07.925 --> 00:00:17.275
+It covers three ways of searching a sequence database: word search with BLAST, profile search with PSI-BLAST, and profile hidden Markov models.
+
+3
+00:00:17.875 --> 00:00:25.400
+This lecture draws on chapters four and five of the Pevsner book, with the topics rearranged a little so that they build on each other.
+
+4
+00:00:26.000 --> 00:00:28.050
+There are three parts.
+
+5
+00:00:28.050 --> 00:00:34.550
+First, the word-search algorithm behind BLAST — the most widely used sequence search program there is.
+
+6
+00:00:34.550 --> 00:00:40.325
+That is chapter four of the book, pages one hundred and twenty-eight to one hundred and forty-four.
+
+7
+00:00:40.325 --> 00:00:45.750
+Second, sequence profiles, and why pseudocounts matter more than they look like they should.
+
+8
+00:00:45.750 --> 00:00:50.850
+Chapter five, pages one hundred and seventy-one to one hundred and seventy-nine.
+
+9
+00:00:50.850 --> 00:00:55.900
+Third, profile hidden Markov models: how to build one and how to use it.
+
+10
+00:00:55.900 --> 00:01:00.625
+The book covers that only briefly, so most of it comes from this lecture.
+
+11
+00:01:01.225 --> 00:01:09.575
+Last time we looked at dynamic programming — the algorithms that find the best possible global or local alignment between two sequences.
+
+12
+00:01:09.575 --> 00:01:13.325
+They are exact, and they are guaranteed to find the optimum.
+
+13
+00:01:13.325 --> 00:01:15.575
+The difficulty is scale.
+
+14
+00:01:15.575 --> 00:01:23.525
+The databases hold somewhere between a billion and ten billion sequences, and a typical query is two to five hundred residues.
+
+15
+00:01:23.525 --> 00:01:30.125
+Running an exact algorithm against all of that is a needle in a haystack, and in practice it cannot be done.
+
+16
+00:01:30.125 --> 00:01:32.300
+There are three ways out.
+
+17
+00:01:32.300 --> 00:01:40.625
+You can put the algorithm into hardware — graphics processors are built for exactly this kind of arithmetic — but that is expensive.
+
+18
+00:01:40.625 --> 00:01:48.050
+You can spread the database over thousands of processors and combine the results afterwards, which is also expensive.
+
+19
+00:01:48.050 --> 00:01:50.625
+Or you can use a heuristic.
+
+20
+00:01:50.625 --> 00:01:54.800
+A heuristic is an algorithm that gives an approximate answer.
+
+21
+00:01:54.800 --> 00:01:58.175
+Often you cannot prove the answer is the best one.
+
+22
+00:01:58.175 --> 00:02:05.600
+What you get in exchange is speed, and the fact that it runs in software, so it costs nothing and everyone can use it.
+
+23
+00:02:05.600 --> 00:02:09.600
+The heuristics in this lecture rest on a few observations.
+
+24
+00:02:09.600 --> 00:02:15.400
+The database is updated rarely and searched constantly, so it pays to preprocess it.
+
+25
+00:02:15.400 --> 00:02:19.800
+Substitutions are far more common than insertions and deletions.
+
+26
+00:02:19.800 --> 00:02:28.275
+And homologous sequences tend to contain stretches that match without any gaps at all — which makes those stretches a good place to start looking.
+
+27
+00:02:28.875 --> 00:02:33.325
+Here is the whole algorithm in outline; the details come later.
+
+28
+00:02:33.325 --> 00:02:39.325
+In the first stage, BLAST makes a list of short words and the words that score well against them.
+
+29
+00:02:39.325 --> 00:02:50.475
+A word is a short fragment — three residues for proteins, usually longer for DNA and RNA — and the scores come from a substitution matrix such as BLOSUM62.
+
+30
+00:02:50.475 --> 00:02:55.275
+In the second stage it searches the preprocessed database for those words.
+
+31
+00:02:55.275 --> 00:03:03.125
+Any match is a hit, and a hit is extended outwards in both directions, with and without gaps, under rules we will come to.
+
+32
+00:03:03.125 --> 00:03:12.625
+Because the program is only looking for the positions of particular words, it never attempts the vast majority of alignments, which is where the speed comes from.
+
+33
+00:03:12.625 --> 00:03:22.725
+In the third stage it works out how surprising the alignment is, given the size of the database and the scoring matrix, and reports it with that statistic attached.
+
+34
+00:03:23.325 --> 00:03:30.600
+Worth asking: why is BLAST still the default, when there are more sensitive programs around — jackhmmer, HHblits?
+
+35
+00:03:30.600 --> 00:03:32.500
+Partly history.
+
+36
+00:03:32.500 --> 00:03:41.450
+BLAST has been there since the early nineteen-nineties, and the major databases are built to be searched with it, so results are comparable across studies.
+
+37
+00:03:41.450 --> 00:03:43.400
+Partly access.
+
+38
+00:03:43.400 --> 00:03:53.125
+It runs in a browser at NCBI with nothing to install, it is documented exhaustively, and it is usually the first alignment tool anyone is taught.
+
+39
+00:03:53.125 --> 00:03:55.050
+Partly coverage.
+
+40
+00:03:55.050 --> 00:04:02.600
+It handles nucleotide against nucleotide, protein against protein, and the translated comparisons in between.
+
+41
+00:04:02.600 --> 00:04:06.100
+And partly that for routine work it is good enough.
+
+42
+00:04:06.100 --> 00:04:13.000
+The more sensitive programs earn their keep when you are hunting distant relatives or building protein families.
+
+43
+00:04:13.000 --> 00:04:20.250
+For comparing a sequence against a well-curated database, BLAST answers the question, and it answers it quickly.
+
+44
+00:04:20.850 --> 00:04:22.850
+Start with the words.
+
+45
+00:04:22.850 --> 00:04:28.525
+For proteins a word is three amino acids, which gives eight thousand possible words.
+
+46
+00:04:28.525 --> 00:04:40.725
+The useful consequence: you can score every possible pair of words in advance and store the result — an eight thousand by eight thousand table, computed once from whichever substitution matrix you are using.
+
+47
+00:04:40.725 --> 00:04:43.475
+Here, BLOSUM62.
+
+48
+00:04:44.075 --> 00:04:49.700
+Each three-letter combination gets a number, so the table can be indexed by integers.
+
+49
+00:04:50.300 --> 00:04:54.600
+Better still, the triplet itself can be the index — a hash key.
+
+50
+00:04:54.600 --> 00:04:57.500
+That is what makes the lookup instant.
+
+51
+00:04:58.100 --> 00:05:03.225
+And this is how a score in that table is worked out from BLOSUM62.
+
+52
+00:05:03.225 --> 00:05:09.375
+Any substitution matrix would do: BLOSUM, the PAM series, or something of your own.
+
+53
+00:05:09.975 --> 00:05:14.875
+The same calculation again, worked through from BLOSUM62.
+
+54
+00:05:14.875 --> 00:05:20.475
+Any scoring matrix would serve here — BLOSUM, PAM, or one you build yourself.
+
+55
+00:05:21.075 --> 00:05:24.200
+The first step is to take the query apart.
+
+56
+00:05:24.200 --> 00:05:33.350
+The sequence is cut into every overlapping word of three residues — V-T-A, T-A-L, A-L-W, L-W-G, and so on to the end.
+
+57
+00:05:33.350 --> 00:05:41.500
+A query of three hundred residues gives about three hundred words, and those words, not the sequence itself, are what the search looks for.
+
+58
+00:05:42.100 --> 00:05:48.000
+A word may occur more than once in a sequence, so the table lists every position it occurs at.
+
+59
+00:05:48.600 --> 00:05:50.825
+Now the search itself.
+
+60
+00:05:50.825 --> 00:05:58.900
+For each word in the query, BLAST looks up every position in every database sequence where a word scoring above the threshold occurs.
+
+61
+00:05:58.900 --> 00:06:01.650
+The hash table makes that fast.
+
+62
+00:06:01.650 --> 00:06:07.325
+Finding one is called a hit, and a hit triggers extension outwards in both directions.
+
+63
+00:06:07.325 --> 00:06:14.775
+If the alignment that results scores above a threshold, it is called a high-scoring segment pair and goes into the output.
+
+64
+00:06:14.775 --> 00:06:21.125
+The extension can use the Smith-Waterman algorithm from last week, but with one important change.
+
+65
+00:06:21.125 --> 00:06:26.750
+Smith-Waterman only knows where the best alignment ends after the whole matrix has been filled.
+
+66
+00:06:26.750 --> 00:06:33.925
+BLAST never fills the whole matrix — that is the entire point — so it needs some other way to decide when to stop.
+
+67
+00:06:34.525 --> 00:06:40.600
+The rule is easiest to see on an example, and this one is borrowed from the book at the bottom of the slide.
+
+68
+00:06:40.600 --> 00:06:47.650
+It uses two sentences instead of two sequences, which works because a sentence is also a string of letters.
+
+69
+00:06:48.250 --> 00:06:50.450
+Spaces are ignored.
+
+70
+00:06:50.450 --> 00:07:00.575
+The drop-off score records how far the running score has fallen below the best score seen so far; whenever the score reaches a new best, the drop-off goes back to zero.
+
+71
+00:07:00.575 --> 00:07:03.800
+Here the maximum drop-off allowed is five.
+
+72
+00:07:03.800 --> 00:07:11.625
+The first six letters are identical in both sentences, so the score climbs steadily and the drop-off stays at zero throughout.
+
+73
+00:07:12.225 --> 00:07:20.600
+Now the question that decides how BLAST behaves: having found a word that matches, how far do you extend the alignment before giving up?
+
+74
+00:07:20.600 --> 00:07:26.475
+The sentence on screen stands in for a sequence, so you can read the score rather than compute it.
+
+75
+00:07:27.075 --> 00:07:35.300
+Extension starts at the matching word and runs outwards, one position at a time, adding each position's score to a running total.
+
+76
+00:07:35.900 --> 00:07:39.775
+While the residues keep matching, the running score climbs.
+
+77
+00:07:40.375 --> 00:07:43.650
+A mismatch costs points, and the score falls.
+
+78
+00:07:43.650 --> 00:07:49.400
+That on its own is not a reason to stop: a good alignment can survive a bad position.
+
+79
+00:07:50.000 --> 00:07:57.100
+So extension continues, and the score may recover — which is exactly why you cannot stop at the first mismatch.
+
+80
+00:07:57.700 --> 00:08:04.225
+But if the mismatches keep coming, the score keeps falling, and the question becomes whether it will ever climb back.
+
+81
+00:08:04.825 --> 00:08:11.950
+The rule is a drop-off: when the running score has fallen more than a set amount below the best score seen so far, stop.
+
+82
+00:08:11.950 --> 00:08:16.875
+That threshold is a parameter, and it trades sensitivity against speed.
+
+83
+00:08:17.475 --> 00:08:21.375
+And the alignment reported is not where extension stopped.
+
+84
+00:08:21.375 --> 00:08:28.575
+It is trimmed back to the position where the score was highest — the best local alignment inside the region that was explored.
+
+85
+00:08:29.175 --> 00:08:33.100
+Now the statistics, because a score on its own means nothing.
+
+86
+00:08:33.100 --> 00:08:37.825
+Random quantities often follow a normal distribution — the Gaussian.
+
+87
+00:08:37.825 --> 00:08:40.750
+The simplified form is on the slide.
+
+88
+00:08:40.750 --> 00:08:48.800
+The normalised variable carries the mean, which for this distribution is also the median and the mode, and the standard deviation.
+
+89
+00:08:48.800 --> 00:08:56.200
+The constant in front makes the area under the curve equal one, which it has to be if the value is going to be a probability.
+
+90
+00:08:56.800 --> 00:09:03.925
+And the probability that the variable is below some value — minus one, say — is the integral up to that point.
+
+91
+00:09:04.525 --> 00:09:08.425
+Here is the thing that makes sequence statistics interesting.
+
+92
+00:09:08.425 --> 00:09:16.050
+If you compare a query against a set of random sequences of the same length, the scores do not follow a normal distribution.
+
+93
+00:09:16.050 --> 00:09:22.150
+They follow an extreme-value distribution, which Karlin and Altschul proved in the original paper.
+
+94
+00:09:22.150 --> 00:09:24.225
+The difference matters.
+
+95
+00:09:24.225 --> 00:09:29.800
+The extreme-value distribution is asymmetric, with a tail that stretches to the right.
+
+96
+00:09:29.800 --> 00:09:38.900
+The normal distribution is centred on zero; this one has its mean at about nought point five eight, and its median at about nought point three seven.
+

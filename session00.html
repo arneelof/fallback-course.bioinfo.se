@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta charset="utf-8"/>
+<meta content="quarto-1.10.18" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>Session 0: Introduction to the Course – Bioinformatics &amp; Deep Learning — Course Notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta content="./" name="quarto:offset"/>
+<link href="./session01.html" rel="next"/>
+<link href="./setup.html" rel="prev"/>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet"/>
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" id="quarto-text-highlighting-styles" rel="stylesheet"/>
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet"/>
+<link append-hash="true" data-mode="light" href="site_libs/bootstrap/bootstrap-343830dee7e81009abd9657442190b55.min.css" id="quarto-bootstrap" rel="stylesheet"/>
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="js/quiz-widget.js"></script>
+<link href="session-titles.css" rel="stylesheet"/>
+</head>
+<body class="nav-sidebar floating quarto-light">
+<div id="quarto-search-results"></div>
+<header class="headroom fixed-top" id="quarto-header">
+<nav class="quarto-secondary-nav">
+<div class="container-fluid d-flex">
+<button aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="quarto-btn-toggle btn" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="button" type="button">
+<i class="bi bi-layout-text-sidebar-reverse"></i>
+</button>
+<nav aria-label="breadcrumb" class="quarto-page-breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./session00.html">Session 0: Introduction to the Course</a></li></ol></nav>
+<a aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" class="flex-grow-1" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }" role="navigation">
+</a>
+<button aria-label="Search" class="btn quarto-search-button" onclick="window.quartoOpenSearch();" type="button">
+<i class="bi bi-search"></i>
+</button>
+</div>
+</nav>
+</header>
+<!-- content -->
+<div class="quarto-container page-columns page-rows-contents page-layout-article" id="quarto-content">
+<!-- sidebar -->
+<nav class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" id="quarto-sidebar">
+<div class="pt-lg-2 mt-2 text-left sidebar-header">
+<div class="sidebar-title mb-0 py-0">
+<a href="./">Bioinformatics &amp; Deep Learning — Course Notes</a>
+<div class="sidebar-tools-main">
+<a aria-label="All course pages as one PDF" class="quarto-navigation-tool px-1" href="./KB8029-course-notes.pdf" title="All course pages as one PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+</div>
+</div>
+</div>
+<div class="mt-2 flex-shrink-0 align-items-center">
+<div class="sidebar-search">
+<div class="" id="quarto-search" title="Search"></div>
+</div>
+</div>
+<div class="sidebar-menu-container">
+<ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./index.html">
+<span class="menu-text">Welcome</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./schedule.html">
+<span class="menu-text">Course Schedule</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./course-info.html">
+<span class="menu-text">Course Information &amp; Logistics</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./setup.html">
+<span class="menu-text">Setup: VS Code, and Colab when you need a GPU</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link active" href="./session00.html">
+<span class="menu-text">Session 0: Introduction to the Course</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session01.html">
+<span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session02.html">
+<span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Session 2: Working like a computational biologist in Python</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session03.html">
+<span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Session 3: Biological Databases</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session04.html">
+<span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Session 4: Sequence Alignment</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session05.html">
+<span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Session 5: Advanced Database Search &amp; Profile Methods</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session06.html">
+<span class="menu-text"><span class="chapter-number">6</span>  <span class="chapter-title">Session 6: Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session07.html">
+<span class="menu-text"><span class="chapter-number">7</span>  <span class="chapter-title">Session 7: Linear Models, Gradient Descent, the XOR Problem &amp; Secondary Structure Prediction</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session08.html">
+<span class="menu-text"><span class="chapter-number">8</span>  <span class="chapter-title">Session 8: Machine Learning Foundations &amp; Practical PyTorch</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session09.html">
+<span class="menu-text"><span class="chapter-number">9</span>  <span class="chapter-title">Session 9: How a Neural Network Learns, and Why Training Fails</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session10.html">
+<span class="menu-text"><span class="chapter-number">10</span>  <span class="chapter-title">Session 10: CNNs, from ImageNet to Biology</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session11.html">
+<span class="menu-text"><span class="chapter-number">11</span>  <span class="chapter-title">Session 11: Sequences, Language Models and SignalP</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./session12.html">
+<span class="menu-text"><span class="chapter-number">12</span>  <span class="chapter-title">Session 12: AlphaFold and Generative Models of Protein Structure</span></span></a>
+</div>
+</li>
+
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./capstone.html">
+<span class="menu-text">Capstone Project: Secondary Structure Prediction</span></a>
+</div>
+</li>
+<li class="sidebar-item">
+<div class="sidebar-item-container">
+<a class="sidebar-item-text sidebar-link" href="./references.html">
+<span class="menu-text">References</span></a>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<div class="quarto-sidebar-collapse-item" data-bs-target=".quarto-sidebar-collapse-item" data-bs-toggle="collapse" id="quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+<div class="sidebar margin-sidebar" id="quarto-margin-sidebar">
+<nav class="toc-active" id="TOC" role="doc-toc">
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a class="nav-link active" data-scroll-target="#what-this-course-is-about" href="#what-this-course-is-about" id="toc-what-this-course-is-about">What this course is about</a></li>
+<li><a class="nav-link" data-scroll-target="#how-a-session-works" href="#how-a-session-works" id="toc-how-a-session-works">How a session works</a></li>
+<li><a class="nav-link" data-scroll-target="#where-to-find-everything" href="#where-to-find-everything" id="toc-where-to-find-everything">Where to find everything</a></li>
+<li><a class="nav-link" data-scroll-target="#people" href="#people" id="toc-people">People</a></li>
+<li><a class="nav-link" data-scroll-target="#help-us-improve-the-course" href="#help-us-improve-the-course" id="toc-help-us-improve-the-course">Help us improve the course</a></li>
+<li><a class="nav-link" data-scroll-target="#the-rules-in-brief" href="#the-rules-in-brief" id="toc-the-rules-in-brief">The rules, in brief</a></li>
+<li><a class="nav-link" data-scroll-target="#at-scilifelab" href="#at-scilifelab" id="toc-at-scilifelab">At SciLifeLab</a></li>
+<li><a class="nav-link" data-scroll-target="#computers" href="#computers" id="toc-computers">Computers</a></li>
+<li><a class="nav-link" data-scroll-target="#before-the-first-lecture" href="#before-the-first-lecture" id="toc-before-the-first-lecture">Before the first lecture</a></li>
+<li><a class="nav-link" data-scroll-target="#before-session-2" href="#before-session-2" id="toc-before-session-2">Before Session 2</a></li>
+<li><a class="nav-link" data-scroll-target="#whats-next" href="#whats-next" id="toc-whats-next">What’s next</a></li>
+</ul>
+</nav>
+</div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+<header class="quarto-title-block default" id="title-block-header">
+<div class="quarto-title">
+<h1 class="title">Session 0: Introduction to the Course</h1>
+</div>
+<div class="quarto-title-meta">
+</div>
+</header>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Sources for this page:</strong> the course’s own introduction slides from earlier years, updated for this version of the course. Dates, rooms, deadlines and this year’s teaching assistants are on Canvas, not here.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Reproducibility
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<blockquote class="blockquote">
+<p><strong>How many bioinformaticians does it take to change a light bulb?</strong> One, but first they write a pipeline for it, and then it only works on their own laptop.</p>
+</blockquote>
+</div>
+</div>
+<section class="level2" id="what-this-course-is-about">
+<h2 class="anchored" data-anchor-id="what-this-course-is-about">What this course is about</h2>
+<p>KB8029 brings two subjects together: <strong>bioinformatics</strong>, the computational analysis of biological sequences and structures, and <strong>machine learning</strong>, in particular the neural networks behind today’s methods. They are not taught as two separate halves. The classical bioinformatics methods motivate the machine learning, and the machine learning is applied to the same biological problems.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img class="img-fluid figure-img" src="figs/session00-roadmap.png" style="width:100.0%"/></p>
+<figcaption>The course at a glance. Sessions 1-2 refresh the mathematics and programming the rest of the course uses. Sessions 3-6 cover classical bioinformatics: databases, alignment, database searches with profiles, and protein structure. In Sessions 7-9 the two subjects meet: a profile score turns out to be a simple neural network, and the networks are trained properly. Sessions 10-12 cover modern deep learning, up to AlphaFold. One problem, predicting protein structure from sequence, runs through the second half and ends in your capstone project.</figcaption>
+</figure>
+</div>
+<p>By the end of the course you should be able to</p>
+<ul>
+<li>find, retrieve and compare biological sequences and structures using the main databases and tools;</li>
+<li>explain how the classical methods work: alignment, substitution matrices, profiles and database searches;</li>
+<li>build, train and evaluate neural networks in PyTorch, and judge whether a result is real;</li>
+<li>explain how modern deep-learning methods for proteins work, from convolutional networks and protein language models to AlphaFold;</li>
+<li>design, train and evaluate your own secondary-structure predictor (the <a href="./capstone.html">capstone project</a>).</li>
+</ul>
+<p>The full plan is on the <a href="./schedule.html">Course Schedule</a> page.</p>
+</section>
+<section class="level2" id="how-a-session-works">
+<h2 class="anchored" data-anchor-id="how-a-session-works">How a session works</h2>
+<p>Each of the twelve sessions has the same parts:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Part</th>
+<th>Where</th>
+<th>What it is for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>The page</strong></td>
+<td>this book, e.g. <a href="./session01.html">Session 1</a></td>
+<td>the material of the session, with self-study questions and a short quiz at the end</td>
+</tr>
+<tr class="even">
+<td><strong>The course notebook</strong></td>
+<td>this book, linked from each page, with an “Open in Colab” badge</td>
+<td>the same material in code; read it, then run and change it</td>
+</tr>
+<tr class="odd">
+<td><strong>The lecture</strong></td>
+<td>on site</td>
+<td>explanations, live coding, and short <strong>discussion problems</strong> you work on in groups (notebooks opened by QR code)</td>
+</tr>
+<tr class="even">
+<td><strong>Live quizzes</strong></td>
+<td><a href="https://quiz.bioinfo.se">quiz.bioinfo.se</a>, on your phone</td>
+<td>quick questions during the lecture, to check what has landed</td>
+</tr>
+<tr class="odd">
+<td><strong>The lab</strong></td>
+<td>a separate lab notebook in this book, questions on <a href="https://canvas.su.se/">Canvas</a></td>
+<td>most sessions; hands-on work with real data, submitted as a short online quiz</td>
+</tr>
+</tbody>
+</table>
+<p>How much time each session takes, split into reading and lab, is in the table <a href="./course-info.html#workload">Expected workload</a>.</p>
+<p>Read the page before the lecture: the lectures assume you have seen the material once, and use the time for the parts that are hard to learn alone. The exception is this first morning, which covers Sessions 0 and 1 together, so its reading is sent out before the course starts (below). <strong>Lectures are not recorded.</strong></p>
+</section>
+<section class="level2" id="where-to-find-everything">
+<h2 class="anchored" data-anchor-id="where-to-find-everything">Where to find everything</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>What</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Course pages and notebooks (this book)</td>
+<td><a href="https://course.bioinfo.se/">course.bioinfo.se</a></td>
+</tr>
+<tr class="even">
+<td>All course pages as one PDF</td>
+<td><a href="./KB8029-course-notes.pdf">KB8029-course-notes.pdf</a></td>
+</tr>
+<tr class="odd">
+<td>Schedule, rooms, deadlines, announcements, lab quizzes, discussion forum</td>
+<td><a href="https://canvas.su.se/">Canvas</a> (the course appears there once you are admitted)</td>
+</tr>
+<tr class="even">
+<td>Live quizzes during lectures</td>
+<td><a href="https://quiz.bioinfo.se">quiz.bioinfo.se</a></td>
+</tr>
+<tr class="odd">
+<td>Setting up VS Code and Colab</td>
+<td><a href="./setup.html">Setup</a></td>
+</tr>
+<tr class="even">
+<td>The session-by-session plan</td>
+<td><a href="./schedule.html">Course Schedule</a></td>
+</tr>
+<tr class="odd">
+<td>Exam, grading, labs, plagiarism, AI tools, weekly schedule, student office</td>
+<td><a href="./course-info.html">Course Information &amp; Logistics</a></td>
+</tr>
+<tr class="even">
+<td>The capstone project</td>
+<td><a href="./capstone.html">Capstone project</a></td>
+</tr>
+<tr class="odd">
+<td>Past exams</td>
+<td><a href="./schedule.html#exam-preparation">Exam preparation</a></td>
+</tr>
+<tr class="even">
+<td>Further reading for the whole course</td>
+<td><a href="./references.html">References</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="level2" id="people">
+<h2 class="anchored" data-anchor-id="people">People</h2>
+<p>The course has two teachers, one for machine learning and one for bioinformatics, and teaching assistants who run the lab sessions. This year’s teachers and teaching assistants are listed on Canvas.</p>
+<p>Ask questions in the Canvas discussion forum, where everyone can see the answers. The teaching assistants help during the scheduled lab hours; do not expect immediate help at other times.</p>
+</section>
+<section class="level2" id="help-us-improve-the-course">
+<h2 class="anchored" data-anchor-id="help-us-improve-the-course">Help us improve the course</h2>
+<p>Everything in this course, the pages, the notebooks, the labs and the slides, is open access: written from scratch and free for anyone to read and reuse. This is also the first year of this version of the course. We have written it with care, but it is not perfect. You will find errors, explanations that do not work for you, and notebooks that break when a library changes. You are the first readers, so you are the ones who find them, and we really appreciate it when you tell us. Every message is read by the teachers, and each one makes the course better, for you and for the students after you.</p>
+<ul>
+<li><strong>With a university account:</strong> use the <a href="https://bioinfo.se/internal/kb8029-feedback/">feedback form</a> and log in with your university account. You can choose the session, say where the problem is, and send it anonymously if you like. The form is also linked at the bottom of every page.</li>
+<li><strong>With a GitHub account:</strong> open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on the course’s GitHub page</a>. Issues are public, so everyone can see the problem, the discussion and the fix; they are not anonymous. This works well for errors in the text and for notebooks that do not run.</li>
+<li><strong>Without either:</strong> email <a class="email" href="mailto:arne@bioinfo.se">arne@bioinfo.se</a> with the subject “KB8029 feedback”.</li>
+</ul>
+<p>Feedback never affects your grades. The form is for improving the material; questions about the content belong in the Canvas discussion forum, where everyone sees the answer. The official course evaluation at the end of the course is separate, so please fill that in as well.</p>
+</section>
+<section class="level2" id="the-rules-in-brief">
+<h2 class="anchored" data-anchor-id="the-rules-in-brief">The rules, in brief</h2>
+<p>To pass, you need to pass all the <strong>labs</strong>, the <strong>capstone project</strong> (a secondary-structure predictor of your own: a Colab notebook, a short report, and an oral presentation of your code to a teaching assistant) and the <strong>exam</strong>. Your work must be your own, and AI tools may help you understand but must not write your labs or report. The grading, the grade scale, and the rules on plagiarism and AI tools are on the <a href="./course-info.html">Course Information &amp; Logistics</a> page.</p>
+</section>
+<section class="level2" id="at-scilifelab">
+<h2 class="anchored" data-anchor-id="at-scilifelab">At SciLifeLab</h2>
+<p>The lectures and labs are at SciLifeLab in Solna:</p>
+<ul>
+<li><strong>Address:</strong> Science for Life Laboratory (SciLifeLab), Tomtebodavägen 23A, 171 65 Solna (<a href="https://www.google.com/maps/search/?api=1&amp;query=Science+for+Life+Laboratory,+Tomtebodav%C3%A4gen+23A,+17165+Solna,+Sweden">map</a>).</li>
+<li><strong>Public transport:</strong> bus 3 (or others) to Tomteboda-Karolinska inst. (Solna).</li>
+<li><strong>Rooms:</strong> most lectures and labs are in Air&amp;Fire (Gamma 2); a few events are in other rooms in Gamma 2, Gamma 7 or Alfa 2. The room of each lecture and lab is in the Canvas schedule.</li>
+<li><strong>Teachers’ offices:</strong> Alfa, floor 6.</li>
+<li><strong>Directions</strong> from the research group’s page: <a class="uri" href="https://bioinfo.se/contact/">https://bioinfo.se/contact/</a>.</li>
+</ul>
+<p>You need a SciLifeLab access card to enter and leave the building; when and where to collect it is announced by email or on Canvas.</p>
+<ul>
+<li>Use your card <strong>every time</strong> you pass the speed gates, on the way in and on the way out.</li>
+<li>The gates let <strong>one person through at a time</strong>. To let a visitor in, use your card twice, with a few seconds in between, or the alarm goes off.</li>
+<li>Never force your way through a gate.</li>
+</ul>
+</section>
+<section class="level2" id="computers">
+<h2 class="anchored" data-anchor-id="computers">Computers</h2>
+<p>All notebooks and labs run on <strong>Google Colab</strong>, which gives free access to a GPU. The labs are done in <strong>VS Code</strong> on your laptop, with the notebook running on a Colab machine; the course notebooks can also be opened in Colab in the browser. So the only things you need are a laptop with VS Code and git, and a Google account. The <a href="./setup.html">Setup</a> page takes you through it. Even the structure viewing in Session 6 is done with PyMOL inside a notebook, so nothing else has to be installed.</p>
+<p>If you do not have a laptop that can do this, tell us now, not on the day of a lab.</p>
+</section>
+<section class="level2" id="before-the-first-lecture">
+<h2 class="anchored" data-anchor-id="before-the-first-lecture">Before the first lecture</h2>
+<p>Sessions 0 and 1 are the same morning, so this list has to be done <strong>before the course starts</strong>. It is sent to you by email a week before, and it is the only preparation that cannot wait until the day.</p>
+<ol type="1">
+<li>Accept the course invitation on <a href="https://canvas.su.se/">Canvas</a>, and check the schedule there. To get the lectures, labs and lab deadlines in your own calendar, subscribe to <a class="uri" href="https://course.bioinfo.se/kb8029.ics">https://course.bioinfo.se/kb8029.ics</a> (Google Calendar: Other calendars → From URL; Outlook: Add calendar → Subscribe from web); it updates itself when the schedule changes.</li>
+<li>Open <a href="https://quiz.bioinfo.se">quiz.bioinfo.se</a> on your phone and check that you can log in.</li>
+<li>Read the <a href="./session01.html">Session 1</a> page, the mathematics refresher, and try its practice problems. It is the longest reading in the course, so start early. If you do not manage all of it, read the parts on vectors and derivatives: the lecture builds on those. Nothing else has to be read in advance.</li>
+</ol>
+</section>
+<section class="level2" id="before-session-2">
+<h2 class="anchored" data-anchor-id="before-session-2">Before Session 2</h2>
+<p>Session 2 has the first lab, and it runs on Colab. Before it, work through the <a href="./setup.html">Setup</a> page: install VS Code, git and the Google Colab extension, clone the course notebooks into VS Code, and make sure you can run a lab notebook on Colab from VS Code. Setting up takes about half an hour, and it is easier to sort out problems before the lab than during it.</p>
+</section>
+<section class="level2" id="whats-next">
+<h2 class="anchored" data-anchor-id="whats-next">What’s next</h2>
+<p><a href="./session01.html">Session 1</a> refreshes the mathematics the course relies on: vectors and matrices, derivatives and gradients, and probability, likelihood and entropy. <a href="./session02.html">Session 2</a> does the same for programming in Python.</p>
+</section>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+<div class="nav-page nav-page-previous">
+<a aria-label="Setup: VS Code, and Colab when you need a GPU" class="pagination-link" href="./setup.html">
+<i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Setup: VS Code, and Colab when you need a GPU</span>
+</a>
+</div>
+<div class="nav-page nav-page-next">
+<a aria-label="Session 1: Math Prerequisites" class="pagination-link" href="./session01.html">
+<span class="nav-page-text"><span class="chapter-number">1</span>  <span class="chapter-title">Session 1: Math Prerequisites</span></span> <i class="bi bi-arrow-right-short"></i>
+</a>
+</div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+<div class="nav-footer">
+<div class="nav-footer-left">
+       
+    </div>
+<div class="nav-footer-center">
+<p>Found an error or something unclear? <a href="https://bioinfo.se/internal/kb8029-feedback/">Send feedback</a> (university login), open an <a href="https://github.com/ElofssonLab/kb8029-book/issues">issue on GitHub</a>, or email arne@bioinfo.se with the subject “KB8029 feedback”. The course is open access, and your feedback improves it.</p>
+</div>
+<div class="nav-footer-right">
+       
+    </div>
+</div>
+</footer>
+<script>
+// Keep the browser tab title consistent with the displayed session title.
+document.title = document.title.replace(/^\d+(?:\.\d+)*\s+(?=Session\s+\d+\b)/i, "");
+</script>
+</body></html>

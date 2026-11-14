@@ -1,0 +1,896 @@
+1
+00:00:00,000 --> 00:00:05,325
+Welcome to Session six, the session where the structure itself becomes the data.
+
+2
+00:00:05,325 --> 00:00:10,650
+Let me start with the joke from the page, because it is also the plot of the third block.
+
+3
+00:00:10,650 --> 00:00:13,200
+Haemoglobin walks into a bar.
+
+4
+00:00:13,200 --> 00:00:23,050
+The bartender says, "You look tense." Haemoglobin says, "Give me some oxygen and I'll relax." That is a real description of a real mechanism, and we come back to it.
+
+5
+00:00:23,050 --> 00:00:34,150
+The question for the session is this: what information about a protein is contained in its sequence, what becomes visible only in three dimensions, and how can a computer connect the two?
+
+6
+00:00:34,150 --> 00:00:40,400
+Sessions three to five worked with sequences — retrieving them, aligning them, searching for families.
+
+7
+00:00:40,400 --> 00:00:49,325
+Structures appeared in Session three, but only as database records: a PDB entry, an AlphaFold model, an accession to write down.
+
+8
+00:00:49,325 --> 00:00:52,925
+Today the coordinates themselves are what we work with.
+
+9
+00:00:52,925 --> 00:01:00,975
+We turn them into distances, into secondary structure, into domains and interfaces, and we compare them with other structures.
+
+10
+00:01:00,975 --> 00:01:03,700
+And the globin thread continues.
+
+11
+00:01:03,700 --> 00:01:07,425
+Session three found beta-globin's identifiers.
+
+12
+00:01:07,425 --> 00:01:10,725
+Session four aligned globin sequences.
+
+13
+00:01:10,725 --> 00:01:14,000
+Session five searched for the globin family.
+
+14
+00:01:14,000 --> 00:01:20,325
+Today we compare globin structures — and we will see them succeed exactly where Session five hit a wall.
+
+15
+00:01:20,325 --> 00:01:21,950
+Three blocks.
+
+16
+00:01:21,950 --> 00:01:26,875
+First, how a sequence becomes a structure, and what the levels of structure are.
+
+17
+00:01:26,875 --> 00:01:30,625
+Second, comparing proteins in three dimensions.
+
+18
+00:01:30,625 --> 00:01:38,650
+Third, domains, conformational states, and structure as something to predict — which is where the second half of this course begins.
+
+19
+00:01:39,250 --> 00:01:44,175
+One framing before we start, because it sets up the whole second half of the course.
+
+20
+00:01:44,175 --> 00:01:46,975
+Today the structure is the data.
+
+21
+00:01:46,975 --> 00:01:52,100
+We have the coordinates; we are going to look at what they tell us that a sequence cannot.
+
+22
+00:01:52,100 --> 00:01:58,900
+From Session seven onwards the question inverts: can a computer predict these things from the sequence alone?
+
+23
+00:01:58,900 --> 00:02:07,600
+Every structural property we meet today — the secondary structure, the contact map, the fold, the interface — becomes a prediction target later.
+
+24
+00:02:07,600 --> 00:02:15,425
+So it is worth paying attention today not only to what these properties are, but to how hard each one looks to guess from sequence.
+
+25
+00:02:15,425 --> 00:02:18,375
+Some of them turn out to be nearly easy.
+
+26
+00:02:18,375 --> 00:02:20,725
+Others took fifty years.
+
+27
+00:02:21,325 --> 00:02:22,925
+First block.
+
+28
+00:02:22,925 --> 00:02:27,575
+A chain of amino acids becomes a specific three-dimensional shape.
+
+29
+00:02:27,575 --> 00:02:33,050
+What are the levels of that description, and what does the chain actually have freedom to do?
+
+30
+00:02:33,650 --> 00:02:42,300
+Structural biology describes a folded protein at four levels, and haemoglobin has all four at once, which is why it is the example.
+
+31
+00:02:42,300 --> 00:02:45,875
+Primary structure is the amino-acid sequence.
+
+32
+00:02:45,875 --> 00:02:49,725
+That is what Sessions three to five worked with entirely.
+
+33
+00:02:49,725 --> 00:02:57,050
+Secondary structure is local backbone shape: alpha-helices, beta-strands, and everything else, which is called coil.
+
+34
+00:02:57,050 --> 00:03:04,050
+It is local in a precise sense — it is determined by interactions between residues close together in the chain.
+
+35
+00:03:04,050 --> 00:03:11,200
+Tertiary structure is the three-dimensional fold of one chain: how the helices and strands pack against each other.
+
+36
+00:03:11,200 --> 00:03:16,775
+This requires long-range interactions, between residues far apart in the sequence.
+
+37
+00:03:16,775 --> 00:03:22,000
+Quaternary structure is several folded chains packed together into an assembly.
+
+38
+00:03:22,000 --> 00:03:25,475
+Haemoglobin shows you all four simultaneously.
+
+39
+00:03:25,475 --> 00:03:34,225
+It has a sequence, it is largely helical, each chain folds into the globin fold, and four of those chains assemble into the working molecule.
+
+40
+00:03:34,225 --> 00:03:37,375
+The levels are not competing descriptions.
+
+41
+00:03:37,375 --> 00:03:41,775
+They are a hierarchy, and each one is built out of the one below it.
+
+42
+00:03:42,375 --> 00:03:48,200
+And each level brings its own computational problem, which is how this course is organised.
+
+43
+00:03:48,200 --> 00:03:51,950
+Primary structure: alignment, BLAST, profiles.
+
+44
+00:03:51,950 --> 00:03:54,525
+That was Sessions three to five.
+
+45
+00:03:54,525 --> 00:03:58,075
+Secondary structure: prediction from sequence.
+
+46
+00:03:58,075 --> 00:04:05,075
+That is Sessions seven to eleven — most of the machine-learning half of the course is aimed at this and its relatives.
+
+47
+00:04:05,075 --> 00:04:09,075
+Tertiary structure: comparing structures and predicting them.
+
+48
+00:04:09,075 --> 00:04:12,800
+Comparison is today; prediction is Session twelve.
+
+49
+00:04:12,800 --> 00:04:16,800
+Quaternary structure: interfaces and complexes.
+
+50
+00:04:16,800 --> 00:04:20,375
+Again, partly today and fully in Session twelve.
+
+51
+00:04:20,375 --> 00:04:24,575
+So the course follows the levels in order, and we are at the hinge.
+
+52
+00:04:24,575 --> 00:04:27,725
+Everything before today was sequences.
+
+53
+00:04:27,725 --> 00:04:30,750
+Everything after today is prediction.
+
+54
+00:04:30,750 --> 00:04:35,175
+Today is the one session where we simply look at structures as they are.
+
+55
+00:04:35,775 --> 00:04:45,300
+A protein chain is called flexible, and that is true, but it is far narrower than it sounds — and this narrowness is what makes structure prediction possible at all.
+
+56
+00:04:45,300 --> 00:04:49,650
+Each residue contributes three dihedral angles to the backbone.
+
+57
+00:04:49,650 --> 00:04:52,875
+Phi turns about the N-C-alpha bond.
+
+58
+00:04:52,875 --> 00:04:55,450
+Psi turns about C-alpha-C.
+
+59
+00:04:55,450 --> 00:05:00,350
+And omega turns about the peptide bond joining one residue to the next.
+
+60
+00:05:00,350 --> 00:05:03,100
+Only the first two actually turn.
+
+61
+00:05:03,100 --> 00:05:12,875
+The peptide bond has partial double-bond character, which means it resists rotation, so omega is held near a hundred and eighty degrees — the trans form.
+
+62
+00:05:12,875 --> 00:05:22,900
+About three residues in a thousand are found in the cis form instead, usually before a proline, and those are worth noticing when you meet one, but they are exceptions.
+
+63
+00:05:22,900 --> 00:05:27,300
+So a backbone conformation is two numbers per residue, not three.
+
+64
+00:05:27,300 --> 00:05:30,075
+That is the entire search space.
+
+65
+00:05:30,075 --> 00:05:38,025
+It is also why a Ramachandran plot — phi against psi — can show the conformation of a whole chain on a single pair of axes.
+
+66
+00:05:38,025 --> 00:05:41,475
+The right-hand panel is not a textbook diagram.
+
+67
+00:05:41,475 --> 00:05:43,875
+It is this chain, measured.
+
+68
+00:05:43,875 --> 00:05:48,325
+Every residue of beta-globin, plotted by its own two angles.
+
+69
+00:05:48,325 --> 00:05:55,800
+The helix residues fall into one tight cluster, because that is what a helix is: the same pair of angles, repeated.
+
+70
+00:05:55,800 --> 00:05:58,225
+The coil residues scatter.
+
+71
+00:05:58,225 --> 00:06:06,575
+And there are no strands at all — which agrees with the eighty point eight per cent helix and zero per cent strand we measure later in the lecture.
+
+72
+00:06:06,575 --> 00:06:09,550
+Nobody drew those clusters on the plot.
+
+73
+00:06:09,550 --> 00:06:12,625
+That is simply where the residues landed.
+
+74
+00:06:13,225 --> 00:06:23,125
+The three classes of secondary structure, defined by hydrogen bonds between backbone groups — the N-H and the C-equals-O of the backbone, not the side chains.
+
+75
+00:06:23,125 --> 00:06:29,900
+An alpha-helix is a coil held together by hydrogen bonds from residue i to residue i plus four.
+
+76
+00:06:29,900 --> 00:06:38,775
+That spacing is what produces the pitch of the helix, and it is strictly local: everything holding a helix together lies within four residues.
+
+77
+00:06:38,775 --> 00:06:45,600
+A beta-strand is an extended stretch, hydrogen-bonded edge to edge with other strands to form a sheet.
+
+78
+00:06:45,600 --> 00:06:49,400
+Note the difference — a strand is not stable by itself.
+
+79
+00:06:49,400 --> 00:06:54,025
+It needs its partners, and those partners can be anywhere in the sequence.
+
+80
+00:06:54,025 --> 00:06:59,625
+So a sheet is partly a long-range structure even though we call the strands secondary.
+
+81
+00:06:59,625 --> 00:07:01,925
+Everything else is coil.
+
+82
+00:07:01,925 --> 00:07:09,925
+Not disorder, and not an absence of structure: coil is a perfectly definite shape, it is just not one of the two repeating ones.
+
+83
+00:07:09,925 --> 00:07:14,575
+The protein shown is ubiquitin, because it has all three classes.
+
+84
+00:07:14,575 --> 00:07:19,325
+Haemoglobin has no strands at all, so it would be a poor illustration here.
+
+85
+00:07:19,325 --> 00:07:22,675
+And these labels are assigned, not observed.
+
+86
+00:07:22,675 --> 00:07:33,075
+Programs like DSSP, or PyMOL's dss, take the coordinates of a solved structure and apply hydrogen-bonding rules to decide which residue gets which label.
+
+87
+00:07:33,075 --> 00:07:41,825
+That matters later, because when we train a model to predict secondary structure, these program-assigned labels are the ground truth we train against.
+
+88
+00:07:42,425 --> 00:07:45,625
+What actually holds a tertiary fold together?
+
+89
+00:07:45,625 --> 00:07:48,875
+Mainly one thing: the hydrophobic effect.
+
+90
+00:07:48,875 --> 00:07:58,825
+Non-polar side chains are pushed away from water, so they end up buried in the interior of the protein, while polar and charged ones sit on the surface where water is.
+
+91
+00:07:58,825 --> 00:08:05,650
+The fold is to a large extent what you get when a chain arranges itself so the oily residues are inside.
+
+92
+00:08:05,650 --> 00:08:09,800
+This is why Session four's sequence logos showed what they showed.
+
+93
+00:08:09,800 --> 00:08:20,150
+Those columns that were not conserved as a residue but were always hydrophobic are buried positions — the constraint is "must be oily", and several residues satisfy it.
+
+94
+00:08:20,150 --> 00:08:22,775
+Other interactions contribute.
+
+95
+00:08:22,775 --> 00:08:27,325
+Hydrogen bonds, electrostatics, van der Waals contacts.
+
+96
+00:08:27,325 --> 00:08:30,000
+Two are worth naming specifically.
+
+97
+00:08:30,000 --> 00:08:39,550
+A salt bridge is an electrostatic interaction between oppositely charged side chains — a lysine or arginine against an aspartate or glutamate.
+
+98
+00:08:39,550 --> 00:08:51,200
+And a disulfide bond is a covalent link between two cysteine sulphurs, far stronger than any of the others, and the only one of these that is a real chemical bond rather than an attraction.
+
+99
+00:08:51,200 --> 00:08:53,125
+Finally, scale.
+
+100
+00:08:53,125 --> 00:08:56,225
+Many proteins work as a single chain.
+
+101
+00:08:56,225 --> 00:09:00,950
+Others assemble into complexes of anything from two chains to hundreds.
+
+102
+00:09:01,550 --> 00:09:03,975
+Haemoglobin specifically.
+
+103
+00:09:03,975 --> 00:09:12,700
+It is a heterotetramer: two alpha-globin chains of a hundred and forty-one residues, and two beta-globin chains of a hundred and forty-six.
+
+104
+00:09:12,700 --> 00:09:17,925
+Beta-globin is HBB, the protein this course has followed since Session three.
+
+105
+00:09:17,925 --> 00:09:23,925
+Each chain folds independently and carries one haem group, which is what binds the oxygen.
+
+106
+00:09:23,925 --> 00:09:29,025
+In the figure the alpha chains are blue and cyan, the beta chains salmon and pink.
+
+107
+00:09:29,025 --> 00:09:35,425
+Now a measurement, because this is the kind of thing you should get from the coordinates rather than from a textbook.
+
+108
+00:09:35,425 --> 00:09:47,250
+Using PyMOL's secondary-structure algorithm, one beta chain is a hundred and eighteen of a hundred and forty-six residues helical — eighty point eight per cent — and zero per cent strand.
+
+109
+00:09:47,250 --> 00:09:50,450
+A protein essentially made of helices.
+
+110
+00:09:50,450 --> 00:09:54,875
+One detail worth flagging, because it will matter in Session seven.
+
+111
+00:09:54,875 --> 00:10:02,425
+The PDB entry's own annotation gives a hundred and seventeen helical residues, not a hundred and eighteen.
+
+112
+00:10:02,425 --> 00:10:06,325
+The methods disagree about where exactly a helix ends.
+
+113
+00:10:06,325 --> 00:10:12,750
+That is a difference of one residue out of a hundred and forty-six, so it changes nothing biologically.
+
+114
+00:10:12,750 --> 00:10:21,875
+But if you are training a model to predict secondary structure, that one residue is a label, and your ground truth now depends on which program assigned it.
+
+115
+00:10:21,875 --> 00:10:26,975
+Keep that in mind when we start quoting prediction accuracies to the decimal point.
+
+116
+00:10:27,575 --> 00:10:34,750
+Let this run for a moment and watch it, because a still picture of a protein hides the one thing a structure is actually for.
+
+117
+00:10:34,750 --> 00:10:37,050
+A still is a projection.
+
+118
+00:10:37,050 --> 00:10:45,575
+It flattens three dimensions into two and throws away what is near what — which is precisely the information a structure exists to give you.
+
+119
+00:10:45,575 --> 00:10:47,875
+Turning it brings that back.
+
+120
+00:10:47,875 --> 00:11:01,125
+Watch the two kinds of chain packing against each other: the alpha chains in blue, the beta chains in tan, meeting at interfaces that are a real part of the machine rather than an accident of how four chains were put in a box.
+
+121
+00:11:01,125 --> 00:11:05,250
+Watch the central cavity open and close as it goes round.
+
+122
+00:11:05,250 --> 00:11:09,925
+It is there in every still too, but you have to be told; here you see it.
+
+123
+00:11:09,925 --> 00:11:14,350
+And watch the four haem groups, the red spheres, pass in and out of view.
+
+124
+00:11:14,350 --> 00:11:16,450
+Notice where they are.
+
+125
+00:11:16,450 --> 00:11:22,425
+Each one is buried inside its own subunit, not at the interfaces between subunits.
+
+126
+00:11:22,425 --> 00:11:33,075
+Which raises the question the third block answers: if the oxygen binds inside each subunit separately, how does binding at one subunit make binding at the next one easier?
+
+127
+00:11:33,075 --> 00:11:36,300
+One revolution, ten degrees at a time.
+
+128
+00:11:36,300 --> 00:11:39,525
+Nobody has to open PyMOL to see this.
+
+129
+00:11:40,125 --> 00:11:44,400
+Now the question underneath the entire second half of this course.
+
+130
+00:11:44,400 --> 00:11:47,350
+Does the sequence determine the structure?
+
+131
+00:11:47,350 --> 00:11:53,450
+Because if it does not, predicting structure from sequence is not merely hard, it is impossible.
+
+132
+00:11:53,450 --> 00:11:58,250
+The classic evidence is Christian Anfinsen's, from the nineteen sixties.
+
+133
+00:11:58,250 --> 00:12:05,175
+He took ribonuclease, unfolded it in a test tube with a denaturant, and then removed the denaturant.
+
+134
+00:12:05,175 --> 00:12:14,200
+The protein refolded into its active shape on its own — no cellular machinery, no instructions, nothing present but the chain and the solvent.
+
+135
+00:12:14,200 --> 00:12:22,625
+So for many small globular proteins, the sequence contains enough information to specify the native fold under the right conditions.
+
+136
+00:12:22,625 --> 00:12:27,075
+That principle is what makes structure prediction a sensible goal.
+
+137
+00:12:27,075 --> 00:12:31,450
+But it is not a law for every protein, and the exceptions matter.
+
+138
+00:12:31,450 --> 00:12:41,150
+Some proteins need chaperones to fold efficiently — the information may be in the sequence, but the chain cannot find it unaided at cellular concentrations.
+
+139
+00:12:41,150 --> 00:12:47,875
+Many need a ligand, a cofactor or a binding partner, and without it there is no stable fold to find.
+
+140
+00:12:47,875 --> 00:12:53,500
+Some switch between alternative states — haemoglobin itself, as the third block shows.
+
+141
+00:12:53,500 --> 00:12:59,925
+And intrinsically disordered regions have no single fold at all; for them the question is malformed.
+
+142
+00:12:59,925 --> 00:13:07,625
+Worth holding onto when you see a prediction server return exactly one confident structure for any sequence you give it.
+
+143
+00:13:08,225 --> 00:13:16,325
+Two kinds of interaction build a fold, and the difference between them explains the entire difficulty gradient of structure prediction.
+
+144
+00:13:16,325 --> 00:13:22,575
+Local interactions join residues close together in the sequence, and they make secondary structure.
+
+145
+00:13:22,575 --> 00:13:31,025
+An alpha-helix's hydrogen bonds connect residue i to residue i plus four — you never need to look further than four residues away.
+
+146
+00:13:31,025 --> 00:13:40,100
+Long-range interactions join residues far apart in the sequence but close in space, and they pack the helices and strands into a tertiary fold.
+
+147
+00:13:40,100 --> 00:13:45,200
+Two residues a hundred positions apart can be neighbours in three dimensions.
+
+148
+00:13:45,200 --> 00:13:47,250
+Now the consequence.
+
+149
+00:13:47,250 --> 00:13:55,250
+Local structure can partly be guessed from a short window of sequence, because the information determining it is inside that window.
+
+150
+00:13:55,250 --> 00:14:03,200
+That is Session seven, and it is why a method from nineteen ninety-three using a window of thirteen residues gets anywhere at all.
+
+151
+00:14:03,200 --> 00:14:09,150
+Long-range structure cannot be guessed from a window, because no window contains both partners.
+
+152
+00:14:09,150 --> 00:14:19,325
+To know that residue twenty touches residue one hundred and twenty you need information about the pair, and a sliding window over the sequence structurally cannot provide it.
+
+153
+00:14:19,325 --> 00:14:28,975
+That is why secondary-structure prediction was partly solved in the nineteen nineties and tertiary-structure prediction was not solved until twenty twenty.
+
+154
+00:14:28,975 --> 00:14:32,150
+The two problems look adjacent and are not.
+
+155
+00:14:32,750 --> 00:14:43,050
+A structure file is a list of atomic coordinates, but coordinates are often not the most useful representation, and here is an alternative that matters enormously later.
+
+156
+00:14:43,050 --> 00:14:46,525
+Take the distance between every pair of residues.
+
+157
+00:14:46,525 --> 00:14:50,975
+For a chain of L residues that gives an L by L distance map.
+
+158
+00:14:50,975 --> 00:14:59,975
+Threshold it — here, C-beta atoms within eight ångström — and you get a contact map: one where two residues are close, zero elsewhere.
+
+159
+00:14:59,975 --> 00:15:03,525
+The property that makes these useful is invariance.
+
+160
+00:15:03,525 --> 00:15:10,175
+Coordinates change when you rotate or translate a protein; the distances between its residues do not.
+
+161
+00:15:10,175 --> 00:15:17,975
+So two structures can be compared as maps without first superimposing them, which removes a whole step and a whole class of problem.
+
+162
+00:15:17,975 --> 00:15:20,350
+Read the map on the slide.
+
+163
+00:15:20,350 --> 00:15:28,350
+The band along the diagonal is each helix in contact with itself — local interactions, residues near each other in sequence.
+
+164
+00:15:28,350 --> 00:15:37,375
+The stripes away from the diagonal are helices packed against one another — long-range interactions, exactly the ones a sequence window cannot see.
+
+165
+00:15:37,375 --> 00:15:42,025
+The eight red bars are the eight alpha-helices from the PDB file.
+
+166
+00:15:42,025 --> 00:15:55,725
+The notebook counts a hundred and ninety-seven contacts between residues at least six apart in sequence, which is the number that matters: contacts between near-neighbours in sequence are trivially there, and the interesting ones are the rest.
+
+167
+00:15:55,725 --> 00:15:58,750
+This representation returns twice.
+
+168
+00:15:58,750 --> 00:16:06,825
+In Session ten, because an L by L map looks like an image, and image-processing networks turn out to be good at predicting it.
+
+169
+00:16:06,825 --> 00:16:16,725
+And in Session twelve, where coevolution, contact prediction and AlphaFold's pair representation all work on residue-pair information shaped exactly like this.
+
+170
+00:16:17,325 --> 00:16:22,825
+Step back for a second, because this is one of the ideas the course keeps returning to.
+
+171
+00:16:22,825 --> 00:16:25,650
+The same protein can be a sequence.
+
+172
+00:16:25,650 --> 00:16:28,425
+Or a profile, from Session five.
+
+173
+00:16:28,425 --> 00:16:30,725
+Or a set of coordinates.
+
+174
+00:16:30,725 --> 00:16:33,825
+Or a distance map, or a contact map.
+
+175
+00:16:33,825 --> 00:16:37,200
+Or — from Session eleven — a learned embedding.
+
+176
+00:16:37,200 --> 00:16:41,625
+None of these is the protein, and none is more correct than the others.
+
+177
+00:16:41,625 --> 00:16:46,125
+They are descriptions, and each one makes different patterns easy to see.
+
+178
+00:16:46,125 --> 00:16:49,375
+A sequence makes it easy to see a motif.
+
+179
+00:16:49,375 --> 00:16:55,775
+A contact map makes it easy to see which helices pack together, which the sequence hides completely.
+
+180
+00:16:55,775 --> 00:17:02,150
+And later in the course the choice does more than that: it decides which patterns a model can easily learn.
+
+181
+00:17:02,150 --> 00:17:08,600
+A network given coordinates has to work out for itself that rotating a protein does not change it.
+
+182
+00:17:08,600 --> 00:17:12,175
+A network given a distance map gets that for free.
+
+183
+00:17:12,175 --> 00:17:22,250
+Much of the progress in this field has come from changing the representation rather than from changing the model, and Foldseek, later this session, is a clean example.
+
+184
+00:17:22,850 --> 00:17:25,600
+To look at a structure you need a viewer.
+
+185
+00:17:25,600 --> 00:17:31,150
+PyMOL and ChimeraX are the two most widely used, and open-source PyMOL is free.
+
+186
+00:17:31,150 --> 00:17:36,075
+Three representations of the same chain, each answering a different question.
+
+187
+00:17:36,075 --> 00:17:40,425
+Cartoon draws the secondary structure as ribbons and arrows.
+
+188
+00:17:40,425 --> 00:17:45,700
+Use it to see the architecture — how many helices, how they lie against each other.
+
+189
+00:17:45,700 --> 00:17:49,525
+It is an abstraction: there are no ribbons in a protein.
+
+190
+00:17:49,525 --> 00:17:52,050
+Sticks draws every bond.
+
+191
+00:17:52,050 --> 00:17:59,050
+Use it when you need an actual side chain or a ligand, where the cartoon has abstracted away the thing you care about.
+
+192
+00:17:59,050 --> 00:18:03,125
+Spheres draws every atom at roughly its real radius.
+
+193
+00:18:03,125 --> 00:18:12,025
+Use it for packing — this is the one that shows you a protein is a dense object with no room inside, which the cartoon makes very easy to forget.
+
+194
+00:18:12,025 --> 00:18:14,425
+PyMOL also measures.
+
+195
+00:18:14,425 --> 00:18:18,475
+Distances, angles, contacts, straight from the coordinates.
+
+196
+00:18:18,475 --> 00:18:25,100
+And that is the more important half of what it does, because measuring is checkable in a way that looking is not.
+
+197
+00:18:25,700 --> 00:18:32,175
+Here is the alpha-helix's hydrogen bonding, and it is worth saying exactly how this figure was made.
+
+198
+00:18:32,175 --> 00:18:43,150
+The helix is held by N-H to O-equals-C bonds from residue i to residue i plus four — the pattern from earlier in the block, now shown on a real helix from a real structure.
+
+199
+00:18:43,150 --> 00:18:45,650
+Nobody placed these bonds.
+
+200
+00:18:45,650 --> 00:18:49,050
+Nobody decided where they ought to be and drew them.
+
+201
+00:18:49,050 --> 00:18:56,400
+PyMOL applied its polar-contact rules to the deposited coordinates, with a distance cutoff, and drew what it found.
+
+202
+00:18:56,400 --> 00:18:59,475
+That distinction is the point of the slide.
+
+203
+00:18:59,475 --> 00:19:06,475
+If the cutoff is wrong, or the wrong residues were selected, the fix is one line changed and the script rerun.
+
+204
+00:19:06,475 --> 00:19:13,925
+The figure can be wrong, and if it is wrong it can be corrected, and you can see from the script what would have to be true for it to be right.
+
+205
+00:19:13,925 --> 00:19:18,025
+A figure drawn by hand cannot be wrong in that useful way.
+
+206
+00:19:18,025 --> 00:19:20,625
+It can only be unconvincing.
+
+207
+00:19:21,225 --> 00:19:23,500
+And here is the script.
+
+208
+00:19:23,500 --> 00:19:25,200
+Eight lines.
+
+209
+00:19:25,200 --> 00:19:27,825
+Fetch the structure, two-H-H-B.
+
+210
+00:19:27,825 --> 00:19:34,400
+Create a selection containing chain B, residues a hundred and twenty-five to a hundred and forty-four.
+
+211
+00:19:34,400 --> 00:19:36,675
+Show it as a cartoon.
+
+212
+00:19:36,675 --> 00:19:39,425
+Show the backbone atoms as sticks.
+
+213
+00:19:39,425 --> 00:19:48,350
+Then the measurement: distances from backbone nitrogens to backbone oxygens within three point five ångström, in the mode that labels them.
+
+214
+00:19:48,350 --> 00:19:50,625
+Colour the dashes yellow.
+
+215
+00:19:50,625 --> 00:19:58,050
+I want to labour this for a minute, because it is a habit rather than a tool, and it is the habit this course is trying to instil.
+
+216
+00:19:58,050 --> 00:20:05,150
+A figure drawn by hand — ovals for atoms, extruded cylinders for bonds — cannot be checked against anything.
+
+217
+00:20:05,150 --> 00:20:10,125
+There is no record of which structure it came from, which residues, which cutoff.
+
+218
+00:20:10,125 --> 00:20:16,000
+And correcting it means moving shapes one at a time, so in practice it does not get corrected.
+
+219
+00:20:16,000 --> 00:20:19,675
+A figure made by a script carries its own provenance.
+
+220
+00:20:19,675 --> 00:20:22,275
+The PDB entry is in it.
+
+221
+00:20:22,275 --> 00:20:24,750
+The residue range is in it.
+
+222
+00:20:24,750 --> 00:20:28,575
+The three point five ångström cutoff is in it.
+
+223
+00:20:28,575 --> 00:20:35,400
+A reviewer who thinks the cutoff is too generous can say so, specifically, and you can rerun it in seconds.
+
+224
+00:20:35,400 --> 00:20:38,600
+From the lab onwards, make your figures this way.
+

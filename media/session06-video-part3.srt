@@ -1,0 +1,732 @@
+1
+00:00:00,000 --> 00:00:01,600
+Third block.
+
+2
+00:00:01,600 --> 00:00:09,525
+Proteins are built from reusable parts, they exist in more than one state, and then we turn to structure as something to predict.
+
+3
+00:00:10,125 --> 00:00:14,400
+A domain is a compact, semi-independent unit of structure.
+
+4
+00:00:14,400 --> 00:00:24,400
+It can often fold on its own, and it is reused across many different proteins — which is why classifying domains is more useful than classifying whole proteins.
+
+5
+00:00:24,400 --> 00:00:31,250
+Sessions three and five met domains from the sequence side, as Pfam families built from profile HMMs.
+
+6
+00:00:31,250 --> 00:00:40,275
+Structural classifications group them by three-dimensional shape instead, and that can reveal relationships sequence misses — as we have just seen.
+
+7
+00:00:40,275 --> 00:00:47,250
+CATH, from Orengo and colleagues in nineteen ninety-seven, uses four levels, and the name is the levels.
+
+8
+00:00:47,250 --> 00:00:52,425
+Class: mainly alpha, mainly beta, alpha-beta, or few secondary structures.
+
+9
+00:00:52,425 --> 00:00:57,200
+Architecture: the overall arrangement of the secondary-structure elements.
+
+10
+00:00:57,200 --> 00:01:02,475
+Topology: how they are connected, which is what people usually mean by the fold.
+
+11
+00:01:02,475 --> 00:01:07,600
+And Homologous superfamily: domains with evidence of common ancestry.
+
+12
+00:01:07,600 --> 00:01:17,425
+Beta-globin's domain is one point ten point four nine zero point one zero — Mainly Alpha, then Orthogonal Bundle, then Globin-like, then Globins.
+
+13
+00:01:17,425 --> 00:01:24,800
+Each number is one level, narrowing from a very broad structural class to a specific family with shared ancestry.
+
+14
+00:01:24,800 --> 00:01:27,650
+Myoglobin is in the same place.
+
+15
+00:01:27,650 --> 00:01:29,825
+So is neuroglobin.
+
+16
+00:01:29,825 --> 00:01:37,825
+And so is the Mycobacterium tuberculosis truncated haemoglobin — the one whose sequence alignment scored below noise.
+
+17
+00:01:37,825 --> 00:01:42,325
+GFP, meanwhile, is in class two, Mainly Beta, Beta Barrel.
+
+18
+00:01:42,925 --> 00:01:47,425
+This disagreement is worth dwelling on, because both sides are right.
+
+19
+00:01:47,425 --> 00:01:53,675
+CATH puts beta-globin and the truncated haemoglobin in the same homologous superfamily.
+
+20
+00:01:53,675 --> 00:01:56,625
+Pfam, working from sequence, cannot.
+
+21
+00:01:56,625 --> 00:02:10,600
+It needs a separate family for the truncated haemoglobin — PF01152, "Bacterial-like globin", rather than PF00042, "Globin" — and connects the two only at the higher level of a clan.
+
+22
+00:02:10,600 --> 00:02:13,300
+Neither classification is wrong.
+
+23
+00:02:13,300 --> 00:02:16,400
+They are answering with the evidence they have.
+
+24
+00:02:16,400 --> 00:02:24,475
+The sequence similarity genuinely is too weak to support one family; we measured that, and it scored below shuffled sequences.
+
+25
+00:02:24,475 --> 00:02:31,000
+The structural similarity genuinely is strong enough to support one superfamily; we measured that too.
+
+26
+00:02:31,000 --> 00:02:41,675
+So the two classifications are complementary rather than competing, and if you want to know whether two proteins are related, the answer may depend on which kind of evidence you ask for.
+
+27
+00:02:41,675 --> 00:02:51,650
+The practical habit: when a sequence-based resource says two proteins are unrelated, that is a statement about sequence evidence, not a verdict on ancestry.
+
+28
+00:02:52,250 --> 00:02:58,100
+CATH is not the only one, and the others differ in philosophy rather than in detail.
+
+29
+00:02:58,100 --> 00:03:08,025
+SCOP, from Murzin and colleagues in nineteen ninety-five, is built on expert manual curation — a human structural biologist deciding where the boundaries are.
+
+30
+00:03:08,025 --> 00:03:16,275
+ECOD, Cheng and colleagues, two thousand and fourteen, is organised primarily by evolutionary relationship rather than by shape.
+
+31
+00:03:16,275 --> 00:03:33,425
+And TED, from Lau, Bordin and colleagues in twenty twenty-four, parses domains automatically out of the entire AlphaFold Database — hundreds of millions of predicted structures, far more than anyone could curate by hand, and mostly structures nobody has ever solved experimentally.
+
+32
+00:03:33,425 --> 00:03:35,750
+They do not always agree.
+
+33
+00:03:35,750 --> 00:03:41,675
+They disagree about where one domain ends, and about how distant superfamilies should be grouped.
+
+34
+00:03:41,675 --> 00:03:49,575
+That is not a scandal: domains are a useful abstraction over a continuum, and a continuum does not have natural boundaries.
+
+35
+00:03:49,575 --> 00:03:56,500
+So knowing that several classifications exist, and why they differ, matters more than picking one and trusting it.
+
+36
+00:03:57,100 --> 00:04:04,400
+Beyond single chains, a complex is held together by interfaces — patches of surface where two chains touch.
+
+37
+00:04:04,400 --> 00:04:09,875
+Interfaces have measurable properties that distinguish them from the rest of the surface.
+
+38
+00:04:09,875 --> 00:04:18,350
+They are usually more hydrophobic, because burying oily residues against another protein is energetically much like burying them in a core.
+
+39
+00:04:18,350 --> 00:04:22,425
+And they are usually more conserved, because they have a job to do.
+
+40
+00:04:22,425 --> 00:04:33,325
+Both of those are reasons to hope a predictor could find them from sequence and structure, and the fact that they are properties rather than motifs is why that is a learning problem rather than a lookup.
+
+41
+00:04:33,325 --> 00:04:40,250
+Many proteins also bind ligands — small molecules or ions, such as haemoglobin's four haem groups.
+
+42
+00:04:40,250 --> 00:04:46,200
+Interfaces and ligand-binding sites are where much of a protein's function actually happens.
+
+43
+00:04:46,200 --> 00:04:50,750
+A fold is a scaffold; the function is usually at a site on it.
+
+44
+00:04:50,750 --> 00:04:55,450
+Predicting those sites is one of the open problems of Session twelve.
+
+45
+00:04:56,050 --> 00:05:05,825
+If interfaces are where the function is, the obvious question is whether we can predict them — given two proteins of known structure, work out how they fit together.
+
+46
+00:05:05,825 --> 00:05:14,475
+That is called docking, and it has its own history running alongside single-chain prediction, along the same three routes you just saw for folds.
+
+47
+00:05:14,475 --> 00:05:16,750
+Shape and physics first.
+
+48
+00:05:16,750 --> 00:05:32,075
+In nineteen ninety-two Katchalski-Katzir and colleagues put both proteins on a three-dimensional grid and scored shape complementarity for every relative translation at once, using the fast Fourier transform, while sampling rotations exhaustively.
+
+49
+00:05:32,075 --> 00:05:39,825
+The trick is that the FFT turns "try every offset" into a single calculation rather than millions of separate ones.
+
+50
+00:05:39,825 --> 00:05:53,100
+That became the standard engine, and the refinements followed: GRAMM used low-resolution grids that tolerate errors in the input structures, and ZDOCK added electrostatics and desolvation to the shape term.
+
+51
+00:05:53,100 --> 00:05:56,700
+All of those produce thousands of candidate poses.
+
+52
+00:05:56,700 --> 00:06:02,850
+And that is the real difficulty — not generating an answer, but ranking the ones you already have.
+
+53
+00:06:02,850 --> 00:06:08,525
+A method that puts the right answer somewhere in its top thousand has not solved the problem.
+
+54
+00:06:08,525 --> 00:06:10,750
+Second route: data.
+
+55
+00:06:10,750 --> 00:06:21,800
+HADDOCK, from two thousand and three, drives the search with experimental information — mutations that abolish binding, NMR data — marking which residues are at the interface.
+
+56
+00:06:21,800 --> 00:06:27,500
+Rather than searching blind, you constrain the search with what the experiments already say.
+
+57
+00:06:27,500 --> 00:06:29,825
+Third route: templates.
+
+58
+00:06:29,825 --> 00:06:39,050
+A complex can be modelled on a related complex whose structure is already known, exactly as comparative modelling builds a chain on a related chain.
+
+59
+00:06:39,050 --> 00:06:48,725
+The claim from twenty twelve is stronger than you might expect: templates "are available to model nearly all complexes of structurally characterized proteins".
+
+60
+00:06:48,725 --> 00:06:53,500
+The first author of that paper, Petras Kundrotas, teaches on this course.
+
+61
+00:06:54,100 --> 00:07:00,125
+Measuring how good a predicted complex is needs its own measures, and the reason is specific.
+
+62
+00:07:00,125 --> 00:07:04,850
+Both chains can be modelled beautifully and still be put together wrongly.
+
+63
+00:07:04,850 --> 00:07:15,300
+A single RMSD over every atom would average the good chains together with the bad placement and report something mediocre, which tells you nothing about which part failed.
+
+64
+00:07:15,300 --> 00:07:22,350
+So the convention is to superimpose on the larger chain — the receptor — and then measure the error on the smaller one.
+
+65
+00:07:22,350 --> 00:07:30,975
+That is ligand RMSD, and it isolates exactly the thing in question: given that you got the receptor right, where did you put the other chain?
+
+66
+00:07:30,975 --> 00:07:42,375
+Interface RMSD measures only over the residues in contact, which asks a slightly different question: is the interface itself right, even if the far ends of the chains have drifted?
+
+67
+00:07:42,375 --> 00:07:52,275
+A third kind of measure drops distances altogether and counts contacts — what fraction of the real complex's residue-residue contacts does the model reproduce?
+
+68
+00:07:52,275 --> 00:07:57,425
+That is closer to asking whether the model would make the same biological predictions.
+
+69
+00:07:57,425 --> 00:08:04,625
+And DockQ, from Basu and Wallner in twenty sixteen, combines these into a single number between zero and one.
+
+70
+00:08:04,625 --> 00:08:15,700
+That is the figure usually quoted, which is why, when Session twelve talks about how confident AlphaFold is about an interface, the honest measure it gets compared against is DockQ.
+
+71
+00:08:16,300 --> 00:08:20,675
+Docking has had its own blind assessment since two thousand and one.
+
+72
+00:08:20,675 --> 00:08:27,100
+CAPRI is docking's CASP, and until twenty eighteen its verdict was strikingly consistent.
+
+73
+00:08:27,100 --> 00:08:31,950
+Targets with a template available were predicted "very good to excellent".
+
+74
+00:08:31,950 --> 00:08:43,025
+The template route worked, for the same reason comparative modelling works for single chains: if you can find a solved complex of related proteins, you can borrow its arrangement.
+
+75
+00:08:43,025 --> 00:08:46,375
+Targets without a template were another matter.
+
+76
+00:08:46,375 --> 00:08:54,800
+Of eleven difficult targets at CASP13 in twenty eighteen, medium or high quality models were submitted for only three.
+
+77
+00:08:54,800 --> 00:08:56,875
+Three out of eleven.
+
+78
+00:08:56,875 --> 00:09:05,200
+And notice how closely that mirrors the single-chain story before twenty twenty — with a template, reliable; without one, mostly not.
+
+79
+00:09:05,200 --> 00:09:09,025
+Docking had the same shape of problem and the same ceiling.
+
+80
+00:09:09,025 --> 00:09:15,800
+What changed it is also the same thing that changed single-chain prediction, and that is Session twelve's subject.
+
+81
+00:09:16,400 --> 00:09:18,650
+Now the joke pays off.
+
+82
+00:09:18,650 --> 00:09:21,600
+Haemoglobin has two classic states.
+
+83
+00:09:21,600 --> 00:09:25,600
+Deoxy — T, for tense, PDB entry two-H-H-B.
+
+84
+00:09:25,600 --> 00:09:28,775
+And oxy — R, for relaxed, one-H-H-O.
+
+85
+00:09:28,775 --> 00:09:34,100
+We already measured the chains: TM-score nought point nine eight between the two states.
+
+86
+00:09:34,100 --> 00:09:36,900
+Each chain hardly changes at all.
+
+87
+00:09:36,900 --> 00:09:39,700
+So the difference is not in the folds.
+
+88
+00:09:39,700 --> 00:09:43,025
+It is in how the folded chains are arranged.
+
+89
+00:09:43,025 --> 00:09:55,250
+The two alpha-beta pairs rotate relative to each other by about thirteen to fifteen degrees — Baldwin and Chothia measured this in nineteen seventy-nine, and the third discussion problem has you measure it yourself.
+
+90
+00:09:55,250 --> 00:09:58,025
+The notebook measures a consequence.
+
+91
+00:09:58,025 --> 00:10:12,200
+The distance between the iron atoms of the two beta-chain haems is thirty-nine point five one ångström in the T state and thirty-four point six two in the R state — a contraction of four point eight nine ångström, call it five.
+
+92
+00:10:12,200 --> 00:10:15,400
+And that quaternary change is the mechanism.
+
+93
+00:10:15,400 --> 00:10:26,700
+It is how binding at one subunit makes binding at the others easier, which is cooperative oxygen binding, which is what lets haemoglobin pick oxygen up in the lungs and let it go in the tissues.
+
+94
+00:10:26,700 --> 00:10:32,975
+A protein that bound oxygen without cooperativity would be far worse at being haemoglobin.
+
+95
+00:10:32,975 --> 00:10:35,875
+Give me some oxygen and I'll relax.
+
+96
+00:10:35,875 --> 00:10:41,125
+That is the T-to-R transition, and it is quaternary structure doing the work.
+
+97
+00:10:41,725 --> 00:10:46,925
+Which leads to the general lesson, and it is one of the most useful things in this session.
+
+98
+00:10:46,925 --> 00:10:53,625
+A PDB entry is one snapshot of one state, under one set of conditions, usually in a crystal.
+
+99
+00:10:53,625 --> 00:10:56,625
+It is not "the" structure of the protein.
+
+100
+00:10:56,625 --> 00:11:02,900
+Proteins occupy different conformational states depending on ligands, partners and conditions.
+
+101
+00:11:02,900 --> 00:11:06,150
+Haemoglobin has two and they are both correct.
+
+102
+00:11:06,150 --> 00:11:12,125
+Ask which one is the real structure of haemoglobin and you have asked a question with no answer.
+
+103
+00:11:12,125 --> 00:11:17,100
+Here are the two measurements again, because together they make the point precisely.
+
+104
+00:11:17,100 --> 00:11:22,425
+TM-score of each chain, T against R: nought point nine eight — nothing changed.
+
+105
+00:11:22,425 --> 00:11:29,725
+Iron-to-iron distance across the beta chains: about five ångström shorter in R — everything changed.
+
+106
+00:11:29,725 --> 00:11:36,250
+Both true at once, which is only possible because the change is in the arrangement rather than in the folds.
+
+107
+00:11:36,250 --> 00:11:44,725
+Why this matters for the rest of the course: whenever a predicted model is compared with "the" experimental structure, this caveat applies.
+
+108
+00:11:44,725 --> 00:11:47,775
+AlphaFold usually predicts one state.
+
+109
+00:11:47,775 --> 00:11:53,925
+If a protein has two, and the prediction matches one of them, is that a success or a half-failure?
+
+110
+00:11:53,925 --> 00:11:59,550
+Session twelve returns to this as one of the real limitations of structure prediction.
+
+111
+00:12:00,150 --> 00:12:02,725
+Now we turn the session around.
+
+112
+00:12:02,725 --> 00:12:08,875
+Given only the sequence, could a computer predict which residues become helix, strand or coil?
+
+113
+00:12:08,875 --> 00:12:15,450
+As a supervised learning problem: the input is the sequence, or its profile, one window per residue.
+
+114
+00:12:15,450 --> 00:12:20,550
+The target is H, E or C — helix, strand or coil — for every residue.
+
+115
+00:12:20,550 --> 00:12:27,150
+The training labels come from solved structures, assigned by DSSP, exactly as in the notebook.
+
+116
+00:12:27,150 --> 00:12:35,050
+That is a complete specification of a machine-learning task, and it is worth noticing that we could only write it because of this session.
+
+117
+00:12:35,050 --> 00:12:39,900
+We needed structures to label from, and a program to assign the labels.
+
+118
+00:12:39,900 --> 00:12:42,275
+What information could help?
+
+119
+00:12:42,275 --> 00:12:44,150
+Three sources.
+
+120
+00:12:44,150 --> 00:12:51,625
+The residue itself, because some amino acids favour helices, others strands, and proline and glycine break both.
+
+121
+00:12:51,625 --> 00:12:55,825
+Its neighbours in the sequence, since secondary structure is local.
+
+122
+00:12:55,825 --> 00:13:02,775
+And — from Session five — how that position varies across homologous sequences, which is to say a profile.
+
+123
+00:13:02,775 --> 00:13:13,525
+That third one turns out to be the most useful input of the three, which is a nice closing of the loop: the profile methods of Session five become the input features of Session seven.
+
+124
+00:13:13,525 --> 00:13:24,575
+Sessions seven to eleven build the machinery for learning mappings like this, and the course returns to this specific problem in Sessions seven, nine and ten, and in the capstone project.
+
+125
+00:13:25,175 --> 00:13:31,550
+Predicting the full three-dimensional structure has been one of biology's hardest problems for decades.
+
+126
+00:13:31,550 --> 00:13:45,675
+Since nineteen ninety-four the CASP competition — Critical Assessment of Structure Prediction — has tested methods blind, on structures that are solved but not yet published, which is the only honest way to run such a test.
+
+127
+00:13:45,675 --> 00:13:50,550
+Four classical strategies, each building on something you have already met.
+
+128
+00:13:50,550 --> 00:13:59,275
+Physics, also called de novo or ab initio modelling, searches for the lowest-energy arrangement of the chain using physical interactions.
+
+129
+00:13:59,275 --> 00:14:04,975
+Rigorous in principle, and so expensive that it long worked only for small proteins.
+
+130
+00:14:04,975 --> 00:14:17,550
+Rosetta, from the Baker lab, assembles structures from short fragments of known structures instead of searching from nothing — and it grew into a tool for protein design, which is what the Nobel Prize recognised.
+
+131
+00:14:17,550 --> 00:14:26,775
+Comparative, or homology, modelling finds a related protein of known structure — Sessions four and five — and builds the model on it as a template.
+
+132
+00:14:26,775 --> 00:14:30,975
+Reliable when a template exists, useless for a new fold.
+
+133
+00:14:30,975 --> 00:14:41,300
+And the table from the second block is exactly why it works: related sequences share their structure, so a structure you can find by sequence search is a structure you can borrow.
+
+134
+00:14:41,300 --> 00:14:48,350
+Contact prediction uses the fact that residues in contact tend to mutate together, which is the next slide.
+
+135
+00:14:48,350 --> 00:15:00,200
+And deep learning arrived with AlphaFold2 in twenty twenty, combining learned representations, evolutionary information and geometry, and it was the breakthrough at CASP14.
+
+136
+00:15:00,200 --> 00:15:06,450
+Session twelve covers it, once Sessions seven to eleven have built up the neural-network machinery.
+
+137
+00:15:07,050 --> 00:15:13,775
+The coevolution idea deserves its own slide, because it is the bridge from Session five to AlphaFold.
+
+138
+00:15:13,775 --> 00:15:16,100
+The reasoning is physical.
+
+139
+00:15:16,100 --> 00:15:23,725
+Suppose a positively charged residue at one position faces a negatively charged one at another, across a contact.
+
+140
+00:15:23,725 --> 00:15:31,775
+A mutation that makes the first position negative is destabilising — unless the second position also changes to compensate.
+
+141
+00:15:31,775 --> 00:15:37,050
+So the two positions are not free to vary independently; they vary together.
+
+142
+00:15:37,050 --> 00:15:43,075
+Now look across thousands of homologous sequences, which Session five taught you how to collect.
+
+143
+00:15:43,075 --> 00:15:47,850
+Correlated columns in that alignment point to residues in contact.
+
+144
+00:15:47,850 --> 00:15:59,500
+The signal is statistical and it is about pairs, which is exactly the information a single sequence cannot carry and a profile — scoring each position independently — cannot represent.
+
+145
+00:15:59,500 --> 00:16:03,625
+That is the link back to Session five's closing limitation.
+
+146
+00:16:03,625 --> 00:16:12,225
+A PSSM and a profile HMM both score positions independently, so neither can express a correlation between two columns.
+
+147
+00:16:12,225 --> 00:16:16,825
+Coevolution analysis is precisely about those correlations.
+
+148
+00:16:16,825 --> 00:16:23,875
+Fill in enough correlated pairs and you have a contact map, which is the representation from the first block of today.
+
+149
+00:16:23,875 --> 00:16:29,100
+And a contact map is close enough to a structure that geometry can finish the job.
+
+150
+00:16:29,100 --> 00:16:32,850
+Session twelve follows that path through to AlphaFold.
+
+151
+00:16:33,450 --> 00:16:39,400
+One last thing, pointing forward, and it starts from a question this session has already set up.
+
+152
+00:16:39,400 --> 00:16:51,575
+AF-Cluster: clustering a multiple sequence alignment, rather than using it whole, lets AlphaFold2 predict both folds of KaiB, a protein that genuinely switches between two different structures.
+
+153
+00:16:51,575 --> 00:17:01,375
+NMR confirmed one of those predictions, and three designed mutations flipped a KaiB variant to the other state — which is a prediction that was tested and held.
+
+154
+00:17:01,375 --> 00:17:15,650
+At the same time, in-cell cryo-electron tomography combined with cross-linking mass spectrometry showed RNA polymerase and the ribosome coupled together by NusG and NusA, inside living Mycoplasma pneumoniae cells.
+
+155
+00:17:15,650 --> 00:17:20,550
+Not a purified complex in a crystal: the machine in place, in the cell.
+
+156
+00:17:20,550 --> 00:17:32,275
+And the twenty twenty-four Nobel Prize in Chemistry went half to David Baker for computational protein design, and half to Demis Hassabis and John Jumper for protein structure prediction.
+
+157
+00:17:32,275 --> 00:17:36,450
+So here is the question to carry into the second half of the course.
+
+158
+00:17:36,450 --> 00:17:43,125
+Haemoglobin's function is the switch between T and R — not either state, but the transition between them.
+
+159
+00:17:43,125 --> 00:17:48,225
+We measured both states today, and each chain is almost identical in the two.
+
+160
+00:17:48,225 --> 00:17:51,150
+What would one predicted structure miss?
+
+161
+00:17:51,150 --> 00:17:58,150
+If a prediction server gives you one confident model of haemoglobin, it has given you a protein that cannot breathe.
+
+162
+00:17:58,150 --> 00:18:02,650
+The answer is not that prediction is useless; it plainly is not.
+
+163
+00:18:02,650 --> 00:18:12,450
+The answer is that "the structure" was always a simplification, and now that we can predict structures easily, the simplification has become the thing worth questioning.
+
+164
+00:18:13,050 --> 00:18:15,750
+To put the session in context.
+
+165
+00:18:15,750 --> 00:18:18,300
+Today: structures as data.
+
+166
+00:18:18,300 --> 00:18:23,850
+Compared by alignment, by TM-score, by distance maps, and searched with Foldseek.
+
+167
+00:18:23,850 --> 00:18:28,275
+Plus the reminder that one experimental structure is one state.
+
+168
+00:18:28,275 --> 00:18:33,725
+And the course's path through representations, which is the thread to follow from here.
+
+169
+00:18:33,725 --> 00:18:36,575
+Sequence, in Sessions three and four.
+
+170
+00:18:36,575 --> 00:18:40,550
+Profile and evolutionary information, Session five.
+
+171
+00:18:40,550 --> 00:18:44,475
+Learned representations, Sessions seven to eleven.
+
+172
+00:18:44,475 --> 00:18:49,675
+Local structure, contacts and distances — Sessions seven, ten and twelve.
+
+173
+00:18:49,675 --> 00:18:53,775
+And finally three-dimensional structure, in Session twelve.
+
+174
+00:18:53,775 --> 00:19:02,250
+Each step is a change of representation, and at each step more of the representation is learned from data rather than designed by hand.
+
+175
+00:19:02,250 --> 00:19:09,550
+Foldseek's 3Di alphabet, which you met today, is the first one on that list where a machine chose the representation.
+
+176
+00:19:09,550 --> 00:19:11,650
+It will not be the last.
+
+177
+00:19:12,250 --> 00:19:14,450
+That is Session six.
+
+178
+00:19:14,450 --> 00:19:37,850
+The notebook fetches both haemoglobin structures, reads the chains and residues, computes the secondary structure with PyMOL and compares it with the PDB annotation that Session seven uses, renders the tetramer, draws beta-globin's distance and contact maps, builds the sequence-versus-structure table, and measures the iron-to-iron distance that changes by about five ångström between the states.
+
+179
+00:19:37,850 --> 00:20:04,725
+The lab runs PyMOL as a Python library inside the notebook, on three structures beyond haemoglobin: an HIV envelope glycoprotein trimer with an antibody for representations, chains and structural alignment; a chitinase with bound metal ions and an inhibitor for ligands and charged residues; and human neuroglobin for the central comparison, run with TM-align — the same protein experimental against AlphaFold prediction, a different globin, and GFP.
+
+180
+00:20:04,725 --> 00:20:13,650
+Then a search of the whole PDB with neuroglobin through the Foldseek web server's API, and a structural domain lookup in CATH.
+
+181
+00:20:13,650 --> 00:20:18,700
+Session seven starts building the machinery to predict what we have been looking at.
+
+182
+00:20:18,700 --> 00:20:36,325
+It returns to the weighted sum a PSSM computes, formalises it as a perceptron whose weights are learned from labelled examples, applies it to secondary structure through Rost and Sander's PHD method, and shows why the helix you saw in PyMOL can be hard to predict from a window of residues.
+
+183
+00:20:36,325 --> 00:20:37,950
+See you there.
+
