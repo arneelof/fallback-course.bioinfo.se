@@ -1,0 +1,1084 @@
+1
+00:00:00,000 --> 00:00:01,400
+Block two.
+
+2
+00:00:01,400 --> 00:00:04,375
+How do we know a model learned anything?
+
+3
+00:00:04,375 --> 00:00:09,275
+On the page, this block is the section "How do we know a model learned anything?
+
+4
+00:00:09,275 --> 00:00:12,150
+Evaluation and generalisation".
+
+5
+00:00:12,150 --> 00:00:18,275
+This is the centre of the session, and it is the part I would most like you to remember in five years.
+
+6
+00:00:18,275 --> 00:00:20,750
+Three data sets and why.
+
+7
+00:00:20,750 --> 00:00:23,625
+The metrics, and what each one hides.
+
+8
+00:00:23,625 --> 00:00:33,650
+And then leakage: the ways that information about your test set gets into your model without anybody intending it, which in our field happens mostly through homology.
+
+9
+00:00:34,250 --> 00:00:38,950
+A story first, because it is the clearest possible statement of the problem.
+
+10
+00:00:38,950 --> 00:00:43,925
+The story goes that a neural network was trained to spot tanks in photographs.
+
+11
+00:00:43,925 --> 00:00:47,475
+On the training data it was essentially perfect.
+
+12
+00:00:47,475 --> 00:00:50,875
+On new photographs it was no better than guessing.
+
+13
+00:00:50,875 --> 00:01:00,950
+When people went back and looked at the data, they found that every photograph containing a tank had been taken on a sunny day, and every photograph without one on a cloudy day.
+
+14
+00:01:00,950 --> 00:01:04,175
+The network had learned to classify the weather.
+
+15
+00:01:04,175 --> 00:01:13,850
+I should say that the story is probably apocryphal, or at least has never been pinned to a specific documented case, and you will find it told a dozen different ways.
+
+16
+00:01:13,850 --> 00:01:21,625
+I tell it anyway, because the failure it describes is completely real and I have seen versions of it in biology more than once.
+
+17
+00:01:21,625 --> 00:01:32,625
+The model finds the easiest thing in your data that predicts the label, and if that easiest thing is an artefact of how the data was collected, it will learn the artefact with great enthusiasm.
+
+18
+00:01:32,625 --> 00:01:41,825
+Real versions in our field: all the tumour samples sequenced in one laboratory and all the controls in another, so the model learns the laboratory.
+
+19
+00:01:41,825 --> 00:01:47,450
+All the positive examples taken from one database with a particular curation style.
+
+20
+00:01:47,450 --> 00:01:51,375
+All the structures of one class solved by one technique.
+
+21
+00:01:51,375 --> 00:01:54,375
+The lesson is not about networks at all.
+
+22
+00:01:54,375 --> 00:02:03,875
+It is that your dataset has to be representative of the situation you intend to use the model in, and that nothing in the training procedure will tell you if it is not.
+
+23
+00:02:03,875 --> 00:02:06,350
+Only looking at the data will.
+
+24
+00:02:06,950 --> 00:02:11,575
+Now the standard machinery, and the reason there are three sets and not two.
+
+25
+00:02:11,575 --> 00:02:14,725
+The training set is what you fit the weights on.
+
+26
+00:02:14,725 --> 00:02:16,675
+That is obvious.
+
+27
+00:02:16,675 --> 00:02:20,025
+The validation set is for making choices.
+
+28
+00:02:20,025 --> 00:02:22,700
+How many epochs to train for.
+
+29
+00:02:22,700 --> 00:02:24,900
+How many hidden units.
+
+30
+00:02:24,900 --> 00:02:27,350
+Which features to include.
+
+31
+00:02:27,350 --> 00:02:30,000
+Which of three models to prefer.
+
+32
+00:02:30,000 --> 00:02:34,750
+You try the options, you look at the validation score, and you take the best.
+
+33
+00:02:34,750 --> 00:02:39,575
+That is entirely legitimate and it is what the validation set is for.
+
+34
+00:02:39,575 --> 00:02:45,825
+The test set is looked at once, at the very end, to report what your chosen model actually achieves.
+
+35
+00:02:45,825 --> 00:02:51,975
+And here is the reason for the separation, which is the bit that is easy to say and hard to feel.
+
+36
+00:02:51,975 --> 00:02:58,525
+Every single choice you make by looking at the validation score makes that score a little bit optimistic.
+
+37
+00:02:58,525 --> 00:03:03,300
+You are, in effect, fitting your choices to that particular set of examples.
+
+38
+00:03:03,300 --> 00:03:14,150
+If you try fifty configurations and keep the one that scored best on validation, part of what you selected for is real quality and part of it is luck with those examples.
+
+39
+00:03:14,150 --> 00:03:20,675
+So the validation score of your chosen model is not an honest estimate of how it will do on new data.
+
+40
+00:03:20,675 --> 00:03:25,175
+It is biased upward, and the harder you searched, the more biased it is.
+
+41
+00:03:25,175 --> 00:03:29,900
+The test set is clean only because you did not use it to decide anything.
+
+42
+00:03:29,900 --> 00:03:42,050
+The moment you look at the test score, and then go back and change your model because you did not like it, your test set has quietly become a second validation set, and you no longer have an honest estimate at all.
+
+43
+00:03:42,050 --> 00:03:45,950
+That is a rule about discipline, not about statistics.
+
+44
+00:03:45,950 --> 00:03:48,650
+The arithmetic cannot save you.
+
+45
+00:03:49,250 --> 00:03:56,400
+Here is that abstract point as a concrete decision, and I want you to make the decision yourself before I give the answer.
+
+46
+00:03:56,400 --> 00:04:01,175
+The plot shows validation accuracy against the number of training epochs.
+
+47
+00:04:01,175 --> 00:04:06,450
+It rises quickly, then wobbles along a plateau at about nought point eight nine.
+
+48
+00:04:06,450 --> 00:04:11,050
+The single best epoch is epoch three, with nought point nine four.
+
+49
+00:04:11,050 --> 00:04:13,725
+Which epoch would you choose, and why?
+
+50
+00:04:13,725 --> 00:04:15,825
+Pause and decide.
+
+51
+00:04:15,825 --> 00:04:19,700
+Most people say epoch three, because it is the highest.
+
+52
+00:04:19,700 --> 00:04:22,725
+Let me argue that it is the wrong answer.
+
+53
+00:04:22,725 --> 00:04:25,775
+We have a hundred validation examples.
+
+54
+00:04:25,775 --> 00:04:36,675
+With a hundred examples, a single accuracy figure is uncertain by roughly plus or minus nought point zero three, just from the luck of which hundred examples you happened to have.
+
+55
+00:04:36,675 --> 00:04:44,250
+So the peak at nought point nine four and the plateau at nought point eight nine are about one and a half standard errors apart.
+
+56
+00:04:44,250 --> 00:04:48,375
+That is not evidence that epoch three is genuinely better.
+
+57
+00:04:48,375 --> 00:04:53,525
+Worse: we did not pick one number, we picked the maximum of fifty noisy numbers.
+
+58
+00:04:53,525 --> 00:04:58,225
+The maximum of fifty noisy draws is systematically higher than the truth.
+
+59
+00:04:58,225 --> 00:05:07,575
+That is selection bias, and it is the same phenomenon as the optimistic validation score on the previous slide, concentrated into one decision.
+
+60
+00:05:07,575 --> 00:05:14,325
+So the rule I would give you is this: take the earliest epoch that is clearly on the plateau, not the single best one.
+
+61
+00:05:14,325 --> 00:05:16,350
+Here, two epochs.
+
+62
+00:05:16,350 --> 00:05:22,350
+You get essentially the same quality, you train faster, and you have not selected a lucky bump.
+
+63
+00:05:22,350 --> 00:05:24,550
+And then the honest part.
+
+64
+00:05:24,550 --> 00:05:29,875
+Having chosen two epochs on the validation set, we look at the test set, once.
+
+65
+00:05:29,875 --> 00:05:32,400
+Nought point eight nine five.
+
+66
+00:05:32,400 --> 00:05:39,400
+Notice that is close to the plateau and well below the lucky peak, which is exactly what the argument predicted.
+
+67
+00:05:39,400 --> 00:05:43,300
+One last detail from this plot that is worth noticing.
+
+68
+00:05:43,300 --> 00:05:50,300
+The training accuracy never settles down either; it bounces between nought point eight eight and nought point nine eight.
+
+69
+00:05:50,300 --> 00:05:52,300
+That is not a bug.
+
+70
+00:05:52,300 --> 00:06:00,800
+The patterns have noise added, and five flat boundaries cannot separate noisy patterns perfectly, so the model keeps getting jostled.
+
+71
+00:06:01,400 --> 00:06:04,925
+Accuracy tells you how often a classifier is wrong.
+
+72
+00:06:04,925 --> 00:06:11,275
+The confusion matrix tells you what it is wrong about, which is almost always the more useful question.
+
+73
+00:06:11,275 --> 00:06:13,050
+It is a grid.
+
+74
+00:06:13,050 --> 00:06:16,825
+Rows are the truth, columns are what the model predicted.
+
+75
+00:06:16,825 --> 00:06:22,850
+The cell in row i, column j counts how many examples of true class i were called class j.
+
+76
+00:06:22,850 --> 00:06:31,175
+The diagonal is the correct answers; everything off the diagonal is a mistake, labelled with exactly what kind of mistake it was.
+
+77
+00:06:31,175 --> 00:06:41,725
+Now look at ours, and remember what we predicted when we set up the problem: the cross shares pixels with the horizontal and the vertical bar, so that is where the confusion should be.
+
+78
+00:06:41,725 --> 00:06:43,625
+And there it is.
+
+79
+00:06:43,625 --> 00:06:46,250
+Nine crosses called vertical.
+
+80
+00:06:46,250 --> 00:06:49,875
+Four horizontals and two verticals called cross.
+
+81
+00:06:49,875 --> 00:06:53,875
+Almost every mistake in the whole matrix involves the cross.
+
+82
+00:06:53,875 --> 00:06:56,650
+The model is not randomly bad.
+
+83
+00:06:56,650 --> 00:07:01,900
+It is specifically confused in the one place where the classes genuinely overlap.
+
+84
+00:07:01,900 --> 00:07:08,000
+That is a model behaving sensibly on a hard problem, and you cannot see it in an accuracy figure.
+
+85
+00:07:08,000 --> 00:07:18,600
+On the right of the slide is a second view, the ROC curve, which comes from sweeping the threshold on one perceptron's score from very strict to very permissive and plotting what happens.
+
+86
+00:07:18,600 --> 00:07:23,425
+We will come to it in two slides, once the counts it is built from are clear.
+
+87
+00:07:24,025 --> 00:07:29,800
+Everything in classification metrics comes from four counts, so let us fix them properly.
+
+88
+00:07:29,800 --> 00:07:32,800
+Pick one class and call it positive.
+
+89
+00:07:32,800 --> 00:07:37,050
+Every prediction then falls into exactly one of four boxes.
+
+90
+00:07:37,050 --> 00:07:40,950
+True positives: it was positive and you said positive.
+
+91
+00:07:40,950 --> 00:07:41,900
+Right.
+
+92
+00:07:41,900 --> 00:07:45,875
+False positives: it was negative and you said positive.
+
+93
+00:07:45,875 --> 00:07:47,775
+A false alarm.
+
+94
+00:07:47,775 --> 00:07:51,750
+False negatives: it was positive and you said negative.
+
+95
+00:07:51,750 --> 00:07:53,000
+A miss.
+
+96
+00:07:53,000 --> 00:07:56,800
+True negatives: it was negative and you said negative.
+
+97
+00:07:56,800 --> 00:07:57,750
+Right.
+
+98
+00:07:57,750 --> 00:07:59,450
+Four numbers.
+
+99
+00:07:59,450 --> 00:08:04,550
+And the different metrics are nothing more than different choices of what to divide by.
+
+100
+00:08:04,550 --> 00:08:11,425
+That really is the whole difference between them, and if you hold on to that, you never have to memorise a formula again.
+
+101
+00:08:11,425 --> 00:08:19,850
+Divide the true positives by the whole column of things you called positive, and you get precision: of the things I flagged, how many were real?
+
+102
+00:08:19,850 --> 00:08:28,150
+Divide the true positives by the whole row of things that really are positive, and you get recall: of the real ones, how many did I find?
+
+103
+00:08:28,150 --> 00:08:32,100
+Two vocabulary notes that cause confusion every year.
+
+104
+00:08:32,100 --> 00:08:37,100
+Recall and the true-positive rate are two names for exactly the same number.
+
+105
+00:08:37,100 --> 00:08:48,675
+And the false-positive rate is the other row: false positives divided by all the true negatives plus false positives, that is, of the things that were not positive, how many did I wrongly flag?
+
+106
+00:08:48,675 --> 00:08:53,400
+Get those two straight now, because the ROC curve plots one against the other.
+
+107
+00:08:54,000 --> 00:08:58,375
+Let me put our numbers on it, because the asymmetry is instructive.
+
+108
+00:08:58,375 --> 00:09:04,200
+For the vertical class: recall nought point nine five, precision nought point seven six.
+
+109
+00:09:04,200 --> 00:09:05,575
+Read that.
+
+110
+00:09:05,575 --> 00:09:11,725
+Recall nought point nine five means we found ninety-five per cent of the real vertical bars.
+
+111
+00:09:11,725 --> 00:09:13,150
+Excellent.
+
+112
+00:09:13,150 --> 00:09:20,575
+Precision nought point seven six means that of everything we called vertical, only seventy-six per cent actually was.
+
+113
+00:09:20,575 --> 00:09:22,025
+Why the gap?
+
+114
+00:09:22,025 --> 00:09:26,850
+Go back to the confusion matrix: nine crosses were called vertical.
+
+115
+00:09:26,850 --> 00:09:30,725
+Those nine are counted as false positives for vertical.
+
+116
+00:09:30,725 --> 00:09:41,900
+They do not hurt vertical's recall at all, because recall only asks about the real verticals, but they damage its precision, because precision asks about everything we labelled vertical.
+
+117
+00:09:41,900 --> 00:09:48,975
+So one number says the classifier is excellent at vertical and the other says it is mediocre, and both are true.
+
+118
+00:09:48,975 --> 00:09:51,675
+They are answering different questions.
+
+119
+00:09:51,675 --> 00:10:00,200
+Which you should care about depends entirely on what happens next, and this is a decision about the biology or the clinic, not about the model.
+
+120
+00:10:00,200 --> 00:10:06,475
+If you are screening, and anything you flag will be checked by a cheap follow-up experiment, favour recall.
+
+121
+00:10:06,475 --> 00:10:11,650
+Missing a real hit is expensive; a false alarm costs one cheap test.
+
+122
+00:10:11,650 --> 00:10:20,725
+If every positive triggers something expensive or irreversible, a structure determination, a patient being told something, favour precision.
+
+123
+00:10:20,725 --> 00:10:24,050
+Now a false alarm is the expensive error.
+
+124
+00:10:24,050 --> 00:10:33,375
+For completeness, for the cross class, recall drops to nought point seven five: the cross is genuinely the hard class, as we predicted from the pixels.
+
+125
+00:10:33,975 --> 00:10:38,975
+Now the most important warning in this block, and it is about accuracy alone.
+
+126
+00:10:38,975 --> 00:10:45,375
+Suppose I build a model that predicts whether a PhD student will eventually pass their defence.
+
+127
+00:10:45,375 --> 00:10:48,300
+My model is: everyone passes.
+
+128
+00:10:48,300 --> 00:10:54,475
+That model is right about ninety-nine point nine per cent of the time, because almost everyone does.
+
+129
+00:10:54,475 --> 00:10:57,600
+It contains no information whatsoever.
+
+130
+00:10:57,600 --> 00:11:00,600
+It is not a model; it is a constant.
+
+131
+00:11:00,600 --> 00:11:04,625
+The same thing happens in our data in a less obvious form.
+
+132
+00:11:04,625 --> 00:11:10,750
+The subcellular localisation dataset has five classes, but they are not equally common.
+
+133
+00:11:10,750 --> 00:11:15,825
+Always answering nucleus beats guessing at random, and it has learned nothing.
+
+134
+00:11:15,825 --> 00:11:23,100
+Both of those models have a Matthews correlation coefficient of exactly zero, which is what MCC is for.
+
+135
+00:11:23,100 --> 00:11:32,100
+So the rule, which I would like you to apply to other people's papers as well as your own work: never report accuracy alone on unbalanced data.
+
+136
+00:11:32,100 --> 00:11:36,650
+Report MCC, or report precision and recall, next to it.
+
+137
+00:11:36,650 --> 00:11:42,125
+And be aware that real data is usually far more unbalanced than a teaching dataset.
+
+138
+00:11:42,125 --> 00:11:56,500
+If you are looking for a rare targeting signal that occurs in two per cent of proteins, then always answering no is ninety-eight per cent accurate, and if you report that number without comment, you are misleading your reader, whatever you intended.
+
+139
+00:11:56,500 --> 00:12:10,300
+A practical note for the rest of this session: our localisation classes have been deliberately balanced to a hundred and forty proteins each, seven hundred in total, so that accuracy is interpretable while we are learning the machinery.
+
+140
+00:12:10,300 --> 00:12:13,225
+Real proteomes are not so kind.
+
+141
+00:12:13,825 --> 00:12:20,175
+Two single numbers that behave better than accuracy, and then we are done with classification metrics.
+
+142
+00:12:20,175 --> 00:12:23,175
+The Matthews correlation coefficient.
+
+143
+00:12:23,175 --> 00:12:28,575
+It combines all four counts into one number, running from minus one to plus one.
+
+144
+00:12:28,575 --> 00:12:30,775
+Plus one is perfect.
+
+145
+00:12:30,775 --> 00:12:35,800
+Zero is chance, including the always-say-yes model from the last slide.
+
+146
+00:12:35,800 --> 00:12:41,325
+Minus one is perfectly wrong, which is rare and usually means you have swapped your labels.
+
+147
+00:12:41,325 --> 00:12:50,775
+Its virtue is that it stays honest when the classes are unbalanced, because it involves all four boxes rather than just the ones a lazy classifier can fill.
+
+148
+00:12:50,775 --> 00:12:56,700
+On our three-by-three test set, the multi-class MCC is nought point eight seven one.
+
+149
+00:12:56,700 --> 00:12:59,725
+The area under the ROC curve, AUROC.
+
+150
+00:12:59,725 --> 00:13:07,075
+The ROC curve comes from sweeping the decision threshold and plotting the true-positive rate against the false-positive rate.
+
+151
+00:13:07,075 --> 00:13:20,875
+The area under it has a beautifully concrete interpretation, which is the only one worth remembering: it is the probability that a randomly chosen positive example gets a higher score than a randomly chosen negative one.
+
+152
+00:13:20,875 --> 00:13:26,025
+So nought point five is guessing, and one point zero is a perfect ranking.
+
+153
+00:13:26,025 --> 00:13:30,150
+For our cross class, AUROC is nought point nine three eight.
+
+154
+00:13:30,150 --> 00:13:33,575
+Notice what that measures and what it does not.
+
+155
+00:13:33,575 --> 00:13:39,550
+AUROC is about ranking, not about any particular threshold, and not about calibration.
+
+156
+00:13:39,550 --> 00:13:44,875
+A model can have a superb AUROC and still put its threshold in a useless place.
+
+157
+00:13:44,875 --> 00:13:55,900
+F1 also exists and you will see it everywhere: it is the harmonic mean of precision and recall, which is a way of insisting that both are decent rather than letting a model trade one away.
+
+158
+00:13:55,900 --> 00:14:03,300
+And one connection worth making: Session five's E-value cut-off was a point on exactly this kind of trade-off curve.
+
+159
+00:14:03,300 --> 00:14:07,600
+Choosing a cut-off is choosing where on the ROC curve you want to sit.
+
+160
+00:14:08,200 --> 00:14:12,550
+Regression now, which has fewer metrics and more ways to be misled.
+
+161
+00:14:12,550 --> 00:14:16,050
+Three numbers, and each answers a different question.
+
+162
+00:14:16,050 --> 00:14:19,175
+The root mean squared error, RMSE.
+
+163
+00:14:19,175 --> 00:14:22,500
+Take each error, square it, average, square-root.
+
+164
+00:14:22,500 --> 00:14:26,825
+Its virtue is that it comes out in the units of the thing you are predicting.
+
+165
+00:14:26,825 --> 00:14:37,650
+If you are predicting helix fraction, an RMSE of nought point one means you are typically off by about a tenth, and you can decide for yourself whether that is good enough for what you want to do.
+
+166
+00:14:37,650 --> 00:14:40,300
+No other metric tells you that.
+
+167
+00:14:40,300 --> 00:14:42,650
+Always give it a baseline.
+
+168
+00:14:42,650 --> 00:14:48,725
+The simplest model that could possibly exist predicts the mean of the training data for everything.
+
+169
+00:14:48,725 --> 00:14:52,225
+For our data that scores nought point two three four.
+
+170
+00:14:52,225 --> 00:15:00,050
+So if your clever model reports nought point two two, it is barely beating a constant, and you should know that before you write it up.
+
+171
+00:15:00,050 --> 00:15:02,725
+Pearson's r, the correlation.
+
+172
+00:15:02,725 --> 00:15:07,075
+It measures whether the predictions and the truth rise and fall together.
+
+173
+00:15:07,075 --> 00:15:09,700
+It answers: have I got the trend?
+
+174
+00:15:09,700 --> 00:15:11,250
+R squared.
+
+175
+00:15:11,250 --> 00:15:18,225
+It compares your model against that mean-predicting baseline directly: what fraction of the variance did I explain?
+
+176
+00:15:18,225 --> 00:15:21,725
+Zero means you did as well as predicting the mean.
+
+177
+00:15:21,725 --> 00:15:27,275
+Negative means you did worse, which is entirely possible and should make you check your code.
+
+178
+00:15:27,275 --> 00:15:33,275
+On the helix data, R squared is about a half, so roughly half the variance is explained.
+
+179
+00:15:33,275 --> 00:15:39,975
+Three questions: how far off am I, in real units; do I have the trend; and am I better than doing nothing.
+
+180
+00:15:39,975 --> 00:15:43,050
+You want all three, and they can disagree.
+
+181
+00:15:43,650 --> 00:15:50,800
+Here is the trap in that list, and it is common enough in published bioinformatics that I want you to be able to spot it.
+
+182
+00:15:50,800 --> 00:15:53,150
+Before I show you, predict.
+
+183
+00:15:53,150 --> 00:15:56,200
+Take a set of predictions that are quite good.
+
+184
+00:15:56,200 --> 00:15:59,975
+Now double every prediction and add nought point three.
+
+185
+00:15:59,975 --> 00:16:02,525
+What happens to the correlation?
+
+186
+00:16:02,525 --> 00:16:05,250
+Most people expect it to fall.
+
+187
+00:16:05,250 --> 00:16:07,525
+It does not change at all.
+
+188
+00:16:07,525 --> 00:16:09,800
+Not slightly: not at all.
+
+189
+00:16:09,800 --> 00:16:18,300
+Correlation measures whether things move together, and doubling and shifting every value preserves the ordering and the relative spacing perfectly.
+
+190
+00:16:18,300 --> 00:16:20,950
+The correlation is identical.
+
+191
+00:16:20,950 --> 00:16:30,100
+Meanwhile, on the same transformed predictions, the RMSE roughly quadruples, because every prediction is now badly wrong in absolute terms.
+
+192
+00:16:30,100 --> 00:16:36,225
+And R squared falls below zero, which means these predictions are worse than always guessing the mean.
+
+193
+00:16:36,225 --> 00:16:42,650
+So you have one set of numbers that is simultaneously excellently correlated and worse than useless.
+
+194
+00:16:42,650 --> 00:16:45,475
+This is not a contrived example.
+
+195
+00:16:45,475 --> 00:16:54,325
+It is exactly what happens when a method is systematically biased, predicting everything too high, or when it has the right shape on a different scale.
+
+196
+00:16:54,325 --> 00:17:01,550
+And it is why a paper that reports only the correlation of its predictions is not telling you whether its predictions are right.
+
+197
+00:17:01,550 --> 00:17:04,550
+It is telling you they are in the right order.
+
+198
+00:17:04,550 --> 00:17:12,700
+If you take one habit from this slide: when you report a correlation for a regression, report RMSE or R squared next to it.
+
+199
+00:17:12,700 --> 00:17:16,025
+And when you read one, notice if they did not.
+
+200
+00:17:16,625 --> 00:17:22,975
+Now we start on the ways evaluation goes wrong, beginning with the gentlest one: ordinary luck.
+
+201
+00:17:22,975 --> 00:17:24,725
+Same data.
+
+202
+00:17:24,725 --> 00:17:28,075
+Same model, a logistic-regression baseline.
+
+203
+00:17:28,075 --> 00:17:34,300
+The only thing that changes is which proteins happen to land in training, validation and test.
+
+204
+00:17:34,300 --> 00:17:39,850
+Ten different random splits, in the usual seventy, fifteen, fifteen proportions.
+
+205
+00:17:39,850 --> 00:17:45,550
+The accuracies range from nought point five zero five to nought point six one zero.
+
+206
+00:17:45,550 --> 00:17:51,175
+Mean nought point five six one, standard deviation nought point zero three one.
+
+207
+00:17:51,175 --> 00:17:55,225
+Ten points of accuracy, from nothing but the luck of the draw.
+
+208
+00:17:55,225 --> 00:17:59,200
+Sit with that, because it calibrates how to read everything else.
+
+209
+00:17:59,200 --> 00:18:11,150
+If someone reports that their method scores nought point five nine and a competing method scores nought point five six, on a dataset this size, with one split each, they have shown you nothing at all.
+
+210
+00:18:11,150 --> 00:18:15,025
+The difference is inside the range you get by reshuffling.
+
+211
+00:18:15,025 --> 00:18:18,975
+One partial remedy is k-fold cross-validation.
+
+212
+00:18:18,975 --> 00:18:26,275
+Split the data into five parts; train five times, each time holding out a different part; average the results.
+
+213
+00:18:26,275 --> 00:18:33,175
+Every protein is validated exactly once, and your estimate no longer depends on one arbitrary division.
+
+214
+00:18:33,175 --> 00:18:38,925
+Here that gives nought point five four zero, plus or minus nought point zero four four.
+
+215
+00:18:38,925 --> 00:18:47,675
+It costs five times the computing, and, importantly, it reduces the dependence on one split but does not abolish sampling variability.
+
+216
+00:18:47,675 --> 00:18:50,425
+Your dataset is still a sample.
+
+217
+00:18:50,425 --> 00:18:57,525
+If it is small, your estimate is uncertain, and no amount of re-splitting creates information that is not there.
+
+218
+00:18:57,525 --> 00:19:00,275
+Report the spread, not just the mean.
+
+219
+00:19:00,275 --> 00:19:05,400
+A single number with no uncertainty attached is a claim you cannot support.
+
+220
+00:19:06,000 --> 00:19:11,525
+And now the one that is specific to our field, and the most important slide in the session.
+
+221
+00:19:11,525 --> 00:19:14,050
+Proteins come in families.
+
+222
+00:19:14,050 --> 00:19:22,225
+A random split does not know that, so it will cheerfully put one member of a family in training and its close relative in the test set.
+
+223
+00:19:22,225 --> 00:19:24,125
+Let us measure it.
+
+224
+00:19:24,125 --> 00:19:34,625
+Take our seven hundred proteins and cluster them with MMseqs2 at thirty per cent sequence identity, which is a conventional rough threshold for likely homology.
+
+225
+00:19:34,625 --> 00:19:39,300
+The seven hundred proteins fall into five hundred and fifty-one clusters.
+
+226
+00:19:39,300 --> 00:19:48,075
+Seventy-five of those clusters have more than one member, accounting for two hundred and twenty-four proteins, and the largest cluster has eleven.
+
+227
+00:19:48,075 --> 00:19:58,375
+Now split at random and ask how much contamination that produces: thirty-one point three per cent of validation proteins have a homolog sitting in the training set.
+
+228
+00:19:58,375 --> 00:20:00,250
+Nearly a third.
+
+229
+00:20:00,250 --> 00:20:03,000
+And here is what it does to the score.
+
+230
+00:20:03,000 --> 00:20:09,950
+Those proteins with a relative in training are predicted correctly sixty-seven point five per cent of the time.
+
+231
+00:20:09,950 --> 00:20:14,650
+The ones without are predicted correctly fifty point nine per cent of the time.
+
+232
+00:20:14,650 --> 00:20:21,975
+Sixteen and a half percentage points, between proteins the model has a relative of and proteins it does not.
+
+233
+00:20:21,975 --> 00:20:25,350
+Think about what the model is doing in those cases.
+
+234
+00:20:25,350 --> 00:20:29,275
+It is not applying general knowledge of targeting signals.
+
+235
+00:20:29,275 --> 00:20:35,725
+It is recognising the family, because relatives share sequence and usually share localisation too.
+
+236
+00:20:35,725 --> 00:20:48,125
+That is a perfectly good way to get the answer right, and it is not what you claimed your method does, and it will not work on a protein family nobody has seen before, which is precisely the case where you wanted a predictor.
+
+237
+00:20:48,725 --> 00:20:53,850
+The fix is simple to describe and you should do it in every project from now on.
+
+238
+00:20:53,850 --> 00:20:55,700
+Cluster first.
+
+239
+00:20:55,700 --> 00:20:58,850
+Then split the clusters, not the proteins.
+
+240
+00:20:58,850 --> 00:21:06,875
+Every member of a family goes into the same side of the split: all into training, or all into validation, or all into test.
+
+241
+00:21:06,875 --> 00:21:09,650
+No family straddles the boundary.
+
+242
+00:21:09,650 --> 00:21:12,125
+The slide shows the effect.
+
+243
+00:21:12,125 --> 00:21:22,250
+Over ten splits of each kind, baseline accuracy drops from nought point five five three with random splits to nought point five three six with homology-aware splits.
+
+244
+00:21:22,250 --> 00:21:28,450
+Now, that drop is small, and I want to explain why rather than let you conclude the problem is small.
+
+245
+00:21:28,450 --> 00:21:37,800
+In this dataset, four hundred and seventy-six of the seven hundred proteins have no homolog in the set at all, so most of the data was never going to leak.
+
+246
+00:21:37,800 --> 00:21:43,450
+The leakage was concentrated in the two hundred and twenty-four proteins that have relatives.
+
+247
+00:21:43,450 --> 00:21:46,925
+In redundant data, the gap is much larger.
+
+248
+00:21:46,925 --> 00:21:49,900
+A whole proteome is full of paralogs.
+
+249
+00:21:49,900 --> 00:21:55,400
+The PDB is full of the same protein solved many times, and of close variants.
+
+250
+00:21:55,400 --> 00:22:05,775
+In datasets like those, the difference between a random split and a homology-aware split can be enormous, and papers have been published whose central claim does not survive it.
+
+251
+00:22:05,775 --> 00:22:15,500
+From today, the course uses the homology-aware split: four hundred and eighty-six training, a hundred and five validation, a hundred and nine test proteins.
+
+252
+00:22:15,500 --> 00:22:22,025
+Sessions nine and ten reuse exactly that split, which is why their numbers are comparable with each other.
+
+253
+00:22:22,025 --> 00:22:31,650
+One honest limitation: no cluster at thirty per cent identity crosses the split, but remote homologs below that threshold can still be related.
+
+254
+00:22:31,650 --> 00:22:35,850
+Thirty per cent is a pragmatic line, not a guarantee.
+
+255
+00:22:36,450 --> 00:22:39,050
+Homology is our field's leak.
+
+256
+00:22:39,050 --> 00:22:46,425
+There are others, and they share a shape: something that distinguishes training from test, which is not the biology you meant to learn.
+
+257
+00:22:46,425 --> 00:22:48,175
+Batch effects.
+
+258
+00:22:48,175 --> 00:22:53,575
+All the tumour samples processed in one laboratory, all the controls in another.
+
+259
+00:22:53,575 --> 00:22:56,225
+The model learns the laboratory.
+
+260
+00:22:56,225 --> 00:22:59,825
+This is the tank story with real consequences.
+
+261
+00:22:59,825 --> 00:23:00,850
+Time.
+
+262
+00:23:00,850 --> 00:23:09,000
+You train on proteins annotated before some date and test on proteins annotated after it, which sounds rigorous and often is.
+
+263
+00:23:09,000 --> 00:23:20,350
+But if you do it the other way round, or if the annotation of your test proteins was informed by methods trained on your training proteins, information flows backwards in a way that is hard to see.
+
+264
+00:23:20,350 --> 00:23:23,325
+Preprocessing on everything at once.
+
+265
+00:23:23,325 --> 00:23:31,825
+If you normalise your features, or select which features to use, using all the data before splitting, then your test set influenced your model.
+
+266
+00:23:31,825 --> 00:23:35,750
+This one is extremely common and completely invisible.
+
+267
+00:23:35,750 --> 00:23:40,475
+And unrepresentative data generally, which we started the block with.
+
+268
+00:23:40,475 --> 00:23:49,250
+The gold standard against all of this is a blind test: somebody else holds the answers, and you submit predictions before the answers exist.
+
+269
+00:23:49,250 --> 00:23:59,900
+In our field that is CASP, which you met in Session six: structures that have been solved but not yet published, predictions collected, scored when the experiments come out.
+
+270
+00:23:59,900 --> 00:24:05,450
+Nothing can leak, by construction, because the answer did not exist when you predicted.
+
+271
+00:24:05,450 --> 00:24:10,375
+That is expensive and slow, and it is why CASP matters so much.
+

@@ -1,0 +1,444 @@
+1
+00:00:00,000 --> 00:00:03,325
+There are two problems with applying this directly.
+
+2
+00:00:03,325 --> 00:00:06,875
+The first is that the background is not quite random.
+
+3
+00:00:06,875 --> 00:00:15,250
+We insist the shuffled sequences keep their lengths, and that constraint can make the distribution non-Gaussian, which throws the estimate off.
+
+4
+00:00:15,250 --> 00:00:18,450
+The second is the size of the database.
+
+5
+00:00:18,450 --> 00:00:26,525
+With a million sequences you have a million chances to find a high score by accident — and the databases are far larger than that now.
+
+6
+00:00:26,525 --> 00:00:33,750
+The remedy is to adjust the significance level by the number of attempts, which is exactly what the BLAST statistics do.
+
+7
+00:00:34,350 --> 00:00:38,950
+One more tool: relative entropy, borrowed from information theory.
+
+8
+00:00:38,950 --> 00:00:45,750
+For a given substitution matrix you can calculate the relative entropy of aligning a single pair of residues.
+
+9
+00:00:45,750 --> 00:00:52,000
+It is measured in bits, and the alignment's total is that figure times the number of aligned residues.
+
+10
+00:00:52,000 --> 00:00:55,125
+The useful rule of thumb is thirty bits.
+
+11
+00:00:55,125 --> 00:00:59,750
+An alignment carrying at least thirty bits is statistically significant.
+
+12
+00:00:59,750 --> 00:01:10,050
+The numbers at the bottom work this through for PAM10 and PAM250, and they lead to a conclusion worth keeping: to detect distant homologues, you need longer alignments.
+
+13
+00:01:10,650 --> 00:01:16,975
+This summarises the perspectives and pitfalls sections of chapter three, which are worth reading in full.
+
+14
+00:01:17,575 --> 00:01:21,800
+Now multiple sequence alignment, and first, what it is for.
+
+15
+00:01:21,800 --> 00:01:28,900
+Conserved columns across an alignment mark positions that matter — enzyme active sites, binding domains.
+
+16
+00:01:28,900 --> 00:01:33,675
+That is how Pfam, SMART and InterPro recognise protein families.
+
+17
+00:01:33,675 --> 00:01:38,175
+The catalytic triad of the serine proteases shows up this way.
+
+18
+00:01:38,175 --> 00:01:41,500
+Alignments also drive structure prediction.
+
+19
+00:01:41,500 --> 00:01:50,525
+Where two positions vary together across a family, they are probably in contact, and that is the signal AlphaFold and its predecessors exploit.
+
+20
+00:01:50,525 --> 00:01:55,075
+And they annotate unknown proteins by relating them to known ones.
+
+21
+00:01:55,675 --> 00:01:59,650
+There is also a structure-based approach, which this lecture skips.
+
+22
+00:01:59,650 --> 00:02:04,800
+It needs ideas from the protein structure lecture; come back to it afterwards.
+
+23
+00:02:05,400 --> 00:02:07,850
+The exact approach first.
+
+24
+00:02:07,850 --> 00:02:13,900
+It is Needleman-Wunsch extended from two sequences to N, and it has the same three steps.
+
+25
+00:02:13,900 --> 00:02:18,875
+Build the matrix — now N-dimensional, with a zeroth plane for every pair.
+
+26
+00:02:18,875 --> 00:02:24,950
+Easy to write down for a computer, impossible to draw, so the slide shows three sequences.
+
+27
+00:02:24,950 --> 00:02:33,250
+Fill it by the same recurrence, except that now a gap can go into any of the N sequences, so there are N gap terms rather than two.
+
+28
+00:02:33,250 --> 00:02:35,150
+Then trace back.
+
+29
+00:02:35,750 --> 00:02:39,950
+It guarantees the best alignment, because it considers all of them.
+
+30
+00:02:39,950 --> 00:02:45,875
+And it is only usable for about five sequences, because the cost grows with the dimension.
+
+31
+00:02:46,475 --> 00:02:49,425
+So in practice, progressive alignment.
+
+32
+00:02:49,425 --> 00:02:55,950
+The idea is to build the alignment up, starting with the sequences that are most alike and working outwards.
+
+33
+00:02:55,950 --> 00:02:57,575
+Three steps.
+
+34
+00:02:57,575 --> 00:03:03,750
+Align every pair of sequences, and use the results to build a matrix of distances between them.
+
+35
+00:03:03,750 --> 00:03:06,850
+Turn that into a guide tree, by clustering.
+
+36
+00:03:06,850 --> 00:03:13,900
+Then align along the tree: the closest pair first, merged into a group, then the next closest, until everything is in.
+
+37
+00:03:13,900 --> 00:03:22,675
+It is fast and it follows the evolutionary relationships, which is why ClustalW, Clustal Omega and T-Coffee all work this way.
+
+38
+00:03:22,675 --> 00:03:25,000
+The weakness is in the name.
+
+39
+00:03:25,000 --> 00:03:28,150
+It is progressive, so it never goes back.
+
+40
+00:03:28,150 --> 00:03:35,275
+An error in the guide tree propagates into everything built on it, and a gap introduced early is never reconsidered.
+
+41
+00:03:35,875 --> 00:03:38,125
+Let us do one properly.
+
+42
+00:03:38,125 --> 00:03:41,525
+Ten sequences, lengths from nine to twelve.
+
+43
+00:03:41,525 --> 00:03:48,650
+First, all forty-five pairwise alignments — forty-five rather than ninety, because identity is symmetric.
+
+44
+00:03:48,650 --> 00:03:52,275
+Needleman-Wunsch gives the identity matrix shown.
+
+45
+00:03:52,275 --> 00:03:56,650
+In the balloon on the left is the alignment of sequences three and ten.
+
+46
+00:03:56,650 --> 00:04:02,825
+Notice that identity is calculated against the length of the alignment, not of either sequence.
+
+47
+00:04:02,825 --> 00:04:07,375
+That matters in the next example, where both sequences have gaps.
+
+48
+00:04:07,375 --> 00:04:16,200
+Normalising by the upper sequence would make the answer depend on which sequence you put on top — six out of nine one way, six out of ten the other.
+
+49
+00:04:16,200 --> 00:04:19,275
+Normalising by the alignment does not.
+
+50
+00:04:19,875 --> 00:04:23,825
+Turn identity into distance by this simple relation.
+
+51
+00:04:24,425 --> 00:04:26,700
+Then build the guide tree.
+
+52
+00:04:26,700 --> 00:04:33,450
+There are many ways; this is the simplest and the most common, hierarchical clustering by average linkage.
+
+53
+00:04:33,450 --> 00:04:36,875
+Start with every sequence as its own cluster.
+
+54
+00:04:36,875 --> 00:04:39,075
+Find the two closest.
+
+55
+00:04:39,075 --> 00:04:40,625
+Merge them.
+
+56
+00:04:40,625 --> 00:04:46,700
+Recompute the distances from the new cluster to everything else, averaging over the members.
+
+57
+00:04:46,700 --> 00:04:49,650
+Repeat until one cluster is left.
+
+58
+00:04:50,250 --> 00:04:55,050
+Drawn as a dendrogram, which gives the order the alignment will be built in.
+
+59
+00:04:55,050 --> 00:04:59,025
+The sequence numbers along the bottom can be in any order.
+
+60
+00:04:59,625 --> 00:05:04,925
+First merge: sequences three and ten, distance nine, the smallest in the matrix.
+
+61
+00:05:05,525 --> 00:05:08,375
+Then one and nine, and two and five.
+
+62
+00:05:08,375 --> 00:05:14,975
+Sequences six and nine are also at distance ten, so six could have gone first and one added after.
+
+63
+00:05:14,975 --> 00:05:16,975
+Either order works.
+
+64
+00:05:17,575 --> 00:05:21,250
+Now sequence six joins the cluster of one and nine.
+
+65
+00:05:21,250 --> 00:05:27,650
+The average-linkage denominator is two, because one cluster has a single member and the other has two.
+
+66
+00:05:28,250 --> 00:05:33,150
+Then the next smallest distance, twenty-two, between sequences four and eight.
+
+67
+00:05:33,750 --> 00:05:37,975
+Now two clusters merge — three and ten with six, one and nine.
+
+68
+00:05:37,975 --> 00:05:44,625
+Averaging over all six pairs gives twenty-two point five, just above the four-eight distance of twenty-two.
+
+69
+00:05:45,225 --> 00:05:50,075
+Sequence seven joins two and five, because that is where it is closest.
+
+70
+00:05:50,675 --> 00:05:54,675
+Then the cluster of four and eight joins seven, two and five.
+
+71
+00:05:54,675 --> 00:05:57,375
+That takes six distance values.
+
+72
+00:05:57,975 --> 00:06:03,125
+And the final merge, at thirty-seven point eight, averaged over twenty values.
+
+73
+00:06:03,125 --> 00:06:06,850
+The distances themselves mean nothing in isolation.
+
+74
+00:06:06,850 --> 00:06:13,125
+What matters is the order they put the sequences in, because that is the order the alignment is built.
+
+75
+00:06:13,725 --> 00:06:24,600
+So: align the most closely related sequences first, then merge the groups following the tree, carrying the gaps from the pairwise alignments of the shorter sequences into the longer ones.
+
+76
+00:06:25,200 --> 00:06:29,700
+The second level of the dendrogram is triplets, and there are two of them.
+
+77
+00:06:29,700 --> 00:06:33,900
+In the first, sequence six joins the alignment of one and nine.
+
+78
+00:06:33,900 --> 00:06:37,475
+No gaps are needed — all three are the same length.
+
+79
+00:06:37,475 --> 00:06:42,725
+In the second we do need gaps, because sequence seven is shorter than sequence two.
+
+80
+00:06:42,725 --> 00:06:47,125
+We take the gap positions from the pairwise alignment of two and seven.
+
+81
+00:06:47,725 --> 00:06:50,800
+The third level joins a triplet to a pair.
+
+82
+00:06:50,800 --> 00:06:59,050
+Here the pair of three and ten joins the triplet six, one and nine, with three and ten kept at the bottom because they are closer to each other.
+
+83
+00:06:59,050 --> 00:07:07,950
+Gaps go into six, one and nine, taken from their alignments against sequence three — or against ten, which would do equally well, since neither has gaps.
+
+84
+00:07:08,550 --> 00:07:11,500
+The second triplet-plus-pair on that level.
+
+85
+00:07:11,500 --> 00:07:18,800
+Here the gaps can only come from the alignments against sequence two, because that is the only one without gaps of its own.
+
+86
+00:07:19,400 --> 00:07:21,550
+And the final alignment.
+
+87
+00:07:21,550 --> 00:07:28,475
+Again the extra gaps came from the alignments against sequence three, and sequence ten would have served just as well.
+
+88
+00:07:29,075 --> 00:07:31,300
+Which points at the weakness.
+
+89
+00:07:31,300 --> 00:07:36,500
+The gaps could have come from either sequence, so the result is not quite determined.
+
+90
+00:07:36,500 --> 00:07:43,550
+The remedy is to refine iteratively: score the alignment, find the regions dragging the score down, and realign them.
+
+91
+00:07:43,550 --> 00:07:49,075
+MUSCLE and MAFFT both do this, and PRANK does an evolution-aware version.
+
+92
+00:07:49,075 --> 00:07:59,075
+It is worth the extra time when the alignment feeds something that depends on getting it right — a phylogeny, a structural study, a comparative genomics analysis.
+
+93
+00:07:59,675 --> 00:08:02,750
+The other improvement is consistency.
+
+94
+00:08:02,750 --> 00:08:04,900
+The idea is simple.
+
+95
+00:08:04,900 --> 00:08:11,675
+If A aligns to B, and B aligns to C, then the alignment of A to C ought to agree with what those two imply.
+
+96
+00:08:11,675 --> 00:08:19,200
+So instead of scoring each pair on its own, score it against what the indirect alignments through every other sequence suggest.
+
+97
+00:08:19,200 --> 00:08:25,925
+That information is then used while merging along the guide tree, which stops local misalignments taking hold.
+
+98
+00:08:25,925 --> 00:08:31,325
+T-Coffee is built around this, and MAFFT uses it in some of its modes.
+
+99
+00:08:31,925 --> 00:08:35,300
+And finally, the three approaches side by side.
+
+100
+00:08:35,300 --> 00:08:44,200
+Progressive alignment is fast and follows the evolutionary relationships, but errors in the guide tree carry through and nothing is ever corrected.
+
+101
+00:08:44,200 --> 00:08:54,375
+Iterative alignment starts from a progressive one and refines it, so it does correct its mistakes — at more computational cost, and still limited by where it started.
+
+102
+00:08:54,375 --> 00:09:03,150
+Consistency-based alignment uses information from all the pairwise alignments at once, which makes it the most accurate of the three and the slowest.
+
+103
+00:09:03,150 --> 00:09:05,550
+Each suits a different job.
+
+104
+00:09:05,550 --> 00:09:09,150
+For a large family where you need speed, progressive.
+
+105
+00:09:09,150 --> 00:09:13,025
+Where accuracy matters more than time, one of the other two.
+
+106
+00:09:13,625 --> 00:09:17,100
+To close, the three things this lecture rests on.
+
+107
+00:09:17,100 --> 00:09:32,250
+Pairwise alignment is a search for the best correspondence between two sequences, and dynamic programming finds it exactly rather than by trying everything — Needleman-Wunsch for the whole length of both sequences, Smith-Waterman for the best matching region inside them.
+
+108
+00:09:32,250 --> 00:09:35,700
+A scoring matrix is where the biology enters.
+
+109
+00:09:35,700 --> 00:09:45,025
+It says how much a substitution costs, and a matrix built from closely related proteins asks a different question from one built from distant ones.
+
+110
+00:09:45,025 --> 00:09:54,025
+And a multiple alignment is built up rather than solved: the most similar sequences are aligned first, then progressively more distant ones are added.
+
+111
+00:09:54,025 --> 00:10:01,850
+The order is decided by the distances between them, which is why the distance matrix comes before the alignment and not after.
+

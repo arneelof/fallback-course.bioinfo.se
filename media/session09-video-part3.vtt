@@ -1,0 +1,834 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.475
+Block three.
+
+2
+00:00:01.475 --> 00:00:04.650
+Overfitting, and is the improvement real?
+
+3
+00:00:04.650 --> 00:00:13.000
+On the page, this block is the sections "Why not make the network enormous?", "What can we do about overfitting?" and "Is the improvement real?".
+
+4
+00:00:13.000 --> 00:00:16.225
+Block two was about training failing to work.
+
+5
+00:00:16.225 --> 00:00:23.625
+This block is about training working too well: the model fits the training data beautifully and then fails on anything new.
+
+6
+00:00:23.625 --> 00:00:33.650
+We will take Session eight's localisation network, watch it memorise, try five different remedies, and find that the honest answer is not the one people hope for.
+
+7
+00:00:33.650 --> 00:00:43.150
+Then the tools themselves, L1, L2 and dropout, and finally where all of this sits in a world where almost nobody trains a model from scratch any more.
+
+8
+00:00:43.750 --> 00:00:47.300
+Back to the network we built at the end of Session eight.
+
+9
+00:00:47.300 --> 00:00:54.350
+The input is a protein sequence: a hundred and fifty residues, one-hot encoded, three thousand numbers.
+
+10
+00:00:54.350 --> 00:00:57.200
+A hidden layer of sixty-four units.
+
+11
+00:00:57.200 --> 00:00:59.575
+Five output classes.
+
+12
+00:00:59.575 --> 00:01:03.625
+And the training set is four hundred and eighty-six proteins.
+
+13
+00:01:03.625 --> 00:01:08.150
+Put those two facts next to each other, which is what the slide is for.
+
+14
+00:01:08.150 --> 00:01:12.450
+The first layer alone has three thousand times sixty-four weights.
+
+15
+00:01:12.450 --> 00:01:17.775
+The whole network has a hundred and ninety-two thousand, three hundred and eighty-nine.
+
+16
+00:01:17.775 --> 00:01:24.250
+A hundred and ninety-two thousand free parameters, fitted on four hundred and eighty-six examples.
+
+17
+00:01:24.250 --> 00:01:27.325
+Roughly four hundred weights per example.
+
+18
+00:01:27.325 --> 00:01:30.825
+You do not need any theory to be nervous about that.
+
+19
+00:01:30.825 --> 00:01:40.350
+There is enough freedom in that model to describe each training protein individually, and when a model can do that, there is no pressure on it to find anything general.
+
+20
+00:01:40.350 --> 00:01:46.025
+Before I show you what happens, predict what the training and validation curves will look like.
+
+21
+00:01:46.625 --> 00:01:50.950
+Here it is, and it is overfitting in its plainest possible form.
+
+22
+00:01:50.950 --> 00:01:54.725
+Training accuracy: one point zero zero zero.
+
+23
+00:01:54.725 --> 00:01:58.550
+Every single training protein classified correctly.
+
+24
+00:01:58.550 --> 00:02:02.725
+The model has memorised its four hundred and eighty-six examples.
+
+25
+00:02:02.725 --> 00:02:09.025
+Validation accuracy peaks at epoch five, and then falls, ending at nought point four three eight.
+
+26
+00:02:09.025 --> 00:02:10.600
+Epoch five.
+
+27
+00:02:10.600 --> 00:02:22.950
+The network learns whatever generalisable signal it is going to learn in the first handful of passes over the data, and everything after that is memorisation, which actively makes it worse on new proteins.
+
+28
+00:02:22.950 --> 00:02:26.475
+That is worth understanding rather than just naming.
+
+29
+00:02:26.475 --> 00:02:40.750
+The network is not doing anything wrong in its own terms: it is reducing the training loss, which is what we told it to do, and the most efficient remaining way to reduce the training loss is to learn the idiosyncrasies of these particular sequences.
+
+30
+00:02:40.750 --> 00:02:46.500
+A quirk of one training protein is, to the model, just another pattern that predicts a label.
+
+31
+00:02:46.500 --> 00:02:51.675
+And notice the two curves tell you this clearly, long before you look at a test set.
+
+32
+00:02:51.675 --> 00:02:57.725
+Divergence between training and validation loss is the signature, and it is why you plot both.
+
+33
+00:02:58.325 --> 00:03:01.425
+And now the result that should keep you humble.
+
+34
+00:03:01.425 --> 00:03:05.975
+On this data, plain logistic regression beats the neural network.
+
+35
+00:03:05.975 --> 00:03:12.275
+Let me put the numbers in context first, because they are all low and I do not want you to mis-read them.
+
+36
+00:03:12.275 --> 00:03:17.250
+Chance accuracy, with five balanced classes, is nought point two zero.
+
+37
+00:03:17.250 --> 00:03:25.025
+The untrained network from Session eight scored nought point one eight one with an MCC of minus nought point zero two seven.
+
+38
+00:03:25.025 --> 00:03:32.400
+So every trained model here is far above chance; the problem is genuinely hard, and we are comparing real models.
+
+39
+00:03:32.400 --> 00:03:35.400
+And the simplest of them is the best one.
+
+40
+00:03:35.400 --> 00:03:47.575
+This is why Session eight insisted on baselines, and I want to state the rule in its strongest form: before you believe that your bigger model is better, compare it with the simplest model that could possibly work.
+
+41
+00:03:47.575 --> 00:03:52.600
+Logistic regression, or predicting the most common class, or nearest-neighbour.
+
+42
+00:03:52.600 --> 00:04:00.275
+If your network does not beat those convincingly, you do not have a result, whatever the network's absolute numbers look like.
+
+43
+00:04:00.275 --> 00:04:05.400
+It is an uncomfortable habit because it so often deflates a week of work.
+
+44
+00:04:05.400 --> 00:04:09.475
+It is also the difference between a finding and an artefact.
+
+45
+00:04:10.075 --> 00:04:12.150
+So what can be done?
+
+46
+00:04:12.150 --> 00:04:19.475
+Five remedies, and I have put them in order of how much they actually help, which is not the order people usually try them in.
+
+47
+00:04:19.475 --> 00:04:21.500
+One: more data.
+
+48
+00:04:21.500 --> 00:04:26.100
+By a wide margin the most reliable fix, and the least glamorous.
+
+49
+00:04:26.100 --> 00:04:32.425
+More examples make memorisation harder and generalisation easier, with no tuning required.
+
+50
+00:04:32.425 --> 00:04:35.875
+Two: a smaller model, or a better architecture.
+
+51
+00:04:35.875 --> 00:04:38.775
+Fewer parameters to memorise with.
+
+52
+00:04:38.775 --> 00:04:54.725
+Or, better, an architecture whose built-in assumptions do the work instead of free parameters, which is Session ten: its convolutional network does this same task with nineteen thousand, two hundred and thirty-seven weights instead of a hundred and ninety-two thousand.
+
+53
+00:04:54.725 --> 00:04:56.925
+Three: early stopping.
+
+54
+00:04:56.925 --> 00:05:01.750
+Keep the weights from the best validation epoch rather than the last one.
+
+55
+00:05:01.750 --> 00:05:05.175
+Almost free, and often most of the benefit.
+
+56
+00:05:05.175 --> 00:05:09.525
+Four: weight decay, also called L2, or its relative L1.
+
+57
+00:05:09.525 --> 00:05:11.825
+Penalise large weights.
+
+58
+00:05:11.825 --> 00:05:13.750
+Five: dropout.
+
+59
+00:05:13.750 --> 00:05:16.875
+Switch off random units during training.
+
+60
+00:05:16.875 --> 00:05:21.950
+And now the honest result on our localisation network, which is on the slide.
+
+61
+00:05:21.950 --> 00:05:25.525
+Early stopping alone gives nought point four eight six.
+
+62
+00:05:25.525 --> 00:05:30.325
+Adding dropout and weight decay on top gives nought point four seven six.
+
+63
+00:05:30.325 --> 00:05:32.175
+Slightly worse.
+
+64
+00:05:32.175 --> 00:05:35.350
+The fancy regularisation bought nothing.
+
+65
+00:05:35.350 --> 00:05:43.150
+And here is the part I most want you to take away: whatever we do, training accuracy still reaches one point zero zero zero.
+
+66
+00:05:43.150 --> 00:05:53.175
+A hundred and ninety-two thousand weights can always memorise four hundred and eighty-six examples; regularisation changes how it memorises, not whether it can.
+
+67
+00:05:53.175 --> 00:05:59.975
+Regularisation is not a substitute for data, and it is not a substitute for a model that fits the problem.
+
+68
+00:05:59.975 --> 00:06:03.050
+It is a modest improvement at the margin.
+
+69
+00:06:03.050 --> 00:06:08.950
+If your model has four hundred weights per training example, no amount of dropout will save you.
+
+70
+00:06:09.550 --> 00:06:14.400
+Before the individual tools, the habit that ties the whole session together.
+
+71
+00:06:14.400 --> 00:06:19.625
+Plot two curves, always: training loss and validation loss, against epoch.
+
+72
+00:06:19.625 --> 00:06:23.175
+They answer two different questions, and you need both.
+
+73
+00:06:23.175 --> 00:06:27.525
+The training loss answers: is optimisation working at all?
+
+74
+00:06:27.525 --> 00:06:31.750
+If the training loss is not falling, nothing further matters.
+
+75
+00:06:31.750 --> 00:06:40.800
+Your model cannot even fit the data it can see, and the cause is somewhere in Block two: initialisation, vanishing gradients, learning rate, or a bug.
+
+76
+00:06:40.800 --> 00:06:46.150
+The validation loss answers: does more optimisation still help on new data?
+
+77
+00:06:46.150 --> 00:06:49.350
+While it falls, training is buying you something.
+
+78
+00:06:49.350 --> 00:06:57.950
+When it flattens and then rises, while the training loss continues down, the network has stopped learning the problem and started learning the training set.
+
+79
+00:06:57.950 --> 00:07:07.850
+So the recipe is: keep the weights from the epoch with the best validation loss, which was fifty-two for the breast-cancer network and five for the localisation network.
+
+80
+00:07:07.850 --> 00:07:10.600
+And then the discipline from Session eight.
+
+81
+00:07:10.600 --> 00:07:17.600
+Because you chose that epoch using the validation set, the validation score at that epoch is optimistic.
+
+82
+00:07:17.600 --> 00:07:21.400
+Only the test set, looked at once, gives an honest number.
+
+83
+00:07:21.400 --> 00:07:29.325
+These two curves are the first thing I look at in anyone's project, and they usually tell me what is wrong before I have read any of the code.
+
+84
+00:07:29.925 --> 00:07:37.700
+Now the two penalties, which are worth understanding properly because the difference between them is useful rather than cosmetic.
+
+85
+00:07:37.700 --> 00:07:44.950
+Both work by adding a term to the loss, so that the optimiser is pushed to keep the weights small as well as to fit the data.
+
+86
+00:07:44.950 --> 00:07:50.750
+L2, which PyTorch calls weight decay, adds lambda times the sum of the squared weights.
+
+87
+00:07:50.750 --> 00:07:54.825
+L1 adds lambda times the sum of the absolute values.
+
+88
+00:07:54.825 --> 00:07:58.325
+Lambda is a knob you choose on the validation set.
+
+89
+00:07:58.325 --> 00:08:01.425
+Now, the question that reveals the difference.
+
+90
+00:08:01.425 --> 00:08:05.750
+Which penalty still pulls hard on a weight that is already very small?
+
+91
+00:08:05.750 --> 00:08:07.950
+Work out the derivative.
+
+92
+00:08:07.950 --> 00:08:12.425
+For L2, the pull on a weight is two lambda times the weight itself.
+
+93
+00:08:12.425 --> 00:08:19.000
+So as the weight shrinks, the pull shrinks with it, and it approaches zero asymptotically but never arrives.
+
+94
+00:08:19.000 --> 00:08:26.100
+That is also why it is called weight decay: every step multiplies the weights by a factor slightly less than one.
+
+95
+00:08:26.100 --> 00:08:31.450
+For L1, the pull is lambda, a constant, regardless of how small the weight is.
+
+96
+00:08:31.450 --> 00:08:37.400
+So the pull does not fade, and it pushes weights all the way to exactly zero, where they stop.
+
+97
+00:08:37.400 --> 00:08:41.500
+That is the whole difference, and it has a practical consequence.
+
+98
+00:08:41.500 --> 00:08:44.850
+L2 shrinks everything and keeps everything.
+
+99
+00:08:44.850 --> 00:08:52.550
+L1 produces a sparse model: many weights become exactly zero, and the features attached to them have been discarded.
+
+100
+00:08:52.550 --> 00:08:59.400
+If you have met these in statistics under other names: L2 is ridge regression, L1 is the lasso.
+
+101
+00:09:00.000 --> 00:09:04.525
+And here is why you might choose the sparse one, on the biopsy data.
+
+102
+00:09:04.525 --> 00:09:12.800
+With L2, the best lambda is three point nine eight, all thirty weights survive, and the test accuracy is nought point nine six five.
+
+103
+00:09:12.800 --> 00:09:21.125
+With L1, the best lambda is fifteen point eight, six of the thirty weights survive, and the test accuracy is nought point nine four two.
+
+104
+00:09:21.125 --> 00:09:28.150
+So L1 costs you about two percentage points and gives you a model that uses six measurements instead of thirty.
+
+105
+00:09:28.150 --> 00:09:32.200
+Whether that is a good trade is not a statistical question.
+
+106
+00:09:32.200 --> 00:09:38.200
+A model with six features can be printed on a card, checked by a pathologist, and argued about.
+
+107
+00:09:38.200 --> 00:09:45.175
+Those six features are a hypothesis about what distinguishes malignant nuclei, and someone can go and test it.
+
+108
+00:09:45.175 --> 00:09:50.775
+A model with thirty weighted features is a black box that happens to work slightly better.
+
+109
+00:09:50.775 --> 00:09:55.200
+And in some settings L1 is not a preference but a necessity.
+
+110
+00:09:55.200 --> 00:10:01.700
+Gene-expression data is the standard case: twenty thousand genes measured on a few hundred patients.
+
+111
+00:10:01.700 --> 00:10:08.800
+Without something forcing sparsity, you have far more features than examples and the model will fit noise beautifully.
+
+112
+00:10:08.800 --> 00:10:15.600
+L1 picks a handful of genes, which is both statistically necessary and biologically interpretable.
+
+113
+00:10:15.600 --> 00:10:21.125
+The third discussion problem asks you to check the effect of the two penalties by hand.
+
+114
+00:10:21.725 --> 00:10:25.450
+Dropout, which is the strangest-sounding of the remedies.
+
+115
+00:10:25.450 --> 00:10:34.250
+During training, each hidden unit is switched off at random with some probability, commonly a half, with a fresh random choice for every mini-batch.
+
+116
+00:10:34.250 --> 00:10:37.125
+At test time, every unit is on.
+
+117
+00:10:37.125 --> 00:10:44.550
+Before I explain, ask yourself the obvious question: why on earth would damaging the network during training make it better?
+
+118
+00:10:44.550 --> 00:10:46.750
+Here is the argument.
+
+119
+00:10:46.750 --> 00:10:50.950
+Without dropout, hidden units can form fragile coalitions.
+
+120
+00:10:50.950 --> 00:10:59.900
+Unit seventeen learns to do half a job, relying on unit forty-two to do the other half, and the combination fits some quirk of the training data.
+
+121
+00:10:59.900 --> 00:11:06.125
+That coalition is brittle: it is specific to the training set, and it will not hold on new data.
+
+122
+00:11:06.125 --> 00:11:13.750
+With dropout, unit seventeen cannot rely on unit forty-two, because on the next batch unit forty-two may be missing.
+
+123
+00:11:13.750 --> 00:11:24.450
+So each unit has to compute something that is useful on its own, and the information gets spread redundantly across many units instead of concentrated in fragile combinations.
+
+124
+00:11:24.450 --> 00:11:27.875
+On GB1 you can watch the trade directly.
+
+125
+00:11:27.875 --> 00:11:41.050
+With dropout at nought point two, the training mean absolute error gets worse, from nought point two one two to nought point two two zero, and the test error gets better, from nought point two five four to nought point two four seven.
+
+126
+00:11:41.050 --> 00:11:51.450
+That is the signature of a regularisation method working as intended: you deliberately make the model fit the training data less well, in exchange for fitting new data better.
+
+127
+00:11:51.450 --> 00:11:56.400
+If a technique improves your training score, it is not regularising anything.
+
+128
+00:11:57.000 --> 00:12:02.175
+One practical trap, which costs people an afternoon and which you can now avoid.
+
+129
+00:12:02.175 --> 00:12:06.250
+Dropout must be on during training and off at evaluation.
+
+130
+00:12:06.250 --> 00:12:14.825
+In PyTorch you control that with model dot train and model dot eval, and these also affect other layers such as batch normalisation.
+
+131
+00:12:14.825 --> 00:12:23.100
+If you forget model dot eval before evaluating, dropout stays on, which means units are being randomly switched off while you measure.
+
+132
+00:12:23.100 --> 00:12:31.275
+Your accuracy will be worse than it should be, and, more confusingly, it will be different every time you run it, because the random choice differs.
+
+133
+00:12:31.275 --> 00:12:37.500
+If you see an evaluation that changes between identical runs, this is the first thing to check.
+
+134
+00:12:37.500 --> 00:12:41.725
+One detail of how it works, so the behaviour is not mysterious.
+
+135
+00:12:41.725 --> 00:12:47.175
+During training, PyTorch scales the surviving units up by one over one minus p.
+
+136
+00:12:47.175 --> 00:12:55.900
+That keeps the total signal at roughly the same size whether half the units are off or none are, which is why nothing has to be adjusted at test time.
+
+137
+00:12:55.900 --> 00:12:59.925
+Every training loop in this course calls both train and eval.
+
+138
+00:12:59.925 --> 00:13:02.075
+Make it a habit now.
+
+139
+00:13:02.675 --> 00:13:09.225
+Let us put the three datasets side by side, because together they say something that none of them says alone.
+
+140
+00:13:09.225 --> 00:13:10.950
+Breast cancer.
+
+141
+00:13:10.950 --> 00:13:15.900
+The data is nearly additive, and there is plenty of it relative to the model.
+
+142
+00:13:15.900 --> 00:13:19.375
+A hidden layer ties with logistic regression.
+
+143
+00:13:19.375 --> 00:13:22.250
+The flexibility had nothing to do.
+
+144
+00:13:22.250 --> 00:13:23.975
+GB1.
+
+145
+00:13:23.975 --> 00:13:30.600
+The data is genuinely non-additive, because of epistasis, and there are twenty thousand training examples.
+
+146
+00:13:30.600 --> 00:13:36.250
+The network wins decisively, nought point seven nine against nought point five zero.
+
+147
+00:13:36.250 --> 00:13:38.200
+Localisation.
+
+148
+00:13:38.200 --> 00:13:46.500
+The signal is presumably non-additive too, but there are four hundred and eighty-six proteins and a hundred and ninety-two thousand weights.
+
+149
+00:13:46.500 --> 00:13:50.700
+The network memorises, and loses to logistic regression.
+
+150
+00:13:50.700 --> 00:13:59.900
+So the answer to should I use a neural network is: it depends on whether the structure of your problem needs one, and on whether you have the data to pay for it.
+
+151
+00:13:59.900 --> 00:14:01.800
+Both, not either.
+
+152
+00:14:01.800 --> 00:14:08.250
+One caveat about the examples-per-weight heuristic, because I do not want you to over-apply it.
+
+153
+00:14:08.250 --> 00:14:10.950
+It is a warning sign, not a rule.
+
+154
+00:14:10.950 --> 00:14:21.625
+Modern networks routinely have more parameters than training examples and generalise perfectly well, because of their architecture, their regularisation and the way they are trained.
+
+155
+00:14:21.625 --> 00:14:25.950
+The ratio is a reason to look carefully, not a proof of failure.
+
+156
+00:14:25.950 --> 00:14:34.975
+And Session eight's rules apply to every one of these comparisons: choose on validation, test once, and always compare against a simple baseline.
+
+157
+00:14:35.575 --> 00:14:39.375
+A last demonstration of that discipline, from your lab.
+
+158
+00:14:39.375 --> 00:14:41.650
+Four settings were tried.
+
+159
+00:14:41.650 --> 00:14:46.050
+The best one scored nought point eight two three on the validation set.
+
+160
+00:14:46.050 --> 00:14:51.700
+That setting, evaluated once on the test set, scored nought point seven seven six.
+
+161
+00:14:51.700 --> 00:14:54.350
+Five percentage points lower.
+
+162
+00:14:54.350 --> 00:15:02.400
+And that is not a failure or an error: it is the expected consequence of the fact that the choice itself was fitted to the validation set.
+
+163
+00:15:02.400 --> 00:15:07.925
+You selected the best of four noisy numbers, so the one you selected is optimistic.
+
+164
+00:15:07.925 --> 00:15:18.100
+If you report nought point eight two three as what your method achieves, you are overstating it, and you will have a confusing conversation when someone else cannot reproduce it.
+
+165
+00:15:18.100 --> 00:15:21.750
+The honest number is nought point seven seven six.
+
+166
+00:15:21.750 --> 00:15:31.725
+The more options you try, the bigger that gap becomes, which is a reason to be a bit sceptical of very large hyperparameter searches reported with validation numbers.
+
+167
+00:15:31.725 --> 00:15:38.700
+Session ten's lab trains a convolutional network on these same blood cells, so the comparison carries forward.
+
+168
+00:15:39.300 --> 00:15:47.950
+Before the last slide, a nice piece of bookkeeping: everything in the second half of this course, assembled in one method from nineteen ninety-three.
+
+169
+00:15:47.950 --> 00:15:52.725
+PHD, which you met in Session seven, predicts secondary structure.
+
+170
+00:15:52.725 --> 00:15:55.200
+Look at what it is made of.
+
+171
+00:15:55.200 --> 00:16:00.375
+Its input is a profile from a multiple sequence alignment: Session five.
+
+172
+00:16:00.375 --> 00:16:05.050
+Its architecture is a network with hidden layers: Session seven.
+
+173
+00:16:05.050 --> 00:16:10.350
+Its output is three classes with the appropriate loss and metrics: Session eight.
+
+174
+00:16:10.350 --> 00:16:13.850
+It is trained by backpropagation: this session.
+
+175
+00:16:13.850 --> 00:16:25.250
+And it was tested on sets purged of sequences similar to the training set: Session eight's homology partitioning, in nineteen ninety-three, which was ahead of its time and is still ahead of some papers.
+
+176
+00:16:25.250 --> 00:16:28.825
+Seventy point eight per cent three-state accuracy.
+
+177
+00:16:28.825 --> 00:16:34.525
+I show this because it is easy to experience a course as a list of disconnected techniques.
+
+178
+00:16:34.525 --> 00:16:42.225
+PHD is one method that needs every single one of them, and its authors got the methodology right as well as the method.
+
+179
+00:16:42.825 --> 00:16:50.450
+And a last slide about the world you are actually going into, because it would be misleading to end on a network with five hundred weights.
+
+180
+00:16:50.450 --> 00:16:56.775
+The training loop from Block one of this session is the same loop used for the largest models that exist.
+
+181
+00:16:56.775 --> 00:16:58.575
+Five lines.
+
+182
+00:16:58.575 --> 00:17:02.725
+What changed is scale, and the scale is difficult to convey.
+
+183
+00:17:02.725 --> 00:17:15.375
+Kaplan and colleagues showed in twenty twenty that a language model's loss falls as a power law with model size, data and compute: make everything bigger in the right proportion and the loss goes down predictably.
+
+184
+00:17:15.375 --> 00:17:18.375
+Protein models followed the same path.
+
+185
+00:17:18.375 --> 00:17:27.175
+ESM-2 went from eight million to fifteen billion parameters, and structural information emerged in its representations as it grew.
+
+186
+00:17:27.175 --> 00:17:35.775
+Evo 2 has forty billion parameters, trained on about nine trillion bases of DNA, on two thousand and forty-eight GPUs.
+
+187
+00:17:35.775 --> 00:17:48.050
+ESM3 has ninety-eight billion parameters and was trained with one point zero seven times ten to the twenty-four floating-point operations, on two point seven eight billion proteins.
+
+188
+00:17:48.050 --> 00:17:50.800
+Ten to the twenty-four operations.
+
+189
+00:17:50.800 --> 00:17:53.825
+Essentially nobody can repeat that.
+
+190
+00:17:53.825 --> 00:18:03.275
+So what almost everybody actually does, including most academic groups, is start from a pretrained model and fine-tune it on their own small dataset.
+
+191
+00:18:03.275 --> 00:18:09.350
+Often with a method called LoRA, which trains small low-rank updates instead of all the weights.
+
+192
+00:18:09.350 --> 00:18:13.050
+And here is why this session still matters in that world.
+
+193
+00:18:13.050 --> 00:18:24.575
+Fine-tuning on a small biological dataset is exactly the situation where today's tools are needed: a validation set, early stopping, weight decay, dropout, and the discipline of a baseline.
+
+194
+00:18:24.575 --> 00:18:31.475
+The overfitting problem is worse, not better, when you adapt a billion-parameter model to four hundred examples.
+
+195
+00:18:31.475 --> 00:18:36.800
+Then the question on the slide, which is a real one and which I would like you to think about.
+
+196
+00:18:36.800 --> 00:18:41.725
+Only a handful of companies and large laboratories can train these models.
+
+197
+00:18:41.725 --> 00:18:48.475
+Some release their weights openly, such as ESM-2 and Evo 2, which lets everyone else build on them.
+
+198
+00:18:48.475 --> 00:18:50.300
+Others do not.
+
+199
+00:18:50.300 --> 00:18:55.825
+So: who can afford the next model, and what does that mean for open science in our field?
+
+200
+00:18:55.825 --> 00:18:58.650
+I do not have a comfortable answer.
+
+201
+00:18:59.250 --> 00:19:01.375
+That is Session nine.
+
+202
+00:19:01.375 --> 00:19:09.050
+You can now train a network, recognise the three common ways training fails, and tell whether an apparent improvement is real.
+
+203
+00:19:09.050 --> 00:19:13.275
+Session ten changes the architecture rather than the training.
+
+204
+00:19:13.275 --> 00:19:29.175
+Convolutional networks assume that nearby inputs belong together and reuse one small detector everywhere, and that single assumption lets them do this session's localisation task with nineteen thousand weights instead of a hundred and ninety-two thousand, and beat it.
+
+205
+00:19:29.175 --> 00:19:36.425
+It is also the session where you get to open a network up and find a piece of biology inside it that nobody put there.
+
+206
+00:19:36.425 --> 00:19:45.200
+The Session nine page has all of this written out, and its "Check your understanding" section at the end is the fastest way to find out whether it stuck.
+
+207
+00:19:45.200 --> 00:19:49.250
+The course notebook is linked in the box under the page's title.
+
+208
+00:19:49.250 --> 00:19:50.875
+See you there.
+

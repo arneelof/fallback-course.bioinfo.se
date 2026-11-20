@@ -1,0 +1,2 @@
+lab,ta,date,runtime,minutes_per_part,minutes_total,failed_or_slow_cells,services_slow_or_down,numbers,second_run_numbers,unclear,other_comments
+example,Your Name,2026-11-05,Colab CPU,"A=40; B=35; C=50",125,"B2: the training cell took 6 min",EBI search timed out once,"Q3=12.3; Q5=0.45","Q3=12.9; Q5=0.47","Q7: does 'validation' mean the validation or the test set?",delete this example row

@@ -1,0 +1,384 @@
+1
+00:00:00,000 --> 00:00:02,100
+Let us build one up.
+
+2
+00:00:02,100 --> 00:00:09,275
+Start with two special states that emit nothing and exist only for the transitions: Begin and End, the blue spheres.
+
+3
+00:00:09,275 --> 00:00:14,675
+Begin leads into the first state of the profile; everything eventually leads to End.
+
+4
+00:00:14,675 --> 00:00:16,775
+Then the match states.
+
+5
+00:00:16,775 --> 00:00:22,375
+N is not the number of residues in a sequence, and it is not the length of the alignment.
+
+6
+00:00:22,375 --> 00:00:28,650
+It is the number of columns in the alignment where most of the sequences have a residue rather than a gap.
+
+7
+00:00:28,650 --> 00:00:34,725
+Match-to-match transitions run in one direction only, from each state to the next — like time.
+
+8
+00:00:34,725 --> 00:00:37,875
+From Begin, through the match states, to End.
+
+9
+00:00:37,875 --> 00:00:44,825
+A model with only match states cannot handle gaps, so we add delete states, one for every match state.
+
+10
+00:00:44,825 --> 00:00:53,650
+That gives three kinds of transition: delete to delete, for a run of gaps; match to delete, where a gap begins; and delete to match, where it ends.
+
+11
+00:00:53,650 --> 00:00:57,025
+For extra residues we add insert states.
+
+12
+00:00:57,025 --> 00:01:02,675
+Since an insertion can occur at either end, there are N plus one of them, numbered from zero.
+
+13
+00:01:02,675 --> 00:01:12,975
+Again three kinds of transition: match to insert where an insertion begins, insert to match where it ends, and insert to itself for consecutive inserted residues.
+
+14
+00:01:12,975 --> 00:01:18,050
+For completeness there are also transitions between insert and delete states.
+
+15
+00:01:18,050 --> 00:01:20,625
+They are rare, but they are possible.
+
+16
+00:01:20,625 --> 00:01:26,550
+And finally the emissions: from each match state, the residues actually observed in that column.
+
+17
+00:01:27,150 --> 00:01:30,300
+And the emissions from the insert states too.
+
+18
+00:01:30,900 --> 00:01:38,575
+A hidden Markov model adds something a scoring matrix does not have: the probability of moving from one state to the next.
+
+19
+00:01:38,575 --> 00:01:45,875
+From a match state, the model can go to the next match state — the ordinary case of one aligned residue following another.
+
+20
+00:01:46,475 --> 00:01:52,600
+From a delete state, the model can carry on deleting, or rejoin the alignment at the next match.
+
+21
+00:01:52,600 --> 00:01:58,575
+A run of deletions is how the model represents a gap in the query relative to the family.
+
+22
+00:01:59,175 --> 00:02:06,825
+From an insert state, the model can insert again — which is why the insert state loops back on itself — or return to matching.
+
+23
+00:02:06,825 --> 00:02:10,775
+A loop is how the model allows an insertion of any length.
+
+24
+00:02:11,375 --> 00:02:19,575
+Each match state also emits a residue, with a probability for each of the twenty amino acids, or four bases for DNA.
+
+25
+00:02:19,575 --> 00:02:26,350
+Those emission probabilities are the profile part of the model: they are the column frequencies in another notation.
+
+26
+00:02:26,950 --> 00:02:35,700
+Insert states emit too, usually with the background frequencies, because an inserted residue is not expected to follow the family's pattern.
+
+27
+00:02:36,300 --> 00:02:42,475
+Now the model is built from an alignment, and the first decision is which columns count as match states.
+
+28
+00:02:43,075 --> 00:02:49,225
+The rule of thumb is occupancy: a column where most sequences have a residue is a match state.
+
+29
+00:02:49,825 --> 00:02:53,500
+A column that is mostly gaps is not a match state.
+
+30
+00:02:53,500 --> 00:02:57,400
+Whatever residues it holds are treated as insertions.
+
+31
+00:02:58,000 --> 00:03:02,725
+Going along the alignment, each column is labelled one way or the other.
+
+32
+00:03:03,325 --> 00:03:10,275
+That labelling fixes the length of the model: the number of match states is the number of columns that survived the test.
+
+33
+00:03:10,875 --> 00:03:14,250
+Every residue in the alignment now has a role.
+
+34
+00:03:14,250 --> 00:03:18,075
+In a match column it is an emission from that match state.
+
+35
+00:03:18,675 --> 00:03:25,050
+In an insert column it is an emission from the insert state that sits between the neighbouring match states.
+
+36
+00:03:25,650 --> 00:03:30,375
+And a gap in a match column is a visit to that position's delete state.
+
+37
+00:03:30,975 --> 00:03:35,675
+Sequence by sequence, the alignment is read as a path through the model.
+
+38
+00:03:36,275 --> 00:03:42,675
+Each path is a series of states — match, insert, delete — from the beginning state to the end state.
+
+39
+00:03:43,275 --> 00:03:48,225
+Different sequences take different paths, and the paths are what get counted.
+
+40
+00:03:48,825 --> 00:03:52,850
+A short sequence with gaps takes a path through delete states.
+
+41
+00:03:53,450 --> 00:03:58,600
+A sequence with extra residues takes a path that loops through an insert state.
+
+42
+00:03:59,200 --> 00:04:07,125
+Once every sequence has a path, the model is trained simply by counting how often each transition and each emission was used.
+
+43
+00:04:07,725 --> 00:04:11,550
+Here is the alignment again, with the paths it implies.
+
+44
+00:04:12,150 --> 00:04:15,075
+Counting begins at the first position.
+
+45
+00:04:15,675 --> 00:04:19,050
+Every transition out of a state is counted.
+
+46
+00:04:19,650 --> 00:04:22,675
+So is every residue emitted from it.
+
+47
+00:04:23,275 --> 00:04:26,775
+The counts accumulate as the alignment is read.
+
+48
+00:04:27,375 --> 00:04:32,650
+And when the reading is done, each state has a tally of what left it and what it emitted.
+
+49
+00:04:33,250 --> 00:04:36,625
+Dividing by the total gives a probability.
+
+50
+00:04:36,625 --> 00:04:41,800
+Four sequences out of five taking the same transition gives nought point eight.
+
+51
+00:04:42,400 --> 00:04:46,425
+The remaining fifth gives nought point two to the alternative.
+
+52
+00:04:47,025 --> 00:04:54,300
+Every state's outgoing transitions sum to one, which is what makes this a probability model rather than a score table.
+
+53
+00:04:54,900 --> 00:05:02,000
+And a transition nobody took gets zero — the same problem that minus infinity caused in the scoring matrix.
+
+54
+00:05:02,600 --> 00:05:06,300
+A zero probability says the path is impossible.
+
+55
+00:05:06,300 --> 00:05:12,225
+For a model trained on five sequences, that is a much stronger claim than the data supports.
+
+56
+00:05:12,825 --> 00:05:19,000
+So the counts are smoothed, exactly as before, by adding a small amount to each before dividing.
+
+57
+00:05:19,600 --> 00:05:22,300
+The same is done for the emissions.
+
+58
+00:05:22,900 --> 00:05:28,250
+A residue never seen at a position becomes unlikely rather than impossible.
+
+59
+00:05:28,850 --> 00:05:34,800
+How much to add is a judgement, and the usual answer scales it with how little data there is.
+
+60
+00:05:35,400 --> 00:05:41,250
+With few sequences, the pseudocounts dominate and the model stays close to the background.
+
+61
+00:05:41,850 --> 00:05:46,675
+With many sequences, the counts dominate and the model follows the family.
+
+62
+00:05:47,275 --> 00:05:56,150
+Notice this one: no sequence has a deletion after that insertion, so the probability of going from insert six to delete six is zero.
+
+63
+00:05:56,750 --> 00:06:04,400
+Same point on this transition: no sequence has a deletion after that insertion, so that probability is zero too.
+
+64
+00:06:06,600 --> 00:06:10,850
+The smoothed probabilities replace the raw ones throughout the model.
+
+65
+00:06:11,450 --> 00:06:13,625
+Transitions first.
+
+66
+00:06:14,225 --> 00:06:16,850
+Then emissions, state by state.
+
+67
+00:06:17,450 --> 00:06:24,050
+And the model is complete: a length, a set of states, and a probability on every arrow and every letter.
+
+68
+00:06:24,650 --> 00:06:29,300
+Compare the two sets of numbers and the effect of smoothing is visible.
+
+69
+00:06:29,900 --> 00:06:34,850
+Where a raw probability was nought point eight, the smoothed one is a little lower.
+
+70
+00:06:35,450 --> 00:06:38,950
+Where it was zero, it is now small but not zero.
+
+71
+00:06:39,550 --> 00:06:42,025
+Nothing has been invented.
+
+72
+00:06:42,025 --> 00:06:46,725
+The ordering is unchanged; only the certainty has been reduced.
+
+73
+00:06:47,325 --> 00:06:56,750
+This is the trained model drawn out: match states along the top, insert states above them, delete states below, and the beginning and end states at either side.
+
+74
+00:06:57,350 --> 00:07:04,175
+Every arrow carries a probability, and every match and insert state carries a distribution over residues.
+
+75
+00:07:04,175 --> 00:07:06,350
+That is the whole model.
+
+76
+00:07:06,950 --> 00:07:11,300
+With a model in hand, there are two things to do with a new sequence.
+
+77
+00:07:11,300 --> 00:07:13,675
+The first is to score it.
+
+78
+00:07:14,275 --> 00:07:26,900
+Scoring an aligned sequence means following its path through the model and multiplying the probabilities along the way — or, in practice, adding their logarithms, because the products become very small very quickly.
+
+79
+00:07:27,500 --> 00:07:31,700
+Each matched residue contributes its emission probability.
+
+80
+00:07:32,300 --> 00:07:36,125
+Each step contributes its transition probability.
+
+81
+00:07:36,725 --> 00:07:41,125
+A gap contributes the cost of entering and staying in delete states.
+
+82
+00:07:41,725 --> 00:07:45,000
+An insertion contributes the cost of the loop.
+
+83
+00:07:45,600 --> 00:07:53,600
+Add them all and the result is a score for this sequence against this family, usually compared against the score under a background model.
+
+84
+00:07:54,200 --> 00:08:03,000
+The second thing is harder and more useful: given a sequence and no alignment at all, find the path through the model that the sequence most likely took.
+
+85
+00:08:03,600 --> 00:08:13,050
+That is what the Viterbi algorithm does, and it is dynamic programming again — the same principle as Needleman-Wunsch, with states instead of matrix cells.
+
+86
+00:08:13,650 --> 00:08:16,825
+The table is filled one position at a time.
+
+87
+00:08:17,425 --> 00:08:21,825
+Each cell holds the best score for reaching that state at that position.
+
+88
+00:08:22,425 --> 00:08:29,325
+Reaching a state means coming from one of the states that can precede it, and the algorithm keeps only the best of those.
+
+89
+00:08:29,925 --> 00:08:34,800
+It also records which one it was, so the path can be recovered afterwards.
+
+90
+00:08:35,400 --> 00:08:38,600
+Filling continues to the end of the sequence.
+
+91
+00:08:39,200 --> 00:08:43,150
+The best score at the end state is the score of the best path.
+
+92
+00:08:43,750 --> 00:08:53,525
+And tracing the recorded choices backwards gives the alignment: which residues matched which positions, where the insertions went and which positions were deleted.
+
+93
+00:08:54,125 --> 00:08:57,775
+To close, the three methods in one sentence each.
+
+94
+00:08:57,775 --> 00:09:03,425
+A word search finds a local match quickly, and treats every position of the query alike.
+
+95
+00:09:03,425 --> 00:09:10,675
+A profile search learns from a family what each position tolerates, and finds relatives a single sequence would miss.
+
+96
+00:09:10,675 --> 00:09:19,525
+And a hidden Markov model adds the probability of the gaps themselves, which is what makes it the most sensitive of the three — and the slowest to build.
+

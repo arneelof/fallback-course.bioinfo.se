@@ -1,0 +1,526 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.775
+Second block.
+
+2
+00:00:01.775 --> 00:00:10.650
+The algorithm finds the best alignment for a scoring scheme — so now let us look hard at the scoring scheme, which is where the biology actually lives.
+
+3
+00:00:11.250 --> 00:00:16.850
+Until now the gap penalty has been one flat number, g, charged per gap position.
+
+4
+00:00:16.850 --> 00:00:19.700
+That choice matters far more than it looks.
+
+5
+00:00:19.700 --> 00:00:24.800
+A linear penalty means n consecutive gaps cost n times g-open.
+
+6
+00:00:24.800 --> 00:00:35.000
+Do the arithmetic and notice what it implies: the total is identical whether those gap positions are bunched into one block or scattered one at a time across the alignment.
+
+7
+00:00:35.000 --> 00:00:39.350
+Five single gaps cost exactly what one gap of five costs.
+
+8
+00:00:39.350 --> 00:00:42.250
+The scheme has no opinion about it.
+
+9
+00:00:42.250 --> 00:00:44.825
+Biology does have an opinion.
+
+10
+00:00:44.825 --> 00:00:52.025
+Insertions and deletions are mutational events, and one event usually affects a contiguous stretch of residues.
+
+11
+00:00:52.025 --> 00:00:56.550
+A single insertion of five residues is one thing that happened.
+
+12
+00:00:56.550 --> 00:01:03.750
+Five separate single-residue insertions are five things that happened, and five events are far less likely than one.
+
+13
+00:01:03.750 --> 00:01:09.400
+A scoring scheme indifferent between those will cheerfully produce the implausible version.
+
+14
+00:01:09.400 --> 00:01:17.150
+It sprinkles single gaps wherever they buy a point or two, and in doing so it breaks up blocks that evolution conserved as units.
+
+15
+00:01:17.150 --> 00:01:20.575
+The top pair on this slide shows exactly that.
+
+16
+00:01:20.575 --> 00:01:27.050
+Scattered gaps, and the shared Q-Q-W motif has been chopped apart to squeeze out a slightly better score.
+
+17
+00:01:27.050 --> 00:01:30.525
+Every individual choice was locally rational.
+
+18
+00:01:30.525 --> 00:01:33.725
+The result is not a believable history.
+
+19
+00:01:34.325 --> 00:01:40.950
+The fix is an affine gap penalty, and it works by charging for the event rather than for the positions.
+
+20
+00:01:40.950 --> 00:01:44.500
+Opening a new gap costs a large amount, g-open.
+
+21
+00:01:44.500 --> 00:01:49.075
+Extending a gap that is already open costs much less, g-extend.
+
+22
+00:01:49.075 --> 00:01:54.300
+So a gap of length n costs g-open plus n minus one times g-extend.
+
+23
+00:01:54.300 --> 00:02:02.650
+The first position is expensive because it represents an event; each further position is cheap because it is the same event continuing.
+
+24
+00:02:02.650 --> 00:02:11.250
+With gap open minus ten and extend minus zero point five, a ten-residue gap as one block costs minus fourteen point five.
+
+25
+00:02:11.250 --> 00:02:19.375
+Compare that with charging minus ten at every position, which is the linear scheme with the same opening cost: minus one hundred.
+
+26
+00:02:19.375 --> 00:02:28.025
+The affine scheme has made the single long gap roughly seven times cheaper than the scattered equivalent, which is precisely the preference we wanted.
+
+27
+00:02:28.025 --> 00:02:33.400
+The bottom pair on the slide is the same two sequences under affine penalties.
+
+28
+00:02:33.400 --> 00:02:39.975
+The gaps have consolidated into contiguous stretches and the Q-Q-W motif has stayed intact.
+
+29
+00:02:39.975 --> 00:02:47.100
+Same sequences, same algorithm, different gap model — and now the alignment proposes a history you can believe.
+
+30
+00:02:47.100 --> 00:02:50.875
+Affine penalties are what every real tool uses.
+
+31
+00:02:50.875 --> 00:02:53.625
+The defaults are usually sensible.
+
+32
+00:02:53.625 --> 00:02:59.225
+But they are parameters, and you will see in the lab how much the answer moves when you change them.
+
+33
+00:02:59.825 --> 00:03:06.600
+The other half of the score is the substitution score — what we get for aligning residue a against residue b.
+
+34
+00:03:06.600 --> 00:03:11.700
+Treating all mismatches alike throws away most of what we know about proteins.
+
+35
+00:03:11.700 --> 00:03:17.875
+Real substitution scores are log-odds scores, the same construction as Session one's log-odds.
+
+36
+00:03:17.875 --> 00:03:29.475
+Roughly: take how often a and b are seen aligned in genuinely related proteins, divide by how often they would be paired by chance given how common each residue is, and take the logarithm.
+
+37
+00:03:29.475 --> 00:03:32.075
+The ratio is the whole point.
+
+38
+00:03:32.075 --> 00:03:40.200
+A positive score means the pair turns up among relatives more often than chance predicts — so seeing it is evidence for relatedness.
+
+39
+00:03:40.200 --> 00:03:45.225
+A negative score means it turns up less often than chance — evidence against.
+
+40
+00:03:45.225 --> 00:03:55.200
+Conservative swaps like lysine for arginine, or isoleucine for valine, come out positive, because they happen in real families without breaking the protein.
+
+41
+00:03:55.200 --> 00:03:59.275
+And the denominator explains something that surprises people.
+
+42
+00:03:59.275 --> 00:04:06.775
+Tryptophan against tryptophan scores plus seventeen in BLOSUM sixty-two, far higher than most identities.
+
+43
+00:04:06.775 --> 00:04:10.125
+That is not because tryptophan is important.
+
+44
+00:04:10.125 --> 00:04:19.075
+It is because tryptophan is rare, so two sequences both having one in the same column is unlikely by chance and therefore highly informative.
+
+45
+00:04:19.075 --> 00:04:21.700
+Rarity carries information.
+
+46
+00:04:21.700 --> 00:04:27.800
+Session five builds profiles on exactly this idea, applied one alignment column at a time.
+
+47
+00:04:28.400 --> 00:04:31.650
+Here is BLOSUM sixty-two in full.
+
+48
+00:04:31.650 --> 00:04:37.050
+Rather than reading off numbers, look at the structure, because the structure is chemistry.
+
+49
+00:04:37.050 --> 00:04:43.000
+The diagonal is identities, and it is the highest-scoring part of the matrix — unsurprising.
+
+50
+00:04:43.000 --> 00:04:47.075
+What is more interesting is that the diagonal is not flat.
+
+51
+00:04:47.075 --> 00:04:52.525
+Rare residues score higher on it than common ones, for the reason we just discussed.
+
+52
+00:04:52.525 --> 00:04:56.375
+Off the diagonal, positive scores cluster into blocks.
+
+53
+00:04:56.375 --> 00:05:04.750
+There is a hydrophobic block — alanine, valine, isoleucine, leucine, methionine — where the members substitute for one another readily.
+
+54
+00:05:04.750 --> 00:05:09.475
+There is an aromatic block of phenylalanine, tryptophan and tyrosine.
+
+55
+00:05:09.475 --> 00:05:14.200
+Lysine with arginine, the two long basic residues, is positive.
+
+56
+00:05:14.200 --> 00:05:18.475
+Aspartate with glutamate, the two acidic ones, is positive.
+
+57
+00:05:18.475 --> 00:05:20.950
+Nobody put the chemistry in.
+
+58
+00:05:20.950 --> 00:05:26.800
+These matrices were built by counting substitutions in real alignments of real proteins.
+
+59
+00:05:26.800 --> 00:05:35.050
+The blocks emerged because evolution tolerates swaps that preserve a residue's chemical role and does not tolerate swaps that destroy it.
+
+60
+00:05:35.050 --> 00:05:39.800
+The matrix is a record of what proteins have actually been able to survive.
+
+61
+00:05:40.400 --> 00:05:47.375
+Two families of substitution matrix dominate, and they differ in the data they come from and in the model behind them.
+
+62
+00:05:47.375 --> 00:05:59.500
+PAM — Point Accepted Mutations, from Dayhoff, Schwartz and Orcutt in nineteen seventy-eight — is built from global alignments of closely related proteins, with an explicit evolutionary model.
+
+63
+00:05:59.500 --> 00:06:08.725
+The sequences are arranged into phylogenetic trees, ancestral sequences are inferred, and substitutions are counted along the tree's branches.
+
+64
+00:06:08.725 --> 00:06:11.250
+Three quantities do the work.
+
+65
+00:06:11.250 --> 00:06:15.100
+A residue's frequency is how often it occurs at all.
+
+66
+00:06:15.100 --> 00:06:26.800
+Its mutability is how often it was seen to change, divided by how often it could have changed — and the first surprise in Dayhoff's paper is that frequency and mutability do not track each other.
+
+67
+00:06:26.800 --> 00:06:43.200
+Dividing an observed rate by what chance alone would give is an odds ratio; its logarithm turns "rarer than chance" into a negative number and "commoner than chance" into a positive one, which is why every substitution matrix holds log-odds rather than probabilities.
+
+68
+00:06:43.200 --> 00:06:54.850
+Matrices for greater distances are then extrapolated by matrix multiplication: PAM two is PAM one applied twice, PAM two-fifty is PAM one applied two hundred and fifty times.
+
+69
+00:06:54.850 --> 00:07:03.825
+BLOSUM — BLOcks SUbstitution Matrix, Henikoff and Henikoff, nineteen ninety-two — takes the opposite approach on every count.
+
+70
+00:07:03.825 --> 00:07:07.625
+Local, ungapped alignments instead of global ones.
+
+71
+00:07:07.625 --> 00:07:11.475
+Distantly related proteins instead of close ones.
+
+72
+00:07:11.475 --> 00:07:21.800
+Substitution frequencies counted directly from conserved blocks of real multiple alignments, with no tree, no inferred ancestors, and no extrapolation.
+
+73
+00:07:21.800 --> 00:07:27.150
+Each BLOSUM matrix is derived independently from its own data.
+
+74
+00:07:27.150 --> 00:07:30.450
+That independence is the practical difference.
+
+75
+00:07:30.450 --> 00:07:40.825
+A PAM matrix for distant relatives is an extrapolation from close ones, and it inherits whatever the model got wrong, amplified two hundred and fifty times over.
+
+76
+00:07:40.825 --> 00:07:46.525
+A BLOSUM matrix for distant relatives was counted from distant relatives.
+
+77
+00:07:47.125 --> 00:07:55.975
+One thing to memorise, because it is the most reliable way to get a search quietly wrong: the two numbering schemes run in opposite directions.
+
+78
+00:07:55.975 --> 00:07:59.650
+A higher PAM number means a more distant comparison.
+
+79
+00:07:59.650 --> 00:08:05.175
+PAM two-fifty is for divergent sequences, PAM one hundred for closer ones.
+
+80
+00:08:05.175 --> 00:08:13.800
+It follows directly from the construction — the number counts how many times the one-step matrix was applied, so more evolutionary time.
+
+81
+00:08:13.800 --> 00:08:17.775
+A higher BLOSUM number means a closer comparison.
+
+82
+00:08:17.775 --> 00:08:24.525
+BLOSUM eighty is for similar sequences, BLOSUM forty-five for divergent ones.
+
+83
+00:08:24.525 --> 00:08:31.000
+That number is the identity threshold at which sequences were clustered when the matrix was built.
+
+84
+00:08:31.000 --> 00:08:39.525
+So PAM two-fifty and BLOSUM forty-five do a similar job, and PAM one hundred and BLOSUM eighty do a similar job.
+
+85
+00:08:39.525 --> 00:08:42.700
+High PAM goes with low BLOSUM.
+
+86
+00:08:42.700 --> 00:08:51.375
+The scales are not aligned with each other and there is no reason they should be, since they were built by different people from different data for different purposes.
+
+87
+00:08:51.375 --> 00:08:58.575
+Why it matters: picking a matrix built for close relatives when you are hunting distant ones does not produce an error.
+
+88
+00:08:58.575 --> 00:09:05.975
+It produces a search that finds nothing, and silence looks the same whether there is nothing there or you asked the wrong question.
+
+89
+00:09:05.975 --> 00:09:18.525
+BLOSUM sixty-two is BLAST's default in Session five, and it is a reasonable middle-of-the-road choice — which is why it is the default, and why it is also the wrong choice for the hardest cases.
+
+90
+00:09:19.125 --> 00:09:27.300
+Here is global against local on two real fragments — one from beta-globin, one from myoglobin — scored with PAM two-fifty.
+
+91
+00:09:27.300 --> 00:09:32.275
+These two proteins are genuinely related but have diverged a long way.
+
+92
+00:09:32.275 --> 00:09:39.725
+The global alignment has to use all of S-A-V-T-A-L-W-G-K-V-N and all of Q-L-V-L-N-V-W-G-K-V-E.
+
+93
+00:09:39.725 --> 00:09:42.325
+Every residue must appear.
+
+94
+00:09:42.325 --> 00:09:44.575
+It scores thirty-three.
+
+95
+00:09:44.575 --> 00:09:52.175
+The local alignment is free to drop the beginnings, which do not correspond well, and keep the shared W-G-K-V region.
+
+96
+00:09:52.175 --> 00:09:54.350
+It scores forty-three.
+
+97
+00:09:54.350 --> 00:09:58.725
+Now, the question worth sitting with: why is the local score higher?
+
+98
+00:09:58.725 --> 00:10:04.775
+Both algorithms are finding an optimum, and the local alignment is a subset of the global one.
+
+99
+00:10:04.775 --> 00:10:07.300
+How can taking less give more?
+
+100
+00:10:07.300 --> 00:10:10.600
+Because the first few aligned pairs cost points.
+
+101
+00:10:10.600 --> 00:10:19.975
+S against Q, A against L — these are poorly scoring pairs under PAM two-fifty, and the global alignment has no choice but to include them and pay.
+
+102
+00:10:19.975 --> 00:10:28.025
+The local alignment simply declines, starts where the correspondence actually begins, and keeps only the part carrying signal.
+
+103
+00:10:28.025 --> 00:10:30.800
+Look also at the two matrices.
+
+104
+00:10:30.800 --> 00:10:35.950
+The local one has no negative numbers in it at all — that is the flooring at zero.
+
+105
+00:10:35.950 --> 00:10:41.900
+Its path starts at the highest cell and stops at a zero, rather than running corner to corner.
+
+106
+00:10:41.900 --> 00:10:50.975
+The same two sequences, the same matrix, the same gap penalties: two different questions, two different answers, and the local one found the biology.
+
+107
+00:10:51.575 --> 00:10:54.875
+We now have a score for any pair of sequences.
+
+108
+00:10:54.875 --> 00:11:00.425
+The uncomfortable question is what a score means, and the answer is: on its own, nothing.
+
+109
+00:11:00.425 --> 00:11:03.275
+There is no universal threshold.
+
+110
+00:11:03.275 --> 00:11:10.975
+A raw score depends on how long the sequences are, which substitution matrix was used, and what the gap penalties were.
+
+111
+00:11:10.975 --> 00:11:18.125
+A score of forty is impressive for a short alignment under one matrix and unremarkable for a long one under another.
+
+112
+00:11:18.125 --> 00:11:21.450
+You cannot carry a number between contexts.
+
+113
+00:11:21.450 --> 00:11:24.525
+The intuitive fix is calibration.
+
+114
+00:11:24.525 --> 00:11:32.850
+Take your two sequences, shuffle one of them — same length, same amino acid composition, no relationship — and align it the same way.
+
+115
+00:11:32.850 --> 00:11:39.750
+Do that many times and you get a distribution of scores achievable by chance alone with sequences of this shape.
+
+116
+00:11:39.750 --> 00:11:42.700
+Now ask where your real score sits.
+
+117
+00:11:42.700 --> 00:11:47.500
+Far above almost all of them, and chance is an unlikely explanation.
+
+118
+00:11:47.500 --> 00:11:50.225
+Buried in the middle, and you have nothing.
+
+119
+00:11:50.225 --> 00:11:55.475
+For local alignments this can be made precise, and there is a subtlety that matters.
+
+120
+00:11:55.475 --> 00:12:00.700
+The best scores of unrelated sequences do not follow a normal distribution.
+
+121
+00:12:00.700 --> 00:12:15.575
+They follow an extreme-value distribution, with a long right tail — and that makes sense, because a local alignment score is the maximum over many possible sub-alignments, and maxima of random quantities have their own characteristic distribution.
+
+122
+00:12:15.575 --> 00:12:23.525
+Treat them as normal and you will underestimate how often chance produces a high score, which means believing hits you should not.
+
+123
+00:12:23.525 --> 00:12:26.150
+Database tools build on this.
+
+124
+00:12:26.150 --> 00:12:35.225
+An E-value is the number of hits this good you would expect by chance in a database of this size — which turns a score into something you can actually interpret.
+
+125
+00:12:35.225 --> 00:12:38.325
+Session five does E-values properly.
+
+126
+00:12:38.325 --> 00:12:41.225
+One more useful rule, about length.
+
+127
+00:12:41.225 --> 00:12:50.950
+Each aligned residue pair carries a certain amount of information in bits, set by the substitution matrix; this is the matrix's relative entropy.
+
+128
+00:12:50.950 --> 00:12:56.825
+Multiply by the number of aligned residues and you get the information in the whole alignment.
+
+129
+00:12:56.825 --> 00:13:02.175
+Roughly thirty bits is the threshold for an alignment to be convincing by itself.
+
+130
+00:13:02.175 --> 00:13:13.800
+The practical consequence is sharp: a matrix built for distant relatives carries less information per residue, so finding a distant homologue needs a longer alignment, not merely a higher score.
+
+131
+00:13:13.800 --> 00:13:17.450
+There is a limit to what a short sequence can ever prove.
+

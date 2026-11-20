@@ -1,0 +1,646 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.400
+Block two.
+
+2
+00:00:01.400 --> 00:00:06.550
+Plot first, test second; getting data from somewhere; and then live coding.
+
+3
+00:00:06.550 --> 00:00:13.875
+On the page, this block is the sections "Seeing the data", "Asking quantitative questions" and "Data coming from somewhere".
+
+4
+00:00:13.875 --> 00:00:23.450
+The first half of this block is about statistics you can get wrong without any error at all, and about the libraries that already contain the method you were about to write.
+
+5
+00:00:23.450 --> 00:00:27.700
+Then I will write some code in front of you and get it wrong three times.
+
+6
+00:00:28.300 --> 00:00:32.750
+This is my favourite slide in the session, because the answer flips.
+
+7
+00:00:32.750 --> 00:00:37.900
+The question: in this dataset, is fold change related to expression level?
+
+8
+00:00:37.900 --> 00:00:42.900
+Do highly expressed genes change more, or less, than lowly expressed ones?
+
+9
+00:00:42.900 --> 00:00:46.350
+Compute Pearson's correlation on the raw numbers.
+
+10
+00:00:46.350 --> 00:00:51.350
+r equals minus nought point zero one, p equals nought point four three.
+
+11
+00:00:51.350 --> 00:00:53.925
+No relationship whatsoever.
+
+12
+00:00:53.925 --> 00:00:57.700
+Now plot it, with expression on a logarithmic axis.
+
+13
+00:00:57.700 --> 00:01:02.975
+And there is an obvious relationship: the lowly expressed genes change much more.
+
+14
+00:01:02.975 --> 00:01:04.950
+So which is right?
+
+15
+00:01:04.950 --> 00:01:06.200
+The plot.
+
+16
+00:01:06.200 --> 00:01:08.800
+Let us see why the number lied.
+
+17
+00:01:08.800 --> 00:01:15.675
+Pearson's correlation measures a linear relationship, and expression levels span several orders of magnitude.
+
+18
+00:01:15.675 --> 00:01:22.450
+Albumin, in liver, has a base mean of nine hundred and fifty-four thousand, nine hundred and sixty-four.
+
+19
+00:01:22.450 --> 00:01:31.800
+A handful of genes like that are so far from everything else that they dominate the calculation, and the pattern among the other three thousand becomes invisible.
+
+20
+00:01:31.800 --> 00:01:34.975
+Do it properly and the relationship appears.
+
+21
+00:01:34.975 --> 00:01:39.750
+Pearson on the logarithm of expression: minus nought point three zero.
+
+22
+00:01:39.750 --> 00:01:50.100
+Spearman, which uses ranks and therefore does not care about the scale at all: minus nought point four two, with a p-value of two times ten to the minus one hundred and twenty-nine.
+
+23
+00:01:50.100 --> 00:02:01.575
+And the biology behind it, which makes the result believable: a lowly expressed gene is measured from few reads, so its estimated fold change is noisier, and noise makes things look bigger.
+
+24
+00:02:01.575 --> 00:02:04.200
+That is Session eight's subject.
+
+25
+00:02:04.200 --> 00:02:07.050
+The rule: plot first, test second.
+
+26
+00:02:07.050 --> 00:02:13.500
+If you had only run the test, you would have reported no relationship, with a perfectly correct p-value.
+
+27
+00:02:14.100 --> 00:02:19.175
+A short slide with a simple message: look for the function before you write it.
+
+28
+00:02:19.175 --> 00:02:21.750
+SciPy has the statistics.
+
+29
+00:02:21.750 --> 00:02:28.600
+The Welch t-test from Session one is stats dot ttest underscore ind, with equal-var set to false.
+
+30
+00:02:28.600 --> 00:02:37.475
+On Session one's control and treatment numbers it gives t about minus eleven point nine and p about nought point zero zero zero one.
+
+31
+00:02:37.475 --> 00:02:47.200
+Note the default is equal-var true, which is Student's t-test and assumes equal variances; Welch is usually the safer choice, and you have to ask for it.
+
+32
+00:02:47.200 --> 00:02:55.650
+SciPy also has hierarchical clustering: cluster dot hierarchy dot linkage, which repeatedly merges the closest clusters.
+
+33
+00:02:55.650 --> 00:03:01.575
+That is the algorithm behind Session four's guide tree for multiple alignment, already written.
+
+34
+00:03:01.575 --> 00:03:08.150
+And scikit-learn has the machine learning: linear regression, multilayer perceptrons, and everything else.
+
+35
+00:03:08.150 --> 00:03:14.775
+In Sessions seven to nine you will build several of those by hand, once, because you should know what is inside.
+
+36
+00:03:14.775 --> 00:03:17.300
+After that, call the library.
+
+37
+00:03:17.300 --> 00:03:20.850
+The reason to prefer the library is not laziness.
+
+38
+00:03:20.850 --> 00:03:30.175
+It is that these implementations handle the numerical edge cases, have been tested by thousands of people, and are what your reader will assume you used.
+
+39
+00:03:30.775 --> 00:03:33.125
+Where does data come from?
+
+40
+00:03:33.125 --> 00:03:36.825
+Four sources, and one pattern that covers all of them.
+
+41
+00:03:36.825 --> 00:03:38.825
+A file on disk.
+
+42
+00:03:38.825 --> 00:03:40.825
+A compressed file.
+
+43
+00:03:40.825 --> 00:03:42.300
+An archive.
+
+44
+00:03:42.300 --> 00:03:44.925
+And a database over the network.
+
+45
+00:03:44.925 --> 00:03:54.375
+The pattern: every one of them gives you something Python calls a handle, which is an object you can read from, and SeqIO dot parse reads records from a handle.
+
+46
+00:03:54.375 --> 00:03:59.075
+The handle is where the differences live; the reading code is identical.
+
+47
+00:03:59.075 --> 00:04:05.700
+So a gzipped FASTA does not need unpacking first: gzip dot open gives you a handle.
+
+48
+00:04:05.700 --> 00:04:12.025
+A zip or tar archive opens with the zipfile or tarfile module, which gives you a handle per member.
+
+49
+00:04:12.025 --> 00:04:15.675
+And NCBI gives you a handle over the network.
+
+50
+00:04:15.675 --> 00:04:23.525
+Entrez dot efetch, with the database, the accession, and the format you want, inside a with statement, and then SeqIO dot read.
+
+51
+00:04:23.525 --> 00:04:35.225
+Fetch N M underscore zero zero zero five one eight point five that way and you get Homo sapiens haemoglobin subunit beta, mRNA, six hundred and twenty-eight nucleotides.
+
+52
+00:04:35.225 --> 00:04:38.500
+That is the call the live coding starts from.
+
+53
+00:04:39.100 --> 00:04:45.275
+Three rules for using NCBI from code, because they are a shared resource and they will block you.
+
+54
+00:04:45.275 --> 00:04:48.700
+Set Entrez dot email to your real address.
+
+55
+00:04:48.700 --> 00:04:56.550
+It is required, and it means that if your script misbehaves they can tell you rather than just banning your institution's address range.
+
+56
+00:04:56.550 --> 00:05:00.750
+Fetch many records in one request rather than many requests.
+
+57
+00:05:00.750 --> 00:05:07.250
+Join your accessions with commas and pass them as one id argument: fifty accessions, one request.
+
+58
+00:05:07.250 --> 00:05:14.225
+Tempting as it is to write a loop, a loop of fifty single requests is fifty times the load for the same data.
+
+59
+00:05:14.225 --> 00:05:19.150
+And without an API key you are allowed roughly three requests per second.
+
+60
+00:05:19.150 --> 00:05:26.375
+A tight loop will exceed that in milliseconds, and then you are blocked, and the error you get will not obviously say so.
+
+61
+00:05:26.375 --> 00:05:35.000
+This generalises beyond NCBI: when you use somebody else's service from a script, find out what the limits are before you write the loop.
+
+62
+00:05:35.600 --> 00:05:37.750
+Now the live coding.
+
+63
+00:05:37.750 --> 00:05:44.600
+I will type this in front of you rather than show finished code, because the point is the process and not the result.
+
+64
+00:05:44.600 --> 00:05:52.375
+The task is small: fetch six globin genes, tabulate some properties, plot one against another, and work out the protein lengths.
+
+65
+00:05:52.375 --> 00:05:56.700
+And I am going to make three mistakes, deliberately, one of each kind.
+
+66
+00:05:56.700 --> 00:05:58.850
+I will not tell you when.
+
+67
+00:05:58.850 --> 00:06:01.300
+Your job is to notice.
+
+68
+00:06:01.300 --> 00:06:07.350
+If you are watching the recording, you are missing the typing, which is the part that does not record well.
+
+69
+00:06:07.350 --> 00:06:15.225
+What follows is what happens and what you should take from it, and the script itself is on the teachers page, so you can run it yourself.
+
+70
+00:06:15.825 --> 00:06:19.325
+First, the taxonomy, so you know what to watch for.
+
+71
+00:06:19.325 --> 00:06:21.025
+Three kinds.
+
+72
+00:06:21.025 --> 00:06:23.450
+Kind one: a Python error.
+
+73
+00:06:23.450 --> 00:06:26.225
+The code stops, you get a traceback.
+
+74
+00:06:26.225 --> 00:06:28.725
+This is the friendly kind.
+
+75
+00:06:28.725 --> 00:06:33.250
+Something is wrong and you are told immediately, at the place it happened.
+
+76
+00:06:33.250 --> 00:06:35.900
+Kind two: a wrong analysis.
+
+77
+00:06:35.900 --> 00:06:40.575
+The code runs perfectly, and computes something other than what you meant.
+
+78
+00:06:40.575 --> 00:06:42.900
+No error, no warning.
+
+79
+00:06:42.900 --> 00:06:48.050
+The axes are swapped, or you filtered on the wrong column, or you compared the wrong groups.
+
+80
+00:06:48.050 --> 00:06:51.175
+Kind three: biologically nonsensical.
+
+81
+00:06:51.175 --> 00:06:56.625
+The code runs, the analysis is what you intended, and the result is impossible.
+
+82
+00:06:56.625 --> 00:06:59.375
+Only knowing the biology tells you.
+
+83
+00:06:59.375 --> 00:07:01.850
+Watch for all three as I type.
+
+84
+00:07:01.850 --> 00:07:05.725
+And afterwards, ask yourself which was hardest to notice.
+
+85
+00:07:05.725 --> 00:07:09.600
+The answer should be two and three, because nothing complained.
+
+86
+00:07:09.600 --> 00:07:13.200
+That ranking is the whole reason this session exists.
+
+87
+00:07:13.200 --> 00:07:18.800
+Our tools are excellent at catching kind one and completely blind to kinds two and three.
+
+88
+00:07:19.400 --> 00:07:22.200
+Here is the plan, in four steps.
+
+89
+00:07:22.200 --> 00:07:32.700
+Fetch six globins in one Entrez request: HBB and HBA1 and HBA2, the haemoglobin chains; myoglobin; neuroglobin; and cytoglobin.
+
+90
+00:07:32.700 --> 00:07:38.200
+Tabulate them into a DataFrame: gene name, mRNA length, GC content.
+
+91
+00:07:38.200 --> 00:07:45.875
+Plot GC content against mRNA length, with length on the x-axis, because that is how the question was phrased.
+
+92
+00:07:45.875 --> 00:07:49.150
+And then compute the protein length for each gene.
+
+93
+00:07:49.150 --> 00:07:52.350
+Now, the three mistakes, which I will walk through.
+
+94
+00:07:52.350 --> 00:07:55.100
+Mistake one is a Python error.
+
+95
+00:07:55.100 --> 00:07:58.650
+I type genes, square bracket, g c, dot mean.
+
+96
+00:07:58.650 --> 00:08:00.400
+KeyError: g c.
+
+97
+00:08:00.400 --> 00:08:06.550
+The rule from Block three: read the last line of a traceback first, because that is what went wrong.
+
+98
+00:08:06.550 --> 00:08:10.925
+A KeyError on a DataFrame means there is no column with that name.
+
+99
+00:08:10.925 --> 00:08:16.825
+So I type genes dot columns and look: the column is called g c underscore content.
+
+100
+00:08:16.825 --> 00:08:19.075
+Fixed in ten seconds.
+
+101
+00:08:19.075 --> 00:08:23.425
+Mistake two is a wrong analysis, and it is the interesting one.
+
+102
+00:08:23.425 --> 00:08:28.550
+The question was GC against length, so length belongs on the x-axis.
+
+103
+00:08:28.550 --> 00:08:36.800
+I type plt dot scatter with g c underscore content first and length second, and label the x-axis mRNA length.
+
+104
+00:08:36.800 --> 00:08:38.375
+It runs.
+
+105
+00:08:38.375 --> 00:08:41.825
+The plot appears and looks entirely reasonable.
+
+106
+00:08:41.825 --> 00:08:45.400
+Mistake three is biologically nonsensical.
+
+107
+00:08:45.400 --> 00:08:51.250
+I compute protein length as mRNA length divided by three, using integer division.
+
+108
+00:08:51.250 --> 00:08:52.825
+It runs.
+
+109
+00:08:52.825 --> 00:08:59.650
+Cytoglobin comes out as six hundred and fifty-four amino acids and HBB as two hundred and nine.
+
+110
+00:08:59.650 --> 00:09:02.925
+Each of the next three slides takes one of those.
+
+111
+00:09:03.525 --> 00:09:09.400
+Here is the plot from mistake two, and the method for catching it, which is the transferable part.
+
+112
+00:09:09.400 --> 00:09:11.400
+The plot looks fine.
+
+113
+00:09:11.400 --> 00:09:15.175
+Points scattered, axes labelled, nothing suspicious.
+
+114
+00:09:15.175 --> 00:09:17.425
+So how do you catch it?
+
+115
+00:09:17.425 --> 00:09:20.675
+Find one point you already know the answer for.
+
+116
+00:09:20.675 --> 00:09:24.450
+Cytoglobin has the longest mRNA of these six.
+
+117
+00:09:24.450 --> 00:09:29.325
+So if length is on the x-axis, cytoglobin should be the furthest right.
+
+118
+00:09:29.325 --> 00:09:30.475
+Is it?
+
+119
+00:09:30.475 --> 00:09:33.675
+Then read the tick labels on the x-axis.
+
+120
+00:09:33.675 --> 00:09:37.650
+They run from about nought point five to nought point six five.
+
+121
+00:09:37.650 --> 00:09:41.325
+Lengths are hundreds or thousands of nucleotides.
+
+122
+00:09:41.325 --> 00:09:46.775
+Nought point five to nought point six five is GC content, which is a fraction.
+
+123
+00:09:46.775 --> 00:09:51.800
+So the axis is GC content and the label says mRNA length.
+
+124
+00:09:51.800 --> 00:09:57.025
+The arguments are the wrong way round, and the label is a lie I wrote myself.
+
+125
+00:09:57.025 --> 00:09:59.875
+Nothing in Python could have caught that.
+
+126
+00:09:59.875 --> 00:10:06.750
+The function was given two columns of numbers and asked to plot one against the other, and it did exactly that.
+
+127
+00:10:06.750 --> 00:10:13.275
+The habit that catches it: find a point whose position you can predict, and check that it is where you expect.
+
+128
+00:10:13.275 --> 00:10:17.900
+That takes five seconds and it works on every plot you will ever make.
+
+129
+00:10:18.500 --> 00:10:25.250
+And mistake three, which is my favourite, because it is invisible to everything except knowledge of biology.
+
+130
+00:10:25.250 --> 00:10:29.350
+Protein length equals mRNA length divided by three.
+
+131
+00:10:29.350 --> 00:10:33.425
+That is correct arithmetic: three bases per codon.
+
+132
+00:10:33.425 --> 00:10:35.250
+The code runs.
+
+133
+00:10:35.250 --> 00:10:38.425
+The numbers are plausible-looking integers.
+
+134
+00:10:38.425 --> 00:10:42.500
+Cytoglobin: six hundred and fifty-four amino acids.
+
+135
+00:10:42.500 --> 00:10:45.275
+HBB: two hundred and nine.
+
+136
+00:10:45.275 --> 00:10:47.325
+Now, is that wrong?
+
+137
+00:10:47.325 --> 00:10:49.775
+Nothing in the data says so.
+
+138
+00:10:49.775 --> 00:10:52.125
+The arithmetic is right.
+
+139
+00:10:52.125 --> 00:10:54.175
+The code is right.
+
+140
+00:10:54.175 --> 00:10:58.050
+But globins are about a hundred and fifty amino acids.
+
+141
+00:10:58.050 --> 00:11:00.825
+All of them, across the whole family.
+
+142
+00:11:00.825 --> 00:11:05.000
+A six-hundred-and-fifty-four-residue globin is not a thing.
+
+143
+00:11:05.000 --> 00:11:10.525
+And the cause is the slide from Block one: the mRNA is not the coding sequence.
+
+144
+00:11:10.525 --> 00:11:16.375
+It has untranslated regions at both ends, and those are not translated into anything.
+
+145
+00:11:16.375 --> 00:11:22.100
+The fix is to use the CDS feature from the record, exactly as we saw earlier.
+
+146
+00:11:22.100 --> 00:11:24.975
+I want to be clear about what caught this.
+
+147
+00:11:24.975 --> 00:11:27.875
+Not the computer, and not the data.
+
+148
+00:11:27.875 --> 00:11:32.325
+Domain knowledge caught it: knowing roughly how big a globin is.
+
+149
+00:11:32.325 --> 00:11:40.800
+Which is an argument for knowing your biology, and also an argument for always asking, of any number you compute, whether it is the right size.
+
+150
+00:11:41.400 --> 00:11:46.825
+And here are the corrected numbers, which are themselves a small biological result.
+
+151
+00:11:46.825 --> 00:11:52.550
+The proteins are between a hundred and forty-two and a hundred and ninety amino acids.
+
+152
+00:11:52.550 --> 00:11:54.975
+Globins, as expected.
+
+153
+00:11:54.975 --> 00:12:02.075
+The mRNAs are between five hundred and seventy-six and one thousand nine hundred and sixty-two nucleotides.
+
+154
+00:12:02.075 --> 00:12:09.675
+So the untranslated regions are between a hundred and forty-seven and one thousand three hundred and eighty-nine nucleotides.
+
+155
+00:12:09.675 --> 00:12:14.950
+In the extreme case, the untranslated part is much longer than the coding part.
+
+156
+00:12:14.950 --> 00:12:20.775
+Which tells you something worth knowing: mRNA length says very little about protein length.
+
+157
+00:12:20.775 --> 00:12:28.400
+The variation between these six transcripts is mostly variation in their untranslated regions, not in their proteins.
+
+158
+00:12:28.400 --> 00:12:31.800
+One last note, which is a Session eight preview.
+
+159
+00:12:31.800 --> 00:12:43.875
+With six genes, the correlation between mRNA length and protein length is r equals nought point seven eight, which sounds strong, but p equals nought point zero seven, which is not significant.
+
+160
+00:12:43.875 --> 00:12:46.275
+Six points is not many.
+
+161
+00:12:46.275 --> 00:12:49.125
+That is the next discussion problem.
+

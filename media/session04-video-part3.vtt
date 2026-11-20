@@ -1,0 +1,798 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.600
+Third block.
+
+2
+00:00:01.600 --> 00:00:05.775
+Everything so far has involved exactly two sequences.
+
+3
+00:00:05.775 --> 00:00:11.200
+But a protein family has many members, and a family tells you things no pair can.
+
+4
+00:00:11.800 --> 00:00:16.775
+The natural idea is to extend dynamic programming to more sequences.
+
+5
+00:00:16.775 --> 00:00:20.925
+It does extend — correctly, provably — and it is useless.
+
+6
+00:00:20.925 --> 00:00:25.300
+For N sequences the matrix needs one dimension per sequence.
+
+7
+00:00:25.300 --> 00:00:28.075
+Length L to the power N cells.
+
+8
+00:00:28.075 --> 00:00:32.925
+Two sequences of a hundred residues: ten thousand cells, trivial.
+
+9
+00:00:32.925 --> 00:00:37.700
+Ten sequences of a hundred residues: ten to the twentieth cells.
+
+10
+00:00:37.700 --> 00:00:41.850
+That is not a matter of waiting longer or buying a bigger machine.
+
+11
+00:00:41.850 --> 00:00:49.050
+It is the same kind of wall as the brute-force count at the start of the session, and ten sequences is a small family.
+
+12
+00:00:49.050 --> 00:00:51.625
+Real families have hundreds.
+
+13
+00:00:51.625 --> 00:00:58.025
+So exact multiple alignment is off the table, and every tool you will ever use is a heuristic.
+
+14
+00:00:58.025 --> 00:01:06.675
+It is worth being clear about what that costs: for two sequences we had a guarantee of optimality, and for many sequences we give it up.
+
+15
+00:01:06.675 --> 00:01:11.375
+A multiple alignment is a good arrangement, not a provably best one.
+
+16
+00:01:11.975 --> 00:01:17.975
+Practical methods combine three ideas, and knowing which is which tells you how a tool will fail.
+
+17
+00:01:17.975 --> 00:01:30.075
+Progressive alignment computes all the pairwise distances, builds a guide tree from them, aligns the closest pair first, and then adds sequences or already-aligned groups one at a time, following the tree.
+
+18
+00:01:30.075 --> 00:01:35.225
+It is fast and it is the classic approach — ClustalW is the example.
+
+19
+00:01:35.225 --> 00:01:39.950
+Its weakness is structural: early decisions are never revisited.
+
+20
+00:01:39.950 --> 00:01:48.425
+A gap placed wrongly in the first merge, when only two sequences were visible, stays there while every later sequence is aligned around it.
+
+21
+00:01:48.425 --> 00:01:52.050
+Iterative refinement addresses exactly that.
+
+22
+00:01:52.050 --> 00:02:00.100
+Start from a progressive alignment, then repeatedly pull parts of it apart and re-align them, keeping changes that improve the score.
+
+23
+00:02:00.100 --> 00:02:03.300
+MUSCLE and MAFFT work this way.
+
+24
+00:02:03.300 --> 00:02:06.450
+Early mistakes get a chance to be undone.
+
+25
+00:02:06.450 --> 00:02:12.175
+Consistency uses the agreement among all the pairwise alignments as extra evidence.
+
+26
+00:02:12.175 --> 00:02:20.350
+If A aligns with B at some position, and B aligns with C there, then a multiple alignment where A also matches C there is preferred.
+
+27
+00:02:20.350 --> 00:02:22.750
+T-Coffee is the example.
+
+28
+00:02:22.750 --> 00:02:29.875
+It is slower, and it is better on hard cases, because it uses information the progressive approach throws away.
+
+29
+00:02:29.875 --> 00:02:32.250
+Real tools mix these.
+
+30
+00:02:32.250 --> 00:02:43.600
+Which does best depends on how many sequences you have, how long they are, and how diverged they are — which is why benchmarks disagree and why the answer is to try more than one on your own data.
+
+31
+00:02:44.200 --> 00:02:49.475
+The guide tree deserves a closer look, since it determines the order of every merge.
+
+32
+00:02:49.475 --> 00:02:54.200
+It is built by ordinary hierarchical clustering on a distance matrix.
+
+33
+00:02:54.200 --> 00:02:57.475
+Every sequence starts as its own cluster.
+
+34
+00:02:57.475 --> 00:03:00.850
+Repeatedly merge the closest pair of clusters.
+
+35
+00:03:00.850 --> 00:03:03.550
+Stop when one cluster remains.
+
+36
+00:03:03.550 --> 00:03:07.900
+The merge order is the alignment order — that is the whole purpose.
+
+37
+00:03:07.900 --> 00:03:16.075
+The worked example has five toy sequences, almost identical except for sequence four, with their pairwise Hamming distances.
+
+38
+00:03:16.075 --> 00:03:24.750
+Follow the merges: the close ones pair up early, and sequence four joins only at the very last step, because it differs clearly from the other four.
+
+39
+00:03:24.750 --> 00:03:32.650
+The tree has put the easy decisions first and the hard one last, which is exactly what you want when early decisions are permanent.
+
+40
+00:03:32.650 --> 00:03:37.500
+Now the question to hold on to: this looks like a phylogenetic tree.
+
+41
+00:03:37.500 --> 00:03:39.100
+Is it one?
+
+42
+00:03:39.100 --> 00:03:45.000
+It has leaves, branches, and a nested structure, and it was built from sequence distances.
+
+43
+00:03:45.000 --> 00:03:48.325
+Keep it in mind — we answer it on the next slide.
+
+44
+00:03:48.925 --> 00:03:57.225
+The answer is no, and the distinction is worth being precise about, because the two kinds of tree look alike and answer different questions.
+
+45
+00:03:57.225 --> 00:04:01.250
+A guide tree asks: in what order should I align these?
+
+46
+00:04:01.250 --> 00:04:11.325
+It is built from quick pairwise distances, often before any alignment exists, usually by UPGMA, which assumes every lineage evolves at the same rate.
+
+47
+00:04:11.325 --> 00:04:16.450
+It is a computational shortcut, and its branch lengths are not meant to be read.
+
+48
+00:04:16.450 --> 00:04:21.075
+A phylogenetic tree asks: how are these related by descent?
+
+49
+00:04:21.075 --> 00:04:27.750
+It is built from a multiple alignment with an evolutionary model, by neighbour joining or maximum likelihood.
+
+50
+00:04:27.750 --> 00:04:33.450
+It is a hypothesis about evolution, and its branch lengths mean the amount of change.
+
+51
+00:04:33.450 --> 00:04:45.550
+The consequence of UPGMA's equal-rates assumption is concrete: a fast-evolving sequence looks distant, so it gets placed as though it branched off early, when it may simply have been changing quickly.
+
+52
+00:04:45.550 --> 00:04:48.675
+Good enough for deciding an alignment order.
+
+53
+00:04:48.675 --> 00:04:51.575
+Not good enough for a claim about history.
+
+54
+00:04:51.575 --> 00:05:02.575
+Neighbour joining uses the same pairwise distance matrix but allows lineages to evolve at different rates, which is why it is suitable for phylogeny where UPGMA is not.
+
+55
+00:05:02.575 --> 00:05:04.625
+Reading a tree, then.
+
+56
+00:05:04.625 --> 00:05:07.550
+Leaves are the sequences you put in.
+
+57
+00:05:07.550 --> 00:05:12.225
+Internal nodes are inferred ancestors — inferred, not observed.
+
+58
+00:05:12.225 --> 00:05:17.150
+Branch lengths are the amount of change, here the fraction of differing residues.
+
+59
+00:05:17.150 --> 00:05:21.200
+A clade is an ancestor together with all of its descendants.
+
+60
+00:05:21.200 --> 00:05:24.075
+And trees are rooted or unrooted.
+
+61
+00:05:24.075 --> 00:05:30.575
+Only a rooted tree has a direction of time, so only a rooted tree lets you read off the order of events.
+
+62
+00:05:30.575 --> 00:05:33.775
+Distance methods give unrooted trees.
+
+63
+00:05:33.775 --> 00:05:43.350
+A root is added either with an outgroup — a sequence known to have branched off before all the others — or, as here, at the midpoint of the longest path through the tree.
+
+64
+00:05:43.350 --> 00:05:48.950
+On this tree, red squares mark duplications and blue circles mark speciations.
+
+65
+00:05:48.950 --> 00:05:57.475
+The two topmost splits are both duplications, and here is how you can tell: each branch below them still contains all three species.
+
+66
+00:05:57.475 --> 00:06:02.425
+If the gene had been copied after the species diverged, that could not be true.
+
+67
+00:06:03.025 --> 00:06:09.050
+Now we can settle the orthologs-and-paralogs question from the first block, with real numbers.
+
+68
+00:06:09.050 --> 00:06:14.950
+Human alpha-globin against mouse alpha-globin: fourteen per cent of positions differ.
+
+69
+00:06:14.950 --> 00:06:18.550
+Against chicken alpha-globin: thirty per cent.
+
+70
+00:06:18.550 --> 00:06:23.100
+Both of those pairs are orthologs, separated by speciations.
+
+71
+00:06:23.100 --> 00:06:28.375
+Human alpha-globin against human beta-globin: fifty-four per cent differ.
+
+72
+00:06:28.375 --> 00:06:34.425
+Same genome, same cell, same protein complex — and far more different than the chicken gene.
+
+73
+00:06:34.425 --> 00:06:40.175
+Those are paralogs, separated by the ancient duplication that made alpha and beta.
+
+74
+00:06:40.175 --> 00:06:46.950
+So the gene you share with a chicken is more similar to yours than the gene sitting next to it in your own genome.
+
+75
+00:06:46.950 --> 00:06:50.800
+That is not an anomaly; it is what you should expect.
+
+76
+00:06:50.800 --> 00:06:57.400
+The duplication is older than the bird-mammal split, so the alpha-beta pair has had longer to diverge.
+
+77
+00:06:57.400 --> 00:06:59.825
+But do not take the wrong lesson.
+
+78
+00:06:59.825 --> 00:07:07.575
+It is tempting to conclude that paralogs are simply the distant ones and orthologs the close ones, and use distance to classify.
+
+79
+00:07:07.575 --> 00:07:09.650
+That does not hold.
+
+80
+00:07:09.650 --> 00:07:17.175
+A fast-evolving ortholog can be very distant, and a recent duplication produces paralogs that are nearly identical.
+
+81
+00:07:17.175 --> 00:07:20.500
+Distance is a consequence, not a definition.
+
+82
+00:07:20.500 --> 00:07:29.200
+What decides is the event at the node separating the two genes in the tree: speciation gives orthologs, duplication gives paralogs.
+
+83
+00:07:29.200 --> 00:07:31.075
+You need the tree.
+
+84
+00:07:31.075 --> 00:07:42.625
+This is the first of several places where the course needs the tree structure of sequences — Session eight uses it for homology-aware data splits, and Session twelve uses it for coevolution.
+
+85
+00:07:43.225 --> 00:07:48.100
+A tree drawn with confident lines invites more trust than it has earned.
+
+86
+00:07:48.100 --> 00:07:51.250
+Every tree-building method returns a tree.
+
+87
+00:07:51.250 --> 00:07:56.100
+None of them return "I do not know", even when the data cannot decide.
+
+88
+00:07:56.100 --> 00:07:58.500
+The bootstrap measures that.
+
+89
+00:07:58.500 --> 00:08:06.175
+Take your alignment and resample its columns with replacement — same number of columns, but some drawn twice and some not at all.
+
+90
+00:08:06.175 --> 00:08:09.475
+Rebuild the tree from the resampled alignment.
+
+91
+00:08:09.475 --> 00:08:15.175
+Do that hundreds of times, and count how often each branch of your original tree reappears.
+
+92
+00:08:15.175 --> 00:08:25.150
+A branch reappearing in ninety-nine per cent of the replicates is supported by many columns independently; the conclusion does not rest on a handful of positions.
+
+93
+00:08:25.150 --> 00:08:33.950
+A branch appearing in forty per cent is being held up by very little, and a different sample of the same protein would have given you a different tree there.
+
+94
+00:08:33.950 --> 00:08:48.675
+So a bootstrap value is the answer to "how much of this tree is the data, and how much is the method having to choose?" Published trees carry these numbers on the branches, and branches below about seventy per cent are generally not treated as resolved.
+
+95
+00:08:48.675 --> 00:08:50.750
+Two honest limits.
+
+96
+00:08:50.750 --> 00:09:01.075
+Real phylogenetics uses explicit models of how residues substitute, with maximum likelihood — IQ-TREE or FastTree — rather than the distance methods here.
+
+97
+00:09:01.075 --> 00:09:11.600
+And the bootstrap measures consistency of the data with the method, not correctness: a systematically biased method can be confidently wrong, and resampling will not notice.
+
+98
+00:09:12.200 --> 00:09:15.150
+Now to reading a multiple alignment.
+
+99
+00:09:15.150 --> 00:09:23.675
+A family alignment of hundreds of sequences is far too big to read row by row, so we summarise it, and what matters is the columns.
+
+100
+00:09:23.675 --> 00:09:29.875
+A column where every sequence has the same residue has been conserved through evolutionary time.
+
+101
+00:09:29.875 --> 00:09:39.225
+Since evolution has had the opportunity to change it and has not, something is probably stopping it — the residue likely matters for structure or function.
+
+102
+00:09:39.225 --> 00:09:46.350
+A column with many different residues has been free to change, so presumably little depends on which residue is there.
+
+103
+00:09:46.350 --> 00:09:49.525
+Session one's entropy puts a number on it.
+
+104
+00:09:49.525 --> 00:09:55.725
+For the residue frequencies p in a column, H equals minus the sum of p times log-two p.
+
+105
+00:09:55.725 --> 00:09:59.050
+A fully conserved column gives zero bits.
+
+106
+00:09:59.050 --> 00:10:07.475
+The maximum for a protein column, with all twenty amino acids equally common, is log-two twenty, about four point three two bits.
+
+107
+00:10:07.475 --> 00:10:11.825
+For DNA the maximum is log-two four, which is two bits.
+
+108
+00:10:11.825 --> 00:10:23.325
+Entropy measures variability, but it is usually more convenient to measure conservation, so we take the distance from the maximum: information content equals log-two twenty minus H.
+
+109
+00:10:23.325 --> 00:10:27.500
+High for conserved columns, near zero for variable ones.
+
+110
+00:10:27.500 --> 00:10:29.300
+Two caveats.
+
+111
+00:10:29.300 --> 00:10:36.075
+This simple version assumes all twenty amino acids are equally common in the background, which they are not.
+
+112
+00:10:36.075 --> 00:10:40.775
+And with few sequences a column can look conserved purely by chance.
+
+113
+00:10:40.775 --> 00:10:46.300
+Real logo programs correct for both — background frequencies and small samples.
+
+114
+00:10:46.900 --> 00:10:49.850
+Before I show you this, make a prediction.
+
+115
+00:10:49.850 --> 00:10:57.125
+This is the Pfam globin family: seventy-three globins from bacteria, plants, worms, insects and vertebrates.
+
+116
+00:10:57.125 --> 00:11:01.400
+They all bind haem, and haem binding is what globins are for.
+
+117
+00:11:01.400 --> 00:11:05.275
+Which columns would you expect to be conserved across all of them?
+
+118
+00:11:05.275 --> 00:11:11.575
+The intuitive answer is the ones that touch the haem — the iron-binding residues, the pocket around it.
+
+119
+00:11:11.575 --> 00:11:13.575
+Hold that thought.
+
+120
+00:11:13.575 --> 00:11:15.725
+Here is the logo.
+
+121
+00:11:15.725 --> 00:11:25.450
+Each column is a stack of letters; the stack's height is the column's information content in bits, and each letter's height within the stack is that residue's frequency.
+
+122
+00:11:25.450 --> 00:11:32.825
+A tall stack with one big letter is a conserved position; a low stack of many small letters is a variable one.
+
+123
+00:11:32.825 --> 00:11:39.600
+Gaps lower the stack too, because the height is scaled by the fraction of sequences that have any residue there at all.
+
+124
+00:11:39.600 --> 00:11:46.100
+The colours are chemistry: hydrophobic black, polar green, basic blue, acidic red, amide purple.
+
+125
+00:11:46.100 --> 00:11:54.275
+And the three labelled columns are numbered as in mature human beta-globin, so you can map them onto a protein we have been using all session.
+
+126
+00:11:54.275 --> 00:11:58.650
+The prediction was broadly right, and much narrower than you would guess.
+
+127
+00:11:58.650 --> 00:12:04.700
+Across all seventy-three sequences, exactly two columns are identical in every one.
+
+128
+00:12:04.700 --> 00:12:11.350
+Histidine ninety-two — the proximal histidine, F-eight — whose side chain binds the haem iron directly.
+
+129
+00:12:11.350 --> 00:12:15.925
+And phenylalanine forty-two, C-D-one, which packs against the haem.
+
+130
+00:12:15.925 --> 00:12:26.500
+A third, histidine sixty-three, the distal histidine on the oxygen-binding side, is histidine in seventy-three per cent of the sequences — common, but not universal.
+
+131
+00:12:26.500 --> 00:12:28.450
+Two residues.
+
+132
+00:12:28.450 --> 00:12:34.625
+That is what a protein family spanning bacteria to vertebrates absolutely cannot do without.
+
+133
+00:12:35.225 --> 00:12:40.350
+Sit with how strange that is, because it is the most important thing in this block.
+
+134
+00:12:40.350 --> 00:12:44.875
+Only two columns are identical in all seventy-three sequences.
+
+135
+00:12:44.875 --> 00:12:50.625
+The average column carries one point two bits, against a maximum of four point three two.
+
+136
+00:12:50.625 --> 00:12:56.600
+And most pairs of globins in this alignment share fewer than twenty per cent of their residues.
+
+137
+00:12:56.600 --> 00:13:02.300
+Yet every one of them folds into the same globin fold and binds haem in the same place.
+
+138
+00:13:02.300 --> 00:13:06.075
+Sequence nearly gone; structure and function kept.
+
+139
+00:13:06.075 --> 00:13:06.850
+How?
+
+140
+00:13:06.850 --> 00:13:09.975
+Not by identical residues, mostly.
+
+141
+00:13:09.975 --> 00:13:17.600
+Look at the black stacks — leucine, valine, isoleucine, phenylalanine — often with several residues sharing one column.
+
+142
+00:13:17.600 --> 00:13:21.125
+Those positions are not conserved as a residue.
+
+143
+00:13:21.125 --> 00:13:27.475
+They are conserved as a property: whatever sits there must be hydrophobic, because it points into the core.
+
+144
+00:13:27.475 --> 00:13:36.525
+Any of several residues will do, so no single letter dominates the column and the stack stays shortish, but the constraint is real and absolute.
+
+145
+00:13:36.525 --> 00:13:45.150
+This is why substitution matrices have those positive hydrophobic blocks, and it is why similarity is a better guide than identity.
+
+146
+00:13:45.150 --> 00:13:50.875
+Judge this family by identity and you would conclude the sequences are barely related.
+
+147
+00:13:50.875 --> 00:14:01.550
+They are related, and the alignment can point you at the residues the protein cannot do without — two of them — and at the many positions where chemistry matters but identity does not.
+
+148
+00:14:01.550 --> 00:14:12.500
+A practical note: closely related sequences are over-represented in most alignments, which skews the frequencies, so real tools weight sequences by how redundant they are.
+
+149
+00:14:12.500 --> 00:14:19.200
+The lab compares a logo of five sequences with this one of seventy-three, and the difference is instructive.
+
+150
+00:14:19.800 --> 00:14:26.325
+Logos are not only for families of homologs, and this example shows a different kind of thing entirely.
+
+151
+00:14:26.325 --> 00:14:42.950
+Many proteins destined for secretion, a membrane, or an organelle of the secretory pathway begin with a signal peptide: a short N-terminal stretch, typically fifteen to thirty residues, that sends the new chain into the pathway and is then cut off once it has done its job.
+
+152
+00:14:42.950 --> 00:14:48.050
+Signal peptides from unrelated proteins share no common ancestor.
+
+153
+00:14:48.050 --> 00:14:53.675
+They cannot be aligned residue by residue, because there is nothing homologous to align.
+
+154
+00:14:53.675 --> 00:15:05.725
+But they share a design, and the first collections of a few dozen sequences around nineteen eighty already showed it: a positively charged N-terminus, then a hydrophobic stretch, then a more polar end.
+
+155
+00:15:05.725 --> 00:15:09.900
+Today those are the n-region, the h-region and the c-region.
+
+156
+00:15:09.900 --> 00:15:19.375
+To draw that as a logo we need an alignment, and since homology will not give us one, we use the one position they all genuinely share: the cleavage site.
+
+157
+00:15:19.375 --> 00:15:23.200
+Line them all up on the cut and look at the columns around it.
+
+158
+00:15:23.200 --> 00:15:28.550
+The logo shows two different kinds of signal, and this is the point of the example.
+
+159
+00:15:28.550 --> 00:15:37.475
+In the h-region, no column is conserved at all — but every column leans the same way, towards hydrophobic residues and above all leucine.
+
+160
+00:15:37.475 --> 00:15:42.600
+What matters there is a property of a whole stretch, not a residue at a position.
+
+161
+00:15:42.600 --> 00:15:47.275
+Near the cut, the opposite: two single positions stand out sharply.
+
+162
+00:15:47.275 --> 00:15:56.225
+Minus three and minus one carry small uncharged residues, mostly alanine, also glycine and serine, while minus two between them is free.
+
+163
+00:15:56.225 --> 00:16:03.600
+This is the minus-three, minus-one rule, found in nineteen eighty-three in a collection of seventy-eight signal peptides.
+
+164
+00:16:03.600 --> 00:16:11.325
+The enzyme that cuts, signal peptidase, needs small side chains at those two positions and does not care what is between them.
+
+165
+00:16:11.325 --> 00:16:22.450
+The n-region is blurred in the logo, and that is an artefact worth recognising: signal peptides differ in length, so columns at the left-hand end mix residues from different regions.
+
+166
+00:16:22.450 --> 00:16:26.975
+The charge is clearest in bacteria, as lysine and arginine.
+
+167
+00:16:26.975 --> 00:16:32.125
+Note also that the two logos have different y-scales — compare shapes, not heights.
+
+168
+00:16:32.125 --> 00:16:36.550
+Like a family's logo, this description can be turned into a score.
+
+169
+00:16:36.550 --> 00:16:50.450
+Von Heijne did exactly that in nineteen eighty-six, building a position weight matrix for positions minus thirteen to plus two around the cleavage site — which is Session five's PSSM idea, arriving twenty years early.
+
+170
+00:16:50.450 --> 00:17:05.400
+The signal peptide comes back repeatedly: Session seven compares that weight matrix with a neural network, Session eight uses h-region hydrophobicity as a feature, and Session eleven lets recurrent networks find the regions by themselves.
+
+171
+00:17:06.000 --> 00:17:09.450
+One last thing, which points at the rest of the course.
+
+172
+00:17:09.450 --> 00:17:21.775
+Everything in this session rests on a substitution matrix, and a substitution matrix is an explicit, readable model of evolution: log-odds of substitutions, counted in related proteins.
+
+173
+00:17:21.775 --> 00:17:27.300
+You can open BLOSUM sixty-two, look at a number, and say why it is what it is.
+
+174
+00:17:27.300 --> 00:17:30.250
+Recent methods do not work that way.
+
+175
+00:17:30.250 --> 00:17:45.225
+TM-Vec is a deep network trained to predict the structural similarity of two proteins — their TM-score — directly from their sequences, with no substitution matrix anywhere, and it finds remote homologs better than sequence alignment does.
+
+176
+00:17:45.225 --> 00:17:50.525
+DeepBLAST, from the same work, produces the alignment itself from sequence alone.
+
+177
+00:17:50.525 --> 00:18:04.375
+Foldseek takes another route: it describes each residue's three-dimensional environment as a letter from a twenty-letter structural alphabet, turning a structure into a string, and then aligns those strings with fast sequence-search machinery.
+
+178
+00:18:04.375 --> 00:18:17.025
+The result is four to five orders of magnitude faster than structural aligners, at eighty-six, eighty-eight and a hundred and thirty-three per cent of the sensitivity of Dali, TM-align and CE respectively.
+
+179
+00:18:17.025 --> 00:18:20.250
+So here is the question I want to leave with you.
+
+180
+00:18:20.250 --> 00:18:27.175
+A substitution matrix is a hypothesis about evolution that you can read, argue with, and reject.
+
+181
+00:18:27.175 --> 00:18:31.775
+A learned similarity works better and cannot be read the same way.
+
+182
+00:18:31.775 --> 00:18:41.000
+Is it still a hypothesis about evolution, or has it become something else — a prediction that happens to be right, with no claim about history attached?
+
+183
+00:18:41.000 --> 00:18:47.725
+I do not think that question has a settled answer, and it comes back in every remaining session of this course.
+
+184
+00:18:48.325 --> 00:18:51.800
+To summarise the session in three sentences.
+
+185
+00:18:51.800 --> 00:19:00.675
+Dynamic programming finds the optimal alignment for a given scoring scheme — guaranteed optimal, and that guarantee is real and worth something.
+
+186
+00:19:00.675 --> 00:19:07.250
+The scoring scheme is a choice: a substitution matrix, a gap-opening cost, a gap-extension cost.
+
+187
+00:19:07.250 --> 00:19:15.975
+Change the choice and you change the answer, which means the optimum is optimal with respect to your assumptions rather than with respect to the truth.
+
+188
+00:19:15.975 --> 00:19:21.850
+And a high score still has to beat chance, which is why Session five's E-values exist.
+
+189
+00:19:21.850 --> 00:19:33.275
+Beyond two sequences, a multiple alignment gives you something a pair cannot: each column becomes a distribution over amino acids, showing what the family keeps and what it lets vary.
+
+190
+00:19:33.275 --> 00:19:41.900
+In the globins that was two absolutely conserved residues and a great many positions conserved as chemistry rather than as identity.
+
+191
+00:19:41.900 --> 00:19:45.725
+Those column distributions are the bridge to the next session.
+
+192
+00:19:45.725 --> 00:19:49.700
+Session five turns them into position-specific scores.
+
+193
+00:19:50.300 --> 00:19:52.425
+That is Session four.
+
+194
+00:19:52.425 --> 00:20:03.500
+The notebook implements Needleman-Wunsch and Smith-Waterman from scratch, filling a matrix one cell at a time with the reasoning printed out, and then builds the globin gene tree by neighbour joining.
+
+195
+00:20:03.500 --> 00:20:17.625
+The lab has you fill a matrix by hand with BLOSUM sixty-two, see how much the answer moves when the matrix and gap penalties change, build a small multiple alignment, and work out column entropies before drawing the globin logo.
+
+196
+00:20:17.625 --> 00:20:21.875
+Session five takes up the two problems this session leaves open.
+
+197
+00:20:21.875 --> 00:20:29.775
+Needleman-Wunsch does not scale to searching one sequence against an entire database — that is what BLAST's heuristic is for.
+
+198
+00:20:29.775 --> 00:20:35.350
+And once you have many aligned sequences rather than two, you can build a profile from them.
+
+199
+00:20:35.350 --> 00:20:36.975
+See you there.
+

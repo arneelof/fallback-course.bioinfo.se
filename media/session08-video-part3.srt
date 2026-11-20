@@ -1,0 +1,600 @@
+1
+00:00:00,000 --> 00:00:01,475
+Block three.
+
+2
+00:00:01,475 --> 00:00:03,875
+Towards training networks.
+
+3
+00:00:03,875 --> 00:00:08,125
+On the page, this block is the section "Towards training networks".
+
+4
+00:00:08,125 --> 00:00:12,825
+We have posed the problem and we know how to tell whether an answer is any good.
+
+5
+00:00:12,825 --> 00:00:22,225
+The rest of this session is practical: the pieces a neural network is made of, and how you write one in PyTorch, so that Session nine can train it properly.
+
+6
+00:00:22,825 --> 00:00:28,400
+One architectural idea before the code, because it is the one that keeps coming back.
+
+7
+00:00:28,400 --> 00:00:34,300
+How a layer is wired decides how many weights it has, and therefore how much data it needs.
+
+8
+00:00:34,300 --> 00:00:43,700
+Fully connected, which in PyTorch is nn dot Linear, and which is what Sessions eight and nine use: every input is connected to every output.
+
+9
+00:00:43,700 --> 00:00:50,250
+The number of weights is the number of inputs times the number of outputs, so it grows with the size of the input.
+
+10
+00:00:50,250 --> 00:00:55,150
+Give it a longer sequence or a bigger image and the layer grows accordingly.
+
+11
+00:00:55,150 --> 00:01:05,600
+The alternative is local connections with shared weights: each output looks at only a small window of the input, and the same small set of weights is used at every position.
+
+12
+00:01:05,600 --> 00:01:09,825
+That is convolution, and it is Session ten's whole subject.
+
+13
+00:01:09,825 --> 00:01:23,550
+I am flagging it now because the comparison is the clearest demonstration in the course of a general principle: an architecture is a set of assumptions about your data, and the right assumptions are worth more than extra parameters.
+
+14
+00:01:23,550 --> 00:01:29,725
+Today we use the fully connected version, which assumes nothing and therefore has to learn everything.
+
+15
+00:01:30,325 --> 00:01:37,650
+A short slide to set expectations about the biological analogy, since we are about to use the word network a great deal.
+
+16
+00:01:37,650 --> 00:01:43,975
+Real neurons fire discrete spikes, and information is carried in their timing as well as their rate.
+
+17
+00:01:43,975 --> 00:01:50,300
+Real brains loop back on themselves constantly, with feedback from later areas to earlier ones.
+
+18
+00:01:50,300 --> 00:01:56,250
+Real brains are sparsely connected: each neuron contacts a small fraction of the others.
+
+19
+00:01:56,250 --> 00:02:00,350
+Our artificial units output one number, not a spike train.
+
+20
+00:02:00,350 --> 00:02:07,675
+The networks in Sessions eight to ten are strictly feed-forward: information goes in one direction, with no loops.
+
+21
+00:02:07,675 --> 00:02:11,350
+And a fully connected layer is the opposite of sparse.
+
+22
+00:02:11,350 --> 00:02:15,700
+So the analogy is loose, and it is loose in ways that matter.
+
+23
+00:02:15,700 --> 00:02:25,800
+I say this not to be pedantic but because the vocabulary invites over-reading, and you will meet claims in the literature that lean on the analogy much harder than it can bear.
+
+24
+00:02:25,800 --> 00:02:30,475
+What the analogy did was historical: it suggested the architecture.
+
+25
+00:02:30,475 --> 00:02:34,425
+What justifies the architecture today is that it works.
+
+26
+00:02:35,025 --> 00:02:42,850
+A map of the rest of the course, in one slide, organised by the only question that matters: what does each architecture assume?
+
+27
+00:02:42,850 --> 00:02:50,325
+Feed-forward networks, which are today and PHD from Session seven: assume nothing about the structure of the input.
+
+28
+00:02:50,325 --> 00:02:54,775
+Every input position is treated as unrelated to every other.
+
+29
+00:02:54,775 --> 00:02:58,850
+Maximum flexibility, maximum data requirement.
+
+30
+00:02:58,850 --> 00:03:07,200
+Convolutional networks, Session ten: assume that nearby inputs belong together and that a pattern means the same thing wherever it occurs.
+
+31
+00:03:07,200 --> 00:03:11,550
+Good for images, for sequence motifs, and for contact maps.
+
+32
+00:03:11,550 --> 00:03:21,250
+Recurrent networks and transformers, Session eleven: assume that the input is a sequence with an order, and provide machinery for relating distant positions.
+
+33
+00:03:21,250 --> 00:03:24,350
+Signal peptides and language models.
+
+34
+00:03:24,350 --> 00:03:32,900
+And then Session twelve: AlphaFold, which builds in assumptions about geometry, and diffusion models, which generate rather than predict.
+
+35
+00:03:32,900 --> 00:03:42,450
+That is the whole second half of the course on one slide, and the single thread through it is that each architecture is a different bet about what structure your data has.
+
+36
+00:03:43,050 --> 00:03:47,800
+Back to the smallest practical details, because Session nine needs them.
+
+37
+00:03:47,800 --> 00:03:56,925
+Session seven already told you the problem with the step function: its derivative is zero almost everywhere, so gradient descent gets no signal.
+
+38
+00:03:56,925 --> 00:04:06,675
+Backpropagation, which is Session nine's subject, is gradient descent applied layer by layer, and it needs the derivative of every activation on the way back.
+
+39
+00:04:06,675 --> 00:04:09,350
+A step function stops it dead.
+
+40
+00:04:09,350 --> 00:04:12,100
+So, the three you will actually use.
+
+41
+00:04:12,100 --> 00:04:15,500
+The sigmoid, which maps to between nought and one.
+
+42
+00:04:15,500 --> 00:04:19,425
+Use it for a binary output, where you want a probability.
+
+43
+00:04:19,425 --> 00:04:23,075
+Tanh, which maps to between minus one and plus one.
+
+44
+00:04:23,075 --> 00:04:31,350
+Same S shape, but centred on zero, which is often better behaved inside a network because the outputs do not all have the same sign.
+
+45
+00:04:31,350 --> 00:04:36,725
+And the ReLU: if the number is negative, output zero, otherwise output the number.
+
+46
+00:04:36,725 --> 00:04:41,575
+This is the default for hidden layers in essentially all modern networks.
+
+47
+00:04:41,575 --> 00:04:52,125
+It has a kink at zero where the derivative is not defined, which sounds fatal and is not: everywhere else the slope is exactly one or exactly zero, and that is enough.
+
+48
+00:04:52,125 --> 00:04:59,200
+Why the choice matters more in deep networks than shallow ones is the vanishing-gradient discussion in Session nine.
+
+49
+00:04:59,200 --> 00:05:03,575
+For now: sigmoid or softmax at the output, ReLU in the middle.
+
+50
+00:05:04,175 --> 00:05:09,900
+For more than two classes you need the generalisation of the sigmoid, which is the softmax.
+
+51
+00:05:09,900 --> 00:05:16,650
+It takes the K raw scores coming out of your network and turns them into K positive numbers that sum to one.
+
+52
+00:05:16,650 --> 00:05:23,000
+The formula is: e to the power of each score, divided by the sum of e to the power of all the scores.
+
+53
+00:05:23,000 --> 00:05:25,475
+Two properties worth knowing.
+
+54
+00:05:25,475 --> 00:05:28,775
+First, it never changes which class wins.
+
+55
+00:05:28,775 --> 00:05:34,925
+Exponentiating is monotonic, so the biggest score before is the biggest probability after.
+
+56
+00:05:34,925 --> 00:05:39,300
+Softmax does not make decisions; it makes numbers comparable.
+
+57
+00:05:39,300 --> 00:05:47,200
+Second, and this is the same warning as with the sigmoid earlier: numbers that sum to one are not automatically probabilities.
+
+58
+00:05:47,200 --> 00:05:56,250
+The five perceptrons on our toy problem were not trained with cross-entropy, so their softmax outputs sum to one and should not be read as confidence.
+
+59
+00:05:56,250 --> 00:06:07,900
+When you do train with cross-entropy, which is Session nine, softmax outputs can reasonably be interpreted as probability estimates, and you should still check their calibration on held-out data.
+
+60
+00:06:07,900 --> 00:06:15,050
+A small aside that ties things together: the entropy of the softmax output tells you how confident the model is.
+
+61
+00:06:15,050 --> 00:06:24,425
+Zero bits means completely certain; log to base two of five, about two point three two bits, means it cannot tell the five classes apart at all.
+
+62
+00:06:24,425 --> 00:06:27,675
+That is Session one's entropy, doing a job.
+
+63
+00:06:27,675 --> 00:06:33,700
+And for two classes, softmax reduces exactly to logistic regression with a sigmoid.
+
+64
+00:06:33,700 --> 00:06:35,700
+They are the same thing.
+
+65
+00:06:36,300 --> 00:06:41,625
+One practical PyTorch point that catches everyone once, and costs an afternoon.
+
+66
+00:06:41,625 --> 00:06:44,950
+Your model should not apply the softmax itself.
+
+67
+00:06:44,950 --> 00:06:59,050
+In PyTorch, nn dot CrossEntropyLoss expects the raw scores, which are conventionally called logits, and applies the log-softmax internally, combined with the negative log-likelihood, in one numerically stable operation.
+
+68
+00:06:59,050 --> 00:07:06,050
+If you apply a softmax in your model and then pass the result to CrossEntropyLoss, you have applied softmax twice.
+
+69
+00:07:06,050 --> 00:07:12,425
+The model will still train, which is the cruel part, and it will train badly, and nothing will tell you why.
+
+70
+00:07:12,425 --> 00:07:16,100
+The reason the library does it this way is numerical.
+
+71
+00:07:16,100 --> 00:07:28,825
+Exponentiating large numbers overflows, and taking logarithms of tiny ones loses precision; doing the two operations together lets the library rearrange the arithmetic into a form that is stable.
+
+72
+00:07:28,825 --> 00:07:33,400
+So the rule: model outputs logits, loss function handles the rest.
+
+73
+00:07:33,400 --> 00:07:41,300
+When you want actual probabilities, for reporting or for plotting, apply softmax yourself afterwards, outside the training loop.
+
+74
+00:07:41,900 --> 00:07:44,700
+And here is how a model is written.
+
+75
+00:07:44,700 --> 00:07:49,300
+Three pieces, and once you have seen them you can read any PyTorch code.
+
+76
+00:07:49,300 --> 00:07:53,675
+A model is a Python class that inherits from nn dot Module.
+
+77
+00:07:53,675 --> 00:07:57,850
+In its constructor you create the layers and store them as attributes.
+
+78
+00:07:57,850 --> 00:08:02,900
+That is how PyTorch discovers your parameters: it looks at what you stored.
+
+79
+00:08:02,900 --> 00:08:10,575
+And you write a method called forward, which takes an input tensor and returns an output tensor, by calling the layers in order.
+
+80
+00:08:10,575 --> 00:08:13,175
+You do not write the backward pass.
+
+81
+00:08:13,175 --> 00:08:19,325
+Automatic differentiation, which you met in Session two, constructs it from your forward pass.
+
+82
+00:08:19,325 --> 00:08:29,200
+To make this concrete: the entire five-perceptron classifier for our three-by-three problem is one line, nn dot Linear, nine inputs to five outputs.
+
+83
+00:08:29,200 --> 00:08:33,950
+Fifty parameters: five times nine weights, plus five biases.
+
+84
+00:08:33,950 --> 00:08:37,175
+And here is the check that I think makes it click.
+
+85
+00:08:37,175 --> 00:08:47,700
+Take the weights from the five perceptrons we trained by hand earlier in the session, copy them into that nn dot Linear layer, and the PyTorch model makes identical predictions.
+
+86
+00:08:47,700 --> 00:08:49,875
+Nothing has been added.
+
+87
+00:08:49,875 --> 00:08:57,850
+The library is not doing anything cleverer than what you already wrote; it is doing the same arithmetic with the bookkeeping handled for you.
+
+88
+00:08:58,450 --> 00:09:01,975
+Now the real model, which Session nine will train.
+
+89
+00:09:01,975 --> 00:09:11,025
+The input is a protein sequence: a hundred and fifty residues, one-hot encoded as twenty numbers each, flattened to three thousand inputs.
+
+90
+00:09:11,025 --> 00:09:15,575
+Then one hidden layer of sixty-four units with ReLU activations.
+
+91
+00:09:15,575 --> 00:09:19,825
+Then an output layer giving five logits, one per compartment.
+
+92
+00:09:19,825 --> 00:09:21,500
+That is it.
+
+93
+00:09:21,500 --> 00:09:24,800
+It is Session seven's picture two, at scale.
+
+94
+00:09:24,800 --> 00:09:34,025
+And I would like you to do one thing every single time you build a network, which is what the slide shows: push one batch through it untrained and check the shapes.
+
+95
+00:09:34,025 --> 00:09:39,975
+A hundred and five validation proteins go in as a hundred and five by three thousand.
+
+96
+00:09:39,975 --> 00:09:43,150
+A hundred and five by five comes out.
+
+97
+00:09:43,150 --> 00:09:50,775
+If those are right, your wiring is right, and you have eliminated the most common class of error before you have waited for any training.
+
+98
+00:09:50,775 --> 00:09:55,250
+One number to notice, because Session ten will use it against us.
+
+99
+00:09:55,250 --> 00:10:01,900
+The first layer alone is three thousand times sixty-four weights, about a hundred and ninety-two thousand.
+
+100
+00:10:01,900 --> 00:10:05,525
+From four hundred and eighty-six training proteins.
+
+101
+00:10:05,525 --> 00:10:08,175
+Hold that ratio in your head.
+
+102
+00:10:08,775 --> 00:10:13,825
+And the last experiment of the session, which is a baseline you should always have.
+
+103
+00:10:13,825 --> 00:10:20,500
+Take that network, with its random initial weights, and evaluate it on the homology-aware validation set.
+
+104
+00:10:20,500 --> 00:10:22,500
+No training at all.
+
+105
+00:10:22,500 --> 00:10:25,250
+Accuracy nought point one eight one.
+
+106
+00:10:25,250 --> 00:10:28,975
+MCC minus nought point zero two seven.
+
+107
+00:10:28,975 --> 00:10:32,025
+AUROC nought point four seven four.
+
+108
+00:10:32,025 --> 00:10:33,950
+Look at those three.
+
+109
+00:10:33,950 --> 00:10:40,375
+With five balanced classes, chance accuracy is nought point two, and we got nought point one eight one.
+
+110
+00:10:40,375 --> 00:10:45,900
+MCC of chance is zero, and we got minus nought point zero two seven.
+
+111
+00:10:45,900 --> 00:10:51,175
+AUROC of chance is nought point five, and we got nought point four seven four.
+
+112
+00:10:51,175 --> 00:10:57,400
+All three say the same thing: this is chance, give or take the noise of a hundred and five proteins.
+
+113
+00:10:57,400 --> 00:10:58,750
+Why bother?
+
+114
+00:10:58,750 --> 00:11:05,600
+Because this is what your metrics look like when nothing has been learned, on your data, with your evaluation code.
+
+115
+00:11:05,600 --> 00:11:11,500
+If you ever train a model and get numbers in this region, you know the problem is upstream of the model.
+
+116
+00:11:11,500 --> 00:11:19,200
+And if your untrained network scores well above chance, you have a bug, and probably a leak, and you have found it in thirty seconds.
+
+117
+00:11:19,200 --> 00:11:26,550
+Session nine trains this exact network, with the same metrics and the same split, so that the comparison is honest.
+
+118
+00:11:27,150 --> 00:11:35,400
+Before the summary, I want to put the central message of today in its proper context, because it would be easy to hear it as classroom pedantry.
+
+119
+00:11:35,400 --> 00:11:46,150
+Kapoor and Narayanan went looking for data leakage across machine-learning-based science and found it in seventeen different fields, affecting three hundred and twenty-nine papers.
+
+120
+00:11:46,150 --> 00:11:56,575
+They describe eight distinct types, from textbook errors such as having no test set at all, or preprocessing before splitting, to subtle ones of the kind we have been discussing.
+
+121
+00:11:56,575 --> 00:11:59,225
+One example worth the detail.
+
+122
+00:11:59,225 --> 00:12:07,475
+In a re-analysis of work predicting civil wars, complex machine learning models had been reported as beating logistic regression.
+
+123
+00:12:07,475 --> 00:12:12,075
+Once the leakage was fixed, the advantage disappeared entirely.
+
+124
+00:12:12,075 --> 00:12:16,800
+The headline finding of a literature was an artefact of evaluation.
+
+125
+00:12:16,800 --> 00:12:22,775
+In protein science, our characteristic leak is homology, and you now know how to prevent it.
+
+126
+00:12:22,775 --> 00:12:29,525
+But large models make the problem harder in a new way, and the question on the slide is a genuinely open one.
+
+127
+00:12:29,525 --> 00:12:37,900
+Modern protein language models are trained on essentially all of UniProt, and structure predictors on essentially all of the PDB.
+
+128
+00:12:37,900 --> 00:12:42,250
+So: how would you prove that such a model never saw your test protein?
+
+129
+00:12:42,250 --> 00:12:47,850
+Think about it for a moment before I give you the answer, because the answer is uncomfortable.
+
+130
+00:12:47,850 --> 00:12:51,125
+Essentially, you cannot, not from the outside.
+
+131
+00:12:51,125 --> 00:12:58,000
+You can check sequence identity against the training set if the training set was published, which it often is not.
+
+132
+00:12:58,000 --> 00:13:10,725
+Otherwise your only sound options are a time split, using data created after the model was trained, or a genuinely blind test like CASP, where the answers did not exist when the prediction was made.
+
+133
+00:13:10,725 --> 00:13:17,500
+That is the state of the art in honest evaluation, and it is worth knowing that it is this unsatisfactory.
+
+134
+00:13:18,100 --> 00:13:21,100
+Let me put the whole session on one slide.
+
+135
+00:13:21,100 --> 00:13:23,600
+Pose the problem from the label.
+
+136
+00:13:23,600 --> 00:13:29,600
+The label decides regression or classification, and that decides your loss and your metrics.
+
+137
+00:13:29,600 --> 00:13:31,600
+Split three ways.
+
+138
+00:13:31,600 --> 00:13:36,400
+Train on one, choose on the second, and look at the third once, at the very end.
+
+139
+00:13:36,400 --> 00:13:44,875
+Report MCC, or precision and recall, next to accuracy, because accuracy alone flatters a model on unbalanced data.
+
+140
+00:13:44,875 --> 00:13:53,550
+For regression, report RMSE and R squared next to the correlation, because correlation alone cannot tell you whether the predictions are right.
+
+141
+00:13:53,550 --> 00:14:02,150
+Split proteins by homology, not at random, because a relative in the training set is a relative in the test set, and your model will use it.
+
+142
+00:14:02,150 --> 00:14:09,625
+And underneath all four: evaluate on data the model has never seen, in the strongest sense of never that you can arrange.
+
+143
+00:14:10,225 --> 00:14:12,300
+That is Session eight.
+
+144
+00:14:12,300 --> 00:14:16,550
+Session nine opens the box we have been carefully keeping shut.
+
+145
+00:14:16,550 --> 00:14:19,275
+How does a network actually learn?
+
+146
+00:14:19,275 --> 00:14:30,300
+Backpropagation, the training loop, and then most of the session on the many ways training fails: vanishing gradients, learning rates, overfitting, and what regularisation does about it.
+
+147
+00:14:30,300 --> 00:14:38,050
+It trains the exact network we built today, on the exact split we built today, so you will be able to see what the training bought.
+
+148
+00:14:38,050 --> 00:14:46,725
+The Session eight page has all of this written out, and its "Check your understanding" section at the end is the fastest way to find out whether it stuck.
+
+149
+00:14:46,725 --> 00:14:50,775
+The course notebook is linked in the box under the page's title.
+
+150
+00:14:50,775 --> 00:14:52,400
+See you there.
+

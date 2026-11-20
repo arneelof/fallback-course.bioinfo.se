@@ -1,0 +1,884 @@
+1
+00:00:00,000 --> 00:00:02,450
+Welcome to Session eleven.
+
+2
+00:00:02,450 --> 00:00:05,275
+Session ten ended on a problem.
+
+3
+00:00:05,275 --> 00:00:15,625
+Our convolutional network found the hydrophobic core of a signal peptide on its own, which was a lovely result, and then global average pooling threw away where it found it.
+
+4
+00:00:15,625 --> 00:00:25,475
+And that matters, because a hydrophobic stretch at the start of a protein is a signal peptide, while the same stretch in the middle is probably a transmembrane helix.
+
+5
+00:00:25,475 --> 00:00:28,100
+The network knew the pattern occurred.
+
+6
+00:00:28,100 --> 00:00:30,150
+It did not know where.
+
+7
+00:00:30,150 --> 00:00:36,475
+Today we fix that, and in fixing it we arrive at the architecture that everything modern is built on.
+
+8
+00:00:36,475 --> 00:00:41,625
+There are two questions in this session, and it is worth holding both from the start.
+
+9
+00:00:41,625 --> 00:00:46,325
+The first is: how can a model use context from the rest of a sequence?
+
+10
+00:00:46,325 --> 00:00:48,625
+We will see three answers.
+
+11
+00:00:48,625 --> 00:00:54,325
+The convolutional one from Session ten, where context grows slowly as you stack layers.
+
+12
+00:00:54,325 --> 00:00:59,050
+The recurrent one, where a memory is carried along the sequence step by step.
+
+13
+00:00:59,050 --> 00:01:05,000
+And attention, where every position consults every other position directly, in one step.
+
+14
+00:01:05,000 --> 00:01:13,300
+The second question is different in kind: how do we learn useful representations when labels are scarce but sequences are abundant?
+
+15
+00:01:13,300 --> 00:01:16,950
+Because that is the actual situation in biology.
+
+16
+00:01:16,950 --> 00:01:24,750
+We have hundreds of millions of protein sequences and we have, for most interesting properties, a few thousand labels at best.
+
+17
+00:01:24,750 --> 00:01:26,375
+Three blocks.
+
+18
+00:01:26,375 --> 00:01:31,300
+The recurrent network and the LSTM, applied to signal peptides.
+
+19
+00:01:31,300 --> 00:01:35,150
+Attention, Transformers and protein language models.
+
+20
+00:01:35,150 --> 00:01:39,650
+And then what pretraining actually changed, measured on the same task.
+
+21
+00:01:39,650 --> 00:01:50,975
+And signal peptides run through the entire session, as they have run through this course since Session four, because SignalP's thirty-year history happens to contain every architecture we have studied.
+
+22
+00:01:50,975 --> 00:01:57,150
+Everything in this lecture is also written out in full on the Session eleven page of the course book.
+
+23
+00:01:57,150 --> 00:02:05,375
+The page is the reference and this is the walk through it, so whenever a number or a name goes past too quickly, that is where to look it up.
+
+24
+00:02:05,375 --> 00:02:09,400
+I will say which part of the page we are in as each block starts.
+
+25
+00:02:10,000 --> 00:02:16,300
+Here are the three answers side by side, because I want the shape of the session visible before we start.
+
+26
+00:02:16,300 --> 00:02:19,325
+A convolutional network, Session ten.
+
+27
+00:02:19,325 --> 00:02:24,000
+Each layer sees a small window, and stacking layers widens the view.
+
+28
+00:02:24,000 --> 00:02:34,550
+Context grows with depth, which means that to relate two positions a hundred residues apart you need a deep network, and the information passes through every layer in between.
+
+29
+00:02:34,550 --> 00:02:37,575
+A recurrent network, which is Block one.
+
+30
+00:02:37,575 --> 00:02:46,200
+The model reads the sequence one position at a time and carries a hidden state: a vector that summarises everything it has read so far.
+
+31
+00:02:46,200 --> 00:02:49,325
+Context arrives step by step, in order.
+
+32
+00:02:49,325 --> 00:02:51,850
+Attention, which is Block two.
+
+33
+00:02:51,850 --> 00:02:58,600
+Every position compares itself with every other position directly and decides which ones to listen to.
+
+34
+00:02:58,600 --> 00:03:03,450
+Any distance, in one step, with no intermediate layers to pass through.
+
+35
+00:03:03,450 --> 00:03:13,050
+Those three are the whole architectural story of modern sequence modelling, and each has a characteristic weakness, which I will ask you about at the end of the session.
+
+36
+00:03:13,050 --> 00:03:19,300
+And then, written across the bottom of the slide, the second question: what do we do when labels are scarce?
+
+37
+00:03:19,300 --> 00:03:21,075
+Hold that one.
+
+38
+00:03:21,075 --> 00:03:24,500
+It turns out to have the same answer as the first.
+
+39
+00:03:25,100 --> 00:03:26,575
+Block one.
+
+40
+00:03:26,575 --> 00:03:29,925
+How can a model remember sequence context?
+
+41
+00:03:29,925 --> 00:03:35,250
+On the page, this block is the section "How can a model remember sequence context?".
+
+42
+00:03:35,250 --> 00:03:49,225
+We build a recurrent network, find out exactly how it fails, meet the LSTM that fixes it, and then apply the result to a real annotation problem: labelling which residues of a protein belong to a signal peptide.
+
+43
+00:03:49,225 --> 00:03:53,400
+And the key result of this block is not about architecture at all.
+
+44
+00:03:53,400 --> 00:03:55,575
+It is about direction.
+
+45
+00:03:56,175 --> 00:04:00,000
+Here is the recurrent idea, and it is a simple one.
+
+46
+00:04:00,000 --> 00:04:03,775
+The model reads the sequence one residue at a time.
+
+47
+00:04:03,775 --> 00:04:13,500
+At each step it has a hidden state, which is just a vector of numbers, and you should think of that vector as its memory: a summary of everything it has read so far.
+
+48
+00:04:13,500 --> 00:04:16,300
+At each position it does one thing.
+
+49
+00:04:16,300 --> 00:04:21,075
+It takes the current residue and the old memory, and computes a new memory.
+
+50
+00:04:21,075 --> 00:04:25,925
+New memory equals some function of this residue and the previous memory.
+
+51
+00:04:25,925 --> 00:04:27,825
+Look at the picture.
+
+52
+00:04:27,825 --> 00:04:33,025
+The blue arrows coming up from below are the residues entering, one per position.
+
+53
+00:04:33,025 --> 00:04:37,800
+The orange arrows running left to right are the memory being carried along.
+
+54
+00:04:37,800 --> 00:04:46,525
+And now the crucial detail, which is the same trick as Session ten's convolution in different clothing: it is the same weights at every position.
+
+55
+00:04:46,525 --> 00:04:51,500
+One set of weights, applied again and again as the model walks along the sequence.
+
+56
+00:04:51,500 --> 00:04:54,450
+That has a consequence worth stating.
+
+57
+00:04:54,450 --> 00:04:58,425
+The number of weights does not depend on the length of the protein.
+
+58
+00:04:58,425 --> 00:05:07,425
+One network handles a protein of fifty residues and a protein of five hundred, because it is the same step, repeated a different number of times.
+
+59
+00:05:08,025 --> 00:05:12,725
+Let me put concrete sizes on that, because the shapes are what make it real.
+
+60
+00:05:12,725 --> 00:05:16,875
+Each residue enters as an embedding of twenty-four numbers.
+
+61
+00:05:16,875 --> 00:05:23,150
+An embedding is a lookup table: one row of trainable numbers for each of the twenty amino acids.
+
+62
+00:05:23,150 --> 00:05:32,150
+Instead of representing leucine by a one-hot vector of nineteen zeros and a one, you give it twenty-four numbers that the network learns for itself.
+
+63
+00:05:32,150 --> 00:05:43,450
+And as Session seven noted in passing, an embedding layer is nothing but a linear layer applied to a one-hot vector: multiplying a one-hot vector by a matrix picks out one row.
+
+64
+00:05:43,450 --> 00:05:46,975
+The novelty is in the name, not the mathematics.
+
+65
+00:05:46,975 --> 00:05:50,475
+The memory, the hidden state, has forty-eight numbers.
+
+66
+00:05:50,475 --> 00:05:53,125
+So there are two weight matrices.
+
+67
+00:05:53,125 --> 00:06:00,500
+W x h, which turns the incoming residue into something that can update the memory: forty-eight by twenty-four.
+
+68
+00:06:00,500 --> 00:06:05,900
+And W h h, which carries the old memory forward: forty-eight by forty-eight.
+
+69
+00:06:05,900 --> 00:06:12,850
+Those two matrices are the entire recurrent network, and their size does not change with the length of the protein.
+
+70
+00:06:12,850 --> 00:06:17,200
+Forty-eight by twenty-four, and forty-eight by forty-eight, for anything.
+
+71
+00:06:17,800 --> 00:06:20,075
+Now, how do you train it?
+
+72
+00:06:20,075 --> 00:06:25,225
+You backpropagate, as in Session nine, but through every step the network took.
+
+73
+00:06:25,225 --> 00:06:32,575
+If the protein has sixty residues, the gradient from the end has to travel back through sixty steps to reach the beginning.
+
+74
+00:06:32,575 --> 00:06:36,525
+That procedure has a name: backpropagation through time.
+
+75
+00:06:36,525 --> 00:06:40,575
+And if Session nine is fresh, you can already see the problem.
+
+76
+00:06:40,575 --> 00:06:49,225
+At each step backwards, the gradient is multiplied by a factor involving the recurrent weight matrix and the derivative of the activation.
+
+77
+00:06:49,225 --> 00:06:53,500
+Sixty steps means sixty such factors multiplied together.
+
+78
+00:06:53,500 --> 00:06:55,525
+Put numbers on it.
+
+79
+00:06:55,525 --> 00:07:03,775
+If the effective factor is nought point eight, then nought point eight to the power of sixty is one point five times ten to the minus six.
+
+80
+00:07:03,775 --> 00:07:08,825
+The gradient reaching the first residue is a millionth of what left the last one.
+
+81
+00:07:08,825 --> 00:07:10,575
+It vanishes.
+
+82
+00:07:10,575 --> 00:07:16,400
+And if the factor is one point two, then one point two to the sixty is fifty-six thousand.
+
+83
+00:07:16,400 --> 00:07:20,950
+The gradient explodes, and your training diverges on the first batch.
+
+84
+00:07:20,950 --> 00:07:25,200
+This is exactly Session nine's vanishing gradient problem.
+
+85
+00:07:25,200 --> 00:07:28,600
+The only difference is the direction it runs in.
+
+86
+00:07:28,600 --> 00:07:34,925
+In Session nine the gradient had to travel back through layers; here it travels back along the sequence.
+
+87
+00:07:34,925 --> 00:07:38,125
+Same multiplication, same catastrophe.
+
+88
+00:07:38,125 --> 00:07:42,825
+So a simple recurrent network cannot learn long-range dependencies.
+
+89
+00:07:42,825 --> 00:07:49,625
+In practice it remembers the last handful of positions and nothing more, which for a protein is not much use.
+
+90
+00:07:50,225 --> 00:07:57,125
+The fix is the LSTM, the long short-term memory, and the central idea is one word: addition.
+
+91
+00:07:57,125 --> 00:08:06,750
+In a simple recurrent network, the memory is recomputed from scratch at every step, which is why the gradient gets multiplied by something every time.
+
+92
+00:08:06,750 --> 00:08:18,025
+In an LSTM there is a separate memory, called the cell state, which is carried forward and changed only by multiplying by a number between nought and one and then adding something.
+
+93
+00:08:18,025 --> 00:08:25,200
+Because the path along the cell state is addition, the gradient flowing back along it is not being squashed at every step.
+
+94
+00:08:25,200 --> 00:08:33,475
+The machinery for deciding what to add and what to keep is a set of gates, each a little network that outputs a number between nought and one.
+
+95
+00:08:33,475 --> 00:08:37,475
+The forget gate decides how much of the old memory to keep.
+
+96
+00:08:37,475 --> 00:08:42,150
+The input gate decides how much of the new candidate value to add.
+
+97
+00:08:42,150 --> 00:08:47,375
+The output gate decides how much of the memory to expose as this step's output.
+
+98
+00:08:47,375 --> 00:08:49,600
+Keep, add, expose.
+
+99
+00:08:49,600 --> 00:08:51,775
+That is the whole thing.
+
+100
+00:08:51,775 --> 00:09:02,675
+There is also the GRU, the gated recurrent unit, which does the same job with two gates and no separate cell state, and often performs about the same with fewer parameters.
+
+101
+00:09:02,675 --> 00:09:09,175
+One honest qualification, which I will repeat on the next slide: this mitigates vanishing gradients.
+
+102
+00:09:09,175 --> 00:09:11,425
+It does not abolish them.
+
+103
+00:09:11,425 --> 00:09:20,825
+The additive path works as long as the forget gates stay close to one, and how long a dependency an LSTM can actually learn depends on the task.
+
+104
+00:09:21,425 --> 00:09:27,950
+This slide is the inside of the cell, and I want to walk the one line that matters rather than every arrow.
+
+105
+00:09:27,950 --> 00:09:34,575
+In the diagram, blue is a sigmoid gate, which outputs between nought and one and therefore acts as a valve.
+
+106
+00:09:34,575 --> 00:09:40,000
+Green is a new candidate value, computed from the input and the previous output.
+
+107
+00:09:40,000 --> 00:09:43,625
+And the orange line running across is the cell state.
+
+108
+00:09:43,625 --> 00:09:46,675
+Follow the orange line from left to right.
+
+109
+00:09:46,675 --> 00:09:49,700
+It is multiplied by the forget gate.
+
+110
+00:09:49,700 --> 00:09:52,275
+Then something is added to it.
+
+111
+00:09:52,275 --> 00:09:54,400
+And then it continues.
+
+112
+00:09:54,400 --> 00:09:56,900
+That is all that happens to it.
+
+113
+00:09:56,900 --> 00:10:00,125
+No squashing function sits on that path.
+
+114
+00:10:00,125 --> 00:10:02,300
+Nothing compresses it.
+
+115
+00:10:02,300 --> 00:10:15,600
+Which is exactly why the gradient can flow back along it over many steps: going backwards along an addition does not shrink anything, and going backwards along a multiplication by a forget gate near one does not shrink much either.
+
+116
+00:10:15,600 --> 00:10:23,825
+Compare that with the simple recurrent network, where the memory went through an activation function at every step and was shrunk every time.
+
+117
+00:10:23,825 --> 00:10:27,525
+The GRU, on the right, has no separate cell state.
+
+118
+00:10:27,525 --> 00:10:37,650
+Its update gate z mixes the old state and the new candidate directly, and its reset gate r decides how much of the old state the candidate is even allowed to see.
+
+119
+00:10:37,650 --> 00:10:47,550
+And a reassurance about this kind of diagram: in the notebook the gate equations are written out by hand and checked against PyTorch's nn dot LSTMCell.
+
+120
+00:10:47,550 --> 00:10:50,900
+The maximum difference is zero point zero.
+
+121
+00:10:50,900 --> 00:10:55,650
+There is no hidden magic; it really is these few lines of arithmetic.
+
+122
+00:10:56,250 --> 00:11:02,025
+One more architectural idea, and this is the one that matters most for today's biology.
+
+123
+00:11:02,025 --> 00:11:08,225
+A forward LSTM, reading left to right, knows at each position only what came before.
+
+124
+00:11:08,225 --> 00:11:12,150
+At residue three it has seen residues one, two and three.
+
+125
+00:11:12,150 --> 00:11:13,850
+That is all.
+
+126
+00:11:13,850 --> 00:11:20,625
+A bidirectional LSTM runs two separate LSTMs: one left to right, one right to left.
+
+127
+00:11:20,625 --> 00:11:23,950
+At every position their outputs are combined.
+
+128
+00:11:23,950 --> 00:11:28,800
+So every position sees both what came before it and what comes after it.
+
+129
+00:11:28,800 --> 00:11:33,475
+There is a cost, and it is a real constraint rather than a technicality.
+
+130
+00:11:33,475 --> 00:11:37,225
+You can only do this if you have the whole sequence already.
+
+131
+00:11:37,225 --> 00:11:43,075
+For annotation, which is our task today, that is fine: the protein is sitting there in full.
+
+132
+00:11:43,075 --> 00:11:45,875
+For generation it is impossible.
+
+133
+00:11:45,875 --> 00:11:52,925
+If you are producing a sequence one residue at a time, there is no future to read, because you have not written it yet.
+
+134
+00:11:52,925 --> 00:12:01,150
+That constraint comes back in Block two as the difference between GPT and BERT, and the two cases are exactly analogous.
+
+135
+00:12:01,150 --> 00:12:03,425
+Hold on to that trade.
+
+136
+00:12:03,425 --> 00:12:06,700
+It is the same trade twice in one session.
+
+137
+00:12:07,300 --> 00:12:11,300
+Now the biology, which we have been circling since Session four.
+
+138
+00:12:11,300 --> 00:12:17,750
+A signal peptide is an address at the beginning of a protein that sends it into the secretory pathway.
+
+139
+00:12:17,750 --> 00:12:24,225
+In a eukaryotic cell, into the endoplasmic reticulum; in bacteria, across the inner membrane.
+
+140
+00:12:24,225 --> 00:12:31,350
+Günter Blobel received the Nobel Prize in nineteen ninety-nine for working out that proteins carry such addresses.
+
+141
+00:12:31,350 --> 00:12:34,575
+Structurally it has three regions, in order.
+
+142
+00:12:34,575 --> 00:12:39,375
+An n-region at the very start, which is short and positively charged.
+
+143
+00:12:39,375 --> 00:12:45,050
+Then an h-region, the hydrophobic core, which is the part Session ten's filter found.
+
+144
+00:12:45,050 --> 00:12:52,025
+Then a c-region, which is more polar, and which ends at the cleavage site where an enzyme cuts the signal peptide off.
+
+145
+00:12:52,025 --> 00:13:02,050
+And today's task is per-residue annotation: for each of the first seventy residues of a protein, say whether that residue is part of a signal peptide or not.
+
+146
+00:13:02,050 --> 00:13:05,450
+Notice this is not the task Session ten did.
+
+147
+00:13:05,450 --> 00:13:11,075
+Session ten asked one question per protein; here we want a label per position.
+
+148
+00:13:11,075 --> 00:13:20,025
+Which means, in Session ten's vocabulary, that we want equivariance rather than invariance: shift the sequence and the labels should shift with it.
+
+149
+00:13:20,025 --> 00:13:24,650
+That is why a model that reads the sequence in order is the right tool.
+
+150
+00:13:25,250 --> 00:13:31,175
+Before modelling, look at the data, which is a good habit and in this case genuinely beautiful.
+
+151
+00:13:31,175 --> 00:13:39,125
+These are sequence logos of experimentally supported signal peptides, aligned on the cleavage site, which is the dashed line.
+
+152
+00:13:39,125 --> 00:13:46,750
+The height of a stack is how much information that position carries, and the height of a letter is how often that residue occurs there.
+
+153
+00:13:46,750 --> 00:13:48,800
+Read it from the right.
+
+154
+00:13:48,800 --> 00:13:54,725
+Just before the cleavage site you see small residues at positions minus three and minus one.
+
+155
+00:13:54,725 --> 00:14:04,750
+That is a real, named rule, the minus-three minus-one rule: the enzyme that cuts needs small residues at those two positions, so alanine and glycine dominate there.
+
+156
+00:14:04,750 --> 00:14:10,175
+Move left and you see leucines filling the h-region, which is the hydrophobic core.
+
+157
+00:14:10,175 --> 00:14:17,600
+And in bacteria the n-region, at the far left, is rich in lysine and arginine, the positively charged residues.
+
+158
+00:14:17,600 --> 00:14:20,800
+One honest observation about the figure.
+
+159
+00:14:20,800 --> 00:14:37,225
+The left-hand columns look blurred, and there is a reason: signal peptides differ in length, and the logo is aligned on the cleavage site, so a column some distance to the left mixes residues from the h-region of a short signal peptide with residues from the n-region of a long one.
+
+160
+00:14:37,225 --> 00:14:40,575
+The n-region is therefore smeared, not weak.
+
+161
+00:14:40,575 --> 00:14:47,625
+Note also that the two logos have different vertical scales, so do not compare their heights directly across panels.
+
+162
+00:14:48,225 --> 00:14:55,200
+The dataset, and two decisions in it that I would like you to notice, because both are Session eight's lessons applied.
+
+163
+00:14:55,200 --> 00:14:58,675
+Four thousand nine hundred and ten proteins.
+
+164
+00:14:58,675 --> 00:15:01,550
+The first seventy residues of each.
+
+165
+00:15:01,550 --> 00:15:11,350
+First decision: only signal peptides with experimental evidence are used, those with the evidence code ECO zero zero zero zero two six nine.
+
+166
+00:15:11,350 --> 00:15:13,450
+Why does that matter?
+
+167
+00:15:13,450 --> 00:15:19,725
+Because a great many signal peptide annotations in UniProt were themselves produced by SignalP.
+
+168
+00:15:19,725 --> 00:15:30,475
+If we trained on those, we would be teaching our model to imitate SignalP's predictions, including its mistakes, and then congratulating ourselves when it agreed with SignalP.
+
+169
+00:15:30,475 --> 00:15:35,400
+That is circular, and it is a mistake that is easy to make without noticing.
+
+170
+00:15:35,400 --> 00:15:40,350
+Second decision: transmembrane proteins are included as negatives.
+
+171
+00:15:40,350 --> 00:15:46,875
+And they are deliberately hard negatives, because a transmembrane helix is also a hydrophobic stretch.
+
+172
+00:15:46,875 --> 00:15:56,950
+If your negatives are all soluble cytoplasmic proteins, your model only has to detect hydrophobicity, which is too easy and will fail in the real proteome.
+
+173
+00:15:56,950 --> 00:16:11,200
+And the split is by MMseqs2 clusters, Session eight's homology partitioning, with the signal-peptide fraction kept at about nought point three nine, nought point three nine and nought point four zero across training, validation and test.
+
+174
+00:16:11,800 --> 00:16:15,075
+Now the result, and it is unusually clean.
+
+175
+00:16:15,075 --> 00:16:20,175
+Four models, same data, measured with the Matthews correlation coefficient.
+
+176
+00:16:20,175 --> 00:16:22,700
+A plain window-based model.
+
+177
+00:16:22,700 --> 00:16:28,575
+Then a simple recurrent network: MCC nought point six three one when forward only.
+
+178
+00:16:28,575 --> 00:16:30,875
+Then an LSTM.
+
+179
+00:16:30,875 --> 00:16:35,550
+And then a bidirectional LSTM: nought point eight two zero.
+
+180
+00:16:35,550 --> 00:16:49,625
+And in terms of area under the precision-recall curve: window nought point six eight one, RNN nought point seven seven zero, LSTM nought point seven six seven, bidirectional LSTM nought point nine two zero.
+
+181
+00:16:49,625 --> 00:16:54,900
+Look carefully at those four numbers, because the interesting thing is where the jump is not.
+
+182
+00:16:54,900 --> 00:17:02,775
+Going from the simple recurrent network to the LSTM: nought point seven seven zero to nought point seven six seven.
+
+183
+00:17:02,775 --> 00:17:04,725
+Essentially nothing.
+
+184
+00:17:04,725 --> 00:17:10,325
+All that gate machinery, which is the clever part of the architecture, bought us nothing here.
+
+185
+00:17:10,325 --> 00:17:16,475
+Going from forward to bidirectional: nought point seven six seven to nought point nine two zero.
+
+186
+00:17:16,475 --> 00:17:17,875
+Enormous.
+
+187
+00:17:17,875 --> 00:17:23,600
+So on this task, the architecture that matters is not the one with the sophisticated memory.
+
+188
+00:17:23,600 --> 00:17:27,475
+It is the one that reads the sequence in both directions.
+
+189
+00:17:27,475 --> 00:17:29,375
+Why would that be?
+
+190
+00:17:29,375 --> 00:17:32,100
+Think about it before the next slide.
+
+191
+00:17:32,100 --> 00:17:37,525
+What does a model at residue three actually need to know, and when does it become available?
+
+192
+00:17:38,125 --> 00:17:44,900
+Here is the answer, and it is one of those results that is obvious once stated and would never have occurred to you.
+
+193
+00:17:44,900 --> 00:17:48,025
+Consider residue three of a protein.
+
+194
+00:17:48,025 --> 00:17:52,575
+A forward model, at that point, has seen residues one, two and three.
+
+195
+00:17:52,575 --> 00:17:55,450
+Typically methionine and two others.
+
+196
+00:17:55,450 --> 00:17:58,875
+That is the entire evidence available to it.
+
+197
+00:17:58,875 --> 00:18:02,050
+But what distinguishes a signal peptide?
+
+198
+00:18:02,050 --> 00:18:04,625
+The hydrophobic h-region.
+
+199
+00:18:04,625 --> 00:18:07,650
+And the h-region has not happened yet.
+
+200
+00:18:07,650 --> 00:18:11,150
+It is at positions seven to fifteen or so.
+
+201
+00:18:11,150 --> 00:18:16,850
+The evidence that this residue belongs to a signal peptide arrives after the residue.
+
+202
+00:18:16,850 --> 00:18:21,850
+A forward model is being asked to make a decision before the information exists.
+
+203
+00:18:21,850 --> 00:18:24,650
+And you can measure exactly that.
+
+204
+00:18:24,650 --> 00:18:32,000
+Of the first five residues of real signal peptides, the forward LSTM mislabels seventy-six per cent.
+
+205
+00:18:32,000 --> 00:18:35,700
+The bidirectional one mislabels twelve per cent.
+
+206
+00:18:35,700 --> 00:18:46,750
+Now look at the middle of the signal peptide, residues sixteen to twenty-five, where the h-region has already been seen by both models: nought point two zero against nought point two three.
+
+207
+00:18:46,750 --> 00:18:47,825
+A tie.
+
+208
+00:18:47,825 --> 00:18:52,875
+The forward model is not worse there, because by then it has the evidence too.
+
+209
+00:18:52,875 --> 00:18:57,175
+And there is a mirror-image error, which is just as diagnostic.
+
+210
+00:18:57,175 --> 00:19:10,750
+On proteins that have no signal peptide at all, the forward model wrongly calls the N-terminus a signal peptide: eleven point eight per cent of residues one to ten, against five point three per cent for the bidirectional model.
+
+211
+00:19:10,750 --> 00:19:12,725
+Of course it does.
+
+212
+00:19:12,725 --> 00:19:22,300
+The first few residues of many proteins look plausible, and only the absence of an h-region afterwards rules it out, which the forward model cannot yet see.
+
+213
+00:19:22,300 --> 00:19:31,350
+So the lesson generalises well beyond this task: before choosing an architecture, ask where in the sequence the evidence for your label actually lies.
+
+214
+00:19:31,950 --> 00:19:36,450
+Which brings us to the real tool, and one component we have not met.
+
+215
+00:19:36,450 --> 00:19:45,650
+SignalP version five uses a bidirectional LSTM, which is what we just built, and then puts a conditional random field on top of it.
+
+216
+00:19:45,650 --> 00:19:49,700
+A conditional random field is a structured output layer.
+
+217
+00:19:49,700 --> 00:20:07,125
+The difference from what we have done is this: our model labels each residue independently, so nothing stops it producing a label sequence that is biologically impossible, for instance signal peptide for residues one to five, then not, then signal peptide again for residues eight to twelve.
+
+218
+00:20:07,125 --> 00:20:14,850
+A conditional random field scores the whole label sequence at once, and it learns which transitions between labels are plausible.
+
+219
+00:20:14,850 --> 00:20:22,625
+So it strongly prefers a single contiguous signal peptide starting at residue one, because that is what signal peptides are.
+
+220
+00:20:22,625 --> 00:20:33,550
+It is the same idea as PHD's second level from Session seven, which took the per-residue predictions and cleaned up the implausible segments, done properly and trained jointly.
+
+221
+00:20:33,550 --> 00:20:41,850
+A good general principle hides in here: if your labels have structure, say that structure in the model rather than hoping the model infers it.
+

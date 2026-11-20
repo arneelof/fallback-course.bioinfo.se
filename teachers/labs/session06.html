@@ -1,0 +1,55 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 6 Lab: Protein Structure</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 6 Lab: Protein Structure</h1>
+<p class='meta'>Preview without answers, from <code>labs/session06-pymol-structure.text2qti.md</code> (last change 4637a92 2026-11-20). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='https://course.bioinfo.se/notebooks/session06-lab.ipynb' download>download session06-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>Ten questions, one point each, on protein structure, answered from the measurements and notes you made in session06-lab.ipynb.</p>
+<div class='text'><h2>The notebook</h2><p>Answer from your own copy of <a href="https://course.bioinfo.se/notebooks/session06-lab.ipynb">session06-lab.ipynb</a> and the PyMOL measurements you recorded in it. Download it and open it in VS Code, or upload it to Google Colab; see the <a href="https://course.bioinfo.se/setup.html">Setup</a> page.</p>
+<p>Choose one answer unless the question says <strong>Select all that apply</strong> — questions 3, 7 and 8 do, and on those an incorrect selection reduces partial credit. All choice questions have six options. For a numerical answer, enter the value in angstroms, without units, rounded to two decimal places.</p></div>
+<div class='text'><h2>1. Backbone, chains and representations</h2><p>Use the PyMOL views of deoxyhaemoglobin (2HHB) to distinguish protein chains, secondary structure and the haem group.</p></div>
+<div class='q'><div class='qhead'>Question 1 · choose one · 1 point</div><p>You want one view of 2HHB that shows how the helices pack in β chain B and makes the bonded atoms in its haem group easy to recognize. Which combination best serves both goals?</p>
+<ul><li><p>Show chain B as a Cα trace and display only the iron as a sphere.</p></li><li><p>Show chain B as a cartoon and display its haem group as sticks.</p></li><li><p>Show the entire assembly as a molecular surface and hide the haem group.</p></li><li><p>Show chain B as a cartoon and label the haem without displaying its atoms.</p></li><li><p>Show the assembly as a Cα trace and label the four chains.</p></li><li><p>Show only the haem group as sticks and label the iron.</p></li></ul>
+</div>
+<div class='text'><h2>2. Coordinates and contact maps</h2><p>In this lab a pair of different residues is a contact when its Cα–Cα distance is strictly less than 8 Å. In Q2, the coordinates are a small practice example. Q3 refers to the intrachain map for 2HHB chain B.</p></div>
+<div class='q'><div class='qhead'>Question 2 · number · 1 point</div><p>Two Cα atoms are at (0, 0, 0) and (4, 4, 5), in angstroms. Compute their distance and use the lab cutoff to decide whether they form a contact. Enter only the distance, rounded to two decimal places.</p>
+</div>
+<div class='q'><div class='qhead'>Question 3 · choose all that apply · 1 point</div><p>Which statements about the full intrachain Cα contact map for 2HHB chain B are true? Select ALL that apply.</p>
+<ul><li><p>A contact far from the diagonal can connect residues separated by many positions along the sequence.</p></li><li><p>A contact far from the diagonal identifies an interaction between two different chains.</p></li><li><p>Rotating and translating the whole chain leaves the contact map unchanged.</p></li><li><p>An entry of 0 means one of the two residues is missing from the coordinate file.</p></li><li><p>Swapping the two residue indices leaves a contact entry unchanged.</p></li><li><p>Increasing the distance cutoff from 8 to 10 Å removes some of the original contacts.</p></li></ul>
+</div>
+<div class='text'><h2>3. Superposition and fold comparison</h2><p>The March lecture compares distance lists with the same mean. The notebook uses both the extent of an alignment and its score to judge fold similarity.</p></div>
+<div class='q'><div class='qhead'>Question 4 · number · 1 point</div><p>After superposition, the distances for two paired atoms are 3 Å and 1 Å. What is the root-mean-square deviation over the two pairs? Enter the value rounded to two decimal places.</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · choose one · 1 point</div><p>Human β-globin (2HHB chain B) aligned to human myoglobin (3RGK chain A) has a TM-score of 0.91 and pairs 145 of 146 and 145 of 149 observed Cα atoms, respectively. β-globin aligned to GFP (1EMA chain A) has a TM-score of 0.33 and pairs 84 of 146 and 84 of 221 observed Cα atoms, respectively. Both scores use β-globin length for normalization. Which interpretation is best supported?</p>
+<ul><li><p>The myoglobin score means 91 percent of the aligned residues have identical amino acids.</p></li><li><p>The GFP alignment supports the same overall fold because the TM-score is above zero.</p></li><li><p>Both comparisons support the same fold because both results use the same normalization length.</p></li><li><p>The high myoglobin score alone shows that myoglobin and haemoglobin form the same biological assembly.</p></li><li><p>The high myoglobin score across most of both chains supports a shared overall fold.</p></li><li><p>The GFP alignment supports stronger overall similarity because a lower TM-score indicates a closer fit.</p></li></ul>
+</div>
+<div class='text'><h2>4. Haemoglobin T and R assemblies</h2><p>In the lab, the distance between the two β-chain haem iron atoms is 39.51 Å in the deoxy assembly (2HHB) and 34.62 Å in the oxygenated biological assembly (1HHO).</p></div>
+<div class='q'><div class='qhead'>Question 6 · number · 1 point</div><p>By how many angstroms does the β–β haem iron distance decrease from 2HHB to 1HHO? Enter the positive magnitude of the change.</p>
+</div>
+<div class='q'><div class='qhead'>Question 7 · choose all that apply · 1 point</div><p>The β-chain fold superposes closely across the two structures, while the β–β haem distance changes. The deposited 1HHO asymmetric unit contains one α chain and one β chain. Which statements about the comparison are correct? Select ALL that apply.</p>
+<ul><li><p>The 1HHO biological assembly supplies the second αβ pair needed for the tetramer measurement.</p></li><li><p>The 1HHO asymmetric unit alone provides two β-chain haem irons.</p></li><li><p>A close fit of individually superposed β chains is compatible with a change in subunit placement.</p></li><li><p>A rigid rotation of the whole 2HHB assembly can make its internal β–β distance equal that in 1HHO.</p></li><li><p>The shorter β–β distance shows that every interchain distance decreases by the same amount.</p></li><li><p>The Fe–Fe distance is an assembly-level measurement because the two haems belong to different subunits.</p></li></ul>
+</div>
+<div class='text'><h2>5. Structure evidence and database search</h2><p>The lab compares an experimental human myoglobin construct to a predicted model of the reference sequence, then uses saved structure-search results and domain annotations.</p></div>
+<div class='q'><div class='qhead'>Question 8 · choose all that apply · 1 point</div><p>Compare the X-ray myoglobin construct 3RGK with the AlphaFold DB model for reference sequence P02144. Which statements correctly interpret the evidence? Select ALL that apply.</p>
+<ul><li><p>A pLDDT of 95 means 95 percent of the experimental structure&rsquo;s atoms are present in the predicted model.</p></li><li><p>The experimental resolution of 1.65 Å describes detail in the diffraction data used to model 3RGK.</p></li><li><p>Experimental resolution is the mean deviation of the experimental coordinates from the AlphaFold model.</p></li><li><p>pLDDT is the model&rsquo;s per-residue estimate of confidence in local structure.</p></li><li><p>A Cα RMSD describes the separation of paired Cα atoms after superposition and is interpreted with the alignment coverage.</p></li><li><p>High pLDDT establishes that the prediction and 3RGK contain the same bound haem group.</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>In the book&rsquo;s saved Foldseek run, comparable haemoglobin chains match across 2HHB and 1HHO. The search against the GFP entry 1EMA returns no hits at the settings tested. What conclusion follows?</p>
+<ul><li><p>The matches establish that the two tetramers have identical subunit placement.</p></li><li><p>The GFP search establishes that the proteins share no local geometric features at any scale.</p></li><li><p>This run detects structural similarity between the haemoglobin chains and reports no GFP alignment that passes its search criteria.</p></li><li><p>The no-hit result is a measured TM-score of exactly zero for every 2HHB and 1EMA chain pair.</p></li><li><p>The haemoglobin matches establish that the two structures have the same ligands and oxygenation state.</p></li><li><p>The result proves the same hit list will appear for every database version and search mode.</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 10 · choose one · 1 point</div><p>The course book assigns β-globin and a truncated bacterial haemoglobin to CATH globin homologous superfamily 1.10.490.10, while the two domains have different Pfam family identifiers. What best explains this result?</p>
+<ul><li><p>A CATH homologous superfamily contains only domains with identical amino-acid sequences.</p></li><li><p>A shared CATH homologous superfamily requires the two proteins to have the same domain boundaries.</p></li><li><p>Both schemes always group domains at the same evolutionary depth, so sharing CATH implies an annotation error.</p></li><li><p>Different Pfam families show that the two solved folds cannot share detectable structural similarity.</p></li><li><p>The CATH identifier indicates experimentally solved chains, so both sequences have the same sequence-profile match.</p></li><li><p>CATH can group domains with evidence for distant common ancestry while Pfam separates distinct sequence families.</p></li></ul>
+</div>
+</main></body></html>

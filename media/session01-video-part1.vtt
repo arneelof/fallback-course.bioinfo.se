@@ -1,0 +1,798 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.250
+Welcome to Session one.
+
+2
+00:00:02.250 --> 00:00:05.000
+This session is the vocabulary.
+
+3
+00:00:05.000 --> 00:00:18.975
+Everything in this course is built from about a dozen mathematical ideas, and today we go through all of them with real numbers, so that when they turn up later you recognise them rather than meeting them for the first time in the middle of something else.
+
+4
+00:00:18.975 --> 00:00:22.225
+Two things about how to use this recording.
+
+5
+00:00:22.225 --> 00:00:25.150
+First, most of this will be familiar.
+
+6
+00:00:25.150 --> 00:00:27.275
+That is intended.
+
+7
+00:00:27.275 --> 00:00:36.900
+The aim is not to teach you mathematics you have never seen; it is to get everybody to the same place, and to connect each idea to where it comes back in the course.
+
+8
+00:00:36.900 --> 00:00:43.125
+Second, and more practically: this is the one session where listening is genuinely worse than reading.
+
+9
+00:00:43.125 --> 00:00:49.050
+A formula on a slide is one glance; the same formula read aloud is a long sentence.
+
+10
+00:00:49.050 --> 00:00:56.450
+So I will tell you what each expression means and walk the arithmetic slowly, and leave the symbols on the screen for you to look at.
+
+11
+00:00:56.450 --> 00:01:02.175
+If you are listening without the slides, this is the session to come back to with the page open.
+
+12
+00:01:02.175 --> 00:01:07.600
+Three blocks: vectors and matrices, calculus, and probability and statistics.
+
+13
+00:01:07.600 --> 00:01:13.675
+Everything in this lecture is also written out in full on the Session one page of the course book.
+
+14
+00:01:13.675 --> 00:01:21.900
+The page is the reference and this is the walk through it, so whenever a number or a name goes past too quickly, that is where to look it up.
+
+15
+00:01:21.900 --> 00:01:25.925
+I will say which part of the page we are in as each block starts.
+
+16
+00:01:26.525 --> 00:01:34.575
+Here is everything we will cover, on one slide, and what I want you to notice is the right-hand column: where each idea comes back.
+
+17
+00:01:34.575 --> 00:01:40.525
+The dot product becomes a profile score in Session five and a perceptron in Session seven.
+
+18
+00:01:40.525 --> 00:01:43.425
+They are the same arithmetic, twice.
+
+19
+00:01:43.425 --> 00:01:48.250
+The gradient trains every model in the course, from Session seven onwards.
+
+20
+00:01:48.250 --> 00:01:53.600
+The chain rule is the one idea that backpropagation is built from, in Session nine.
+
+21
+00:01:53.600 --> 00:02:06.725
+Logarithms of probabilities give you log-odds scores, which are substitution matrices and profile scores in Sessions four and five, and cross-entropy, which is the loss function for every classifier from Session eight on.
+
+22
+00:02:06.725 --> 00:02:10.775
+So this is not a list of mathematics you might one day need.
+
+23
+00:02:10.775 --> 00:02:18.125
+It is a list of the things that are about to appear, with real numbers attached, and each one is here because it is used later.
+
+24
+00:02:18.125 --> 00:02:21.625
+It is also not a complete mathematics course.
+
+25
+00:02:21.625 --> 00:02:23.775
+Plenty is left out.
+
+26
+00:02:23.775 --> 00:02:26.700
+What is here is what this course uses.
+
+27
+00:02:27.300 --> 00:02:28.775
+Block one.
+
+28
+00:02:28.775 --> 00:02:31.225
+Vectors and matrices.
+
+29
+00:02:31.225 --> 00:02:35.500
+On the page, this block is the section "Vectors and matrices".
+
+30
+00:02:35.500 --> 00:02:44.250
+The whole block builds towards one operation: the dot product, which turns out to be the single most important piece of arithmetic in this course.
+
+31
+00:02:44.250 --> 00:02:49.750
+Everything before it is preparation, and everything after it is consequences.
+
+32
+00:02:50.350 --> 00:02:53.325
+A vector is an ordered list of numbers.
+
+33
+00:02:53.325 --> 00:02:55.875
+That is the whole definition.
+
+34
+00:02:55.875 --> 00:02:57.850
+Two operations.
+
+35
+00:02:57.850 --> 00:03:04.000
+You add two vectors by adding them entry by entry: first plus first, second plus second.
+
+36
+00:03:04.000 --> 00:03:08.700
+And you scale a vector by multiplying every entry by the same number.
+
+37
+00:03:08.700 --> 00:03:12.100
+The dimension is just how many entries it has.
+
+38
+00:03:12.100 --> 00:03:24.300
+Now, the biological example that we will use all session: take a protein and compute the fraction of its residues that are alanine, the fraction that are cysteine, and so on through all twenty amino acids.
+
+39
+00:03:24.300 --> 00:03:29.400
+That is twenty numbers in a fixed order, so it is a twenty-dimensional vector.
+
+40
+00:03:29.400 --> 00:03:33.500
+Every protein becomes a point in twenty-dimensional space.
+
+41
+00:03:33.500 --> 00:03:38.175
+And then the geometric picture, which is what the rest of this block builds on.
+
+42
+00:03:38.175 --> 00:03:43.150
+Think of a vector as an arrow from the origin: it has a direction and a length.
+
+43
+00:03:43.150 --> 00:03:46.500
+For two or three dimensions you can draw that.
+
+44
+00:03:46.500 --> 00:03:56.625
+For twenty you cannot, and it does not matter: the arithmetic is identical, and the geometric words, direction, length, angle, keep working even where you cannot picture them.
+
+45
+00:03:56.625 --> 00:04:04.225
+That is worth saying because people stall at exactly this point, feeling they ought to be able to visualise twenty dimensions.
+
+46
+00:04:04.225 --> 00:04:06.025
+Nobody can.
+
+47
+00:04:06.025 --> 00:04:10.625
+You reason with the algebra and borrow the words from two dimensions.
+
+48
+00:04:11.225 --> 00:04:14.825
+The length of a vector, which is also called its norm.
+
+49
+00:04:14.825 --> 00:04:17.525
+It is Pythagoras, extended.
+
+50
+00:04:17.525 --> 00:04:30.575
+In two dimensions, the length of the arrow from the origin to the point three, four is the square root of three squared plus four squared, which is the square root of nine plus sixteen, which is the square root of twenty-five, which is five.
+
+51
+00:04:30.575 --> 00:04:33.575
+The familiar three-four-five triangle.
+
+52
+00:04:33.575 --> 00:04:39.775
+In n dimensions, exactly the same: square every entry, add them all up, take the square root.
+
+53
+00:04:39.775 --> 00:04:42.600
+And notice what this generalises.
+
+54
+00:04:42.600 --> 00:04:47.175
+For a single number, the absolute value is its distance from zero.
+
+55
+00:04:47.175 --> 00:04:52.950
+The norm is that same idea for a list of numbers: how far this point is from the origin.
+
+56
+00:04:52.950 --> 00:05:03.875
+We will need it in two places in this block: to normalise a vector, which means to strip its length away and keep only its direction, and to understand what the dot product is measuring.
+
+57
+00:05:04.475 --> 00:05:07.475
+A matrix is a rectangle of numbers.
+
+58
+00:05:07.475 --> 00:05:13.150
+If it has n rows and m columns, we say its shape is n by m, rows first, always.
+
+59
+00:05:13.150 --> 00:05:20.425
+In biology, a matrix is usually a data table: one row per sample or per protein, one column per feature.
+
+60
+00:05:20.425 --> 00:05:24.650
+Gene expression: fifty samples by twenty thousand genes.
+
+61
+00:05:24.650 --> 00:05:29.850
+Protein features: a thousand proteins by twenty amino-acid fractions.
+
+62
+00:05:29.850 --> 00:05:34.850
+And a tensor is the same idea continued into three or more dimensions.
+
+63
+00:05:34.850 --> 00:05:44.475
+A batch of thirty-two one-hot encoded sequences, each a hundred residues long with twenty numbers per residue, is thirty-two by one hundred by twenty.
+
+64
+00:05:44.475 --> 00:05:53.700
+Now here is the practical advice, and I am going to repeat it in every session where you write code: always know the shape of every object you are handling.
+
+65
+00:05:53.700 --> 00:05:57.475
+Most of the errors you will hit in this course are shape errors.
+
+66
+00:05:57.475 --> 00:06:02.725
+Not conceptual mistakes: two rectangles of numbers that do not fit together.
+
+67
+00:06:02.725 --> 00:06:09.150
+If you can say, for every variable, what its shape is, you will fix those in seconds instead of minutes.
+
+68
+00:06:09.150 --> 00:06:11.775
+If you cannot, you will stare at them.
+
+69
+00:06:11.775 --> 00:06:14.550
+Printing a shape costs one line.
+
+70
+00:06:14.550 --> 00:06:16.700
+Get in the habit now.
+
+71
+00:06:17.300 --> 00:06:20.750
+And here is the operation this whole block is for.
+
+72
+00:06:20.750 --> 00:06:26.525
+The dot product of two vectors: multiply them entry by entry, and add up the results.
+
+73
+00:06:26.525 --> 00:06:30.525
+First times first, plus second times second, and so on.
+
+74
+00:06:30.525 --> 00:06:32.700
+One number comes out.
+
+75
+00:06:32.700 --> 00:06:36.600
+Worked example, which we will use for the next three slides.
+
+76
+00:06:36.600 --> 00:06:40.425
+Take the vector two, minus one and the vector one, four.
+
+77
+00:06:40.425 --> 00:06:42.725
+Two times one is two.
+
+78
+00:06:42.725 --> 00:06:45.850
+Minus one times four is minus four.
+
+79
+00:06:45.850 --> 00:06:48.850
+Two plus minus four is minus two.
+
+80
+00:06:48.850 --> 00:06:51.650
+So the dot product is minus two.
+
+81
+00:06:51.650 --> 00:06:53.675
+Now, what does it mean?
+
+82
+00:06:53.675 --> 00:06:56.250
+Read it as a weighted sum.
+
+83
+00:06:56.250 --> 00:07:00.050
+One vector holds your data, the other holds weights.
+
+84
+00:07:00.050 --> 00:07:04.925
+Each data value contributes to the total in proportion to its weight.
+
+85
+00:07:04.925 --> 00:07:15.725
+A large positive weight on a feature means that feature pushes the total up; a negative weight means it pushes down; a weight near zero means that feature is essentially ignored.
+
+86
+00:07:15.725 --> 00:07:21.450
+That reading, data times weights, added up, is what you will be doing for the rest of the course.
+
+87
+00:07:21.450 --> 00:07:23.850
+A profile score is this.
+
+88
+00:07:23.850 --> 00:07:26.075
+A perceptron is this.
+
+89
+00:07:26.075 --> 00:07:29.800
+A layer of a neural network is a lot of these at once.
+
+90
+00:07:30.400 --> 00:07:38.825
+The dot product also has a geometric meaning, and it is worth having both readings in your head because each is useful in different places.
+
+91
+00:07:38.825 --> 00:07:46.125
+Geometrically, the dot product is the product of the two lengths, multiplied by the cosine of the angle between the vectors.
+
+92
+00:07:46.125 --> 00:07:51.525
+You do not need that formula to use the important consequence, which is about the sign.
+
+93
+00:07:51.525 --> 00:08:01.000
+If the two vectors point broadly in the same direction, the angle is less than ninety degrees, the cosine is positive, and the dot product is positive.
+
+94
+00:08:01.000 --> 00:08:07.725
+If they are perpendicular, the cosine of ninety degrees is zero, so the dot product is exactly zero.
+
+95
+00:08:07.725 --> 00:08:11.700
+Perpendicular vectors have zero dot product, always.
+
+96
+00:08:11.700 --> 00:08:20.400
+And if they point broadly in opposite directions, the angle is more than ninety degrees, the cosine is negative, and the dot product is negative.
+
+97
+00:08:20.400 --> 00:08:26.400
+So the sign of a dot product tells you about agreement in direction, before you compute anything.
+
+98
+00:08:26.400 --> 00:08:34.500
+That is a useful instinct for later, when a dot product is a score: a positive score means the data points the way the weights do.
+
+99
+00:08:35.100 --> 00:08:37.950
+Let us check that on our example.
+
+100
+00:08:37.950 --> 00:08:42.950
+We found that the dot product of two, minus one and one, four is minus two.
+
+101
+00:08:42.950 --> 00:08:44.425
+Negative.
+
+102
+00:08:44.425 --> 00:08:49.325
+So the geometry says those two vectors must be more than ninety degrees apart.
+
+103
+00:08:49.325 --> 00:08:52.575
+And they are: about a hundred and three degrees.
+
+104
+00:08:52.575 --> 00:08:54.975
+Just past perpendicular.
+
+105
+00:08:54.975 --> 00:08:57.625
+You can see that if you draw them.
+
+106
+00:08:57.625 --> 00:09:00.950
+Two, minus one points right and slightly down.
+
+107
+00:09:00.950 --> 00:09:03.850
+One, four points right and steeply up.
+
+108
+00:09:03.850 --> 00:09:10.350
+They both have a rightward component, but the vertical components are opposite, and the vertical ones win.
+
+109
+00:09:10.350 --> 00:09:14.150
+And the point of this slide is the direction of the inference.
+
+110
+00:09:14.150 --> 00:09:21.525
+You did not need to compute an angle to know the sign, and you did not need to compute the dot product to know roughly what the angle was.
+
+111
+00:09:21.525 --> 00:09:23.925
+Each tells you about the other.
+
+112
+00:09:23.925 --> 00:09:32.900
+That is a small thing and it is how you develop a feel for whether a number you have computed is plausible, which is a skill this whole course cares about.
+
+113
+00:09:33.500 --> 00:09:37.450
+And here is why I have spent four slides on one operation.
+
+114
+00:09:37.450 --> 00:09:42.750
+In Session five you will build a profile, a position-specific scoring matrix.
+
+115
+00:09:42.750 --> 00:09:50.650
+To score a candidate sequence you take each position, look up the score for the residue found there, and add all those scores together.
+
+116
+00:09:50.650 --> 00:09:52.900
+That is a dot product.
+
+117
+00:09:52.900 --> 00:09:58.000
+Data on one side, position-specific weights on the other, multiply and add.
+
+118
+00:09:58.000 --> 00:10:03.525
+In Session seven you will meet the perceptron, which is called the simplest neural network.
+
+119
+00:10:03.525 --> 00:10:10.725
+It takes its inputs, multiplies each by a weight, adds them up, adds a bias, and passes the result through a function.
+
+120
+00:10:10.725 --> 00:10:13.350
+That is the same dot product.
+
+121
+00:10:13.350 --> 00:10:20.275
+So the oldest method in this course, from the nineteen eighties, and the foundation of the newest, compute the same thing.
+
+122
+00:10:20.275 --> 00:10:28.075
+What differs is where the weights come from: a profile's weights are counted from an alignment, and a perceptron's are learned from examples.
+
+123
+00:10:28.075 --> 00:10:31.600
+That distinction is the subject of Session seven.
+
+124
+00:10:31.600 --> 00:10:36.000
+When you get there, almost nothing will be new except the interpretation.
+
+125
+00:10:36.000 --> 00:10:43.175
+That is worth knowing in advance, because the vocabulary around neural networks makes them sound more exotic than they are.
+
+126
+00:10:43.775 --> 00:10:47.400
+Now scale it up, which is all a matrix product is.
+
+127
+00:10:47.400 --> 00:10:53.375
+Suppose you have three proteins and two features each, hydrophobic fraction and charged fraction.
+
+128
+00:10:53.375 --> 00:10:56.175
+That is a three by two matrix.
+
+129
+00:10:56.175 --> 00:11:00.250
+And you have a weight vector of two numbers, two and minus one.
+
+130
+00:11:00.250 --> 00:11:05.775
+Multiply the matrix by the vector and you get three numbers: one score per protein.
+
+131
+00:11:05.775 --> 00:11:11.975
+And each of those three numbers is exactly the dot product of that protein's row with the weight vector.
+
+132
+00:11:11.975 --> 00:11:17.425
+So a matrix-vector product is one dot product per row, computed all at once.
+
+133
+00:11:17.425 --> 00:11:22.975
+That is not a mathematical nicety; it is how all the code in this course is written.
+
+134
+00:11:22.975 --> 00:11:36.300
+With a thousand proteins and twenty features, the data matrix is a thousand by twenty, the weight vector has twenty entries, and the product has a thousand entries: a thousand scores from one operation, with no loop.
+
+135
+00:11:36.300 --> 00:11:47.350
+And that matters for speed, because that single operation runs in optimised compiled code, often on a graphics card, while a Python loop over a thousand proteins does not.
+
+136
+00:11:47.350 --> 00:11:54.050
+When you see code in Session seven that scores an entire dataset in one line, this is what it is doing.
+
+137
+00:11:54.650 --> 00:12:00.675
+The rule for whether two matrices can be multiplied, which is the rule you will break most often.
+
+138
+00:12:00.675 --> 00:12:06.725
+If A has shape n by m and B has shape m by k, then A times B has shape n by k.
+
+139
+00:12:06.725 --> 00:12:12.200
+The two inner numbers, the m and the m, must be equal, and they vanish from the result.
+
+140
+00:12:12.200 --> 00:12:26.100
+Example from the slide: with three classes instead of one score, the weight matrix is twenty by three, so the data matrix, a thousand by twenty, times the weights, twenty by three, gives a thousand by three: three scores per protein.
+
+141
+00:12:26.100 --> 00:12:30.375
+Now take a weight vector of length twenty-one instead of twenty.
+
+142
+00:12:30.375 --> 00:12:32.150
+Nothing fits.
+
+143
+00:12:32.150 --> 00:12:36.875
+Twenty and twenty-one do not match, and the operation is impossible.
+
+144
+00:12:36.875 --> 00:12:41.675
+And this is, genuinely, the single most common error in this course's code.
+
+145
+00:12:41.675 --> 00:12:49.150
+PyTorch will tell you something like: size mismatch, got input one thousand, mat one thousand by twenty, vec twenty-one.
+
+146
+00:12:49.150 --> 00:12:55.525
+That message looks intimidating and it is actually complete: it has told you every shape involved.
+
+147
+00:12:55.525 --> 00:13:00.675
+Read the numbers, find the pair that should be equal and is not, and you have the bug.
+
+148
+00:13:00.675 --> 00:13:03.050
+That is the whole technique.
+
+149
+00:13:03.650 --> 00:13:10.400
+The transpose: flip a matrix over its diagonal, so rows become columns and columns become rows.
+
+150
+00:13:10.400 --> 00:13:13.675
+An n by m matrix becomes m by n.
+
+151
+00:13:13.675 --> 00:13:16.250
+Three places you will meet it.
+
+152
+00:13:16.250 --> 00:13:25.900
+Writing a dot product as a matrix product: w transpose times x is a one-by-m times an m-by-one, which gives a one-by-one, a single number.
+
+153
+00:13:25.900 --> 00:13:30.325
+That is why you see dot products written with a transpose in papers.
+
+154
+00:13:30.325 --> 00:13:35.025
+Second: X transpose times X, where X is your data matrix.
+
+155
+00:13:35.025 --> 00:13:42.800
+If X is a thousand by twenty, then X transpose is twenty by a thousand, and the product is twenty by twenty.
+
+156
+00:13:42.800 --> 00:13:45.475
+One entry per pair of features.
+
+157
+00:13:45.475 --> 00:13:57.175
+For data that has been centred, that matrix divided by n minus one is the covariance matrix, which is the matrix that principal component analysis works on, two slides from now.
+
+158
+00:13:57.175 --> 00:14:04.175
+Third, a rule worth knowing: the transpose of a product is the product of the transposes in the reverse order.
+
+159
+00:14:04.175 --> 00:14:08.200
+A B transpose equals B transpose A transpose.
+
+160
+00:14:08.200 --> 00:14:12.500
+And you can check that with shapes alone rather than memorising it.
+
+161
+00:14:12.500 --> 00:14:18.975
+If A is n by m and B is m by k, then A B is n by k, so its transpose is k by n.
+
+162
+00:14:18.975 --> 00:14:22.725
+Now, which order of the transposes gives k by n?
+
+163
+00:14:22.725 --> 00:14:29.700
+B transpose is k by m, A transpose is m by n, so B transpose A transpose is k by n.
+
+164
+00:14:29.700 --> 00:14:32.450
+The other order does not even fit.
+
+165
+00:14:32.450 --> 00:14:34.750
+The shapes force the answer.
+
+166
+00:14:35.350 --> 00:14:43.700
+Normalising a vector means dividing it by its own length, so that what is left has length exactly one, pointing in the same direction.
+
+167
+00:14:43.700 --> 00:14:50.725
+Our example: the vector two, minus one has length the square root of five, which is about two point two three six.
+
+168
+00:14:50.725 --> 00:14:57.075
+So the normalised version is about nought point eight nine four and minus nought point four four seven.
+
+169
+00:14:57.075 --> 00:15:00.200
+Check it: square those, add, and you get one.
+
+170
+00:15:00.200 --> 00:15:01.850
+Why do this?
+
+171
+00:15:01.850 --> 00:15:05.200
+Because of the geometric formula from earlier.
+
+172
+00:15:05.200 --> 00:15:09.550
+The dot product is length times length times the cosine of the angle.
+
+173
+00:15:09.550 --> 00:15:16.800
+If both vectors have length one, the lengths drop out and the dot product is exactly the cosine of the angle between them.
+
+174
+00:15:16.800 --> 00:15:21.400
+That number has a name you will see constantly: cosine similarity.
+
+175
+00:15:21.400 --> 00:15:32.650
+It runs from minus one, for vectors pointing in opposite directions, through zero for perpendicular, to one for the same direction, and it measures direction only, ignoring magnitude.
+
+176
+00:15:32.650 --> 00:15:41.925
+We used it in Session eleven to show that a leucine inside a signal peptide has a different representation from a leucine in a cytoplasmic loop.
+
+177
+00:15:41.925 --> 00:15:48.625
+It is the standard way of comparing two vectors when you care about what they point at rather than how big they are.
+
+178
+00:15:48.625 --> 00:15:57.550
+One footnote: the same length formula applied to every entry of a matrix gives the Frobenius norm, which is just the length of the matrix flattened out.
+
+179
+00:15:57.550 --> 00:16:01.450
+And the first discussion problem is about exactly this.
+
+180
+00:16:02.050 --> 00:16:07.400
+The last idea in this block, and the one I want you to take least algebra away from.
+
+181
+00:16:07.400 --> 00:16:14.300
+When you multiply a vector by a matrix, you usually get a vector pointing somewhere else: the matrix turns it.
+
+182
+00:16:14.300 --> 00:16:21.850
+But for some special vectors, the result points in exactly the same direction as the original, only longer or shorter.
+
+183
+00:16:21.850 --> 00:16:27.600
+Those are the eigenvectors, and the factor by which each one is stretched is its eigenvalue.
+
+184
+00:16:27.600 --> 00:16:31.050
+Written: A times v equals lambda times v.
+
+185
+00:16:31.050 --> 00:16:36.325
+Here is the worked example, and notice I am going to check rather than solve.
+
+186
+00:16:36.325 --> 00:16:39.875
+For the matrix on the slide, take the vector one, one.
+
+187
+00:16:39.875 --> 00:16:42.650
+Multiply, and you get three, three.
+
+188
+00:16:42.650 --> 00:16:45.250
+That is three times one, one.
+
+189
+00:16:45.250 --> 00:16:48.275
+Same direction, three times as long.
+
+190
+00:16:48.275 --> 00:16:52.200
+So one, one is an eigenvector with eigenvalue three.
+
+191
+00:16:52.200 --> 00:17:00.350
+Now take one, minus one: multiplying gives back one, minus one, unchanged, so that is an eigenvector with eigenvalue one.
+
+192
+00:17:00.350 --> 00:17:07.950
+And every other vector gets turned somewhat towards the one, one axis, because that is the direction being stretched most.
+
+193
+00:17:07.950 --> 00:17:10.950
+I want to be clear about what you need here.
+
+194
+00:17:10.950 --> 00:17:14.775
+You do not need to be able to find eigenvectors by hand.
+
+195
+00:17:14.775 --> 00:17:18.700
+In this course the computer does it, with one function call.
+
+196
+00:17:18.700 --> 00:17:23.925
+What you need is the idea: special directions that a matrix only stretches.
+
+197
+00:17:23.925 --> 00:17:27.925
+Because that is what principal component analysis is.
+
+198
+00:17:27.925 --> 00:17:39.200
+PCA finds the eigenvectors of the covariance matrix, which are the directions in which your data varies most, and the eigenvalues say how much variance each direction accounts for.
+
+199
+00:17:39.200 --> 00:17:45.225
+When somebody plots the first two principal components of a dataset, that is what they have done.
+

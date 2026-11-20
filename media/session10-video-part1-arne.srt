@@ -1,0 +1,1180 @@
+1
+00:00:00,000 --> 00:00:01,600
+Welcome to Session ten.
+
+2
+00:00:01,600 --> 00:00:11,680
+The subject today is convolutional neural networks: where they came from, what assumption they build in, and what that assumption buys you in biology.
+
+3
+00:00:11,680 --> 00:00:21,360
+This is the lecture, recorded, so you can listen to it before the session, or after it, or instead of reading, or while you are on the bus.
+
+4
+00:00:21,360 --> 00:00:24,840
+It follows the slides exactly.
+
+5
+00:00:24,840 --> 00:00:33,880
+Everything in it is written out in full on the Session ten page of the course book, so if a number goes past too quickly, the page has it.
+
+6
+00:00:33,880 --> 00:00:36,480
+Let me say at the start where we are.
+
+7
+00:00:36,480 --> 00:00:39,760
+In Sessions eight and nine you built neural networks.
+
+8
+00:00:39,760 --> 00:00:49,480
+A network takes numbers in, multiplies them by weights, adds them up, passes the result through a simple non-linear function, and repeats that a few times until it produces an answer.
+
+9
+00:00:49,480 --> 00:01:01,880
+The weights are the things the network learns, and Session nine covered how it learns them: backpropagation works out how much each individual weight contributed to the error, and then nudges it in the direction that reduces the error.
+
+10
+00:01:01,880 --> 00:01:05,080
+Those networks were what we call dense, or fully connected.
+
+11
+00:01:05,080 --> 00:01:11,960
+Every input is wired to every unit in the next layer, and every one of those wires has its own weight.
+
+12
+00:01:11,960 --> 00:01:14,400
+That is the most general thing you can build.
+
+13
+00:01:14,400 --> 00:01:22,480
+Today is about why the most general thing is usually the wrong thing, and about what you get when you give the network an assumption instead of freedom.
+
+14
+00:01:22,480 --> 00:01:25,160
+We will do this in three blocks.
+
+15
+00:01:25,160 --> 00:01:30,560
+First, why convolution works, and the sixty-year story of how it got there.
+
+16
+00:01:30,560 --> 00:01:35,880
+Second, convolutional networks on biological sequences, DNA and protein.
+
+17
+00:01:35,880 --> 00:01:42,240
+Third, convolutional networks on images, from a cancer slide to a model of the whole human cell.
+
+18
+00:01:42,840 --> 00:01:46,920
+Here is the entire session in one picture and in one sentence.
+
+19
+00:01:46,920 --> 00:01:50,720
+If you remember nothing else from the next ninety minutes, remember this.
+
+20
+00:01:50,720 --> 00:01:54,800
+A dense layer learns a separate weight for every position of its input.
+
+21
+00:01:54,800 --> 00:02:02,120
+A convolutional layer assumes that nearby inputs belong together, and reuses the same small detector at every position.
+
+22
+00:02:02,120 --> 00:02:05,720
+Look at the picture on the slide.
+
+23
+00:02:05,720 --> 00:02:15,240
+On the left, the dense layer: every input position has its own line to the unit, and every line has its own weight.
+
+24
+00:02:15,240 --> 00:02:26,240
+If you want the network to notice a particular pattern, it has to learn that pattern once for position one, again for position two, again for position three, and so on, all the way along.
+
+25
+00:02:26,240 --> 00:02:30,320
+Nothing it learns in one place helps it anywhere else.
+
+26
+00:02:30,320 --> 00:02:36,840
+On the right, the convolution: one small set of weights, drawn once, and then slid along.
+
+27
+00:02:36,840 --> 00:02:40,280
+The same weights are applied at every position.
+
+28
+00:02:40,280 --> 00:02:44,400
+The network learns the pattern once and can then find it anywhere.
+
+29
+00:02:44,400 --> 00:02:46,640
+That is the whole idea.
+
+30
+00:02:46,640 --> 00:02:49,240
+And notice what kind of idea it is.
+
+31
+00:02:49,240 --> 00:02:53,680
+It is not a cleverer learning algorithm, and it is not more computing power.
+
+32
+00:02:53,680 --> 00:03:01,920
+It is an assumption about the data, built into the shape of the model: that what matters is local, and that it means the same thing wherever it occurs.
+
+33
+00:03:01,920 --> 00:03:10,080
+When that assumption is true of your data, you get a model that needs far fewer weights, and therefore far less data, than anything we have built so far.
+
+34
+00:03:10,080 --> 00:03:12,800
+Keep coming back to this sentence as we go.
+
+35
+00:03:12,800 --> 00:03:23,920
+Every result in this session is either that assumption paying off, or that assumption failing at the one place where it does not hold, which is position in proteins.
+
+36
+00:03:23,920 --> 00:03:25,120
+We will meet both.
+
+37
+00:03:25,720 --> 00:03:26,720
+Block one.
+
+38
+00:03:26,720 --> 00:03:31,120
+Where convolutional networks came from, and why convolution works.
+
+39
+00:03:31,120 --> 00:03:42,880
+In this block we do the history first, because the history explains something important about the whole field, and then we do the mechanics: what a convolutional layer actually computes, and the four settings that control it.
+
+40
+00:03:43,480 --> 00:03:49,720
+The idea behind convolutional networks is more than sixty years old, and it starts with cats.
+
+41
+00:03:49,720 --> 00:04:05,720
+In the late nineteen fifties, David Hubel and Torsten Wiesel put fine electrodes into the visual cortex of cats, and recorded what single neurons did while the cat was shown simple patterns: spots of light, bars, edges at different angles.
+
+42
+00:04:05,720 --> 00:04:08,400
+They found two things that matter for us.
+
+43
+00:04:08,400 --> 00:04:14,840
+The first is that each neuron responded only to a small part of the visual field, not to the whole picture.
+
+44
+00:04:14,840 --> 00:04:19,680
+That small part is the neuron's receptive field, and that is where the term comes from.
+
+45
+00:04:19,680 --> 00:04:22,040
+We will use it again later in this block.
+
+46
+00:04:22,040 --> 00:04:33,120
+The second is that within its own small patch, a neuron responded only to one particular feature, for example an edge at one particular angle, and not to an edge at a different angle.
+
+47
+00:04:33,120 --> 00:04:35,200
+And there were two kinds of such neurons.
+
+48
+00:04:35,200 --> 00:04:40,680
+What they called simple cells responded to an edge at one exact position.
+
+49
+00:04:40,680 --> 00:04:46,360
+What they called complex cells responded to that same edge anywhere within a somewhat larger region.
+
+50
+00:04:46,360 --> 00:04:53,600
+Stop and look at that for a moment, because those two cell types are exactly the two operations of a convolutional network.
+
+51
+00:04:53,600 --> 00:04:58,840
+A simple cell is a local feature detector, which is a convolution filter.
+
+52
+00:04:58,840 --> 00:05:05,080
+A complex cell is that detector followed by a step that tolerates small movements, which is pooling.
+
+53
+00:05:05,080 --> 00:05:09,560
+A convolutional layer was described in a cat in nineteen sixty-two.
+
+54
+00:05:09,560 --> 00:05:16,320
+Hubel and Wiesel received the Nobel Prize for it in nineteen eighty-one.
+
+55
+00:05:16,320 --> 00:05:24,800
+In nineteen eighty, Kunihiko Fukushima built both operations into a layered artificial network, which he called the Neocognitron.
+
+56
+00:05:24,800 --> 00:05:33,120
+The title of that paper actually promises pattern recognition unaffected by shift in position, which is the property we will shortly call invariance.
+
+57
+00:05:33,120 --> 00:05:36,400
+So by nineteen eighty the architecture existed.
+
+58
+00:05:36,400 --> 00:05:39,680
+What it lacked was a good way to learn its weights.
+
+59
+00:05:39,680 --> 00:05:50,680
+That arrived at Bell Labs, where Yann LeCun and colleagues trained a convolutional network with backpropagation, Session nine's algorithm, to read the handwritten postcodes on American mail.
+
+60
+00:05:50,680 --> 00:05:52,840
+That was nineteen eighty-nine.
+
+61
+00:05:52,840 --> 00:06:04,440
+Its successor, LeNet-5, published in nineteen ninety-eight, read the amounts written on bank cheques, and by the late nineteen nineties it was reading a large share of all the cheques written in the United States.
+
+62
+00:06:04,440 --> 00:06:12,520
+So: by nineteen ninety-eight, convolutional networks were in production, in banks, reading real money.
+
+63
+00:06:12,520 --> 00:06:15,040
+And then, for about a decade, nothing.
+
+64
+00:06:15,040 --> 00:06:20,440
+Through the two thousands, computer vision belonged to what are called hand-crafted features.
+
+65
+00:06:20,440 --> 00:06:31,120
+That means a person sat down and designed, by hand, a recipe for turning an image into a few hundred numbers: how many edges at this angle here, how much texture there.
+
+66
+00:06:31,120 --> 00:06:43,040
+Those numbers were then fed to a classifier, usually a support vector machine, which is a relative of Session seven's perceptron that separates the classes with the boundary leaving the widest margin.
+
+67
+00:06:43,040 --> 00:06:48,080
+Neural networks were widely thought to be hard to train and not worth the trouble.
+
+68
+00:06:48,080 --> 00:06:51,720
+And here is the thing: given what people had, that judgement was correct.
+
+69
+00:06:51,720 --> 00:06:55,360
+The datasets of the time held a few thousand images.
+
+70
+00:06:55,360 --> 00:07:03,840
+On a few thousand images, a well-designed hand-made feature really does beat a network that has to learn everything from scratch.
+
+71
+00:07:03,840 --> 00:07:05,920
+The problem was not the idea.
+
+72
+00:07:05,920 --> 00:07:09,720
+Two ingredients were missing, and neither of them was an idea.
+
+73
+00:07:09,720 --> 00:07:12,640
+Data, and compute.
+
+74
+00:07:13,240 --> 00:07:22,720
+The data arrived in two thousand and nine, from Fei-Fei Li's group, and it was called ImageNet: millions of photographs, labelled by thousands of crowd-workers paid per image.
+
+75
+00:07:22,720 --> 00:07:26,600
+From twenty ten there was an annual challenge built on it.
+
+76
+00:07:26,600 --> 00:07:32,200
+Sort one point two million training photographs into a thousand classes.
+
+77
+00:07:32,200 --> 00:07:40,360
+The score was the top-five error: the fraction of test photographs whose true class is not among the program's five best guesses.
+
+78
+00:07:40,360 --> 00:07:41,840
+Lower is better.
+
+79
+00:07:41,840 --> 00:07:50,280
+The first two winners, in twenty ten and twenty eleven, used hand-crafted features, and reached twenty-eight per cent and twenty-six per cent.
+
+80
+00:07:50,280 --> 00:07:51,960
+Then twenty twelve.
+
+81
+00:07:51,960 --> 00:08:05,000
+Alex Krizhevsky, a PhD student of Geoffrey Hinton in Toronto, together with Ilya Sutskever, entered a convolutional network with sixty million weights.
+
+82
+00:08:05,000 --> 00:08:08,880
+He trained it for five to six days on two gaming graphics cards.
+
+83
+00:08:08,880 --> 00:08:15,920
+Its top-five error was sixteen point four per cent on the challenge's own training data, against twenty-six point two per cent for the runner-up.
+
+84
+00:08:15,920 --> 00:08:18,120
+That is not an improvement.
+
+85
+00:08:18,120 --> 00:08:21,120
+That is a different sport.
+
+86
+00:08:21,120 --> 00:08:26,840
+Ten percentage points is the largest jump the challenge ever saw, before or after.
+
+87
+00:08:26,840 --> 00:08:34,920
+Now look at the bullets on the slide, because the point I want you to take from AlexNet is not the number.
+
+88
+00:08:34,920 --> 00:08:37,840
+It is which parts of it were new.
+
+89
+00:08:37,840 --> 00:08:42,440
+Convolution came from LeNet, more than twenty years earlier.
+
+90
+00:08:42,440 --> 00:08:50,240
+The ReLU, which is simply the rule that a negative number becomes zero, instead of the older smooth S-shaped function: Session nine.
+
+91
+00:08:50,240 --> 00:08:58,800
+Dropout, which switches off random units during training so that the network cannot lean on any single one of them: Session nine.
+
+92
+00:08:58,800 --> 00:09:03,560
+Data augmentation, which we come back to in Block three: not new either.
+
+93
+00:09:03,560 --> 00:09:08,920
+Almost nothing in AlexNet was new on its own.
+
+94
+00:09:08,920 --> 00:09:11,800
+What was new was the scale.
+
+95
+00:09:11,800 --> 00:09:15,120
+ImageNet's data, and graphics cards to compute on.
+
+96
+00:09:15,120 --> 00:09:26,160
+That is the lesson of this whole story, and it is worth carrying out of this course: a good idea can be right and still fail for thirty years, because the conditions it needs do not exist yet.
+
+97
+00:09:26,160 --> 00:09:27,960
+Two footnotes.
+
+98
+00:09:27,960 --> 00:09:33,680
+Within two years, almost every entry in the challenge was a convolutional network.
+
+99
+00:09:33,680 --> 00:09:42,160
+And Geoffrey Hinton shared the twenty twenty-four Nobel Prize in Physics with John Hopfield, for the foundations of all of this.
+
+100
+00:09:42,160 --> 00:09:44,840
+After AlexNet, the winners mainly went deeper.
+
+101
+00:09:44,840 --> 00:09:50,960
+VGG used stacks of up to nineteen layers of small three-by-three convolutions.
+
+102
+00:09:50,960 --> 00:09:54,000
+GoogLeNet won with twenty-two layers.
+
+103
+00:09:54,000 --> 00:09:59,520
+And then simply adding layers stopped working, for a reason that surprised everyone.
+
+104
+00:09:59,520 --> 00:10:02,800
+We come back to that in Block three, when we meet ResNet.
+
+105
+00:10:02,800 --> 00:10:08,680
+One more thing, and I want to be careful about it, because the easy version of this story is wrong.
+
+106
+00:10:08,680 --> 00:10:12,280
+People will tell you that convolutional networks won.
+
+107
+00:10:12,280 --> 00:10:15,600
+They did not, or at least not permanently.
+
+108
+00:10:15,600 --> 00:10:31,400
+In images they were ahead for about five years, and then the Vision Transformer arrived: cut the picture into patches, treat the patches as a sequence, build in none of convolution's assumptions at all, and, given enough data, match and pass the convolutional networks on the very tasks they had owned.
+
+109
+00:10:31,400 --> 00:10:37,920
+The strongest model in your own lab today, DINOv2, is one of those, not a convolutional network.
+
+110
+00:10:37,920 --> 00:10:40,560
+And in biology nothing took over at all.
+
+111
+00:10:40,560 --> 00:10:50,160
+Convolution sits next to the sequence models of Session eleven and the structure models of Session twelve, each with its own assumption about what matters.
+
+112
+00:10:50,160 --> 00:10:56,280
+So the lesson of ImageNet is not that convolution is the right answer.
+
+113
+00:10:56,280 --> 00:11:03,400
+It is that building in an assumption is worth a great deal when you do not have much data, and worth less and less as the data grows.
+
+114
+00:11:03,400 --> 00:11:08,880
+In biology we usually do not have much data, which is why this session is still useful.
+
+115
+00:11:08,880 --> 00:11:12,680
+Keep that trade-off in your head for the rest of the course.
+
+116
+00:11:13,280 --> 00:11:17,880
+Let me spend a slide on the hardware, because without it none of the rest happened.
+
+117
+00:11:17,880 --> 00:11:19,680
+What does a network actually compute?
+
+118
+00:11:19,680 --> 00:11:29,400
+A convolution, or a dense layer, is a very large number of multiply-and-add operations, and, crucially, they do not depend on each other.
+
+119
+00:11:29,400 --> 00:11:35,800
+Multiplying weight one by input one does not need the result of multiplying weight two by input two.
+
+120
+00:11:35,800 --> 00:11:38,360
+They can all be done at the same time.
+
+121
+00:11:38,360 --> 00:11:45,560
+A normal computer processor is built the other way round: a few very fast cores, each doing one complicated thing after another.
+
+122
+00:11:45,560 --> 00:11:55,040
+A graphics card is built for drawing millions of pixels at once, so it has thousands of simple cores, each doing one easy thing, all at the same time.
+
+123
+00:11:55,040 --> 00:11:58,640
+Which is precisely the shape of the arithmetic a network needs.
+
+124
+00:11:58,640 --> 00:12:02,480
+That coincidence is most of modern artificial intelligence.
+
+125
+00:12:02,480 --> 00:12:11,880
+It became usable for general computing when NVIDIA released CUDA in two thousand and seven, which let people program graphics cards for something other than graphics.
+
+126
+00:12:11,880 --> 00:12:26,320
+In two thousand and nine, Raina, Madhavan and Ng trained a four-layer network with a hundred million parameters and reported that the graphics card took the training time, in their words, from several weeks to around a single day.
+
+127
+00:12:26,320 --> 00:12:35,800
+AlexNet, three years later, was trained on two GTX five-eighty cards with three gigabytes of memory each, for five to six days.
+
+128
+00:12:35,800 --> 00:12:42,480
+Its architecture was actually limited by that memory: the network was split across the two cards because it did not fit on one.
+
+129
+00:12:42,480 --> 00:12:46,240
+And the same idea scales straight up to today's data centres.
+
+130
+00:12:46,240 --> 00:12:52,800
+The classroom version of it is what you use in the lab: the course server, and Colab's free graphics card.
+
+131
+00:12:53,400 --> 00:12:55,800
+Now the mechanics.
+
+132
+00:12:55,800 --> 00:13:01,800
+Let us count, because the argument for convolution is at bottom an argument about counting.
+
+133
+00:13:01,800 --> 00:13:06,560
+Every model in this course so far gives every input position its own weight.
+
+134
+00:13:06,560 --> 00:13:10,000
+Take the protein sequences of Sessions eight and nine.
+
+135
+00:13:10,000 --> 00:13:24,120
+A hundred and fifty residues, and twenty possible amino acids at each one, which is how you write a sequence as numbers: twenty numbers per position, nineteen of them zero and a one in the slot for the amino acid that is actually there.
+
+136
+00:13:24,120 --> 00:13:26,960
+That is three thousand numbers going in.
+
+137
+00:13:26,960 --> 00:13:31,160
+So a dense layer needs three thousand weights for every single hidden unit.
+
+138
+00:13:31,160 --> 00:13:38,640
+For a colour image of two hundred and twenty-four by two hundred and twenty-four pixels, it is over a hundred and fifty thousand weights per unit.
+
+139
+00:13:38,640 --> 00:13:41,440
+But the waste is not really the size of the number.
+
+140
+00:13:41,440 --> 00:13:43,960
+The waste is what those weights are spent on.
+
+141
+00:13:43,960 --> 00:13:51,200
+If a hydrophobic stretch matters at position ten, the network learns a detector for it at position ten.
+
+142
+00:13:51,200 --> 00:13:54,760
+Then it learns that same detector again at position eleven.
+
+143
+00:13:54,760 --> 00:13:56,480
+And again at twelve.
+
+144
+00:13:56,480 --> 00:14:06,520
+Neighbouring residues are treated as being exactly as unrelated as distant ones, because the dense layer does not know that position ten and position eleven are next to each other.
+
+145
+00:14:06,520 --> 00:14:10,280
+It has no idea the input has an order at all.
+
+146
+00:14:10,280 --> 00:14:12,920
+Now the convolution.
+
+147
+00:14:12,920 --> 00:14:16,480
+The slide has the comparison on our own localisation data.
+
+148
+00:14:16,480 --> 00:14:27,960
+A dense layer, three thousand inputs to sixty-four units, is three thousand times sixty-four, plus sixty-four biases: a hundred and ninety-two thousand and sixty-four weights.
+
+149
+00:14:27,960 --> 00:14:40,520
+A convolutional layer, taking twenty channels to thirty-two filters with a window seven residues wide, is seven times twenty times thirty-two, plus thirty-two biases: four thousand five hundred and twelve.
+
+150
+00:14:40,520 --> 00:14:42,920
+Forty times fewer.
+
+151
+00:14:42,920 --> 00:14:50,160
+And here is the part I would underline twice: it stays four and a half thousand for a protein of any length.
+
+152
+00:14:50,160 --> 00:14:52,920
+The dense layer's count grows with the input.
+
+153
+00:14:52,920 --> 00:14:58,200
+The convolution's does not, because the weights are reused rather than repeated.
+
+154
+00:14:58,200 --> 00:15:01,280
+One honest complication, which you will meet in the lab.
+
+155
+00:15:01,280 --> 00:15:04,360
+Whole networks are less simple than single layers.
+
+156
+00:15:04,360 --> 00:15:10,360
+In the lab you will find that adding a convolutional layer sometimes makes the whole network smaller.
+
+157
+00:15:10,360 --> 00:15:21,200
+That sounds backwards until you see why: the convolution, with its pooling, hands a smaller feature map to the dense layer that follows, and the dense layer is where the weights were.
+
+158
+00:15:21,800 --> 00:15:32,440
+Before we go further I want to be concrete about shapes, because half the confusion with convolutional networks is not understanding what the numbers flowing through them look like.
+
+159
+00:15:32,440 --> 00:15:39,280
+A batch of images is a block of numbers with four dimensions: B by C by H by W.
+
+160
+00:15:39,280 --> 00:15:43,480
+B is the batch, how many images you are processing at once.
+
+161
+00:15:43,480 --> 00:15:49,800
+C is the channels, which for a colour image is three, for red, green and blue.
+
+162
+00:15:49,800 --> 00:15:53,320
+H and W are height and width in pixels.
+
+163
+00:15:53,320 --> 00:15:57,000
+A batch of sequences has three: B by C by L.
+
+164
+00:15:57,000 --> 00:15:59,040
+B is again the batch.
+
+165
+00:15:59,040 --> 00:16:01,480
+L is the length of the sequence.
+
+166
+00:16:01,480 --> 00:16:10,560
+And C, the channels, is twenty for a one-hot protein sequence, one channel per amino acid, or four for DNA, one per base.
+
+167
+00:16:10,560 --> 00:16:15,880
+So a channel is one of the parallel streams of numbers available at each position.
+
+168
+00:16:15,880 --> 00:16:25,040
+At the input they have a concrete meaning: this channel is how much leucine there is here, which is one if the residue is a leucine and zero otherwise.
+
+169
+00:16:25,040 --> 00:16:30,200
+Deeper in the network they stop being nameable, and become whatever the network found useful.
+
+170
+00:16:30,200 --> 00:16:34,800
+Now the kernel, which is the small detector itself.
+
+171
+00:16:34,800 --> 00:16:42,920
+A size-seven kernel on protein has twenty times seven weights: one weight per amino acid per position in its window.
+
+172
+00:16:42,920 --> 00:16:55,920
+It sits over residues one to seven, multiplies and adds, producing one number; then it steps along and sits over residues two to eight, producing the next number; and so on to the end.
+
+173
+00:16:55,920 --> 00:17:01,920
+What comes out is a row of numbers, one per position, saying how strongly this detector fired there.
+
+174
+00:17:01,920 --> 00:17:06,120
+That row has a name we will use a lot: it is a feature map.
+
+175
+00:17:06,120 --> 00:17:09,640
+And a layer does not have one kernel, it has many.
+
+176
+00:17:09,640 --> 00:17:16,640
+Each kernel is called a filter, and each filter produces one output channel: one learned feature type.
+
+177
+00:17:16,640 --> 00:17:24,720
+Thirty-two filters means thirty-two different detectors, each free to learn to look for something different, and thirty-two feature maps coming out.
+
+178
+00:17:25,320 --> 00:17:31,880
+Four settings control a convolutional layer, and you need all four to read any architecture in a paper.
+
+179
+00:17:31,880 --> 00:17:39,000
+Kernel size is the width of the local window: three pixels by three, or seven residues.
+
+180
+00:17:39,000 --> 00:17:44,000
+Bigger means each unit sees more at once, and costs more weights.
+
+181
+00:17:44,000 --> 00:17:50,720
+Padding is adding zeros at the edges of the input, so that the output can keep the input's length.
+
+182
+00:17:50,720 --> 00:17:55,720
+Without it the output is shorter than the input, which we will look at on the next slide.
+
+183
+00:17:55,720 --> 00:17:59,360
+Stride is how far the kernel moves between steps.
+
+184
+00:17:59,360 --> 00:18:03,440
+Stride one means it is applied at every position.
+
+185
+00:18:03,440 --> 00:18:11,040
+Stride two means it skips every other position, so the output is half as long, which is a cheap way of shrinking the data.
+
+186
+00:18:11,040 --> 00:18:16,600
+Pooling replaces small regions by a single number, usually their maximum or their mean.
+
+187
+00:18:16,600 --> 00:18:22,360
+Two-by-two max pooling takes each little square of four and keeps only the largest.
+
+188
+00:18:22,360 --> 00:18:31,080
+It shrinks the feature map, and, as we will see, it also buys a small amount of tolerance to the input moving slightly.
+
+189
+00:18:31,080 --> 00:18:36,400
+Those four, plus the number of filters, are essentially the whole vocabulary.
+
+190
+00:18:37,000 --> 00:18:39,280
+Here is why padding exists.
+
+191
+00:18:39,280 --> 00:18:42,560
+Take a kernel of size five, with no padding.
+
+192
+00:18:42,560 --> 00:18:52,920
+The kernel needs five positions under it to produce one output, so it cannot be centred on the first two pixels or the last two: you lose four pixels of width and four of height, every layer.
+
+193
+00:18:52,920 --> 00:18:55,520
+On a small image that matters quickly.
+
+194
+00:18:55,520 --> 00:19:04,240
+A twenty-eight by twenty-eight image, which is what the blood cells in the lab are, loses four each time: twenty-four, twenty, sixteen.
+
+195
+00:19:04,240 --> 00:19:12,560
+You run out of image after a handful of layers, and one of the lab's questions asks you to work out exactly how many fit.
+
+196
+00:19:12,560 --> 00:19:18,400
+With padding, you add a border of zeros so the output has the same size as the input.
+
+197
+00:19:18,400 --> 00:19:26,920
+And once the size stops shrinking, depth becomes free: you can stack as many layers as you like without the data disappearing underneath you.
+
+198
+00:19:26,920 --> 00:19:31,040
+That is what makes a network of a hundred layers possible at all.
+
+199
+00:19:31,640 --> 00:19:37,360
+Now we come to the most important idea in this block, and the one that causes the most confusion every year.
+
+200
+00:19:37,360 --> 00:19:44,360
+It is a pair of words that sound similar and mean opposite things: equivariance and invariance.
+
+201
+00:19:44,360 --> 00:19:46,520
+Let me set it up with a concrete example.
+
+202
+00:19:46,520 --> 00:19:56,320
+Imagine a detector sliding along a piece of DNA, looking for a TATA box, which is a short specific run of bases that marks where the machinery that reads a gene should start.
+
+203
+00:19:56,320 --> 00:19:59,240
+The detector produces a score at every position.
+
+204
+00:19:59,240 --> 00:20:04,600
+Now take the same sequence and move the TATA box eight positions further along.
+
+205
+00:20:04,600 --> 00:20:07,040
+What happens to the scores?
+
+206
+00:20:07,040 --> 00:20:09,200
+The peak moves eight positions.
+
+207
+00:20:09,200 --> 00:20:14,760
+The whole pattern of output shifts by exactly the amount the input shifted.
+
+208
+00:20:14,760 --> 00:20:17,320
+That is equivariance.
+
+209
+00:20:17,320 --> 00:20:21,320
+The output changes in the same way the input changed.
+
+210
+00:20:21,320 --> 00:20:30,560
+In symbols, if T is the shift and f is the model, equivariance means f of T x equals T of f of x: shifting the input shifts the output.
+
+211
+00:20:30,560 --> 00:20:34,760
+An equivariant output answers the question where.
+
+212
+00:20:34,760 --> 00:20:36,760
+Invariance is the other one.
+
+213
+00:20:36,760 --> 00:20:40,560
+An output is invariant if it does not change at all.
+
+214
+00:20:40,560 --> 00:20:47,560
+The single answer to does this sequence contain a TATA box is yes, and it is still yes after you move the motif.
+
+215
+00:20:47,560 --> 00:20:50,480
+f of T x equals f of x.
+
+216
+00:20:50,480 --> 00:20:56,240
+An invariant output answers the question whether, or what, but not where.
+
+217
+00:20:56,240 --> 00:21:03,160
+Which of the two you want depends entirely on the question you are asking, and this is worth remembering for the exam.
+
+218
+00:21:03,160 --> 00:21:15,800
+If you are labelling every residue, is this residue part of a signal peptide, what is the secondary structure here, you want equivariance: shift the sequence, and the labels should shift with it.
+
+219
+00:21:15,800 --> 00:21:27,160
+If you are labelling the whole input, which compartment of the cell is this protein in, what type of blood cell is this, you want invariance: a lymphocyte is a lymphocyte wherever it sits in the picture.
+
+220
+00:21:27,160 --> 00:21:29,800
+So which does convolution give you?
+
+221
+00:21:29,800 --> 00:21:32,680
+Equivariance, and it gives it to you for free.
+
+222
+00:21:32,680 --> 00:21:39,360
+If the input shifts, the shared kernel finds the same pattern somewhere else, so its output shifts by the same amount.
+
+223
+00:21:39,360 --> 00:21:46,640
+And notice where that comes from: it comes from weight sharing itself, from the fact that the same weights are used everywhere.
+
+224
+00:21:46,640 --> 00:21:49,280
+It is not something the network learns.
+
+225
+00:21:49,280 --> 00:21:58,160
+The figure on the slide shows a random, untrained one-dimensional convolution applied to a signal, and to the same signal shifted by ten positions.
+
+226
+00:21:58,160 --> 00:22:06,120
+The shifted input's output is the original output shifted by ten, and away from the edges the difference is zero point zero zero.
+
+227
+00:22:06,120 --> 00:22:09,200
+The network has not been trained at all.
+
+228
+00:22:09,200 --> 00:22:11,840
+Equivariance was there from the start.
+
+229
+00:22:11,840 --> 00:22:16,120
+And now the sentence to write down: equivariance is not invariance.
+
+230
+00:22:16,120 --> 00:22:18,360
+The feature is found wherever it is.
+
+231
+00:22:18,360 --> 00:22:24,800
+But where it was found still differs, and what the rest of the network does with that difference is a separate question.
+
+232
+00:22:24,800 --> 00:22:26,040
+That is the next slide.
+
+233
+00:22:26,640 --> 00:22:31,320
+So let us trace where position information actually goes in a network, step by step.
+
+234
+00:22:31,320 --> 00:22:36,960
+There are four steps on this slide, and each does something different with it.
+
+235
+00:22:36,960 --> 00:22:39,840
+Step one, the convolution itself.
+
+236
+00:22:39,840 --> 00:22:42,360
+The feature map shifts with the input.
+
+237
+00:22:42,360 --> 00:22:45,720
+Position is fully preserved, just moved.
+
+238
+00:22:45,720 --> 00:22:46,880
+Equivariant.
+
+239
+00:22:46,880 --> 00:22:52,120
+Step two, local pooling, for example two-by-two max pooling.
+
+240
+00:22:52,120 --> 00:23:00,200
+If a pattern moves by one pixel, it quite often stays inside the same pooling window, and then the pooled output does not change.
+
+241
+00:23:00,200 --> 00:23:03,880
+So local pooling buys you some tolerance to small shifts.
+
+242
+00:23:03,880 --> 00:23:07,400
+Notice the words: some tolerance.
+
+243
+00:23:07,400 --> 00:23:08,840
+Not invariance.
+
+244
+00:23:08,840 --> 00:23:13,800
+Move far enough and you cross into the next window and the output changes.
+
+245
+00:23:13,800 --> 00:23:16,880
+Step three, flatten followed by a dense layer.
+
+246
+00:23:16,880 --> 00:23:24,760
+Flatten means taking the whole feature map and laying it out as one long list of numbers, which is then fed to a dense layer.
+
+247
+00:23:24,760 --> 00:23:30,160
+And look what that does: every position of the final feature map gets its own weight again.
+
+248
+00:23:30,160 --> 00:23:34,560
+You have just thrown away the thing convolution bought you.
+
+249
+00:23:34,560 --> 00:23:43,840
+The network can now say this feature was present at position seventeen, specifically, which is sometimes exactly what you want, and sometimes a disaster.
+
+250
+00:23:43,840 --> 00:23:46,480
+Step four, global average pooling.
+
+251
+00:23:46,480 --> 00:23:52,680
+Average each feature map over every position, so that each filter is reduced to a single number.
+
+252
+00:23:52,680 --> 00:23:59,360
+The network can then say this feature was present somewhere in the input, and nothing more.
+
+253
+00:23:59,360 --> 00:24:05,560
+That is a position-invariant summary, and it is what our localisation network in Block two uses.
+
+254
+00:24:05,560 --> 00:24:14,000
+So the convolution is equivariant, and which of these later steps you choose is what decides whether the whole network cares about position.
+
+255
+00:24:14,000 --> 00:24:17,360
+That is a design decision, and you make it.
+
+256
+00:24:17,360 --> 00:24:19,400
+One warning before we leave this slide.
+
+257
+00:24:19,400 --> 00:24:21,680
+Everything I have said is about shifts.
+
+258
+00:24:21,680 --> 00:24:29,720
+Rotation is a completely different matter: nothing in convolution, and nothing in pooling, gives you any tolerance to rotation at all.
+
+259
+00:24:29,720 --> 00:24:33,120
+We will measure exactly how badly in Block three.
+
+260
+00:24:33,720 --> 00:24:39,200
+This is what step three looks like when it goes wrong, and I like this experiment because it is so blunt.
+
+261
+00:24:39,200 --> 00:24:45,760
+In the lab, a convolutional network is trained on blood cells that have all been pasted into one corner of the image.
+
+262
+00:24:45,760 --> 00:24:49,040
+Every single training image has the cell in the corner.
+
+263
+00:24:49,040 --> 00:24:59,880
+The network trains happily and reaches between nought point seven seven and nought point eight six accuracy on test images that also have the cell in the corner.
+
+264
+00:24:59,880 --> 00:25:04,200
+Then you show it the same cells placed at random positions.
+
+265
+00:25:04,200 --> 00:25:08,760
+Accuracy falls to between nought point one eight and nought point two nine.
+
+266
+00:25:08,760 --> 00:25:14,440
+To put that in context, always guessing the most common class scores nought point one nine eight.
+
+267
+00:25:14,440 --> 00:25:16,600
+The network has gone to chance.
+
+268
+00:25:16,600 --> 00:25:17,920
+Now, why?
+
+269
+00:25:17,920 --> 00:25:22,240
+The convolution is equivariant, so the features are still found.
+
+270
+00:25:22,240 --> 00:25:25,840
+The cell is detected perfectly well in its new position.
+
+271
+00:25:25,840 --> 00:25:36,520
+The failure is entirely in the last step: flatten plus a dense layer gives every position its own weight, and the weights belonging to the middle of the image were never trained on anything.
+
+272
+00:25:36,520 --> 00:25:42,520
+The features arrive, and meet weights that have never seen a cell.
+
+273
+00:25:42,520 --> 00:25:45,280
+There are two fixes, and they are different in kind.
+
+274
+00:25:45,280 --> 00:25:51,400
+One: replace flatten with global average pooling, so that position stops mattering by construction.
+
+275
+00:25:51,400 --> 00:25:57,400
+Two: train on cells at all positions, so that every position's weights get trained.
+
+276
+00:25:57,400 --> 00:26:03,680
+With randomly placed training cells, the three-block network reaches nought point seven two two.
+
+277
+00:26:03,680 --> 00:26:11,680
+This is the clearest demonstration I know that equivariance is not invariance, and it is why that distinction is not word-play.
+
+278
+00:26:12,280 --> 00:26:17,040
+Last idea of Block one, and it is the one that explains why networks are deep.
+
+279
+00:26:17,040 --> 00:26:20,440
+A single convolutional layer sees only the window of its kernel.
+
+280
+00:26:20,440 --> 00:26:22,840
+Three residues, say.
+
+281
+00:26:22,840 --> 00:26:27,640
+That is all one unit in layer one can possibly know about.
+
+282
+00:26:27,640 --> 00:26:29,920
+But stack a second layer on top.
+
+283
+00:26:29,920 --> 00:26:36,560
+A unit in layer two looks at several layer-one units, each of which looked at its own window of three.
+
+284
+00:26:36,560 --> 00:26:44,480
+Those windows overlap but are offset, so the layer-two unit ultimately depends on five residues of the original input.
+
+285
+00:26:44,480 --> 00:26:46,920
+Add a third layer and it is seven.
+
+286
+00:26:46,920 --> 00:26:58,120
+The amount of original input one unit ultimately depends on is called its receptive field, which is the term we borrowed from Hubel and Wiesel's cats at the start of this block.
+
+287
+00:26:58,120 --> 00:27:04,680
+The arithmetic is simple: with kernel size k and stride one, every layer adds k minus one positions.
+
+288
+00:27:04,680 --> 00:27:06,800
+Three, five, seven.
+
+289
+00:27:06,800 --> 00:27:12,920
+Pooling and larger strides make it grow much faster, because they shrink the data under each step.
+
+290
+00:27:12,920 --> 00:27:17,680
+And this is how deep networks build complicated things out of simple ones.
+
+291
+00:27:17,680 --> 00:27:31,040
+In images: layer one finds edges, layer two finds corners and simple shapes from combinations of edges, layer three finds textures and object parts, and so on up to whole objects.
+
+292
+00:27:31,040 --> 00:27:39,760
+In DNA: layer one finds short motifs, layer two finds combinations of motifs, which is what regulatory grammar actually looks like.
+
+293
+00:27:39,760 --> 00:27:47,320
+In protein: layer one finds a seven-residue pattern, layer two finds something the length of a structural element.
+
+294
+00:27:47,320 --> 00:27:56,440
+Hold on to this, because in Block two we will compute the receptive field of our own network and find that it lands on a biologically meaningful length.
+
+295
+00:27:56,440 --> 00:28:03,680
+The second discussion problem asks you to do exactly that: how wide must the window be if you want to see a whole signal peptide?
+

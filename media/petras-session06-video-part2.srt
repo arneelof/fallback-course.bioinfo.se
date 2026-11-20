@@ -1,0 +1,304 @@
+1
+00:00:00,000 --> 00:00:08,625
+These secondary structure elements sit in one chain, and they have positions in space relative to one another that are particular to that protein.
+
+2
+00:00:08,625 --> 00:00:14,275
+That arrangement is the tertiary structure, and it covers a single polypeptide chain.
+
+3
+00:00:14,275 --> 00:00:23,125
+What holds it together is the hydrophobic effect, together with non-covalent interactions between atoms of both the backbone and the side chains.
+
+4
+00:00:23,725 --> 00:00:27,725
+There are four kinds of non-covalent interaction worth knowing.
+
+5
+00:00:27,725 --> 00:00:31,300
+Van der Waals interactions have two parts.
+
+6
+00:00:31,300 --> 00:00:38,350
+The attraction, which reaches further, comes from quantum-mechanical fluctuations in the dipole moments of the atoms.
+
+7
+00:00:38,350 --> 00:00:47,875
+The repulsion, which is very short range, comes from electron clouds overlapping, from the nuclei repelling each other, and from the Pauli exclusion principle.
+
+8
+00:00:47,875 --> 00:00:51,500
+Electrostatic interactions give salt bridges.
+
+9
+00:00:51,500 --> 00:01:00,800
+A salt bridge forms between two charged residues — lysine or arginine on the positive side, aspartic or glutamic acid on the negative.
+
+10
+00:01:00,800 --> 00:01:11,950
+Hydrogen bonds are interactions between dipoles, which arise because charge is distributed unevenly between the nitrogen and oxygen of the backbone and of the polar side chains.
+
+11
+00:01:11,950 --> 00:01:18,925
+And disulphide bonds are strong — nearly as strong as covalent bonds — formed between two sulphur atoms.
+
+12
+00:01:18,925 --> 00:01:23,375
+Only cysteine can do this; the sulphur in methionine cannot.
+
+13
+00:01:23,975 --> 00:01:30,625
+Water molecules form hydrogen bonds with each other, and that is what makes water such an unusual liquid.
+
+14
+00:01:30,625 --> 00:01:35,775
+One consequence matters a great deal for proteins: the hydrophobic effect.
+
+15
+00:01:35,775 --> 00:01:44,800
+A carbon atom cannot form a hydrogen bond, so when one arrives the water molecules rearrange themselves to surround and isolate the intruder.
+
+16
+00:01:44,800 --> 00:01:54,350
+If there are two such atoms, the rearrangement ends up excluding water from the space between them, and the two are sometimes said to form a hydrophobic bond.
+
+17
+00:01:54,350 --> 00:01:59,125
+The hydrophobic effect is the driving force behind protein folding.
+
+18
+00:01:59,725 --> 00:02:07,800
+Proteins also form complexes — two chains, three chains, and in some experimentally determined structures hundreds of them.
+
+19
+00:02:07,800 --> 00:02:15,650
+How the tertiary structures of the individual chains are arranged relative to each other is the quaternary structure, the highest level.
+
+20
+00:02:15,650 --> 00:02:29,475
+It is held together by the same two things: the hydrophobic effect, because trapping water between hydrophobic patches of two surfaces costs energy, and non-covalent interactions between atoms belonging to different chains.
+
+21
+00:02:30,075 --> 00:02:36,050
+And this is the classical summary slide: all four levels of protein structure in one picture.
+
+22
+00:02:36,650 --> 00:02:43,950
+Experimentally determined structures live in the Protein Data Bank, and predicted ones in the AlphaFold database.
+
+23
+00:02:43,950 --> 00:02:47,100
+Both came up in the first lecture of the course.
+
+24
+00:02:47,100 --> 00:02:50,100
+What is worth looking at here is the growth.
+
+25
+00:02:50,100 --> 00:02:55,350
+The yellow bars are the structures deposited each year, against the running total.
+
+26
+00:02:55,350 --> 00:03:05,250
+The plot on the right shows exactly the same data on a logarithmic scale — useful whenever you want two quantities on one plot that differ by orders of magnitude.
+
+27
+00:03:05,850 --> 00:03:14,825
+Structures in the Protein Data Bank come from three methods: X-ray crystallography, nuclear magnetic resonance, and electron microscopy.
+
+28
+00:03:14,825 --> 00:03:18,800
+The interesting thing is the trend over the last twenty years.
+
+29
+00:03:18,800 --> 00:03:30,825
+Electron microscopy has become steadily more popular, and because of it the database now holds entire macromolecular assemblies — ribosomes, viral capsids — at atomic resolution.
+
+30
+00:03:31,425 --> 00:03:37,825
+The second part of the lecture is about comparing structures, which is something you will need to do constantly.
+
+31
+00:03:37,825 --> 00:03:43,600
+Tertiary and quaternary structures are treated separately, though some measures work for both.
+
+32
+00:03:43,600 --> 00:03:51,300
+Before the measures themselves, one thing that courses often skip: how to move an object around in three-dimensional space.
+
+33
+00:03:51,300 --> 00:03:54,150
+Most comparison metrics need it.
+
+34
+00:03:54,150 --> 00:03:57,375
+It is called a rigid-body transformation.
+
+35
+00:03:57,375 --> 00:03:59,400
+Then three measures.
+
+36
+00:03:59,400 --> 00:04:05,625
+Root-mean-square deviation and the TM-score both depend on moving one structure onto the other.
+
+37
+00:04:05,625 --> 00:04:08,300
+The GDT score does not.
+
+38
+00:04:08,900 --> 00:04:16,700
+A rigid-body transformation moves an object through space without changing the positions of its parts relative to one another.
+
+39
+00:04:16,700 --> 00:04:24,750
+For a protein, that means moving the whole tertiary structure while leaving the secondary structure elements exactly where they are within it.
+
+40
+00:04:24,750 --> 00:04:33,100
+Mathematically it is a function: give it the coordinates of every atom in the old position, and it returns their coordinates in the new one.
+
+41
+00:04:33,700 --> 00:04:35,700
+It has two parts.
+
+42
+00:04:35,700 --> 00:04:42,750
+First a translation — the centre of mass moves along some direction, described by a translation vector.
+
+43
+00:04:42,750 --> 00:04:49,575
+Then a rotation about that centre in its new position, described by a three-by-three rotation matrix.
+
+44
+00:04:49,575 --> 00:04:52,950
+The compact form of that function is on the slide.
+
+45
+00:04:53,550 --> 00:05:01,500
+Those two things — the translation vector and the rotation matrix — are what most structural superposition programs hand back to you.
+
+46
+00:05:02,100 --> 00:05:05,975
+Here is a real example: the output of TM-align.
+
+47
+00:05:05,975 --> 00:05:09,825
+The matrix and the vector are right there in the text it prints.
+
+48
+00:05:10,425 --> 00:05:16,500
+The same transformation written out algebraically, in a form you could type straight into a program.
+
+49
+00:05:17,100 --> 00:05:20,725
+There is a more compact way to describe the rotation.
+
+50
+00:05:20,725 --> 00:05:26,025
+Instead of the nine numbers of a rotation matrix, three will do: the Euler angles.
+
+51
+00:05:26,025 --> 00:05:29,250
+Their relation to the matrix is on the slide.
+
+52
+00:05:29,850 --> 00:05:35,900
+This is the most widely used way of comparing two structures: the root-mean- square deviation.
+
+53
+00:05:35,900 --> 00:05:44,775
+If you know which atom in protein A corresponds to which atom in protein B, you can measure the distance between each pair and take the root mean square.
+
+54
+00:05:44,775 --> 00:05:48,025
+But there is a catch, and the two pictures show it.
+
+55
+00:05:48,025 --> 00:05:56,525
+Those distances depend on where the proteins happen to sit in space — enormous when the two are far apart, small when they are superimposed.
+
+56
+00:05:56,525 --> 00:06:00,825
+So you never calculate RMSD on the coordinates as they come.
+
+57
+00:06:00,825 --> 00:06:08,850
+You first transform one structure onto the other, and the transformation you want is the one that makes the RMSD as small as it can be.
+
+58
+00:06:08,850 --> 00:06:14,700
+If two structures are identical, the optimal superposition gives an RMSD of zero.
+
+59
+00:06:15,300 --> 00:06:18,975
+Two things worth remembering about structural alignment.
+
+60
+00:06:18,975 --> 00:06:22,125
+Structure is more conserved than sequence.
+
+61
+00:06:22,125 --> 00:06:28,775
+And there is no such thing as structural homology — homology is a statement about ancestry, not about shape.
+
+62
+00:06:29,375 --> 00:06:35,125
+One point that gets overlooked: the root-mean-square deviation is not the average distance.
+
+63
+00:06:35,125 --> 00:06:46,575
+Squaring first and taking the root afterwards gives more weight to the large deviations, so a single badly placed region moves the RMSD far more than its share of the atoms would suggest.
+
+64
+00:06:47,175 --> 00:06:52,325
+The second measure is the TM-score, which comes out of the program TM-align.
+
+65
+00:06:52,325 --> 00:06:58,825
+Variants of it — MM-align and I-align — are used for quaternary structures and for interface fragments.
+
+66
+00:06:58,825 --> 00:07:07,600
+In outline, TM-align first builds a residue-to-residue alignment from structural similarity, using repeated rounds of dynamic programming.
+
+67
+00:07:07,600 --> 00:07:15,975
+It then measures the distances between the aligned atoms in that superposition and normalises them into a score between zero and one.
+
+68
+00:07:15,975 --> 00:07:21,350
+The formula is on the slide, and the original paper is from two thousand and five.
+
+69
+00:07:21,950 --> 00:07:26,175
+The third measure does not depend on superimposing anything.
+
+70
+00:07:26,175 --> 00:07:28,925
+It is the global distance test.
+
+71
+00:07:28,925 --> 00:07:35,050
+It works from the fraction of distances that are conserved in the model compared with the reference structure.
+
+72
+00:07:35,050 --> 00:07:39,300
+Two distances are drawn here, one conserved and one not.
+
+73
+00:07:39,300 --> 00:07:43,750
+Whether a distance counts as conserved is a judgement, not a fact.
+
+74
+00:07:43,750 --> 00:07:49,975
+The example on the slide is conserved at a threshold of two ångström, and would not be at one.
+
+75
+00:07:49,975 --> 00:07:54,425
+That is why these scores are computed at several thresholds and averaged.
+
+76
+00:07:54,425 --> 00:08:01,775
+There is a local version too, the local distance difference test, which works the same way over a different set of atoms.
+
