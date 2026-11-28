@@ -1,0 +1,650 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.400
+Block two.
+
+2
+00:00:01.400 --> 00:00:03.950
+Calculus for machine learning.
+
+3
+00:00:03.950 --> 00:00:08.450
+On the page, this block is the section "Calculus for machine learning".
+
+4
+00:00:08.450 --> 00:00:14.875
+This block has one destination: gradient descent, which is how every model in this course is trained.
+
+5
+00:00:14.875 --> 00:00:22.200
+Everything in it is the minimum needed to understand that one procedure, and I will say where each piece is used as we go.
+
+6
+00:00:22.800 --> 00:00:28.075
+A derivative tells you how fast a function's output changes when you change its input.
+
+7
+00:00:28.075 --> 00:00:32.700
+Draw the tangent line at a point; the derivative is that line's slope.
+
+8
+00:00:32.700 --> 00:00:41.025
+If you have seen derivatives before, that is the whole idea, and the rest of this block is mostly about what happens with more than one input.
+
+9
+00:00:41.025 --> 00:00:46.725
+Our example function for the block is f of x equals x minus three, all squared.
+
+10
+00:00:46.725 --> 00:00:50.425
+A parabola with its lowest point at x equals three.
+
+11
+00:00:50.425 --> 00:00:53.950
+Its derivative is two times x minus three.
+
+12
+00:00:53.950 --> 00:00:56.400
+Let us read some values.
+
+13
+00:00:56.400 --> 00:01:02.175
+At x equals one, the derivative is two times one minus three, which is minus four.
+
+14
+00:01:02.175 --> 00:01:05.650
+Negative slope: going right takes you downhill.
+
+15
+00:01:05.650 --> 00:01:09.900
+At x equals three, it is two times zero, which is zero.
+
+16
+00:01:09.900 --> 00:01:10.825
+Flat.
+
+17
+00:01:10.825 --> 00:01:12.950
+That is the bottom.
+
+18
+00:01:12.950 --> 00:01:18.575
+At x equals four point five, it is two times one point five, which is plus three.
+
+19
+00:01:18.575 --> 00:01:21.800
+Positive slope: going right takes you uphill.
+
+20
+00:01:21.800 --> 00:01:31.325
+And the fact to carry forward: the derivative is zero where the function is momentarily flat, which happens at a peak, at a trough, or at a flat inflection point.
+
+21
+00:01:31.325 --> 00:01:36.450
+That is how you find minima, and finding minima is what training a model is.
+
+22
+00:01:36.450 --> 00:01:41.800
+This function comes back in a few slides, as the thing gradient descent walks down.
+
+23
+00:01:42.400 --> 00:01:48.700
+A short table of standard derivatives, which are worth memorising rather than re-deriving each time.
+
+24
+00:01:48.700 --> 00:01:51.675
+A constant differentiates to zero.
+
+25
+00:01:51.675 --> 00:01:55.575
+x to the n gives n times x to the n minus one.
+
+26
+00:01:55.575 --> 00:02:00.125
+e to the x differentiates to itself, which is the defining property of e.
+
+27
+00:02:00.125 --> 00:02:03.625
+The natural logarithm of x gives one over x.
+
+28
+00:02:03.625 --> 00:02:07.300
+Sine gives cosine, and cosine gives minus sine.
+
+29
+00:02:07.300 --> 00:02:12.900
+I am deliberately not dwelling on those, because they are the standard list and you have met them.
+
+30
+00:02:12.900 --> 00:02:18.500
+But the last row is different, and it gets its own slide next, so let me just flag it.
+
+31
+00:02:18.500 --> 00:02:28.250
+It is the derivative of the sigmoid function, and the thing to notice is that it is written in terms of the sigmoid itself rather than in terms of e to the minus z.
+
+32
+00:02:28.250 --> 00:02:31.900
+That is not cosmetic, and the next slide says why.
+
+33
+00:02:32.500 --> 00:02:38.125
+The sigmoid is the S-shaped function: one divided by one plus e to the minus z.
+
+34
+00:02:38.125 --> 00:02:44.950
+It squashes any number into the range between nought and one, and we meet it properly in Sessions seven and eight.
+
+35
+00:02:44.950 --> 00:02:50.400
+Its derivative is remarkably tidy: sigma of z, times one minus sigma of z.
+
+36
+00:02:50.400 --> 00:02:54.400
+The derivative of the sigmoid, expressed using the sigmoid.
+
+37
+00:02:54.400 --> 00:03:00.525
+Here is why that matters, and it is a point about computation rather than about mathematics.
+
+38
+00:03:00.525 --> 00:03:08.175
+When a neural network processes an example, it computes sigma of z on the way forward, as part of producing its answer.
+
+39
+00:03:08.175 --> 00:03:14.875
+Then, when backpropagation runs backwards to work out the gradients, it needs the derivative at that same point.
+
+40
+00:03:14.875 --> 00:03:26.000
+Because the derivative is written in terms of sigma of z, and sigma of z has already been computed and is sitting in memory, the derivative costs one subtraction and one multiplication.
+
+41
+00:03:26.000 --> 00:03:28.650
+Nothing has to be recomputed.
+
+42
+00:03:28.650 --> 00:03:38.025
+Session nine evaluates this once per sigmoid unit per training example, which is an enormous number of times, so a cheap derivative is not a detail.
+
+43
+00:03:38.025 --> 00:03:40.100
+Memorise the form.
+
+44
+00:03:40.100 --> 00:03:42.625
+You do not need the derivation.
+
+45
+00:03:43.225 --> 00:03:48.000
+A picture for the fact from two slides ago, using functions you know well.
+
+46
+00:03:48.000 --> 00:03:50.275
+The solid curve is sine.
+
+47
+00:03:50.275 --> 00:03:53.525
+The dashed curve is its derivative, cosine.
+
+48
+00:03:53.525 --> 00:04:00.100
+Now look at every place where the sine curve reaches a peak or a trough, and look straight down at the cosine curve.
+
+49
+00:04:00.100 --> 00:04:03.975
+It crosses zero at exactly those points, every time.
+
+50
+00:04:03.975 --> 00:04:11.000
+That is the whole statement, seen rather than said: where a function is momentarily flat, its derivative is zero.
+
+51
+00:04:11.000 --> 00:04:15.275
+And it is worth pausing on because it is how optimisation works.
+
+52
+00:04:15.275 --> 00:04:26.425
+Finding the minimum of a function means finding where its derivative is zero, and when you cannot solve for that directly, which is almost always, you walk downhill until the slope flattens out.
+
+53
+00:04:26.425 --> 00:04:29.175
+That walk is the next three slides.
+
+54
+00:04:29.775 --> 00:04:37.100
+Most functions in machine learning have many inputs: a loss function has one input per weight, and there can be millions.
+
+55
+00:04:37.100 --> 00:04:40.450
+So we need derivatives with respect to each one.
+
+56
+00:04:40.450 --> 00:04:50.225
+A partial derivative is exactly that, and the recipe is simple: pick one variable, treat every other variable as a constant, and differentiate as usual.
+
+57
+00:04:50.225 --> 00:04:57.000
+Our example is f of x one, x two equals three x one squared, plus two x one x two.
+
+58
+00:04:57.000 --> 00:05:02.425
+For the partial derivative with respect to x one: treat x two as a constant.
+
+59
+00:05:02.425 --> 00:05:07.250
+The first term, three x one squared, differentiates to six x one.
+
+60
+00:05:07.250 --> 00:05:15.925
+The second term, two x one x two, has x one in it multiplied by the constant two x two, so it differentiates to two x two.
+
+61
+00:05:15.925 --> 00:05:19.175
+Total: six x one plus two x two.
+
+62
+00:05:19.175 --> 00:05:23.250
+Now with respect to x two, and this is where people trip.
+
+63
+00:05:23.250 --> 00:05:25.875
+Treat x one as a constant.
+
+64
+00:05:25.875 --> 00:05:34.750
+The first term, three x one squared, is now entirely constant, and the derivative of a constant is zero, so it contributes nothing at all.
+
+65
+00:05:34.750 --> 00:05:42.100
+The second term is two x one times x two, with two x one constant, so it differentiates to two x one.
+
+66
+00:05:42.100 --> 00:05:47.725
+So the two partial derivatives are six x one plus two x two, and two x one.
+
+67
+00:05:47.725 --> 00:05:55.650
+If you only remember one thing: the term that vanishes is the one that does not contain the variable you are differentiating with respect to.
+
+68
+00:05:56.250 --> 00:06:00.250
+Let us put numbers in, because that is what makes it stick.
+
+69
+00:06:00.250 --> 00:06:04.800
+Evaluate at the point x one equals one, x two equals two.
+
+70
+00:06:04.800 --> 00:06:13.650
+First partial derivative: six x one plus two x two, which is six times one plus two times two, which is six plus four, which is ten.
+
+71
+00:06:13.650 --> 00:06:18.875
+Second partial derivative: two x one, which is two times one, which is two.
+
+72
+00:06:18.875 --> 00:06:22.500
+So the gradient at that point is the vector ten, two.
+
+73
+00:06:22.500 --> 00:06:28.525
+The gradient is simply all the partial derivatives collected into one vector, one per input.
+
+74
+00:06:28.525 --> 00:06:31.050
+And now use Block one on it.
+
+75
+00:06:31.050 --> 00:06:34.075
+This vector has a direction and a length.
+
+76
+00:06:34.075 --> 00:06:41.400
+Its direction, mostly along the first axis, is the direction in which the function increases fastest from that point.
+
+77
+00:06:41.400 --> 00:06:48.000
+Its length, which is the square root of a hundred and four, about ten point two, says how steep that increase is.
+
+78
+00:06:48.000 --> 00:06:52.275
+Two facts in one object: which way is uphill, and how steep.
+
+79
+00:06:52.275 --> 00:07:01.175
+This is the number that PyTorch computes for you in Session two, when the same function is differentiated automatically and returns ten and two.
+
+80
+00:07:01.775 --> 00:07:08.125
+Let me say the key property of the gradient as plainly as I can, because everything else depends on it.
+
+81
+00:07:08.125 --> 00:07:11.875
+The gradient points in the direction of steepest increase.
+
+82
+00:07:11.875 --> 00:07:15.625
+Uphill, as steeply as possible, from where you are standing.
+
+83
+00:07:15.625 --> 00:07:23.550
+Which means that if you turn around and walk in the opposite direction, minus the gradient, you are heading downhill as fast as possible.
+
+84
+00:07:23.550 --> 00:07:27.050
+And that is the entire idea of training a model.
+
+85
+00:07:27.050 --> 00:07:30.825
+You have a loss function that measures how wrong your model is.
+
+86
+00:07:30.825 --> 00:07:32.750
+You want it small.
+
+87
+00:07:32.750 --> 00:07:41.750
+You compute the gradient of the loss with respect to the weights, which tells you which way is uphill, and you take a small step in exactly the opposite direction.
+
+88
+00:07:41.750 --> 00:07:43.750
+Then you do it again.
+
+89
+00:07:43.750 --> 00:07:45.250
+And again.
+
+90
+00:07:45.250 --> 00:07:55.750
+That is gradient descent, it is the next two slides, and it is how every model in this course, from Session seven's perceptron to Session twelve's structure predictors, is trained.
+
+91
+00:07:55.750 --> 00:07:58.150
+There is no second method.
+
+92
+00:07:58.750 --> 00:08:05.525
+Here is the rule: the new x is the old x, minus a small number eta, times the derivative at the old x.
+
+93
+00:08:05.525 --> 00:08:10.400
+Eta is called the learning rate, and it controls how big a step you take.
+
+94
+00:08:10.400 --> 00:08:14.450
+Watch the minus sign, because it is the part people get wrong.
+
+95
+00:08:14.450 --> 00:08:18.825
+The derivative points uphill, so we subtract it to go downhill.
+
+96
+00:08:18.825 --> 00:08:27.850
+And when the derivative is negative, subtracting a negative number increases x, which is correct: a negative slope means downhill is to the right.
+
+97
+00:08:27.850 --> 00:08:34.425
+Let us run it on our parabola, f of x equals x minus three squared, whose minimum is at three.
+
+98
+00:08:34.425 --> 00:08:38.775
+Start at x equals zero, with eta equal to nought point three.
+
+99
+00:08:38.775 --> 00:08:41.650
+From zero, we go to one point eight.
+
+100
+00:08:41.650 --> 00:08:44.325
+Then two point five two zero.
+
+101
+00:08:44.325 --> 00:08:46.975
+Then two point eight zero eight.
+
+102
+00:08:46.975 --> 00:08:49.200
+Closing in on three.
+
+103
+00:08:49.200 --> 00:08:52.400
+And here is the property I find elegant.
+
+104
+00:08:52.400 --> 00:08:58.775
+The steps get smaller as we approach: one point eight, then nought point seven two, then nought point two nine.
+
+105
+00:08:58.775 --> 00:09:01.075
+Nobody arranged that.
+
+106
+00:09:01.075 --> 00:09:08.475
+They shrink because the derivative itself shrinks as you approach a flat minimum, and the step is proportional to the derivative.
+
+107
+00:09:08.475 --> 00:09:12.350
+So you do not have to reduce eta by hand to land softly.
+
+108
+00:09:12.350 --> 00:09:14.775
+The procedure does it for you.
+
+109
+00:09:14.775 --> 00:09:19.100
+The next slide has the arithmetic in full, if you want to check it.
+
+110
+00:09:19.700 --> 00:09:24.325
+The numbers, slowly, because this is worth being able to reproduce.
+
+111
+00:09:24.325 --> 00:09:27.600
+The function is x minus three, all squared.
+
+112
+00:09:27.600 --> 00:09:31.125
+Its derivative is two times x minus three.
+
+113
+00:09:31.125 --> 00:09:35.750
+We start at x equals zero, with eta equal to nought point three.
+
+114
+00:09:35.750 --> 00:09:37.450
+Step zero.
+
+115
+00:09:37.450 --> 00:09:39.325
+x is zero.
+
+116
+00:09:39.325 --> 00:09:44.000
+The derivative is two times zero minus three, which is minus six.
+
+117
+00:09:44.000 --> 00:09:50.400
+The update is zero minus nought point three times minus six, which is zero plus one point eight.
+
+118
+00:09:50.400 --> 00:09:53.125
+So x becomes one point eight.
+
+119
+00:09:53.125 --> 00:09:54.600
+Step one.
+
+120
+00:09:54.600 --> 00:09:56.900
+x is one point eight.
+
+121
+00:09:56.900 --> 00:10:04.975
+The derivative is two times one point eight minus three, which is two times minus one point two, which is minus two point four.
+
+122
+00:10:04.975 --> 00:10:10.775
+The update gives one point eight plus nought point seven two, which is two point five two.
+
+123
+00:10:10.775 --> 00:10:12.075
+Step two.
+
+124
+00:10:12.075 --> 00:10:17.900
+The derivative is minus nought point nine six, and x becomes two point eight zero eight.
+
+125
+00:10:17.900 --> 00:10:19.375
+Step three.
+
+126
+00:10:19.375 --> 00:10:25.200
+The derivative is minus nought point three eight four, and x becomes two point nine two three.
+
+127
+00:10:25.200 --> 00:10:32.150
+Read down the derivative column: six, then two point four, then nought point nine six, then nought point three eight four.
+
+128
+00:10:32.150 --> 00:10:37.250
+Each one is smaller than the last, by the same factor, and eta never changed.
+
+129
+00:10:37.250 --> 00:10:43.075
+From Session seven onwards you will watch this exact arithmetic happen inside a model.
+
+130
+00:10:43.675 --> 00:10:46.500
+And here is the bridge out of this block.
+
+131
+00:10:46.500 --> 00:10:50.375
+What we just did had one variable and one derivative.
+
+132
+00:10:50.375 --> 00:10:54.025
+A real model has thousands or millions of weights.
+
+133
+00:10:54.025 --> 00:10:56.150
+Does anything change?
+
+134
+00:10:56.150 --> 00:10:57.050
+No.
+
+135
+00:10:57.050 --> 00:10:59.725
+The update rule is identical.
+
+136
+00:10:59.725 --> 00:11:09.200
+Instead of one derivative you have the gradient vector, with one partial derivative per weight, and instead of one subtraction you do one subtraction per weight.
+
+137
+00:11:09.200 --> 00:11:12.500
+Same rule, applied many times in parallel.
+
+138
+00:11:12.500 --> 00:11:18.825
+So there is genuinely nothing conceptually new between this toy parabola and training a neural network.
+
+139
+00:11:18.825 --> 00:11:23.475
+If you understand these four steps, you understand the mechanics of training.
+
+140
+00:11:23.475 --> 00:11:31.975
+What is missing is one thing: how do you get the gradient when the function is a deep composition, a function of a function of a function of your weights?
+
+141
+00:11:31.975 --> 00:11:36.000
+Computing that by hand for a million weights is impossible.
+
+142
+00:11:36.000 --> 00:11:39.350
+That is the chain rule, and it is the next slide.
+
+143
+00:11:39.950 --> 00:11:41.700
+The chain rule.
+
+144
+00:11:41.700 --> 00:11:53.750
+For a composite function, y equals f of g of x, the derivative of y with respect to x is the derivative of f with respect to g, multiplied by the derivative of g with respect to x.
+
+145
+00:11:53.750 --> 00:11:59.800
+In words: the derivative of a function of a function is the product of their individual derivatives.
+
+146
+00:11:59.800 --> 00:12:02.100
+That looks unremarkable.
+
+147
+00:12:02.100 --> 00:12:06.675
+It is the single most important fact in the second half of this course.
+
+148
+00:12:06.675 --> 00:12:08.425
+Here is why.
+
+149
+00:12:08.425 --> 00:12:17.600
+A neural network's output is a function of a function of a function of its weights: layer one feeds layer two, which feeds layer three, which feeds the loss.
+
+150
+00:12:17.600 --> 00:12:23.275
+A weight buried in the first layer affects the loss only through everything that comes after it.
+
+151
+00:12:23.275 --> 00:12:31.700
+The chain rule says: to find how that weight affects the loss, multiply together the derivatives of every function it passes through on the way.
+
+152
+00:12:31.700 --> 00:12:34.025
+That is backpropagation.
+
+153
+00:12:34.025 --> 00:12:44.500
+Session nine does it properly, including the crucial efficiency trick that makes it cheap, but the whole algorithm is this one rule, applied systematically from the loss backwards.
+
+154
+00:12:44.500 --> 00:12:55.100
+It is also, incidentally, where things go wrong: multiply enough numbers smaller than one together and you get nothing, which is the vanishing gradient problem of Session nine.
+
+155
+00:12:55.700 --> 00:13:00.225
+Integration, briefly, because we use it in exactly one place.
+
+156
+00:13:00.225 --> 00:13:05.625
+An integral is the area under a curve, and it is differentiation run backwards.
+
+157
+00:13:05.625 --> 00:13:18.025
+If you differentiate a function and then integrate the result, you get back where you started, except for a constant, because the derivative of a constant is zero and so the integration cannot know what it was.
+
+158
+00:13:18.025 --> 00:13:25.150
+On our example: integrating two times x minus three gives back x minus three squared, plus some constant.
+
+159
+00:13:25.150 --> 00:13:27.750
+Where does this appear in the course?
+
+160
+00:13:27.750 --> 00:13:36.750
+AUROC, in Session eight, which is the area under the ROC curve, a single number summarising a classifier's performance across all thresholds.
+
+161
+00:13:36.750 --> 00:13:40.250
+That is an area under a curve, which is an integral.
+
+162
+00:13:40.250 --> 00:13:47.700
+That is essentially the only place, which is why this slide is short and why the detail is in an optional box on the page.
+

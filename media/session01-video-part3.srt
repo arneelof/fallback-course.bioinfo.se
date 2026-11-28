@@ -1,0 +1,1012 @@
+1
+00:00:00,000 --> 00:00:01,475
+Block three.
+
+2
+00:00:01,475 --> 00:00:04,175
+Probability and statistics.
+
+3
+00:00:04,175 --> 00:00:08,800
+On the page, this block is the section "Probability and statistics".
+
+4
+00:00:08,800 --> 00:00:11,225
+This block does two things.
+
+5
+00:00:11,225 --> 00:00:18,150
+It gives you the probability language that scoring systems are written in, which is where log-odds and entropy come from.
+
+6
+00:00:18,150 --> 00:00:26,400
+And it covers the statistics you need to not fool yourself: p-values, multiple testing, and what a correlation does and does not say.
+
+7
+00:00:26,400 --> 00:00:32,225
+It is the longest block, and the one that is most often needed and least often done carefully.
+
+8
+00:00:32,825 --> 00:00:35,325
+Two definitions to start.
+
+9
+00:00:35,325 --> 00:00:45,525
+The expectation of a random variable, written E of X, is its average over the long run: each possible value multiplied by its probability, all added up.
+
+10
+00:00:45,525 --> 00:00:49,675
+Note the shape of that: value times probability, summed.
+
+11
+00:00:49,675 --> 00:00:54,800
+It is a dot product, from Block one, between the values and their probabilities.
+
+12
+00:00:54,800 --> 00:01:01,525
+A fair die: one through six, each with probability one-sixth, gives an expectation of three point five.
+
+13
+00:01:01,525 --> 00:01:08,100
+Which is not a value the die can show, and that is fine; an expectation is an average, not a prediction.
+
+14
+00:01:08,100 --> 00:01:12,950
+The variance measures spread: the expected squared distance from the mean.
+
+15
+00:01:12,950 --> 00:01:17,025
+Squared, so that being above and below the mean do not cancel.
+
+16
+00:01:17,025 --> 00:01:24,225
+And the standard deviation is the square root of the variance, which brings it back into the units of the original quantity.
+
+17
+00:01:24,225 --> 00:01:27,600
+For the fair die, about one point seven one.
+
+18
+00:01:27,600 --> 00:01:36,700
+One rule of thumb worth carrying: for a normal distribution, about ninety-five per cent of values lie within two standard deviations of the mean.
+
+19
+00:01:36,700 --> 00:01:40,175
+That is where the two in most error bars comes from.
+
+20
+00:01:40,175 --> 00:01:45,325
+This is the minimum; the biostatistics course covers probability properly.
+
+21
+00:01:45,925 --> 00:01:50,750
+Correlation, and two ways to measure it, which can disagree dramatically.
+
+22
+00:01:50,750 --> 00:01:54,625
+Pearson's r measures how well the points fit a straight line.
+
+23
+00:01:54,625 --> 00:02:04,550
+Spearman's rho is Pearson's r computed on the ranks rather than the values, so it measures whether the relationship is consistently increasing, regardless of shape.
+
+24
+00:02:04,550 --> 00:02:07,575
+The left panel shows why that matters.
+
+25
+00:02:07,575 --> 00:02:17,650
+Every increase in mRNA goes with an increase in protein, without exception, so Spearman's rho is exactly one: a perfect monotonic relationship.
+
+26
+00:02:17,650 --> 00:02:25,825
+But one value is extreme, far from the others, and it pulls the straight-line fit around, so Pearson's r is nought point seven two.
+
+27
+00:02:25,825 --> 00:02:27,575
+Same data.
+
+28
+00:02:27,575 --> 00:02:31,350
+One says perfect, the other says good but not great.
+
+29
+00:02:31,350 --> 00:02:34,725
+Neither is wrong; they answer different questions.
+
+30
+00:02:34,725 --> 00:02:37,600
+The right panel is the opposite warning.
+
+31
+00:02:37,600 --> 00:02:46,300
+A U-shape: the points have a strong, obvious relationship, and both correlations are zero, because the relationship is not monotonic at all.
+
+32
+00:02:46,300 --> 00:02:50,700
+Three cautions that follow, all of which you will use in Session two.
+
+33
+00:02:50,700 --> 00:02:52,275
+Plot first.
+
+34
+00:02:52,275 --> 00:02:58,275
+A correlation coefficient is a one-number summary of a picture, and you should look at the picture.
+
+35
+00:02:58,275 --> 00:03:02,750
+A correlation has a p-value, and it depends on the number of points.
+
+36
+00:03:02,750 --> 00:03:06,250
+With five points, almost nothing is significant.
+
+37
+00:03:06,250 --> 00:03:12,850
+And correlation is not causation, which you know, and which remains the most common error in the literature.
+
+38
+00:03:13,450 --> 00:03:20,675
+Conditional probability, and the direction of it, which is where most statistical confusion in biology comes from.
+
+39
+00:03:20,675 --> 00:03:26,225
+P of A given B means: among the cases where B is true, what fraction also have A?
+
+40
+00:03:26,225 --> 00:03:30,450
+You restrict your attention to B, and ask about A within that.
+
+41
+00:03:30,450 --> 00:03:35,200
+The formula is the probability of both, divided by the probability of B.
+
+42
+00:03:35,200 --> 00:03:38,350
+Here is the worked example from the slide.
+
+43
+00:03:38,350 --> 00:03:40,675
+Two hundred proteins.
+
+44
+00:03:40,675 --> 00:03:46,100
+Sixty are membrane proteins, and thirty of those sixty have a signal peptide.
+
+45
+00:03:46,100 --> 00:03:49,575
+Of the other hundred and forty, twenty have one.
+
+46
+00:03:49,575 --> 00:03:57,925
+So: the probability of having a signal peptide given that it is a membrane protein is thirty out of sixty, which is nought point five.
+
+47
+00:03:57,925 --> 00:04:04,525
+And the other direction: the probability of being a membrane protein given that it has a signal peptide.
+
+48
+00:04:04,525 --> 00:04:12,150
+There are fifty proteins with a signal peptide in total, thirty plus twenty, and thirty of those are membrane proteins.
+
+49
+00:04:12,150 --> 00:04:15,550
+Thirty out of fifty, which is nought point six.
+
+50
+00:04:15,550 --> 00:04:18,575
+Nought point five and nought point six.
+
+51
+00:04:18,575 --> 00:04:22,125
+Same data, different questions, different answers.
+
+52
+00:04:22,125 --> 00:04:25,150
+The direction is not a technicality.
+
+53
+00:04:25,150 --> 00:04:32,325
+And this is exactly the mistake behind the most common misreading of p-values, which we come to at the end of this block.
+
+54
+00:04:32,325 --> 00:04:40,800
+A p-value is the probability of the data given the hypothesis, and people read it as the probability of the hypothesis given the data.
+
+55
+00:04:40,800 --> 00:04:43,850
+Those are the two directions of this slide.
+
+56
+00:04:43,850 --> 00:04:48,175
+A profile gives you the probability of a residue given a position.
+
+57
+00:04:48,175 --> 00:04:52,500
+A classifier gives you the probability of a class given an input.
+
+58
+00:04:52,500 --> 00:04:57,850
+Bayes' rule converts one into the other, and it is in the optional box on the page.
+
+59
+00:04:58,450 --> 00:05:04,825
+Why this field computes with logarithms, which has one very practical reason and one elegant one.
+
+60
+00:05:04,825 --> 00:05:10,100
+The practical reason: probabilities of sequences are unimaginably small.
+
+61
+00:05:10,100 --> 00:05:16,750
+Take a particular thousand-base sequence under a uniform model, where each base has probability a quarter.
+
+62
+00:05:16,750 --> 00:05:25,225
+The probability of that exact sequence is nought point two five to the power of a thousand, which is about ten to the minus six hundred and two.
+
+63
+00:05:25,225 --> 00:05:30,300
+A computer storing an ordinary floating-point number cannot represent that.
+
+64
+00:05:30,300 --> 00:05:32,425
+It rounds to zero.
+
+65
+00:05:32,425 --> 00:05:39,225
+And then every subsequent calculation gives zero, and your program runs perfectly and produces nothing.
+
+66
+00:05:39,225 --> 00:05:45,225
+Take the logarithm, and ten to the minus six hundred and two becomes minus six hundred and two.
+
+67
+00:05:45,225 --> 00:05:47,900
+An entirely ordinary number.
+
+68
+00:05:47,900 --> 00:05:52,900
+The elegant reason: the logarithm of a product is the sum of the logarithms.
+
+69
+00:05:52,900 --> 00:06:00,325
+So multiplying probabilities, which is what you do for independent positions, becomes adding log-probabilities.
+
+70
+00:06:00,325 --> 00:06:05,925
+Additions are faster than multiplications, and more importantly they do not underflow.
+
+71
+00:06:05,925 --> 00:06:11,200
+That is why scores in this field are added along a sequence rather than multiplied.
+
+72
+00:06:11,200 --> 00:06:20,775
+Every alignment score, every profile score, every log-odds score you meet is a sum of logarithms, because the underlying model multiplies probabilities.
+
+73
+00:06:20,775 --> 00:06:31,025
+One footnote: logs to different bases differ only by a constant factor, so base two, base ten and natural logs are interchangeable as long as you are consistent.
+
+74
+00:06:31,025 --> 00:06:33,350
+Base two gives you bits.
+
+75
+00:06:33,950 --> 00:06:38,625
+And here is the scoring system that the first half of the course is built on.
+
+76
+00:06:38,625 --> 00:06:47,275
+A log-odds score compares two models: how likely is this observation under the thing I am looking for, against how likely under the background?
+
+77
+00:06:47,275 --> 00:06:52,150
+Take the ratio, take the logarithm, and add those up over the positions.
+
+78
+00:06:52,150 --> 00:06:54,025
+Worked example.
+
+79
+00:06:54,025 --> 00:07:05,200
+A GC-rich model where G and C each have probability nought point three five and A and T each nought point one five, against a uniform background of nought point two five each.
+
+80
+00:07:05,200 --> 00:07:12,175
+Per base: log to base two of nought point three five over nought point two five is plus nought point four nine.
+
+81
+00:07:12,175 --> 00:07:19,175
+And log to base two of nought point one five over nought point two five is minus nought point seven four.
+
+82
+00:07:19,175 --> 00:07:25,975
+So a G or a C scores plus nought point four nine, and an A or a T scores minus nought point seven four.
+
+83
+00:07:25,975 --> 00:07:29,150
+Now score the sequence G C G C A T.
+
+84
+00:07:29,150 --> 00:07:35,325
+Four bases scoring plus nought point four nine, and two scoring minus nought point seven four.
+
+85
+00:07:35,325 --> 00:07:43,350
+Four times nought point four nine is one point nine six; two times minus nought point seven four is minus one point four eight.
+
+86
+00:07:43,350 --> 00:07:46,575
+Total plus nought point four seven bits.
+
+87
+00:07:46,575 --> 00:07:58,975
+And you can interpret that directly: two to the power of nought point four seven is about one point four, so this sequence is about one point four times more likely under the GC-rich model than under the background.
+
+88
+00:07:58,975 --> 00:08:01,700
+Positive means the model wins.
+
+89
+00:08:01,700 --> 00:08:05,150
+That is what every substitution matrix is.
+
+90
+00:08:05,150 --> 00:08:14,100
+BLOSUM scores are log-odds: how often do these two residues align in real homologous proteins, against how often by chance?
+
+91
+00:08:14,100 --> 00:08:16,325
+Sessions four and five.
+
+92
+00:08:16,325 --> 00:08:25,475
+And volcano plots use minus log ten of a p-value for the same reason: it turns a range spanning many orders of magnitude into a readable axis.
+
+93
+00:08:26,075 --> 00:08:29,200
+A short slide tying two things together.
+
+94
+00:08:29,200 --> 00:08:34,500
+We have just seen that log-odds are a natural way to combine evidence: add them up.
+
+95
+00:08:34,500 --> 00:08:38,825
+But at the end you often want a probability, not a log-odds score.
+
+96
+00:08:38,825 --> 00:08:42,100
+The function that converts back is the sigmoid.
+
+97
+00:08:42,100 --> 00:08:51,700
+Precisely: take a probability p, form the odds, p over one minus p, take the natural logarithm to get the log-odds, and then apply the sigmoid to that.
+
+98
+00:08:51,700 --> 00:08:53,550
+You get p back.
+
+99
+00:08:53,550 --> 00:08:57,875
+The sigmoid is exactly the inverse of the log-odds transformation.
+
+100
+00:08:57,875 --> 00:09:01,575
+Which explains something that otherwise looks arbitrary.
+
+101
+00:09:01,575 --> 00:09:07,550
+In Session eight, logistic regression computes a weighted sum and then applies a sigmoid.
+
+102
+00:09:07,550 --> 00:09:11,100
+Why a sigmoid and not some other squashing function?
+
+103
+00:09:11,100 --> 00:09:20,950
+Because the weighted sum is being interpreted as a log-odds score, built by adding up evidence, and the sigmoid is what turns a log-odds score into a probability.
+
+104
+00:09:20,950 --> 00:09:29,900
+One caution we repeat in Session eight: the output is a calibrated probability only if the model was fitted for that, with the appropriate loss.
+
+105
+00:09:29,900 --> 00:09:36,575
+Applying a sigmoid to an arbitrary score gives a number between nought and one that is not a probability.
+
+106
+00:09:37,175 --> 00:09:42,800
+Likelihood, which is the idea behind how essentially every model in this course is fitted.
+
+107
+00:09:42,800 --> 00:09:45,275
+Turn probability around.
+
+108
+00:09:45,275 --> 00:09:49,500
+Normally you have a model and ask how probable some data is.
+
+109
+00:09:49,500 --> 00:09:57,050
+Likelihood fixes the data, which you have observed, and asks: for which parameter values would this data have been probable?
+
+110
+00:09:57,050 --> 00:09:58,925
+Worked example.
+
+111
+00:09:58,925 --> 00:10:02,175
+Ten bases, of which seven are G or C.
+
+112
+00:10:02,175 --> 00:10:07,950
+Assume the positions are independent, with some unknown probability p of being G or C.
+
+113
+00:10:07,950 --> 00:10:13,075
+The likelihood of the data is p to the seventh, times one minus p, cubed.
+
+114
+00:10:13,075 --> 00:10:15,200
+Now try values.
+
+115
+00:10:15,200 --> 00:10:20,775
+For p equal to nought point five: about nought point zero zero zero nine eight.
+
+116
+00:10:20,775 --> 00:10:26,100
+For p equal to nought point seven: about nought point zero zero two two.
+
+117
+00:10:26,100 --> 00:10:31,750
+So nought point seven is about two point three times more likely than nought point five.
+
+118
+00:10:31,750 --> 00:10:39,375
+And no other value of p does better than nought point seven, which is exactly the observed fraction, seven out of ten.
+
+119
+00:10:39,375 --> 00:10:45,350
+That is maximum likelihood: choose the parameters that make the observed data most probable.
+
+120
+00:10:45,350 --> 00:10:53,975
+It is how profiles are built, how substitution matrices are derived, and, as the next slide shows, what training a classifier actually is.
+
+121
+00:10:53,975 --> 00:11:03,250
+In practice you always compute with logs, for the reasons two slides back, which is why so many loss functions in this course are negative log-likelihoods.
+
+122
+00:11:03,850 --> 00:11:09,925
+Entropy, which is the measure behind sequence logos and behind every classifier loss.
+
+123
+00:11:09,925 --> 00:11:12,000
+Start with surprise.
+
+124
+00:11:12,000 --> 00:11:19,575
+If something happens that had probability p, the surprise of it is minus log to base two of p, measured in bits.
+
+125
+00:11:19,575 --> 00:11:22,125
+Check that it behaves sensibly.
+
+126
+00:11:22,125 --> 00:11:29,075
+Something certain, probability one, has surprise minus log of one, which is zero bits: no information.
+
+127
+00:11:29,075 --> 00:11:32,725
+A fair coin, probability a half, gives one bit.
+
+128
+00:11:32,725 --> 00:11:36,450
+One of four equally likely bases gives two bits.
+
+129
+00:11:36,450 --> 00:11:43,425
+Entropy, written H, is the average surprise: each outcome's surprise weighted by its probability, summed.
+
+130
+00:11:43,425 --> 00:11:48,325
+So entropy is high when outcomes are unpredictable and low when they are not.
+
+131
+00:11:48,325 --> 00:11:52,200
+Four equally likely bases: two bits, the maximum.
+
+132
+00:11:52,200 --> 00:11:55,750
+A position that is always G: zero bits.
+
+133
+00:11:55,750 --> 00:11:58,650
+And here is where you have already seen it.
+
+134
+00:11:58,650 --> 00:12:08,950
+In a sequence logo, the height of the stack at each position is the maximum entropy minus the actual entropy: how much less uncertain this position is than a random one.
+
+135
+00:12:08,950 --> 00:12:12,800
+A tall stack means a conserved, predictable position.
+
+136
+00:12:12,800 --> 00:12:14,925
+That is Session four.
+
+137
+00:12:14,925 --> 00:12:16,650
+Two footnotes.
+
+138
+00:12:16,650 --> 00:12:25,150
+Session twelve's direct coupling analysis fits a maximum-entropy model, which means the least committed model consistent with what you measured.
+
+139
+00:12:25,150 --> 00:12:32,725
+And the entropy of protein folding in Session six has the same mathematical form but is a different physical quantity.
+
+140
+00:12:33,325 --> 00:12:37,250
+And now the one that matters most for the second half of the course.
+
+141
+00:12:37,250 --> 00:12:45,400
+Cross-entropy measures the average surprise when the data really comes from one distribution, P, but your model believes another, Q.
+
+142
+00:12:45,400 --> 00:12:50,975
+You weight by the true probabilities and take the surprise under your model's probabilities.
+
+143
+00:12:50,975 --> 00:12:52,775
+Two properties.
+
+144
+00:12:52,775 --> 00:12:56,225
+Cross-entropy is never smaller than the true entropy of P.
+
+145
+00:12:56,225 --> 00:13:00,375
+And it is equal to it only when your model is exactly right.
+
+146
+00:13:00,375 --> 00:13:04,975
+So minimising cross-entropy means making your model match reality.
+
+147
+00:13:04,975 --> 00:13:09,200
+The worked example: data that is seventy per cent G or C.
+
+148
+00:13:09,200 --> 00:13:14,850
+If your model says fifty per cent, the cross-entropy is one point zero zero bit.
+
+149
+00:13:14,850 --> 00:13:20,725
+If your model says seventy per cent, it is nought point eight eight bits, which is the minimum.
+
+150
+00:13:20,725 --> 00:13:23,250
+Any other value is worse.
+
+151
+00:13:23,250 --> 00:13:27,875
+And now compare with the likelihood slide, because these are the same thing.
+
+152
+00:13:27,875 --> 00:13:31,300
+There, nought point seven gave the highest likelihood.
+
+153
+00:13:31,300 --> 00:13:34,900
+Here, nought point seven gives the lowest cross-entropy.
+
+154
+00:13:34,900 --> 00:13:48,650
+In fact log to base two of the likelihood at nought point five was minus ten bits for ten bases, which is minus one bit each, and at nought point seven about minus eight point eight bits, which is minus nought point eight eight each.
+
+155
+00:13:48,650 --> 00:13:53,050
+Cross-entropy is the negative log-likelihood per observation.
+
+156
+00:13:53,050 --> 00:13:55,800
+Same quantity, opposite sign.
+
+157
+00:13:55,800 --> 00:14:05,875
+So when Session eight tells you to train a classifier with cross-entropy loss, it is telling you to do maximum likelihood, which is the thing statisticians have done for a century.
+
+158
+00:14:05,875 --> 00:14:17,500
+And the gap between the cross-entropy and the true entropy, the extra bits you pay for having the wrong model, is the relative entropy, also called the KL divergence, which you met in Session four.
+
+159
+00:14:18,100 --> 00:14:24,050
+Now the statistics for not fooling yourself, starting with the most misused number in science.
+
+160
+00:14:24,050 --> 00:14:30,775
+A p-value is the probability of observing data at least this extreme, if the null hypothesis were true.
+
+161
+00:14:30,775 --> 00:14:34,000
+It is an area in the tail of a distribution.
+
+162
+00:14:34,000 --> 00:14:41,675
+Say that definition again, slowly, and notice its direction: it is the probability of the data, given the hypothesis.
+
+163
+00:14:41,675 --> 00:14:45,875
+It is not the probability that the null hypothesis is true.
+
+164
+00:14:45,875 --> 00:14:55,525
+That is the other direction of the conditional probability slide, and converting between them requires Bayes' rule and a prior, which a p-value does not contain.
+
+165
+00:14:55,525 --> 00:15:01,025
+A small p-value says: if nothing were going on, data like this would be unusual.
+
+166
+00:15:01,025 --> 00:15:04,975
+It does not say how likely it is that nothing is going on.
+
+167
+00:15:04,975 --> 00:15:09,150
+And nought point zero five is a convention, nothing more.
+
+168
+00:15:09,150 --> 00:15:18,850
+It was a suggestion, it became a ritual, and there is no mathematics in which nought point zero four nine is meaningfully different from nought point zero five one.
+
+169
+00:15:18,850 --> 00:15:29,600
+What the threshold does mean, precisely: if the null hypothesis is true and all the test's assumptions hold, using nought point zero five will reject it five per cent of the time.
+
+170
+00:15:29,600 --> 00:15:35,875
+That is a statement about the long-run behaviour of the procedure, not about your particular experiment.
+
+171
+00:15:35,875 --> 00:15:47,475
+The worked example on the slide: Welch's t-test on four controls and four treated samples gives t about minus eleven point nine and p about nought point zero zero zero one.
+
+172
+00:15:47,475 --> 00:15:53,225
+We use the same numbers again in Session two, with the SciPy function that computes them.
+
+173
+00:15:53,825 --> 00:15:59,700
+And the thing that makes p-values dangerous in our field specifically: we do not run one test.
+
+174
+00:15:59,700 --> 00:16:01,700
+We run thousands.
+
+175
+00:16:01,700 --> 00:16:04,750
+Here is the arithmetic that should worry you.
+
+176
+00:16:04,750 --> 00:16:13,075
+If the null hypothesis is true, p-values are uniformly distributed: every value between nought and one is equally likely.
+
+177
+00:16:13,075 --> 00:16:18,200
+So five per cent of them fall below nought point zero five, by construction.
+
+178
+00:16:18,200 --> 00:16:25,675
+Test two thousand genes where nothing is happening, and about a hundred of them will have p below nought point zero five.
+
+179
+00:16:25,675 --> 00:16:29,100
+A hundred significant results from pure noise.
+
+180
+00:16:29,100 --> 00:16:31,550
+Two standard responses.
+
+181
+00:16:31,550 --> 00:16:35,475
+Bonferroni: divide your threshold by the number of tests.
+
+182
+00:16:35,475 --> 00:16:40,875
+For two thousand tests, that is nought point zero zero zero zero two five.
+
+183
+00:16:40,875 --> 00:16:50,325
+It is correct and it is usually far too strict: it controls the probability of even one false positive, which is rarely what you want when you are screening.
+
+184
+00:16:50,325 --> 00:16:54,575
+The false discovery rate is better suited to our situation.
+
+185
+00:16:54,575 --> 00:17:02,375
+Instead of preventing any false positive, control the expected proportion of false positives among the things you call significant.
+
+186
+00:17:02,375 --> 00:17:11,475
+Benjamini-Hochberg is the standard procedure, and it controls that under stated assumptions, for independent or positively correlated tests.
+
+187
+00:17:11,475 --> 00:17:21,825
+The shift in thinking is worth stating: you stop asking is this one result real and start asking of this list I am about to publish, what fraction is likely to be wrong.
+
+188
+00:17:22,425 --> 00:17:27,900
+The standard picture for this, which you will see in every differential expression paper.
+
+189
+00:17:27,900 --> 00:17:30,000
+A volcano plot.
+
+190
+00:17:30,000 --> 00:17:36,725
+On the horizontal axis, the log two fold change: how much the gene changed, and in which direction.
+
+191
+00:17:36,725 --> 00:17:44,400
+On the vertical axis, minus log ten of the p-value: how much evidence there is, with the most significant genes highest.
+
+192
+00:17:44,400 --> 00:17:47,300
+Two axes, two different questions.
+
+193
+00:17:47,300 --> 00:17:50,500
+The horizontal is the size of the effect.
+
+194
+00:17:50,500 --> 00:17:53,700
+The vertical is the strength of the evidence.
+
+195
+00:17:53,700 --> 00:18:03,025
+A gene can be strongly changed with weak evidence, if it is noisy, or barely changed with overwhelming evidence, if it is measured very precisely.
+
+196
+00:18:03,025 --> 00:18:08,300
+The interesting genes are the ones that are both: far out to one side and high up.
+
+197
+00:18:08,300 --> 00:18:13,500
+And the reason this plot exists is that reporting only one axis misleads.
+
+198
+00:18:13,500 --> 00:18:19,975
+A list ranked by p-value alone will be full of genes that changed by two per cent, very reliably.
+
+199
+00:18:19,975 --> 00:18:28,600
+The data here is a simulation: two thousand genes, of which fifty are genuinely differentially expressed, with a Welch t-test for each.
+
+200
+00:18:28,600 --> 00:18:33,025
+Which means we know the right answer, and the next slide uses that.
+
+201
+00:18:33,625 --> 00:18:38,425
+And here is why the previous slide's correction matters, with the truth known.
+
+202
+00:18:38,425 --> 00:18:42,650
+Take the naive threshold, p below nought point zero five.
+
+203
+00:18:42,650 --> 00:18:45,600
+You get a hundred and thirty-five hits.
+
+204
+00:18:45,600 --> 00:18:48,350
+Of those, eighty-five are false.
+
+205
+00:18:48,350 --> 00:18:51,950
+Eighty-five false out of a hundred and thirty-five.
+
+206
+00:18:51,950 --> 00:18:54,825
+Well over half your list is noise.
+
+207
+00:18:54,825 --> 00:19:01,325
+And if you did not know the truth, as you do not in a real experiment, you would have no way of telling which half.
+
+208
+00:19:01,325 --> 00:19:03,900
+Where do eighty-five come from?
+
+209
+00:19:03,900 --> 00:19:12,250
+There are nineteen hundred and fifty genes where nothing is happening, and five per cent of nineteen hundred and fifty is about ninety-seven.
+
+210
+00:19:12,250 --> 00:19:14,850
+Eighty-five is close to that.
+
+211
+00:19:14,850 --> 00:19:19,950
+Exactly as predicted; nothing has gone wrong except our expectations.
+
+212
+00:19:19,950 --> 00:19:26,600
+Now Benjamini-Hochberg at five per cent: forty-four hits, and in this simulation all of them are real.
+
+213
+00:19:26,600 --> 00:19:29,750
+Fewer discoveries, and a list you can act on.
+
+214
+00:19:29,750 --> 00:19:34,650
+One honest caution about that result, which I want to be precise about.
+
+215
+00:19:34,650 --> 00:19:43,900
+Controlling the false discovery rate at five per cent does not promise zero false positives; it promises about five per cent of them on average.
+
+216
+00:19:43,900 --> 00:19:50,100
+That none of these forty-four is false is a property of this particular simulation, not a guarantee.
+
+217
+00:19:50,100 --> 00:19:52,275
+Do not quote it as one.
+
+218
+00:19:52,875 --> 00:19:56,700
+Before the summary, something current, and a question for you.
+
+219
+00:19:56,700 --> 00:20:09,100
+In twenty twenty-four, AlphaProof and AlphaGeometry 2 solved four of the six problems at the International Mathematical Olympiad, scoring twenty-eight out of forty-two, one point below a gold medal.
+
+220
+00:20:09,100 --> 00:20:25,700
+In twenty twenty-five, an advanced version of Gemini Deep Think solved five of six, in natural language, within the official time limit: thirty-five out of forty-two, gold-medal standard, and graded by the olympiad's own coordinators, which is the part that makes it checkable.
+
+221
+00:20:25,700 --> 00:20:31,950
+OpenAI reported the same score for an experimental model, graded by itself, which is not.
+
+222
+00:20:31,950 --> 00:20:44,400
+And in twenty twenty-six, OpenAI released three hundred and seventy-two results described as solving an open problem or making substantial progress towards one, at roughly three hours of compute each.
+
+223
+00:20:44,400 --> 00:20:50,050
+I want you to hear that last one as a claim rather than a result, and to understand why.
+
+224
+00:20:50,050 --> 00:20:55,950
+Many come with formal proofs in Lean, which is a proof assistant that machine-checks the logic.
+
+225
+00:20:55,950 --> 00:20:59,825
+That is real: it means the argument contains no gap.
+
+226
+00:20:59,825 --> 00:21:05,775
+But checking the logic is not the same as establishing that a result is new, or that it matters.
+
+227
+00:21:05,775 --> 00:21:12,100
+Both of those require a mathematician who knows the field, and mathematicians are still reading them.
+
+228
+00:21:12,100 --> 00:21:15,725
+Reports differ on how many are complete solutions.
+
+229
+00:21:15,725 --> 00:21:21,650
+Which brings the question on the slide: if an AI can do the mathematics, why should you learn it?
+
+230
+00:21:21,650 --> 00:21:25,675
+One answer, and it is the same answer the whole course gives.
+
+231
+00:21:25,675 --> 00:21:31,200
+To judge whether a result is right, and whether it answers the question you actually asked.
+
+232
+00:21:31,200 --> 00:21:39,025
+That is precisely what Sessions eight and nine teach you to do for models, and it is not a skill you can delegate to the thing being judged.
+
+233
+00:21:39,625 --> 00:21:42,200
+The summary, as three columns.
+
+234
+00:21:42,200 --> 00:21:44,175
+Linear algebra.
+
+235
+00:21:44,175 --> 00:21:49,775
+The dot product is a weighted sum, and it is both a profile score and a perceptron.
+
+236
+00:21:49,775 --> 00:21:53,325
+Matrix products score a whole dataset at once.
+
+237
+00:21:53,325 --> 00:21:58,125
+And the advice that will save you the most time: know the shape of everything.
+
+238
+00:21:58,125 --> 00:21:59,675
+Calculus.
+
+239
+00:21:59,675 --> 00:22:06,275
+The gradient points uphill, so you step against it, and that is how every model in this course is trained.
+
+240
+00:22:06,275 --> 00:22:11,700
+The chain rule multiplies derivatives along a chain, and that is backpropagation.
+
+241
+00:22:11,700 --> 00:22:13,425
+Probability.
+
+242
+00:22:13,425 --> 00:22:17,875
+Logs turn products into sums, which is why scores are added.
+
+243
+00:22:17,875 --> 00:22:24,500
+Log-odds compare a model against a background, which is what substitution matrices and profiles are.
+
+244
+00:22:24,500 --> 00:22:31,400
+Cross-entropy is maximum likelihood with a sign change, and it is the loss for every classifier you will build.
+
+245
+00:22:31,400 --> 00:22:41,550
+And the p-value cautions: it is the probability of the data given the hypothesis, not the other way round, and when you run thousands of tests you must correct for it.
+
+246
+00:22:41,550 --> 00:22:47,400
+If you can give one example of where each of these comes back, you are ready for the rest of the course.
+
+247
+00:22:48,000 --> 00:22:50,075
+That is Session one.
+
+248
+00:22:50,075 --> 00:22:57,075
+Session two moves from mathematics to practice: how a computational biologist actually works in Python.
+
+249
+00:22:57,075 --> 00:23:08,375
+Choosing the right object for your data, exploring a real dataset before computing on it, using libraries rather than writing your own, and having a routine for when code does not work.
+
+250
+00:23:08,375 --> 00:23:15,275
+There is also live coding, in which I make three mistakes on purpose, and only one of them produces an error.
+
+251
+00:23:15,275 --> 00:23:22,175
+Its message, which is worth hearing twice: code that runs without an error does not mean the analysis is correct.
+
+252
+00:23:22,175 --> 00:23:35,875
+The Session one page has all of this written out, with worked solutions to every exercise under its "Solutions" headings, and the course notebook, which computes every number I have quoted, is linked in the box under the page's title.
+
+253
+00:23:35,875 --> 00:23:37,500
+See you there.
+

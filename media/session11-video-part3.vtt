@@ -1,0 +1,542 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.475
+Block three.
+
+2
+00:00:01.475 --> 00:00:04.875
+Pretraining changes biological prediction.
+
+3
+00:00:04.875 --> 00:00:10.250
+On the page, this block is the section "Pretraining changes biological prediction".
+
+4
+00:00:10.250 --> 00:00:13.000
+Blocks one and two built machinery.
+
+5
+00:00:13.000 --> 00:00:22.325
+This block measures what it is worth, on the task we have been using all session, and it contains the result I would most like you to remember from Session eleven.
+
+6
+00:00:22.325 --> 00:00:33.750
+We follow SignalP through thirty years, see what the language model changed in its latest version, and then run the comparison ourselves on our own four thousand nine hundred and ten proteins.
+
+7
+00:00:34.350 --> 00:00:41.525
+SignalP has been online since nineteen ninety-five and is one of the most used tools in all of bioinformatics.
+
+8
+00:00:41.525 --> 00:00:45.900
+Its history is, by coincidence, a tour of this entire course.
+
+9
+00:00:45.900 --> 00:00:51.650
+Version one, nineteen ninety-seven: feed-forward neural networks on sliding windows.
+
+10
+00:00:51.650 --> 00:00:54.875
+That is Session seven, and we covered it there.
+
+11
+00:00:54.875 --> 00:00:59.800
+Versions two and three added hidden Markov models alongside the networks.
+
+12
+00:00:59.800 --> 00:01:06.750
+That is Session five's machinery, modelling the signal peptide as a series of states with transitions between them.
+
+13
+00:01:06.750 --> 00:01:16.450
+Version five, twenty nineteen: a deep recurrent network, the bidirectional LSTM with a conditional random field, which is Block one of today.
+
+14
+00:01:16.450 --> 00:01:22.275
+Version six, twenty twenty-two: a pretrained protein language model, which is Block two.
+
+15
+00:01:22.275 --> 00:01:26.525
+Four architectures, thirty years, one biological problem.
+
+16
+00:01:26.525 --> 00:01:29.975
+And I think there is something worth noticing in that.
+
+17
+00:01:29.975 --> 00:01:32.300
+The problem did not change.
+
+18
+00:01:32.300 --> 00:01:36.575
+The signal peptide is the same object Blobel described.
+
+19
+00:01:36.575 --> 00:01:42.850
+What changed is entirely on our side: what we were able to compute, and what we were able to learn from.
+
+20
+00:01:43.450 --> 00:01:47.575
+So what did the language model actually buy, in version six?
+
+21
+00:01:47.575 --> 00:01:50.300
+Three things, and they are specific.
+
+22
+00:01:50.300 --> 00:01:54.125
+First, rare types became predictable for the first time.
+
+23
+00:01:54.125 --> 00:02:01.175
+Signal peptides come in several types, handled by different translocation machinery, and some of them are rare.
+
+24
+00:02:01.175 --> 00:02:07.075
+Two of those types had thirty-six and a hundred and thirteen training sequences respectively.
+
+25
+00:02:07.075 --> 00:02:12.275
+That is not enough to train a deep network from scratch in any conventional sense.
+
+26
+00:02:12.275 --> 00:02:16.750
+With a pretrained language model underneath, they became predictable.
+
+27
+00:02:16.750 --> 00:02:23.250
+The authors' own summary is that this confirms the importance of language models for low-data problems.
+
+28
+00:02:23.250 --> 00:02:26.975
+Second, the organism input was no longer needed.
+
+29
+00:02:26.975 --> 00:02:36.975
+Earlier versions had to be told what kind of organism the protein came from, because signal peptides differ between, say, Gram-positive bacteria and eukaryotes.
+
+30
+00:02:36.975 --> 00:02:46.275
+Version six infers that from the sequence itself, because the language model's representation already encodes the taxonomic flavour of a sequence.
+
+31
+00:02:46.275 --> 00:02:55.675
+Which has a very practical consequence: SignalP six works on metagenomic proteins, where you often do not know what organism they came from at all.
+
+32
+00:02:55.675 --> 00:03:00.650
+Third, and this is the Session eight connection: where the two versions differed.
+
+33
+00:03:00.650 --> 00:03:06.000
+On close homologs of the training data, versions five and six were about equal.
+
+34
+00:03:06.000 --> 00:03:09.675
+The gain appeared below sixty per cent identity.
+
+35
+00:03:09.675 --> 00:03:16.700
+Version six is better exactly where there is no close relative to lean on, which is where you actually need a predictor.
+
+36
+00:03:16.700 --> 00:03:19.800
+One honest footnote the authors include.
+
+37
+00:03:19.800 --> 00:03:30.375
+They redid the data partitioning with a tool called GraphPart to make the splits more rigorous, and even so they could not get below thirty per cent identity between folds.
+
+38
+00:03:30.375 --> 00:03:32.975
+Perfect separation is hard.
+
+39
+00:03:33.575 --> 00:03:38.750
+Now our own experiment, which is a simplified version of that comparison.
+
+40
+00:03:38.750 --> 00:03:45.475
+The question is now per protein rather than per residue: does this protein have a signal peptide at all?
+
+41
+00:03:45.475 --> 00:03:52.075
+Same four thousand nine hundred and ten proteins, first seventy residues, same homology-aware split.
+
+42
+00:03:52.075 --> 00:03:54.125
+Three classifiers.
+
+43
+00:03:54.125 --> 00:03:58.275
+One: logistic regression on one-hot encoded sequence.
+
+44
+00:03:58.275 --> 00:04:00.450
+The simplest baseline.
+
+45
+00:04:00.450 --> 00:04:06.550
+Two: a convolutional network on one-hot encoded sequence, which is Session ten applied here.
+
+46
+00:04:06.550 --> 00:04:11.050
+Three: logistic regression on frozen ESM-2 embeddings.
+
+47
+00:04:11.050 --> 00:04:21.925
+The residue vectors from ESM-2 are averaged into four hundred and eighty numbers per protein, the language model is kept frozen, and only the logistic regression is trained.
+
+48
+00:04:21.925 --> 00:04:26.350
+Notice that the third model is the simplest classifier of the three.
+
+49
+00:04:26.350 --> 00:04:31.300
+All the capability is in the representation, not in the model on top.
+
+50
+00:04:31.300 --> 00:04:37.550
+That is Session ten's transfer learning exactly: freeze the pretrained thing, train a new last layer.
+
+51
+00:04:37.550 --> 00:04:47.575
+We use the thirty-five-million-parameter ESM-2, standing in for the larger ProtBERT that SignalP six uses, because it has to run in a lab notebook.
+
+52
+00:04:48.175 --> 00:04:51.450
+The results, on the homology-aware test set.
+
+53
+00:04:51.450 --> 00:04:56.600
+Logistic regression on one-hot: MCC nought point seven four five.
+
+54
+00:04:56.600 --> 00:05:01.025
+Convolutional network on one-hot: nought point eight two five.
+
+55
+00:05:01.025 --> 00:05:07.025
+Logistic regression on frozen ESM-2 embeddings: nought point nine five five.
+
+56
+00:05:07.025 --> 00:05:13.550
+In accuracy: nought point eight seven nine, nought point nine one six, and nought point nine seven eight.
+
+57
+00:05:13.550 --> 00:05:21.700
+So the simplest classifier, on top of a pretrained representation, beats a purpose-built convolutional network by a wide margin.
+
+58
+00:05:21.700 --> 00:05:27.175
+I want to be precise about where the credit goes, because it is easy to say this badly.
+
+59
+00:05:27.175 --> 00:05:30.575
+The logistic regression did not become clever.
+
+60
+00:05:30.575 --> 00:05:34.000
+It is the same weighted sum it has always been.
+
+61
+00:05:34.000 --> 00:05:48.375
+What changed is what it was given to work with: four hundred and eighty numbers per protein that already encode the context of every residue, produced by a model that learned from millions of sequences without ever seeing a signal peptide label.
+
+62
+00:05:48.375 --> 00:05:56.025
+And that is Session seven's lesson, in its strongest form yet: the representation of the input matters as much as the model.
+
+63
+00:05:56.025 --> 00:06:00.550
+In Session seven it was profiles against single sequences.
+
+64
+00:06:00.550 --> 00:06:04.400
+Here it is a pretrained language model against one-hot.
+
+65
+00:06:04.400 --> 00:06:07.200
+Same lesson, thirty years apart.
+
+66
+00:06:07.800 --> 00:06:12.675
+And here is the result that I think is the most important one in this session.
+
+67
+00:06:12.675 --> 00:06:17.300
+We repeat the comparison with artificially restricted training data.
+
+68
+00:06:17.300 --> 00:06:23.700
+With twenty labelled training proteins: ESM-2 reaches MCC nought point seven six two.
+
+69
+00:06:23.700 --> 00:06:30.800
+One-hot linear reaches nought point zero four five, and the one-hot convolutional network nought point one two two.
+
+70
+00:06:30.800 --> 00:06:32.875
+Twenty proteins.
+
+71
+00:06:32.875 --> 00:06:36.825
+The one-hot models have essentially nothing; they are at chance.
+
+72
+00:06:36.825 --> 00:06:40.525
+The pretrained one is already at nought point seven six.
+
+73
+00:06:40.525 --> 00:06:43.550
+Now the comparison that states it best.
+
+74
+00:06:43.550 --> 00:06:48.975
+Fifty labelled proteins with ESM-2 gives nought point nine zero seven.
+
+75
+00:06:48.975 --> 00:06:55.700
+Four thousand one hundred and sixty-nine labelled proteins with one-hot gives nought point seven four five.
+
+76
+00:06:55.700 --> 00:06:58.175
+Fifty beats four thousand.
+
+77
+00:06:58.175 --> 00:07:01.775
+Think about what that means for how you would plan a project.
+
+78
+00:07:01.775 --> 00:07:12.450
+If your task has a few dozen labels and you were planning to spend a year generating a few thousand more, you should first check what a frozen pretrained model does with the few dozen you have.
+
+79
+00:07:12.450 --> 00:07:16.625
+It may be better than the year of work, and it costs an afternoon.
+
+80
+00:07:16.625 --> 00:07:23.900
+And the way to understand why is on the slide: the labels are not teaching the model what a signal peptide is from scratch.
+
+81
+00:07:23.900 --> 00:07:31.350
+The model already knows what hydrophobic N-terminal regions look like, because predicting masked residues forced it to.
+
+82
+00:07:31.350 --> 00:07:37.225
+The labels only point at which of the things it already knows is the thing we are asking about.
+
+83
+00:07:37.225 --> 00:07:50.275
+With all four thousand one hundred and sixty-nine training proteins, for completeness: one-hot nought point seven four five, one-hot convolutional nought point eight four five, ESM-2 nought point nine five five.
+
+84
+00:07:50.875 --> 00:07:55.750
+One more decomposition, and it is the methodological heart of the session.
+
+85
+00:07:55.750 --> 00:08:01.075
+Split the test set by how similar each protein is to the closest thing in training.
+
+86
+00:08:01.075 --> 00:08:05.575
+Above ninety per cent identity: every model is perfect.
+
+87
+00:08:05.575 --> 00:08:11.625
+If a near-identical protein was in the training set, anything works, including looking it up.
+
+88
+00:08:11.625 --> 00:08:18.825
+Below thirty per cent identity: the one-hot models get between nought point six eight and nought point seven seven.
+
+89
+00:08:18.825 --> 00:08:22.150
+ESM-2 gets nought point nine six.
+
+90
+00:08:22.150 --> 00:08:31.975
+That is the same pattern as SignalP six against SignalP five: the two are equal on close homologs, and pretraining wins where there is no relative to lean on.
+
+91
+00:08:31.975 --> 00:08:44.700
+And look at where the test set actually lives: four hundred and forty-one of the nine hundred and eighty-two test proteins fall in that lowest bin, and thirty-seven per cent of the test set has no detectable homolog at all.
+
+92
+00:08:44.700 --> 00:08:49.150
+So the hard bin is not an edge case; it is most of the problem.
+
+93
+00:08:49.150 --> 00:08:53.250
+Which is why a random split would be a diagnostic at best.
+
+94
+00:08:53.250 --> 00:09:00.175
+On a random split you would be reporting mostly the top bin, where everything is perfect and nothing is distinguished.
+
+95
+00:09:00.175 --> 00:09:06.900
+Three caveats, because the comparison is not perfectly clean and you should hear it from me rather than discover it.
+
+96
+00:09:06.900 --> 00:09:15.275
+Our task, does this protein have a signal peptide, is easier than SignalP's full task of also finding the cleavage site and the type.
+
+97
+00:09:15.275 --> 00:09:19.675
+Our ESM-2 is small and frozen rather than fine-tuned.
+
+98
+00:09:19.675 --> 00:09:28.625
+And ESM-2 did see these sequences during pretraining, though never their labels, exactly as ProtBERT did inside SignalP six.
+
+99
+00:09:29.225 --> 00:09:33.825
+Before the summary, where this is going, and it is further than you might think.
+
+100
+00:09:33.825 --> 00:09:40.950
+ESM3 has ninety-eight billion parameters and was trained on sequence, structure and function together.
+
+101
+00:09:40.950 --> 00:09:44.800
+It was prompted to generate new fluorescent proteins.
+
+102
+00:09:44.800 --> 00:09:48.975
+One of them, which they call esmGFP, actually glows.
+
+103
+00:09:48.975 --> 00:10:01.150
+And here is the number that makes it remarkable: it is only thirty-six per cent identical to the jellyfish GFP, and fifty-eight per cent identical to the closest known fluorescent protein of any kind.
+
+104
+00:10:01.150 --> 00:10:08.200
+The authors estimate that this distance corresponds to more than five hundred million years of natural evolution.
+
+105
+00:10:08.200 --> 00:10:18.400
+So a model trained to predict sequences produced a working protein that evolution has not produced, and that is a different kind of claim from predicting an annotation.
+
+106
+00:10:18.400 --> 00:10:28.900
+Evo 2 does the same thing for genomes: forty billion parameters, about nine trillion bases from all domains of life, a context window of a million bases.
+
+107
+00:10:28.900 --> 00:10:39.750
+It predicts the effects of mutations, including clinically relevant BRCA1 variants, without being fine-tuned for that, and it generates sequences at genome scale.
+
+108
+00:10:39.750 --> 00:10:46.250
+And it is fully open, including its training data, which matters for the reason Session nine ended on.
+
+109
+00:10:46.250 --> 00:10:56.050
+These same models are the building blocks of the virtual-cell projects: SciLifeLab's Alpha Cell from Session ten, and the Biohub's Virtual Biology Initiative.
+
+110
+00:10:56.050 --> 00:11:01.700
+And then the question on the slide, which is a genuine one and which I will not resolve for you.
+
+111
+00:11:01.700 --> 00:11:07.525
+Does a protein language model understand biology, or does it only model sequences?
+
+112
+00:11:07.525 --> 00:11:19.850
+Here is the case for taking it seriously: a model that designs a working protein five hundred million years of evolution away from anything known has learned something real about what makes a protein a protein.
+
+113
+00:11:19.850 --> 00:11:27.225
+Whether the word understanding is the right one is exactly the argument, and it is worth having carefully rather than loudly.
+
+114
+00:11:27.825 --> 00:11:31.075
+The summary, back to the slide we started on.
+
+115
+00:11:31.075 --> 00:11:33.750
+Three ways to use context.
+
+116
+00:11:33.750 --> 00:11:38.975
+A convolutional network: local context, growing layer by layer with depth.
+
+117
+00:11:38.975 --> 00:11:43.850
+A recurrent network: context carried along the sequence step by step.
+
+118
+00:11:43.850 --> 00:11:48.175
+Attention: any position to any other, directly, in one step.
+
+119
+00:11:48.175 --> 00:11:51.175
+Two ways to learn a representation.
+
+120
+00:11:51.175 --> 00:11:58.375
+A supervised model learns its representation from your labels, so it can only learn as much as your labels contain.
+
+121
+00:11:58.375 --> 00:12:08.475
+A pretrained language model learns its representation first, from millions of unlabelled sequences, so that a handful of labels can go an extraordinarily long way.
+
+122
+00:12:08.475 --> 00:12:12.100
+Fifty against four thousand one hundred and sixty-nine.
+
+123
+00:12:12.100 --> 00:12:18.575
+And here is the exercise I would like you to do, out loud if you are in the room and in your head if you are not.
+
+124
+00:12:18.575 --> 00:12:22.700
+For each of the three architectures, name one thing it cannot do.
+
+125
+00:12:22.700 --> 00:12:27.975
+The convolutional network cannot reach far along the sequence without becoming deep.
+
+126
+00:12:27.975 --> 00:12:36.350
+The forward recurrent network cannot see the future, which on signal peptides cost it seventy-six per cent of the first five residues.
+
+127
+00:12:36.350 --> 00:12:41.025
+And attention, on its own, has no idea what order anything is in.
+
+128
+00:12:41.025 --> 00:12:47.875
+Every architecture is a set of assumptions, and knowing which assumption each one makes is how you choose between them.
+
+129
+00:12:48.475 --> 00:12:50.800
+That is Session eleven.
+
+130
+00:12:50.800 --> 00:13:03.425
+Session twelve is the last one, and it goes from predicting a label about a protein to predicting the protein itself: AlphaFold, and then the generative models that design proteins rather than describe them.
+
+131
+00:13:03.425 --> 00:13:06.175
+Everything we have built arrives there.
+
+132
+00:13:06.175 --> 00:13:17.450
+Session five's multiple alignments, Session ten's residual convolutional networks on contact maps, and today's attention, all in one system that solved a fifty-year-old problem.
+
+133
+00:13:17.450 --> 00:13:26.275
+The Session eleven page has all of this written out, and its "Check your understanding" section at the end is the fastest way to find out whether it stuck.
+
+134
+00:13:26.275 --> 00:13:30.325
+The course notebook is linked in the box under the page's title.
+
+135
+00:13:30.325 --> 00:13:31.950
+See you there.
+

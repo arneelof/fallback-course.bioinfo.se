@@ -1,0 +1,506 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:03.675
+Second block, and this is where structure earns its keep.
+
+2
+00:00:03.675 --> 00:00:09.650
+Session five ended at a wall: a real relative whose sequence signal had vanished completely.
+
+3
+00:00:09.650 --> 00:00:12.250
+Structure walks through that wall.
+
+4
+00:00:12.850 --> 00:00:18.775
+Session four defined an alignment as a hypothesis about which residues correspond.
+
+5
+00:00:18.775 --> 00:00:23.800
+That definition does not mention sequences, and that turns out to matter.
+
+6
+00:00:23.800 --> 00:00:35.775
+A sequence alignment decides the correspondence from the sequences alone, using substitution scores — BLOSUM sixty-two and a gap penalty, choosing the arrangement that scores best.
+
+7
+00:00:35.775 --> 00:00:44.150
+A structure alignment decides the same question from the coordinates, by asking which residues occupy the same position in the two folds.
+
+8
+00:00:44.150 --> 00:00:52.550
+If a residue in one protein sits where a residue in the other protein sits, once the two are optimally superimposed, they correspond.
+
+9
+00:00:52.550 --> 00:00:54.350
+Same question.
+
+10
+00:00:54.350 --> 00:00:56.900
+Completely different evidence.
+
+11
+00:00:56.900 --> 00:01:05.275
+And when the two disagree, the structural answer is usually the one to trust, because it is closer to what we actually mean by correspondence.
+
+12
+00:01:05.275 --> 00:01:17.475
+Remember also that a sequence alignment can be wrong in a specific, structured way: it can pair up roughly the right regions but put the gaps in the wrong places, so that individual residue pairs are shifted.
+
+13
+00:01:17.475 --> 00:01:20.525
+We are about to see exactly that happen.
+
+14
+00:01:21.125 --> 00:01:27.750
+Five proteins compared with beta-globin, both ways, from a close relative to something unrelated.
+
+15
+00:01:27.750 --> 00:01:30.425
+Watch the two columns diverge.
+
+16
+00:01:30.425 --> 00:01:36.300
+Human alpha-globin: forty-three per cent identical, TM-score nought point eight eight.
+
+17
+00:01:36.300 --> 00:01:42.000
+Human myoglobin: twenty-five per cent identical, TM-score nought point nine one.
+
+18
+00:01:42.000 --> 00:01:50.000
+Notice that already — the identity has dropped by eighteen points and the structural similarity has gone *up* slightly.
+
+19
+00:01:50.000 --> 00:01:54.325
+Human neuroglobin: twenty-two per cent, nought point eight two.
+
+20
+00:01:54.325 --> 00:02:01.900
+The truncated haemoglobin N from Mycobacterium tuberculosis: sixteen per cent, nought point five seven.
+
+21
+00:02:01.900 --> 00:02:04.900
+Still above the same-fold threshold.
+
+22
+00:02:04.900 --> 00:02:10.800
+And GFP, a genuinely unrelated fold: six per cent, nought point three three.
+
+23
+00:02:10.800 --> 00:02:13.500
+Read the columns against each other.
+
+24
+00:02:13.500 --> 00:02:24.050
+Sequence identity falls from forty-three to sixteen per cent across the four globins, which is the difference between an obvious relative and a sequence you would not look at twice.
+
+25
+00:02:24.050 --> 00:02:32.175
+The TM-score falls from nought point eight eight to nought point five seven, which is the difference between "same fold" and "same fold".
+
+26
+00:02:32.175 --> 00:02:37.875
+One note on the identity figures: they are measured over the structurally aligned residues.
+
+27
+00:02:37.875 --> 00:02:44.600
+That is the honest way to do it, because it does not reward an alignment for leaving out the parts it handled badly.
+
+28
+00:02:45.200 --> 00:02:52.875
+Now the column that makes the argument, which is how well the sequence alignment pairs up the same residues the structure alignment does.
+
+29
+00:02:52.875 --> 00:02:56.450
+Alpha-globin: ninety-five per cent of pairs agree.
+
+30
+00:02:56.450 --> 00:02:59.475
+Myoglobin: ninety-seven per cent.
+
+31
+00:02:59.475 --> 00:03:05.650
+For these two the sequence alignment has a strong signal and is essentially getting the right answer.
+
+32
+00:03:05.650 --> 00:03:07.900
+You do not need structure.
+
+33
+00:03:07.900 --> 00:03:10.900
+Neuroglobin: sixty-six per cent.
+
+34
+00:03:10.900 --> 00:03:18.950
+The signal is still clear — the score is well above anything shuffled sequences produce — but a third of the residue pairs are wrong.
+
+35
+00:03:18.950 --> 00:03:27.925
+Not because the alignment missed the relationship, but because the gaps went in the wrong places, shifting stretches of the alignment by a residue or two.
+
+36
+00:03:27.925 --> 00:03:31.325
+A plausible alignment that is wrong in detail.
+
+37
+00:03:31.325 --> 00:03:36.000
+Then the truncated haemoglobin, and this is the result to remember.
+
+38
+00:03:36.000 --> 00:03:39.225
+Its sequence alignment scores twenty-eight.
+
+39
+00:03:39.225 --> 00:03:45.175
+The best of two hundred alignments against shuffled versions of the same sequence scores forty-nine.
+
+40
+00:03:45.175 --> 00:03:48.350
+The real relative scores *worse than noise*.
+
+41
+00:03:48.350 --> 00:03:52.175
+And the fraction of residue pairs it gets right is zero.
+
+42
+00:03:52.175 --> 00:03:55.600
+There is no parameter you can tune to fix that.
+
+43
+00:03:55.600 --> 00:03:58.250
+It is not a threshold problem.
+
+44
+00:03:58.250 --> 00:04:01.125
+The pairwise sequence signal is gone.
+
+45
+00:04:01.125 --> 00:04:10.625
+And yet the structure alignment finds the globin fold over more than a hundred residues, and CATH puts both proteins in the same homologous superfamily.
+
+46
+00:04:10.625 --> 00:04:16.025
+That is the central lesson of this session: structure is more conserved than sequence.
+
+47
+00:04:16.025 --> 00:04:28.150
+When the sequence evidence has faded to nothing, structural evidence can still show the relationship — because what evolution is conserving is the fold, and the sequence is only its implementation.
+
+48
+00:04:28.150 --> 00:04:36.150
+And recall from Session five that BLAST with default settings missed myoglobin — which is two rows above the hard case here.
+
+49
+00:04:36.150 --> 00:04:39.325
+Heuristic search makes the gap wider still.
+
+50
+00:04:39.925 --> 00:04:44.700
+Two numbers for structural similarity, and they behave quite differently.
+
+51
+00:04:44.700 --> 00:04:55.325
+RMSD, root-mean-square deviation, is the most direct: the root-mean-square distance between corresponding atoms once the two structures are optimally superimposed.
+
+52
+00:04:55.325 --> 00:04:58.125
+Simple, and it has three problems.
+
+53
+00:04:58.125 --> 00:05:04.225
+It grows with protein length, so RMSDs for proteins of different sizes are not comparable.
+
+54
+00:05:04.225 --> 00:05:12.650
+One badly placed loop inflates it even when everything else matches perfectly, because squaring the distances gives the outliers all the weight.
+
+55
+00:05:12.650 --> 00:05:21.875
+And it depends on which atoms you compare: restrict the superposition to the residues that fit well and you can report a flattering number about a poor model.
+
+56
+00:05:21.875 --> 00:05:30.900
+So an RMSD should always be quoted with the number of aligned residues: "one point five ångström over a hundred and forty residues".
+
+57
+00:05:30.900 --> 00:05:34.150
+An RMSD on its own is not a claim.
+
+58
+00:05:34.150 --> 00:05:36.950
+The TM-score fixes all three.
+
+59
+00:05:36.950 --> 00:05:48.550
+It weights each residue pair by how close it is — small deviations count fully, large ones hardly at all, so a single bad loop cannot dominate — and it normalises by protein length.
+
+60
+00:05:48.550 --> 00:06:01.900
+The distance scale is d-zero equals one point two four times the cube root of L minus fifteen, minus one point eight; for beta-globin's hundred and forty-six residues that is about four and a half ångström.
+
+61
+00:06:01.900 --> 00:06:15.850
+The notebook's RMSDs for the same five proteins: alpha-globin one point four ångström, myoglobin one point five, neuroglobin two point nought, truncated haemoglobin three point two, GFP five point one.
+
+62
+00:06:15.850 --> 00:06:29.700
+Compare those with the TM-scores — myoglobin at one point five ångström and nought point nine one is unambiguous, while the truncated haemoglobin at three point two ångström sounds bad and is still the same fold.
+
+63
+00:06:29.700 --> 00:06:42.300
+One dependency both share: before either can be computed, one structure has to be moved onto the other by a rigid-body transformation — translate the centre of mass, rotate about it, change nothing inside.
+
+64
+00:06:42.300 --> 00:06:50.775
+Programs report the three-by-three rotation matrix and the translation vector, and they choose the superposition that minimises RMSD.
+
+65
+00:06:50.775 --> 00:06:56.075
+So a published RMSD is always the best RMSD, never an arbitrary one.
+
+66
+00:06:56.075 --> 00:06:59.600
+And some measures avoid superposition entirely.
+
+67
+00:06:59.600 --> 00:07:08.350
+The global distance test, GDT, asks what fraction of distances match the reference within a cutoff, averaged over several cutoffs.
+
+68
+00:07:08.350 --> 00:07:13.950
+That is the measure CASP has used to rank structure predictions for twenty-five years.
+
+69
+00:07:14.550 --> 00:07:17.600
+How to read a TM-score in practice.
+
+70
+00:07:17.600 --> 00:07:21.350
+It runs from zero to one, where one is identical.
+
+71
+00:07:21.350 --> 00:07:26.600
+Unrelated proteins typically land between nought point two and nought point three.
+
+72
+00:07:26.600 --> 00:07:31.275
+Above about nought point five usually means the same overall fold.
+
+73
+00:07:31.275 --> 00:07:37.175
+That is a rule of thumb, not a law, and it is worth being honest about where it is reliable.
+
+74
+00:07:37.175 --> 00:07:39.900
+Our examples at the ends are clear.
+
+75
+00:07:39.900 --> 00:07:46.950
+The truncated haemoglobin at nought point five seven is genuinely the same fold, and CATH agrees.
+
+76
+00:07:46.950 --> 00:07:50.850
+GFP at nought point three three is genuinely not.
+
+77
+00:07:50.850 --> 00:07:59.575
+But a score of nought point four eight is not evidence that two proteins have different folds, and nought point five two is not proof that they share one.
+
+78
+00:07:59.575 --> 00:08:08.025
+Scores in the middle need other evidence — a classification, a domain assignment, conserved functional residues, anything independent.
+
+79
+00:08:08.025 --> 00:08:14.575
+A number on a continuous scale with a threshold drawn across it will always be ambiguous near the threshold.
+
+80
+00:08:14.575 --> 00:08:20.350
+That is not a defect in the TM-score; it is what fold similarity is actually like.
+
+81
+00:08:20.950 --> 00:08:27.550
+DALI, from Holm and Sander in nineteen ninety-three, uses the distance-map idea from the first block.
+
+82
+00:08:27.550 --> 00:08:40.275
+The reasoning: if two proteins have the same fold, their distance maps should look alike, even when their sequences do not — because the map records internal geometry, and the fold is the internal geometry.
+
+83
+00:08:40.275 --> 00:08:49.550
+So rather than superimposing coordinates, DALI looks for residue correspondences that make the two patterns of intramolecular distances agree.
+
+84
+00:08:49.550 --> 00:08:51.750
+The figure makes the case.
+
+85
+00:08:51.750 --> 00:08:59.875
+Beta-globin and myoglobin, only a quarter of their residues identical, give distance maps that are almost indistinguishable.
+
+86
+00:08:59.875 --> 00:09:07.275
+GFP's beta-barrel gives a completely different pattern — not a degraded version of the globin pattern, a different one.
+
+87
+00:09:07.275 --> 00:09:11.400
+The analogy with Session four is direct and worth stating.
+
+88
+00:09:11.400 --> 00:09:15.825
+A sequence alignment compares residues along two sequences.
+
+89
+00:09:15.825 --> 00:09:20.100
+DALI compares patterns of residue-to-residue geometry.
+
+90
+00:09:20.100 --> 00:09:23.675
+Same alignment idea, different thing being aligned.
+
+91
+00:09:23.675 --> 00:09:35.150
+DALI and TM-align — Zhang and Skolnick, two thousand and five, which finds the superposition maximising the TM-score — are accurate and still used for careful pairwise comparisons.
+
+92
+00:09:35.150 --> 00:09:41.950
+And they are far too slow to search hundreds of millions of structures, which is the problem the next slides solve.
+
+93
+00:09:42.550 --> 00:09:46.450
+Put the two halves of the course's search story side by side.
+
+94
+00:09:46.450 --> 00:09:52.850
+For sequences, Session five: BLAST and MMseqs2, searching with the amino-acid sequence.
+
+95
+00:09:52.850 --> 00:09:57.500
+For structures, today: Foldseek, searching with a structural sequence.
+
+96
+00:09:57.500 --> 00:10:01.500
+That phrase is doing the work, and the next slide unpacks it.
+
+97
+00:10:01.500 --> 00:10:10.325
+Foldseek comes from the same group as MMseqs2, and it is tens of thousands of times faster than TM-align at comparable sensitivity.
+
+98
+00:10:10.325 --> 00:10:14.300
+Notice the shape of the problem is the same as Session five's.
+
+99
+00:10:14.300 --> 00:10:21.450
+An accurate pairwise method exists — TM-align there, Smith-Waterman here — and it is too slow for a database.
+
+100
+00:10:21.450 --> 00:10:27.800
+The answer in both cases is to change what you are comparing so that fast machinery applies.
+
+101
+00:10:28.400 --> 00:10:32.725
+Here is the idea, and it is one of the most elegant in the course.
+
+102
+00:10:32.725 --> 00:10:44.650
+For each residue, Foldseek looks at the local three-dimensional environment — the geometry between that residue and its nearest neighbour in space — and assigns one of twenty discrete structural states.
+
+103
+00:10:44.650 --> 00:10:47.350
+That is the 3Di alphabet.
+
+104
+00:10:47.350 --> 00:10:51.900
+A structure becomes a string of 3Di letters, one per residue.
+
+105
+00:10:51.900 --> 00:10:56.800
+And once a structure is a string, you can search it with sequence machinery.
+
+106
+00:10:56.800 --> 00:11:06.200
+The same prefilter-and-align cascade as MMseqs2: index the database by k-mers, find double hits on a diagonal, filter, then align.
+
+107
+00:11:06.200 --> 00:11:10.200
+No geometric superposition anywhere in the fast path.
+
+108
+00:11:10.200 --> 00:11:20.250
+So: coordinates, to local geometry around each residue, to one 3Di state per residue, to a structural sequence, to fast alignment and database search.
+
+109
+00:11:20.250 --> 00:11:27.825
+The hundreds of millions of structures in the PDB and the AlphaFold Database become searchable in seconds to minutes.
+
+110
+00:11:27.825 --> 00:11:31.450
+Now the part that belongs to the second half of this course.
+
+111
+00:11:31.450 --> 00:11:34.850
+Nobody designed those twenty states by hand.
+
+112
+00:11:34.850 --> 00:11:48.075
+A machine-learning model — a variational autoencoder — was trained on pairs of structurally aligned residues to find a compact set of recurring three-dimensional environments that are conserved between related structures.
+
+113
+00:11:48.075 --> 00:11:50.700
+Compare that with Session five.
+
+114
+00:11:50.700 --> 00:12:00.125
+There, humans chose the representation, amino acids, and humans chose the scoring scheme, BLOSUM sixty-two, by counting substitutions.
+
+115
+00:12:00.125 --> 00:12:04.125
+In Foldseek, machine learning chose the representation.
+
+116
+00:12:04.125 --> 00:12:12.425
+You do not need to know how a variational autoencoder works to take the point: a useful representation can itself be learned from data.
+
+117
+00:12:12.425 --> 00:12:15.800
+Sessions seven to twelve build that machinery.
+
+118
+00:12:16.400 --> 00:12:26.250
+A real run, on three structures: the two haemoglobin states we use throughout — two-H-H-B, the deoxy form, and one-H-H-O, the oxy form — and GFP.
+
+119
+00:12:26.250 --> 00:12:37.250
+Matching alpha to alpha, or beta to beta, between the two haemoglobin states gives a TM-score of nought point nine eight and an RMSD of nought point seven ångström.
+
+120
+00:12:37.250 --> 00:12:46.175
+These are the same protein in two different conformational states, and that is about as similar as two independently solved structures ever get.
+
+121
+00:12:46.175 --> 00:12:54.725
+Which tells you something important for the third block: whatever the difference between the T and R states is, it is not in the individual chains.
+
+122
+00:12:54.725 --> 00:13:07.425
+Alpha-globin against beta-globin, forty-three per cent identical, gives a TM-score of nought point nine zero to nought point nine one, with RMSDs of one point seven to one point eight ångström.
+
+123
+00:13:07.425 --> 00:13:13.675
+Different genes, separated by an ancient duplication — and structurally almost interchangeable.
+
+124
+00:13:13.675 --> 00:13:21.100
+And searching two-H-H-B against GFP returns no hits at all, even with a loosened significance threshold.
+
+125
+00:13:21.100 --> 00:13:23.425
+Not a weak hit: nothing.
+
+126
+00:13:23.425 --> 00:13:30.725
+Which is the right answer, and worth seeing, because a search tool that always returns something is not telling you anything.
+

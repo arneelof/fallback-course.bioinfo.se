@@ -1,0 +1,802 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.400
+Block two.
+
+2
+00:00:01.400 --> 00:00:04.500
+What one weighted sum can and cannot do.
+
+3
+00:00:04.500 --> 00:00:14.275
+On the page, this block is the sections "What one weighted sum can represent", "What one weighted sum can never represent: XOR" and "Why a hidden layer helps".
+
+4
+00:00:14.275 --> 00:00:20.050
+This block is the famous part of the story, and it is short on biology and long on logic.
+
+5
+00:00:20.050 --> 00:00:27.675
+We are going to find the exact boundary of what the model from Block one can represent, hit it hard, and then see what fixes it.
+
+6
+00:00:27.675 --> 00:00:34.025
+The fix is the hidden layer, and it is the thing that makes everything in Sessions eight to twelve possible.
+
+7
+00:00:34.625 --> 00:00:39.775
+Before asking what a perceptron cannot do, let us be fair and see what it can.
+
+8
+00:00:39.775 --> 00:00:46.150
+The simplest possible test problems are the logic gates, with two inputs that are each zero or one.
+
+9
+00:00:46.150 --> 00:00:50.975
+Four possible inputs, which we can draw as the four corners of a square.
+
+10
+00:00:50.975 --> 00:00:55.175
+Take AND, which should output one only when both inputs are one.
+
+11
+00:00:55.175 --> 00:01:02.850
+Choose the weights by hand: w one equals one, w two equals one, and the bias equals minus one point five.
+
+12
+00:01:02.850 --> 00:01:05.275
+No training, just chosen.
+
+13
+00:01:05.275 --> 00:01:07.750
+Now check all four corners.
+
+14
+00:01:07.750 --> 00:01:14.100
+At zero, zero: z is nought plus nought minus one point five, which is minus one point five.
+
+15
+00:01:14.100 --> 00:01:17.025
+Negative, so the output is zero.
+
+16
+00:01:17.025 --> 00:01:18.200
+Correct.
+
+17
+00:01:18.200 --> 00:01:24.500
+At zero, one: z is nought plus one minus one point five, which is minus nought point five.
+
+18
+00:01:24.500 --> 00:01:26.950
+Negative, output zero.
+
+19
+00:01:26.950 --> 00:01:28.125
+Correct.
+
+20
+00:01:28.125 --> 00:01:33.350
+At one, zero: the same by symmetry, minus nought point five, output zero.
+
+21
+00:01:33.350 --> 00:01:34.525
+Correct.
+
+22
+00:01:34.525 --> 00:01:40.775
+And at one, one: z is one plus one minus one point five, which is plus nought point five.
+
+23
+00:01:40.775 --> 00:01:43.075
+Positive, output one.
+
+24
+00:01:43.075 --> 00:01:44.250
+Correct.
+
+25
+00:01:44.250 --> 00:01:49.225
+That is the AND truth table, exactly, from one weighted sum and a step.
+
+26
+00:01:49.225 --> 00:01:53.025
+And look at the picture, because the geometry is the point.
+
+27
+00:01:53.025 --> 00:02:02.225
+The line z equals zero runs across the square, and it has cut off exactly one corner, the one-one corner, leaving the other three on the far side.
+
+28
+00:02:02.225 --> 00:02:05.300
+The perceptron is not really doing logic.
+
+29
+00:02:05.300 --> 00:02:09.025
+It is drawing a line and asking which side you are on.
+
+30
+00:02:09.625 --> 00:02:17.550
+Your turn, and this one is worth pausing the video for, because you will understand the next five minutes much better if you have tried it yourself.
+
+31
+00:02:17.550 --> 00:02:22.550
+Find w one, w two and b for a perceptron that implements OR.
+
+32
+00:02:22.550 --> 00:02:29.475
+OR outputs one when at least one input is one, so it is one at three corners and zero only at zero, zero.
+
+33
+00:02:29.475 --> 00:02:31.000
+Two hints.
+
+34
+00:02:31.000 --> 00:02:37.925
+First, think geometrically rather than algebraically: where does the line have to sit relative to the four corners?
+
+35
+00:02:37.925 --> 00:02:41.175
+For AND, the line cut off the one-one corner.
+
+36
+00:02:41.175 --> 00:02:45.800
+For OR, which corner do you need to cut off, and on which side should it be?
+
+37
+00:02:45.800 --> 00:02:50.175
+Second hint: start from the AND weights and ask what you need to change.
+
+38
+00:02:50.175 --> 00:02:52.675
+The slope or the intercept?
+
+39
+00:02:52.675 --> 00:02:58.750
+And a third question when you have an answer: is your solution the only one that works, or are there others?
+
+40
+00:02:58.750 --> 00:03:04.250
+That question matters more than it looks, and the slide after next answers it with a number.
+
+41
+00:03:04.250 --> 00:03:05.800
+Pause here.
+
+42
+00:03:06.400 --> 00:03:09.050
+Here are the three gates together.
+
+43
+00:03:09.050 --> 00:03:15.350
+AND, with weights one, one and bias minus one point five: the line cuts off the one-one corner.
+
+44
+00:03:15.350 --> 00:03:19.475
+OR, with weights one, one and bias minus nought point five.
+
+45
+00:03:19.475 --> 00:03:25.800
+The slope is identical to AND; only the bias changed, which slides the line without turning it.
+
+46
+00:03:25.800 --> 00:03:32.000
+Now it cuts off the zero-zero corner instead, and the other three corners are on the positive side.
+
+47
+00:03:32.000 --> 00:03:37.150
+If your answer had a different bias between nought and minus one, it also works.
+
+48
+00:03:37.150 --> 00:03:44.250
+And NAND, which is AND with every sign flipped: weights minus one, minus one, bias plus one point five.
+
+49
+00:03:44.250 --> 00:03:51.575
+Flipping all the signs flips which side of the line is positive, so NAND is the exact opposite of AND at every corner.
+
+50
+00:03:51.575 --> 00:03:57.100
+Under each corner on the slide is the value of z, so you can check all twelve by eye.
+
+51
+00:03:57.100 --> 00:04:02.050
+And to the question of whether your solution was unique: no, not remotely.
+
+52
+00:04:02.050 --> 00:04:14.000
+The notebook searches a grid of possible weights and finds roughly five thousand combinations that implement AND, about nine and a half thousand for OR and about four and a half thousand for NAND.
+
+53
+00:04:14.000 --> 00:04:17.950
+There is nothing special about the particular numbers I chose.
+
+54
+00:04:17.950 --> 00:04:20.925
+Any line in the right place does the job.
+
+55
+00:04:21.525 --> 00:04:24.925
+Now XOR, and this is where it stops working.
+
+56
+00:04:24.925 --> 00:04:29.725
+XOR outputs one when the inputs differ, and zero when they are the same.
+
+57
+00:04:29.725 --> 00:04:32.475
+So: zero, zero gives zero.
+
+58
+00:04:32.475 --> 00:04:34.700
+Zero, one gives one.
+
+59
+00:04:34.700 --> 00:04:36.950
+One, zero gives one.
+
+60
+00:04:36.950 --> 00:04:39.175
+One, one gives zero.
+
+61
+00:04:39.175 --> 00:04:41.775
+Look at where those sit on the square.
+
+62
+00:04:41.775 --> 00:04:48.325
+The two corners that should output one are zero-one and one-zero, which are diagonally opposite each other.
+
+63
+00:04:48.325 --> 00:04:55.325
+The two corners that should output zero are zero-zero and one-one, which are also diagonally opposite each other.
+
+64
+00:04:55.325 --> 00:05:02.675
+So you need a straight line with both ends of one diagonal on one side, and both ends of the other diagonal on the other side.
+
+65
+00:05:02.675 --> 00:05:04.100
+Try it.
+
+66
+00:05:04.100 --> 00:05:07.675
+Genuinely, take a moment and try to draw that line.
+
+67
+00:05:07.675 --> 00:05:10.425
+Any line, at any angle, anywhere.
+
+68
+00:05:10.425 --> 00:05:18.600
+You cannot do it, and once you have tried for thirty seconds the reason becomes obvious: the two diagonals cross in the middle of the square.
+
+69
+00:05:18.600 --> 00:05:26.150
+Anything you separate with a straight cut keeps neighbours together, and in XOR the corners that belong together are not neighbours.
+
+70
+00:05:26.150 --> 00:05:31.625
+The slide shows three failed attempts, each getting three corners right and one wrong.
+
+71
+00:05:31.625 --> 00:05:47.450
+There is also a short algebraic proof on the course page, which I will not do out loud, but the shape of it is this: write down the four inequalities that the four rows of the truth table demand, add two of them together, and you get a statement that directly contradicts a third.
+
+72
+00:05:47.450 --> 00:05:49.750
+So no weights exist.
+
+73
+00:05:49.750 --> 00:05:53.100
+Not none that we found: none that can exist.
+
+74
+00:05:53.700 --> 00:05:58.575
+In case the argument did not convince you, here is the brute-force version.
+
+75
+00:05:58.575 --> 00:06:13.425
+The notebook takes every value of w one, w two and b from minus three to plus three in steps of nought point one, which is two hundred and twenty-six thousand, nine hundred and eighty-one combinations, and checks each one against each truth table.
+
+76
+00:06:13.425 --> 00:06:16.200
+Thousands of them implement AND.
+
+77
+00:06:16.200 --> 00:06:18.775
+Thousands implement OR.
+
+78
+00:06:18.775 --> 00:06:21.225
+Thousands implement NAND.
+
+79
+00:06:21.225 --> 00:06:23.925
+Not one implements XOR.
+
+80
+00:06:23.925 --> 00:06:27.975
+Not a single one out of two hundred and twenty-six thousand.
+
+81
+00:06:27.975 --> 00:06:30.925
+And that is not bad luck with the grid.
+
+82
+00:06:30.925 --> 00:06:35.325
+It is what the proof says: the set of weights that would work is empty.
+
+83
+00:06:35.925 --> 00:06:40.050
+So that is the model being unable to represent XOR.
+
+84
+00:06:40.050 --> 00:06:44.900
+What happens if we ignore that and train it anyway with Block one's machinery?
+
+85
+00:06:44.900 --> 00:06:51.825
+This is worth seeing, because it is how such a failure actually looks in practice, and you will meet the pattern again.
+
+86
+00:06:51.825 --> 00:06:57.725
+Train a linear model with a sigmoid on XOR, with gradient descent, for as long as you like.
+
+87
+00:06:57.725 --> 00:06:59.725
+It does not crash.
+
+88
+00:06:59.725 --> 00:07:02.075
+It does not produce an error.
+
+89
+00:07:02.075 --> 00:07:07.825
+It settles down, converges nicely, and predicts nought point five for all four inputs.
+
+90
+00:07:07.825 --> 00:07:11.000
+Nought point five means "I have no idea".
+
+91
+00:07:11.000 --> 00:07:20.600
+The model has found the least-wrong compromise available to it: since any line it draws gets at least one corner wrong, the safest thing is to sit on the fence everywhere.
+
+92
+00:07:20.600 --> 00:07:23.050
+And you can see it in the loss.
+
+93
+00:07:23.050 --> 00:07:28.725
+The final loss is nought point six nine three one, which is the natural logarithm of two.
+
+94
+00:07:28.725 --> 00:07:32.975
+That is exactly the loss you get from predicting a half for everything.
+
+95
+00:07:32.975 --> 00:07:35.525
+Not approximately: exactly.
+
+96
+00:07:35.525 --> 00:07:46.825
+Compare the same training on AND, which the model can represent: it reaches predictions of nought point zero zero three, nought point one one three, nought point one one three and nought point eight four.
+
+97
+00:07:46.825 --> 00:07:49.075
+Confident, and correct.
+
+98
+00:07:49.075 --> 00:07:54.700
+Here is the practical lesson, and it is a lesson about debugging, not about XOR.
+
+99
+00:07:54.700 --> 00:08:04.300
+When a model trains without complaint and produces a flat, uncertain output, the first thing to suspect is not the learning rate or the amount of data.
+
+100
+00:08:04.300 --> 00:08:08.450
+Suspect that the model cannot represent the thing you are asking for.
+
+101
+00:08:09.050 --> 00:08:13.500
+The fix is almost embarrassingly simple once you have seen the picture.
+
+102
+00:08:13.500 --> 00:08:15.800
+One line cannot do it.
+
+103
+00:08:15.800 --> 00:08:17.725
+Two lines can.
+
+104
+00:08:17.725 --> 00:08:21.150
+Think about what each of our gates does geometrically.
+
+105
+00:08:21.150 --> 00:08:26.775
+OR cuts off the zero-zero corner, so it is true everywhere except the bottom-left.
+
+106
+00:08:26.775 --> 00:08:32.000
+NAND cuts off the one-one corner, so it is true everywhere except the top-right.
+
+107
+00:08:32.000 --> 00:08:34.800
+Now ask where both are true at once.
+
+108
+00:08:34.800 --> 00:08:38.625
+Everywhere except the bottom-left and except the top-right.
+
+109
+00:08:38.625 --> 00:08:43.300
+That is exactly the two corners we want, zero-one and one-zero.
+
+110
+00:08:43.300 --> 00:08:45.525
+That is XOR.
+
+111
+00:08:45.525 --> 00:08:48.175
+So: compute OR from the inputs.
+
+112
+00:08:48.175 --> 00:08:50.975
+Compute NAND from the same inputs.
+
+113
+00:08:50.975 --> 00:08:53.825
+Then take the AND of those two results.
+
+114
+00:08:53.825 --> 00:08:56.725
+The picture on the slide makes it visual.
+
+115
+00:08:56.725 --> 00:09:01.975
+Each of the two gates draws its own line, and the two lines are roughly parallel.
+
+116
+00:09:01.975 --> 00:09:08.625
+The region where both are satisfied is the band between them, and the two corners we want are sitting in that band.
+
+117
+00:09:08.625 --> 00:09:12.400
+One straight line cannot carve out a band; two can.
+
+118
+00:09:12.400 --> 00:09:16.625
+That band is the first non-linear decision boundary in this course.
+
+119
+00:09:16.625 --> 00:09:20.750
+It is made of straight pieces, and it is not itself straight.
+
+120
+00:09:21.350 --> 00:09:30.400
+And here is that arrangement drawn as a network, which is the first time in this course you are looking at a real neural network rather than a single unit.
+
+121
+00:09:30.400 --> 00:09:32.925
+There are two inputs at the bottom.
+
+122
+00:09:32.925 --> 00:09:41.100
+They both go to two units in the middle, which we call the hidden layer, because its outputs are not what the network reports: they are internal.
+
+123
+00:09:41.100 --> 00:09:48.050
+Hidden unit one has weights plus one and plus one, and a bias of minus nought point five: that is OR.
+
+124
+00:09:48.050 --> 00:09:55.125
+Hidden unit two has weights minus one and minus one, and a bias of plus one point five: that is NAND.
+
+125
+00:09:55.125 --> 00:10:03.725
+Then the two hidden units feed one output unit, with weights plus one and plus one and a bias of minus one point five: that is AND.
+
+126
+00:10:03.725 --> 00:10:12.075
+Every single unit is the same thing we have had since the first slide of this session: a weighted sum, plus a bias, then an activation.
+
+127
+00:10:12.075 --> 00:10:14.775
+Nothing new has been introduced.
+
+128
+00:10:14.775 --> 00:10:20.725
+What is new is only that some units take their input from other units instead of from the data.
+
+129
+00:10:20.725 --> 00:10:23.825
+And notice that nothing here was trained.
+
+130
+00:10:23.825 --> 00:10:28.000
+I chose all nine numbers by hand from gates we already knew.
+
+131
+00:10:28.000 --> 00:10:36.575
+In a moment we will let gradient descent find its own, but the point is that the architecture is what makes XOR possible, not the training.
+
+132
+00:10:37.175 --> 00:10:42.825
+Let us push all four inputs through and check it, because it is worth doing once by hand.
+
+133
+00:10:42.825 --> 00:10:46.925
+Take one, one, which is the case people find least obvious.
+
+134
+00:10:46.925 --> 00:10:49.050
+Both inputs are on.
+
+135
+00:10:49.050 --> 00:10:52.500
+OR fires, so hidden unit one outputs one.
+
+136
+00:10:52.500 --> 00:10:59.475
+NAND does not fire, because NAND is off precisely when both inputs are on, so hidden unit two outputs zero.
+
+137
+00:10:59.475 --> 00:11:08.650
+The output unit therefore sees one and zero: its weighted sum is one plus nought minus one point five, which is negative, so it outputs zero.
+
+138
+00:11:08.650 --> 00:11:12.275
+And XOR of one and one is indeed zero.
+
+139
+00:11:12.275 --> 00:11:13.450
+Correct.
+
+140
+00:11:13.450 --> 00:11:15.450
+Take zero, one.
+
+141
+00:11:15.450 --> 00:11:18.225
+OR fires, so hidden one is one.
+
+142
+00:11:18.225 --> 00:11:23.400
+NAND also fires, because not both inputs are on, so hidden two is one.
+
+143
+00:11:23.400 --> 00:11:30.225
+The output unit sees one and one: one plus one minus one point five is positive, so it outputs one.
+
+144
+00:11:30.225 --> 00:11:33.375
+And XOR of zero and one is one.
+
+145
+00:11:33.375 --> 00:11:34.550
+Correct.
+
+146
+00:11:34.550 --> 00:11:38.100
+Run all four and you get zero, one, one, zero.
+
+147
+00:11:38.100 --> 00:11:40.750
+That is XOR, exactly.
+
+148
+00:11:40.750 --> 00:11:50.575
+Written compactly, the whole network is two lines: H equals step of X W one plus b one, and y equals step of H W two plus b two.
+
+149
+00:11:50.575 --> 00:11:56.125
+A matrix product, an activation, another matrix product, another activation.
+
+150
+00:11:56.125 --> 00:12:02.350
+Every network in the rest of this course is that pattern, repeated more times with bigger matrices.
+
+151
+00:12:02.350 --> 00:12:19.275
+And when the notebook trains this architecture properly, with tanh in the hidden layer and a sigmoid on the output instead of hard steps, gradient descent finds its own weights and predicts nought point zero zero one, nought point nine nine eight, nought point nine nine eight, and nought point zero zero one.
+
+152
+00:12:19.275 --> 00:12:24.675
+It rediscovers a solution of this shape without being told about OR or NAND.
+
+153
+00:12:25.275 --> 00:12:31.575
+Now an experiment that looks like a technicality and is actually the most important point in the block.
+
+154
+00:12:31.575 --> 00:12:36.350
+Take that same two-layer network and remove the activation functions.
+
+155
+00:12:36.350 --> 00:12:39.000
+Just the weighted sums, stacked.
+
+156
+00:12:39.000 --> 00:12:41.375
+Write out what it computes.
+
+157
+00:12:41.375 --> 00:12:44.950
+The hidden layer gives W one x plus b one.
+
+158
+00:12:44.950 --> 00:12:52.075
+The output layer takes that and gives W two, times the quantity W one x plus b one, plus b two.
+
+159
+00:12:52.075 --> 00:12:59.275
+Multiply it out, and you get W two W one, times x, plus the quantity W two b one plus b two.
+
+160
+00:12:59.275 --> 00:13:01.375
+Look at that result.
+
+161
+00:13:01.375 --> 00:13:04.775
+W two W one is just some matrix.
+
+162
+00:13:04.775 --> 00:13:08.750
+W two b one plus b two is just some vector.
+
+163
+00:13:08.750 --> 00:13:13.950
+So the whole two-layer network is a single weighted sum with different numbers in it.
+
+164
+00:13:13.950 --> 00:13:16.225
+It is picture one again.
+
+165
+00:13:16.225 --> 00:13:18.350
+And that is general.
+
+166
+00:13:18.350 --> 00:13:23.975
+Any number of linear layers stacked on top of each other collapses into one linear layer.
+
+167
+00:13:23.975 --> 00:13:28.850
+A hundred layers without activations is exactly as powerful as one.
+
+168
+00:13:28.850 --> 00:13:40.600
+The notebook confirms it on XOR: remove the tanh and the two-layer network goes straight back to predicting a half everywhere, with a loss of log two, exactly as the single linear model did.
+
+169
+00:13:40.600 --> 00:13:44.075
+So it is not the depth that gives a network its power.
+
+170
+00:13:44.075 --> 00:13:47.650
+It is the non-linear activation between the layers.
+
+171
+00:13:47.650 --> 00:13:53.575
+The weighted sums draw straight boundaries, and the activation is what lets the next layer bend them.
+
+172
+00:13:53.575 --> 00:13:57.250
+Remove it and all the depth in the world buys you nothing.
+
+173
+00:13:57.250 --> 00:14:01.675
+If you remember one technical fact from this session, make it this one.
+
+174
+00:14:02.275 --> 00:14:07.300
+A short practical slide, which will save you time in every lab from here on.
+
+175
+00:14:07.300 --> 00:14:15.850
+When you build a network in code, most of your errors will be shape errors: a matrix of the wrong size meeting a matrix of another wrong size.
+
+176
+00:14:15.850 --> 00:14:19.025
+The error messages are not always helpful.
+
+177
+00:14:19.025 --> 00:14:24.750
+The cure is to be able to say, for every arrow in the diagram, what shape the numbers have.
+
+178
+00:14:24.750 --> 00:14:30.325
+Session one gave you the rule: for a matrix product, the inner dimensions must match.
+
+179
+00:14:30.325 --> 00:14:35.100
+On this slide, the shapes of the XOR network are written along each arrow.
+
+180
+00:14:35.100 --> 00:14:39.050
+The input is a batch of examples, each with two numbers.
+
+181
+00:14:39.050 --> 00:14:44.400
+The first weight matrix is two by two, taking two inputs to two hidden units.
+
+182
+00:14:44.400 --> 00:14:47.575
+The hidden activations are a batch by two.
+
+183
+00:14:47.575 --> 00:14:50.650
+The second weight matrix is two by one.
+
+184
+00:14:50.650 --> 00:14:53.225
+The output is a batch by one.
+
+185
+00:14:53.225 --> 00:14:59.625
+Get into the habit of printing the shape of a tensor whenever you are unsure, rather than reasoning about it.
+
+186
+00:14:59.625 --> 00:15:03.575
+In the lab, this picture is the training loop, line for line.
+
+187
+00:15:04.175 --> 00:15:10.425
+To close Block two, the history, because this particular piece of mathematics had consequences.
+
+188
+00:15:10.425 --> 00:15:25.925
+In nineteen sixty-nine, Marvin Minsky and Seymour Papert published a book called Perceptrons, in which they proved exactly what we showed by picture this morning: a single-layer perceptron cannot represent XOR, or anything else that is not linearly separable.
+
+189
+00:15:25.925 --> 00:15:28.525
+The mathematics was correct.
+
+190
+00:15:28.525 --> 00:15:31.100
+What followed is more debatable.
+
+191
+00:15:31.100 --> 00:15:40.750
+The book is widely credited with contributing to the first so-called AI winter: funding moved away from neural networks, and the field went quiet for years.
+
+192
+00:15:40.750 --> 00:15:43.125
+Now, the interesting part.
+
+193
+00:15:43.125 --> 00:15:50.775
+It was already known that multi-layer networks are more powerful, because you have just seen that yourself with nine hand-chosen numbers.
+
+194
+00:15:50.775 --> 00:15:54.325
+The missing piece was not the idea of a hidden layer.
+
+195
+00:15:54.325 --> 00:15:57.150
+It was a practical way to train one.
+
+196
+00:15:57.150 --> 00:16:04.150
+Choosing weights by hand works for XOR, with two inputs and three units, and is hopeless for anything real.
+
+197
+00:16:04.150 --> 00:16:12.375
+The method that solved it is backpropagation, which became widely known in the mid-nineteen eighties and which is Session nine's subject.
+
+198
+00:16:12.375 --> 00:16:21.725
+So the gap between knowing that hidden layers help and being able to use them was roughly fifteen years, and it was a gap in training, not in architecture.
+
+199
+00:16:21.725 --> 00:16:29.100
+You will see the same shape of story in Session ten, where convolutional networks waited two decades for data and hardware.
+
+200
+00:16:29.100 --> 00:16:32.225
+A correct idea is not enough on its own.
+

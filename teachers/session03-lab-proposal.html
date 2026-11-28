@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Session 3: Biological Databases</title><style>
+    body { font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+      max-width: 1080px; margin: 2.5em auto; padding: 0 1.25em; color: #1b1f2a; line-height: 1.55; }
+    h1 { font-size: 1.8em; line-height: 1.25; margin-bottom: 0.25em; }
+    h2 { font-size: 1.3em; margin-top: 1.8em; }
+    h3 { font-size: 1.1em; margin-top: 1.5em; }
+    .subtitle { color: #666; margin-top: 0; }
+    a { color: #2e86ab; text-decoration: none; }
+    a:hover, a:focus { text-decoration: underline; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 0.8em 0 1.25em; }
+    table.timetable { min-width: 760px; }
+    caption { text-align: left; font-weight: 600; margin-bottom: 0.5em; }
+    th, td { padding: 0.65em 0.8em; border-bottom: 1px solid #e0e3e8; text-align: left; vertical-align: top; }
+    thead th { background: #f3f4f6; }
+    .clock, .minutes { white-space: nowrap; }
+    .break { background: #f8f9fb; color: #555; }
+    li { margin: 0.35em 0; }
+    @media print { body { max-width: none; margin: 0; font-size: 10pt; }
+      .table-wrap { overflow: visible; } table.timetable { min-width: 0; }
+      h2, h3 { break-after: avoid; } tr { break-inside: avoid; } }
+  </style></head>
+<body>
+<nav><a href="index.html#session03">Session 3 teacher resources</a> · <a href="../session03.html#the-lab">Session 3 book</a></nav>
+<h1>Session 3: Biological Databases</h1>
+<p class="subtitle">Three-hour lab · revised 27 November 2026</p>
+<p>Students investigate human myoglobin (<em>MB</em>) through ten required tasks. They find and connect records, export different sequences, examine annotation evidence, compare structural records and trace a reported interaction to its experiment. Each investigation ends with one graded single-answer or multiple-answer question.</p>
+<p><a href="../notebooks/session03-lab.ipynb" download>Download the current lab notebook</a> · <a href="../notebooks/session03-lab.html">Read the notebook</a> · <a href="labs/session03.html">Preview all ten graded questions without answers</a></p>
+<p>Open the downloaded notebook in VS Code or upload it to Colab. The Colab badge opens the published copy, which may lag behind local revisions. Students edit the indicated parameters and paste sequence exports; they do not write retrieval code from scratch. The notebook displays source data and supports their interpretation.</p>
+<p>The ten questions are worth one point each; five points meets the existing pass threshold. All ten tasks are required. Students submit the quiz and the separate feedback survey through the Session 3 Canvas module. Canvas lists the deadline.</p>
+<h2>Suggested schedule</h2>
+<p>The previous version was completed in about one hour in the feedback received. This revision adds independent record selection and comparisons. The budgets below are planning estimates for 150 minutes of investigation plus 30 minutes for setup, a break and submission. They are not measured completion times. Pilot the revised lab with students of different experience levels, separating time spent investigating from delays caused by unavailable websites.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Task</th><th scope="col">Investigation and assessed decision</th><th scope="col">Minutes</th></tr></thead>
+<tbody>
+<tr><td>Setup</td><td>Download the revised notebook, run setup and open Canvas.</td><td>10</td></tr>
+<tr><td>1</td><td>Compare one archival DNA record through NCBI, ENA and DDBJ; distinguish shared records from independent experiments.</td><td>15</td></tr>
+<tr><td>2</td><td>Find the human MB transcript variant 1 and reviewed protein independently; use the notebook to check the CDS translation and cross-references.</td><td>15</td></tr>
+<tr><td>3</td><td>Locate the transcript on hg38; export the full genomic span and CDS only; interpret the differences and document the settings.</td><td>25</td></tr>
+<tr><td>4</td><td>Compare the evidence for a location annotation and a subunit annotation in UniProt; follow their distinct source types.</td><td>15</td></tr>
+<tr><td>5</td><td>Inspect the InterPro family and domain matches and interpret their overlapping coverage.</td><td>10</td></tr>
+<tr class="break"><td>Break</td><td>Short break.</td><td>10</td></tr>
+<tr><td>6</td><td>Compare the provenance and represented sequences of experimental coordinates and a predicted model.</td><td>10</td></tr>
+<tr><td>7</td><td>Compare three experimental structures for a colleague's question; check protein source, expression host, mutations, cross-references and bound molecules.</td><td>20</td></tr>
+<tr><td>8</td><td>Follow the reported interaction to its pair-specific IntAct evidence; distinguish experimental records from different years.</td><td>20</td></tr>
+<tr><td>9</td><td>Compare the publication abstract with the particular experiment; distinguish an association from direct binding or a tissue-specific claim.</td><td>10</td></tr>
+<tr><td>10</td><td>Complete a browser record log that identifies the transcript, assembly, interval and both sequence-export settings.</td><td>10</td></tr>
+<tr><td>Review and submit</td><td>Check all ten answers, save outputs and notes, submit the quiz and complete the feedback survey.</td><td>10</td></tr>
+<tr><th scope="row">Total</th><td>Ten required graded investigations within a planned three-hour session.</td><td>180</td></tr>
+</tbody></table></div>
+<h2>Teaching and service notes</h2>
+<ul>
+<li>Keep the sequence-retrieval and validation code working. The added workload comes from record selection, comparison and interpretation.</li>
+<li>Task 3 normally uses the UCSC transcript-detail export controls. An explicitly labelled official API route reconstructs the same sequences if export is unavailable; students record which route they used.</li>
+<li>For Tasks 6–7, PDBj is a verified alternative interface to the same PDB records if RCSB is unavailable. The three experimental comparison records are instructor-selected; they are not all cross-references from the human protein entry.</li>
+<li>Task 7 tests source organism and experimental construct, not resolution, prediction confidence or structural alignment. Do not require the older construct-mutation question or full-paper methods reading.</li>
+<li>Task 9 retains the evidence-evaluation objective. The pair-specific interaction record, publication abstract and short assay explanation are sufficient; students do not need the full paper.</li>
+<li>Use the answer markup in <code>labs/session03-databases.text2qti.md</code> for grading review. The web preview contains no answer key. Record changes in live databases and use the course's existing discrepancy policy.</li>
+</ul>
+</body></html>

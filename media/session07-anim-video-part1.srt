@@ -1,0 +1,1048 @@
+1
+00:00:00,000 --> 00:00:02,375
+Welcome to Session seven.
+
+2
+00:00:02,375 --> 00:00:05,675
+This is the session where the course changes gear.
+
+3
+00:00:05,675 --> 00:00:17,100
+Everything up to now has been about comparing sequences and structures, and about scores you compute from data you already trust: alignment scores, profile scores, structure superpositions.
+
+4
+00:00:17,100 --> 00:00:23,375
+From today, the computer stops being told what to compute, and starts working it out from examples.
+
+5
+00:00:23,375 --> 00:00:31,075
+This is the first machine learning in the course, and everything in Sessions eight to twelve is built directly on what we do this morning.
+
+6
+00:00:31,075 --> 00:00:36,000
+The title has four things in it, and they are really one thing seen four ways.
+
+7
+00:00:36,000 --> 00:00:38,950
+A linear model, which is a weighted sum.
+
+8
+00:00:38,950 --> 00:00:45,125
+Gradient descent, which is how such a model learns its weights from examples instead of being given them.
+
+9
+00:00:45,125 --> 00:00:50,800
+The XOR problem, which is the precise point where one weighted sum stops being enough.
+
+10
+00:00:50,800 --> 00:00:59,650
+And secondary-structure prediction, which is the biological problem we use to see all of it in action, and which is also your capstone project.
+
+11
+00:00:59,650 --> 00:01:02,900
+A word about what I expect of you after this.
+
+12
+00:01:02,900 --> 00:01:12,075
+You should be able to say what a weighted sum is, what gradient descent does to it, why one of them cannot solve XOR and what a hidden layer changes.
+
+13
+00:01:12,075 --> 00:01:16,350
+You do not need to be able to write a PyTorch training loop from memory.
+
+14
+00:01:16,350 --> 00:01:20,825
+That comes in Session eight, and from then on a library does it for you.
+
+15
+00:01:20,825 --> 00:01:22,450
+Three blocks.
+
+16
+00:01:22,450 --> 00:01:25,800
+First, the weighted sum and how it is learned.
+
+17
+00:01:25,800 --> 00:01:30,900
+Second, what one weighted sum can and cannot do, which is the XOR story.
+
+18
+00:01:30,900 --> 00:01:37,850
+Third, the biology, and a lesson about representation that I think is the most useful thing in the whole session.
+
+19
+00:01:37,850 --> 00:01:44,000
+Everything in this lecture is also written out in full on the Session seven page of the course book.
+
+20
+00:01:44,000 --> 00:01:52,225
+The page is the reference and this is the walk through it, so whenever a number or a name goes past too quickly, that is where to look it up.
+
+21
+00:01:52,225 --> 00:01:56,250
+I will say which part of the page we are in as each block starts.
+
+22
+00:01:56,850 --> 00:02:01,600
+Before we start, look at this slide, because it is the map for the whole morning.
+
+23
+00:02:01,600 --> 00:02:03,950
+There are two pictures on it.
+
+24
+00:02:03,950 --> 00:02:11,775
+The top one is a single weighted sum: inputs come in, each is multiplied by a weight, they are added up, and something comes out.
+
+25
+00:02:11,775 --> 00:02:19,625
+The bottom one has a layer in the middle: the inputs go to several weighted sums, and their outputs go into another weighted sum.
+
+26
+00:02:19,625 --> 00:02:21,300
+That is it.
+
+27
+00:02:21,300 --> 00:02:23,700
+Those are the two pictures.
+
+28
+00:02:23,700 --> 00:02:25,975
+Now here is the point.
+
+29
+00:02:25,975 --> 00:02:31,450
+Today you will hear a lot of names, and they can feel like a lot of different methods to learn.
+
+30
+00:02:31,450 --> 00:02:34,525
+A position-specific scoring matrix.
+
+31
+00:02:34,525 --> 00:02:36,200
+A perceptron.
+
+32
+00:02:36,200 --> 00:02:38,200
+Linear regression.
+
+33
+00:02:38,200 --> 00:02:40,450
+Logistic regression.
+
+34
+00:02:40,450 --> 00:02:42,000
+The sigmoid.
+
+35
+00:02:42,000 --> 00:02:44,300
+The hyperbolic tangent.
+
+36
+00:02:44,300 --> 00:02:46,100
+A hidden layer.
+
+37
+00:02:46,100 --> 00:02:48,525
+A multilayer perceptron.
+
+38
+00:02:48,525 --> 00:02:50,275
+PHD.
+
+39
+00:02:50,275 --> 00:02:55,800
+Every single one of them is one of these two pictures, or a small variation on one.
+
+40
+00:02:55,800 --> 00:03:02,375
+So as each name goes by, I want you to ask yourself one question: is this picture one, or picture two?
+
+41
+00:03:02,375 --> 00:03:05,950
+If you can answer that, the session has done its job.
+
+42
+00:03:05,950 --> 00:03:16,200
+And at the very end we will come back to this slide, and the question I will ask you is: what exactly changed between the two pictures, and why does that change allow XOR?
+
+43
+00:03:16,200 --> 00:03:19,775
+Do not worry if XOR means nothing to you yet.
+
+44
+00:03:19,775 --> 00:03:21,800
+That is Block two.
+
+45
+00:03:22,400 --> 00:03:23,875
+Block one.
+
+46
+00:03:23,875 --> 00:03:26,875
+A weighted sum, learned from examples.
+
+47
+00:03:26,875 --> 00:03:34,975
+On the page, this block is the sections "A profile score and a perceptron: the same weighted sum" and "Learning the weights from examples".
+
+48
+00:03:34,975 --> 00:03:37,700
+In this block we do three things.
+
+49
+00:03:37,700 --> 00:03:44,450
+We show that you already know what a neural network computes, because you met it in Session five under another name.
+
+50
+00:03:44,450 --> 00:03:51,050
+Then we replace counting with learning: gradient descent, step by step, with the arithmetic written out.
+
+51
+00:03:51,050 --> 00:03:56,250
+And then we look at what sits after the weighted sum, which is the activation function.
+
+52
+00:03:56,850 --> 00:04:02,675
+Let us start with something you already know, because the core of a neural network is not new to you.
+
+53
+00:04:02,675 --> 00:04:09,525
+In Session five you built a position-specific scoring matrix, a PSSM, to search a database.
+
+54
+00:04:09,525 --> 00:04:18,200
+You scored a candidate stretch of sequence by taking each position, looking up the score for the residue that was there, and adding all those scores up.
+
+55
+00:04:18,200 --> 00:04:21,825
+One number out, and if it was big enough, you had a hit.
+
+56
+00:04:21,825 --> 00:04:29,875
+Write that as a formula and it looks like this: z equals w one x one, plus w two x two, and so on, plus b.
+
+57
+00:04:29,875 --> 00:04:36,825
+Each x is something about the input at one position, each w is the weight you attach to it, and you add them up.
+
+58
+00:04:36,825 --> 00:04:43,150
+In Session one you met this same operation under its mathematical name: it is a dot product.
+
+59
+00:04:43,150 --> 00:04:48,850
+Now here is the perceptron, which is the thing people call the simplest neural network.
+
+60
+00:04:48,850 --> 00:04:55,200
+It computes exactly that sum, and then does one more thing to it, which we will come to in a moment.
+
+61
+00:04:55,200 --> 00:04:58,700
+So the core of a neural network is a weighted sum.
+
+62
+00:04:58,700 --> 00:05:02,425
+You have been computing weighted sums since Session five.
+
+63
+00:05:02,425 --> 00:05:05,200
+What is new is not the arithmetic.
+
+64
+00:05:05,200 --> 00:05:08,375
+One piece of notation before we move on.
+
+65
+00:05:08,375 --> 00:05:15,300
+That b at the end is called the bias, and it is just a number added on at the end, with no input attached to it.
+
+66
+00:05:15,300 --> 00:05:18,425
+It looks like an afterthought and it is not.
+
+67
+00:05:18,425 --> 00:05:21,275
+Its job is to move the threshold.
+
+68
+00:05:21,275 --> 00:05:27,850
+Without it, the model is forced to make its decision around zero; with it, the decision can sit anywhere.
+
+69
+00:05:27,850 --> 00:05:32,400
+We will see exactly what it does geometrically two slides from now.
+
+70
+00:05:33,000 --> 00:05:39,450
+A short historical slide, because the name perceptron comes with some baggage that is worth clearing up.
+
+71
+00:05:39,450 --> 00:05:44,625
+The diagram on this slide is Frank Rosenblatt's own, from nineteen fifty-eight.
+
+72
+00:05:44,625 --> 00:05:54,150
+At the top, a sketch of a brain circuit: inputs arriving at a cell through connections of different strengths, and the cell firing if enough of them arrive at once.
+
+73
+00:05:54,150 --> 00:06:02,425
+At the bottom, the machine built to mirror it: the weights are the connection strengths, and the unit fires when the weighted sum crosses a threshold.
+
+74
+00:06:02,425 --> 00:06:13,875
+He first simulated it on an IBM seven-oh-four in nineteen fifty-eight, and the Mark One Perceptron, which was actual hardware with motors adjusting the weights, followed in nineteen sixty.
+
+75
+00:06:13,875 --> 00:06:18,600
+Now the caveat, and I want to be clear about it because it comes up every year.
+
+76
+00:06:18,600 --> 00:06:21,500
+The biological analogy is loose.
+
+77
+00:06:21,500 --> 00:06:30,350
+Real neurons are vastly more complicated than a weighted sum and a threshold, and nobody today claims a neural network is a model of the brain.
+
+78
+00:06:30,350 --> 00:06:38,275
+The analogy was historically important, and it explains the vocabulary we are stuck with: neurons, firing, activation.
+
+79
+00:06:38,275 --> 00:06:41,450
+But this course uses only the mathematics.
+
+80
+00:06:41,450 --> 00:06:45,575
+When I say a unit fires, I mean a number crossed a threshold.
+
+81
+00:06:45,575 --> 00:06:47,325
+Nothing more.
+
+82
+00:06:47,925 --> 00:06:53,400
+Now the geometry, because this is the picture that makes everything in Block two obvious.
+
+83
+00:06:53,400 --> 00:06:59,875
+Suppose you have two inputs, x one and x two, so you can draw each example as a point on a plane.
+
+84
+00:06:59,875 --> 00:07:09,550
+The model computes z equals w one x one plus w two x two plus b, and decides one class if z is positive and the other if it is not.
+
+85
+00:07:09,550 --> 00:07:12,775
+Where is the boundary between the two decisions?
+
+86
+00:07:12,775 --> 00:07:15,425
+It is where z equals zero.
+
+87
+00:07:15,425 --> 00:07:19,325
+And z equals zero is the equation of a straight line.
+
+88
+00:07:19,325 --> 00:07:22,000
+You can see that by rearranging.
+
+89
+00:07:22,000 --> 00:07:34,475
+Solve w one x one plus w two x two plus b equals zero for x two, and you get x two equals minus w one over w two, times x one, minus b over w two.
+
+90
+00:07:34,475 --> 00:07:39,125
+That is y equals m x plus c, the straight line you drew at school.
+
+91
+00:07:39,125 --> 00:07:45,200
+The slope is set by the ratio of the weights, and the intercept by the bias divided by a weight.
+
+92
+00:07:45,200 --> 00:07:48,600
+So now you can read the parameters off the picture.
+
+93
+00:07:48,600 --> 00:07:52,700
+The weights set the slope, that is, the direction the line points.
+
+94
+00:07:52,700 --> 00:07:56,775
+The bias slides the line sideways without changing its slope.
+
+95
+00:07:56,775 --> 00:08:00,800
+That is what I meant when I said the bias moves the threshold.
+
+96
+00:08:00,800 --> 00:08:05,100
+And in more dimensions the same thing happens with a different name.
+
+97
+00:08:05,100 --> 00:08:08,425
+With three inputs the boundary is a flat plane.
+
+98
+00:08:08,425 --> 00:08:14,400
+With twenty inputs it is a flat twenty-dimensional thing you cannot picture, called a hyperplane.
+
+99
+00:08:14,400 --> 00:08:17,675
+The important word in all of those is flat.
+
+100
+00:08:17,675 --> 00:08:21,075
+A weighted sum always gives you a flat boundary.
+
+101
+00:08:21,075 --> 00:08:27,625
+Remember that for Block two, because the whole of Block two is about a problem where a flat boundary is not enough.
+
+102
+00:08:28,225 --> 00:08:30,925
+So we have a model with weights in it.
+
+103
+00:08:30,925 --> 00:08:33,200
+Where do the weights come from?
+
+104
+00:08:33,200 --> 00:08:38,925
+There are exactly two answers in this course, and this slide is the hinge of the whole semester.
+
+105
+00:08:38,925 --> 00:08:42,700
+The first answer is the one you already know: count them.
+
+106
+00:08:42,700 --> 00:08:45,450
+That is what Session five did.
+
+107
+00:08:45,450 --> 00:08:55,625
+You take a multiple alignment of sequences you trust, count how often each residue appears at each position, turn those counts into log-odds scores, and there are your weights.
+
+108
+00:08:55,625 --> 00:09:01,125
+The pseudocounts you added were still counting, just with a correction for small samples.
+
+109
+00:09:01,125 --> 00:09:06,225
+Counting works, and it is fast, and you can explain every number in the matrix.
+
+110
+00:09:06,225 --> 00:09:12,225
+But look at what it needs: a trusted alignment of examples that are already known to be the same thing.
+
+111
+00:09:12,225 --> 00:09:15,450
+For many questions you simply do not have that.
+
+112
+00:09:15,450 --> 00:09:21,125
+The second answer, which everything from here to the end of the course uses, is to learn them.
+
+113
+00:09:21,125 --> 00:09:24,675
+Start with arbitrary weights, usually random ones.
+
+114
+00:09:24,675 --> 00:09:29,475
+Take labelled examples, that is, inputs where you know the right answer.
+
+115
+00:09:29,475 --> 00:09:32,500
+Measure how wrong the model currently is.
+
+116
+00:09:32,500 --> 00:09:36,975
+Then nudge every weight a small step in the direction that makes it less wrong.
+
+117
+00:09:36,975 --> 00:09:39,225
+Repeat, many times.
+
+118
+00:09:39,225 --> 00:09:44,175
+That procedure is called gradient descent, and it is the next four slides.
+
+119
+00:09:44,175 --> 00:09:47,550
+Notice what learning needs and what it does not.
+
+120
+00:09:47,550 --> 00:09:52,300
+It does not need an alignment, or any prior idea of what the weights should be.
+
+121
+00:09:52,300 --> 00:09:56,575
+It does need labelled examples, and a way of measuring wrongness.
+
+122
+00:09:56,575 --> 00:10:04,775
+That trade, from needing curated knowledge to needing labelled data, is most of what changed in biology in the last fifteen years.
+
+123
+00:10:04,775 --> 00:10:08,450
+One practical note, which the lab will make you feel.
+
+124
+00:10:08,450 --> 00:10:15,975
+In Session seven's lab you do this with raw tensors and automatic differentiation, and you write the update yourself.
+
+125
+00:10:15,975 --> 00:10:19,925
+From Session eight you will use a library that hides all of it.
+
+126
+00:10:19,925 --> 00:10:23,925
+The point today is to see the machinery once, with the lid off.
+
+127
+00:10:24,525 --> 00:10:29,475
+To nudge the weights in the right direction, you first have to measure how wrong you are.
+
+128
+00:10:29,475 --> 00:10:38,225
+That measurement is the loss function, and it is a single number: small when the model's predictions are close to the labels, large when they are far away.
+
+129
+00:10:38,225 --> 00:10:43,225
+The simplest one, and the one we use for the worked example, is the squared error.
+
+130
+00:10:43,225 --> 00:10:49,100
+For one example, L of w equals the quantity w x minus y, all squared.
+
+131
+00:10:49,100 --> 00:10:54,400
+In words: take the model's prediction, subtract the true value, and square the difference.
+
+132
+00:10:54,400 --> 00:10:57,175
+Squaring does two useful things.
+
+133
+00:10:57,175 --> 00:11:03,200
+It makes the sign irrelevant, since being too high by two is as bad as being too low by two.
+
+134
+00:11:03,200 --> 00:11:06,925
+And it punishes large errors much more than small ones.
+
+135
+00:11:06,925 --> 00:11:10,300
+Now the requirement, and there is really only one.
+
+136
+00:11:10,300 --> 00:11:12,925
+The loss has to be differentiable.
+
+137
+00:11:12,925 --> 00:11:22,800
+That means it must have a well-defined slope everywhere, because the whole of gradient descent is walking downhill, and you cannot walk downhill on something with no slope.
+
+138
+00:11:22,800 --> 00:11:29,375
+This single requirement has a consequence that will seem strange now and will make sense at the end of this block.
+
+139
+00:11:29,375 --> 00:11:35,325
+The perceptron's original activation, the step function, is flat on both sides of zero.
+
+140
+00:11:35,325 --> 00:11:37,725
+Flat means slope zero.
+
+141
+00:11:37,725 --> 00:11:45,400
+Slope zero means gradient descent gets no signal at all: it cannot tell whether a small change to a weight helped or not.
+
+142
+00:11:45,400 --> 00:11:51,150
+So the original perceptron, with its step function, cannot be trained by gradient descent.
+
+143
+00:11:51,150 --> 00:11:58,850
+That is why the sigmoid exists, and why every activation function in the rest of this course is a smoothed version of a step.
+
+144
+00:11:58,850 --> 00:12:00,850
+Hold that thought.
+
+145
+00:12:01,450 --> 00:12:06,925
+Now let us actually do it, on the smallest possible example, so that nothing is hidden.
+
+146
+00:12:06,925 --> 00:12:09,800
+One input, one weight, no bias.
+
+147
+00:12:09,800 --> 00:12:12,700
+The model is z equals w x.
+
+148
+00:12:12,700 --> 00:12:18,150
+One training example: x equals two, and the correct answer y equals six.
+
+149
+00:12:18,150 --> 00:12:23,575
+So the right weight is obviously three, and the question is whether the procedure finds it.
+
+150
+00:12:23,575 --> 00:12:27,825
+We start with w equals zero, which is wrong on purpose.
+
+151
+00:12:28,425 --> 00:12:34,225
+The loss is the squared error, L of w equals w x minus y, all squared.
+
+152
+00:12:34,225 --> 00:12:44,700
+We need its slope with respect to w, and Session one's chain rule gives it: d L by d w equals two, times the quantity w x minus y, times x.
+
+153
+00:12:44,700 --> 00:12:49,700
+Let me read that formula in words, because it is more intelligible than it looks.
+
+154
+00:12:50,300 --> 00:12:57,425
+The middle bracket, w x minus y, is simply the error: how far the prediction is from the truth, with a sign.
+
+155
+00:12:57,425 --> 00:13:02,225
+So the slope is proportional to the error, and proportional to the input.
+
+156
+00:13:02,225 --> 00:13:04,425
+Big error, big step.
+
+157
+00:13:05,025 --> 00:13:07,425
+Small error, small step.
+
+158
+00:13:07,425 --> 00:13:15,475
+And then the update rule, which is the whole algorithm: the new w is the old w, minus a small number eta times the slope.
+
+159
+00:13:15,475 --> 00:13:18,675
+That small number is called the learning rate.
+
+160
+00:13:18,675 --> 00:13:22,450
+Watch the minus sign, because it catches everyone once.
+
+161
+00:13:22,450 --> 00:13:28,925
+If the slope is negative, it means the loss goes down as w goes up, so we should increase w.
+
+162
+00:13:28,925 --> 00:13:32,275
+Subtracting a negative number increases it.
+
+163
+00:13:32,875 --> 00:13:38,250
+The minus sign is what makes "downhill on the loss" come out right in both directions.
+
+164
+00:13:38,250 --> 00:13:47,925
+Starting at w equals zero, the sequence goes nought, then one point two, then one point nine two, then two point three five, and it keeps heading for three.
+
+165
+00:13:47,925 --> 00:13:51,625
+And notice the thing I find most elegant about this.
+
+166
+00:13:52,225 --> 00:13:57,125
+The steps get smaller as you approach the answer, and nobody arranged that.
+
+167
+00:13:57,125 --> 00:14:02,700
+They get smaller because the gradient itself contains the error, and the error is shrinking.
+
+168
+00:14:02,700 --> 00:14:06,900
+You never have to reduce the learning rate by hand to land softly.
+
+169
+00:14:07,500 --> 00:14:15,700
+Let me put the actual numbers on the screen, because this is the kind of thing that is obvious once you have seen it once and mysterious until then.
+
+170
+00:14:15,700 --> 00:14:19,350
+The learning rate is nought point zero five throughout.
+
+171
+00:14:19,350 --> 00:14:21,050
+Step zero.
+
+172
+00:14:21,050 --> 00:14:26,400
+w is zero, so the prediction w x is zero, and the target is six.
+
+173
+00:14:26,400 --> 00:14:31,925
+The gradient is two, times nought minus six, times two, which is minus twenty-four.
+
+174
+00:14:31,925 --> 00:14:39,825
+The update is w equals nought minus nought point zero five times minus twenty-four, which is plus one point two zero.
+
+175
+00:14:39,825 --> 00:14:43,300
+So w moves from zero to one point two.
+
+176
+00:14:43,300 --> 00:14:44,775
+Step one.
+
+177
+00:14:44,775 --> 00:14:50,050
+w is one point two, so the prediction is two point four, still short of six.
+
+178
+00:14:50,050 --> 00:14:56,300
+The gradient is two, times two point four minus six, times two, which is minus fourteen point four.
+
+179
+00:14:56,300 --> 00:15:00,100
+Smaller in size than before, because the error is smaller.
+
+180
+00:15:00,100 --> 00:15:03,025
+The update gives one point nine two.
+
+181
+00:15:03,025 --> 00:15:04,325
+Step two.
+
+182
+00:15:04,325 --> 00:15:13,875
+w is one point nine two, the prediction is three point eight four, the gradient is minus eight point six four, and w becomes two point three five.
+
+183
+00:15:13,875 --> 00:15:19,025
+Look down that middle column: twenty-four, fourteen point four, eight point six four.
+
+184
+00:15:19,025 --> 00:15:25,150
+The gradient is shrinking by itself, so the steps shrink by themselves, and eta never changed.
+
+185
+00:15:25,150 --> 00:15:27,650
+That is the whole algorithm.
+
+186
+00:15:27,650 --> 00:15:34,325
+Everything in the rest of this course that trains anything is this, done many times over, to many weights at once.
+
+187
+00:15:34,925 --> 00:15:45,125
+The learning rate is the one number you chose by hand in that example, and it is worth a slide, because it is the setting that most often decides whether training works at all.
+
+188
+00:15:45,125 --> 00:15:51,725
+The picture shows the same loss curve and the same starting point three times, with three different learning rates.
+
+189
+00:15:51,725 --> 00:15:53,975
+Too small, on the left.
+
+190
+00:15:53,975 --> 00:15:58,900
+Every step is in the right direction, so it does get there, but it takes forever.
+
+191
+00:15:58,900 --> 00:16:06,250
+With eta equal to nought point zero one on our example, each step closes only eight per cent of the remaining distance.
+
+192
+00:16:06,250 --> 00:16:08,025
+Good, in the middle.
+
+193
+00:16:08,025 --> 00:16:10,450
+Nought point zero five.
+
+194
+00:16:10,450 --> 00:16:13,125
+A handful of steps and you are there.
+
+195
+00:16:13,125 --> 00:16:17,000
+Too large, on the right, and this is the interesting failure.
+
+196
+00:16:17,000 --> 00:16:22,900
+Each step overshoots the minimum and lands further away on the other side than it started.
+
+197
+00:16:23,500 --> 00:16:26,325
+The next step overshoots further still.
+
+198
+00:16:26,325 --> 00:16:30,100
+The weight does not converge slowly; it flies apart.
+
+199
+00:16:30,100 --> 00:16:40,075
+With eta equal to nought point two six, the distance to the answer is multiplied by minus one point zero eight every step: the sign flips, and the size grows.
+
+200
+00:16:40,075 --> 00:16:44,550
+For this particular loss you can work out exactly where the boundary is.
+
+201
+00:16:44,550 --> 00:16:49,975
+Each step multiplies the distance to w equals three by one minus eight eta.
+
+202
+00:16:50,575 --> 00:16:58,925
+For that to shrink the distance, you need the size of one minus eight eta to be less than one, which means eta below nought point two five.
+
+203
+00:16:58,925 --> 00:17:05,850
+So nought point two five is the largest learning rate that still converges, and nought point two six does not.
+
+204
+00:17:05,850 --> 00:17:09,150
+That is a question worth sitting with for a minute.
+
+205
+00:17:09,150 --> 00:17:16,375
+In real problems you cannot compute that boundary, so the learning rate is chosen by trying a few and watching the loss.
+
+206
+00:17:16,375 --> 00:17:24,425
+If your loss goes to infinity or becomes "not a number" in the first few steps, the learning rate is almost always the reason.
+
+207
+00:17:25,025 --> 00:17:35,075
+Here is a sanity check on the whole idea of learning, and I like it because it is the only case in this course where we can check gradient descent against an exact answer.
+
+208
+00:17:35,075 --> 00:17:40,525
+Ordinary linear regression, fitting a straight line through points, has a direct solution.
+
+209
+00:17:40,525 --> 00:17:42,525
+There is a formula.
+
+210
+00:17:42,525 --> 00:17:48,900
+You put the numbers in and the best line comes out in one step, with no iteration and no learning rate.
+
+211
+00:17:48,900 --> 00:18:00,650
+So take five noisy points lying roughly along y equals two x: x equals one to five, and y equals two point one, three point nine, six point two, seven point eight, ten point one.
+
+212
+00:18:00,650 --> 00:18:07,025
+The exact solution gives an intercept of nought point zero five and a slope of one point nine nine.
+
+213
+00:18:07,025 --> 00:18:18,975
+Then run gradient descent on the same data, with a learning rate of nought point zero one and a few thousand small steps, and it arrives at nought point zero five zero and one point nine nine zero.
+
+214
+00:18:18,975 --> 00:18:20,850
+The same answer.
+
+215
+00:18:20,850 --> 00:18:27,350
+That is reassuring, but it raises an obvious question: if there is a formula, why would anyone iterate?
+
+216
+00:18:27,350 --> 00:18:29,125
+Two answers.
+
+217
+00:18:29,125 --> 00:18:33,300
+The first is that almost no interesting model has a formula.
+
+218
+00:18:33,300 --> 00:18:36,875
+A perceptron with a classification loss does not.
+
+219
+00:18:36,875 --> 00:18:40,350
+A network with a hidden layer certainly does not.
+
+220
+00:18:40,350 --> 00:18:51,150
+The exact solution exists for linear regression and for very few other things, and from this point in the course onwards, everything is learned iteratively because there is no alternative.
+
+221
+00:18:51,150 --> 00:18:55,925
+The second answer is the one from the earlier slide, in a different costume.
+
+222
+00:18:55,925 --> 00:19:01,150
+Deriving the answer requires you to know the structure of the problem well enough to solve it.
+
+223
+00:19:01,150 --> 00:19:05,025
+Learning requires only that you can measure how wrong you are.
+
+224
+00:19:05,025 --> 00:19:10,275
+That is a much weaker requirement, which is why it works on so many more problems.
+
+225
+00:19:10,875 --> 00:19:13,750
+One loose end from the worked example.
+
+226
+00:19:13,750 --> 00:19:16,425
+We used a single data point.
+
+227
+00:19:16,425 --> 00:19:18,750
+Real training does not.
+
+228
+00:19:18,750 --> 00:19:26,200
+In practice you have hundreds or millions of labelled examples, and the loss is the average of the per-example losses.
+
+229
+00:19:26,200 --> 00:19:32,550
+The gradient is then the average of the per-example gradients, and the update rule is exactly the same.
+
+230
+00:19:32,550 --> 00:19:36,875
+That leaves a choice: how many examples go into one update?
+
+231
+00:19:36,875 --> 00:19:39,725
+You can use all of them for every step.
+
+232
+00:19:39,725 --> 00:19:44,825
+The gradient is then as accurate as it can be, and the path downhill is smooth.
+
+233
+00:19:44,825 --> 00:19:51,975
+But every single step costs a pass over the whole dataset, which for a large dataset is slow enough to be useless.
+
+234
+00:19:51,975 --> 00:19:56,100
+Or you can use a small random handful, a batch, for each step.
+
+235
+00:19:56,100 --> 00:20:00,225
+The gradient from a handful is noisy, so the path wanders.
+
+236
+00:20:00,225 --> 00:20:08,175
+But you take hundreds of steps in the time the other method takes one, and the wandering turns out not to matter much, and sometimes helps.
+
+237
+00:20:08,175 --> 00:20:13,550
+In practice everyone uses the second, with batches of a few dozen examples.
+
+238
+00:20:13,550 --> 00:20:18,550
+The names you will hear are stochastic gradient descent, momentum, and Adam.
+
+239
+00:20:18,550 --> 00:20:24,450
+I am naming them here only so that they are not new words when Session nine explains them properly.
+
+240
+00:20:24,450 --> 00:20:28,500
+The mechanics you saw on the previous slides do not change at all.
+
+241
+00:20:28,500 --> 00:20:32,025
+Only how many examples go into each gradient.
+
+242
+00:20:32,625 --> 00:20:34,925
+Last piece of Block one.
+
+243
+00:20:34,925 --> 00:20:38,500
+We have done the weighted sum, and we have done the learning.
+
+244
+00:20:38,500 --> 00:20:45,750
+What sits between the sum and the answer is the activation function, and the choice of it decides what the model is called.
+
+245
+00:20:45,750 --> 00:20:47,625
+The step function.
+
+246
+00:20:47,625 --> 00:20:51,350
+Output one if z is positive, zero otherwise.
+
+247
+00:20:51,350 --> 00:20:54,750
+The output is a class, a hard yes or no.
+
+248
+00:20:54,750 --> 00:21:04,575
+A weighted sum with a step on the end is the original perceptron, and it is what we will use in Block two, because it makes the logic exact and easy to check by hand.
+
+249
+00:21:04,575 --> 00:21:10,600
+Its fatal flaw, which I flagged earlier, is that its slope is zero everywhere it is defined.
+
+250
+00:21:10,600 --> 00:21:13,600
+Gradient descent cannot train through it.
+
+251
+00:21:13,600 --> 00:21:15,150
+The sigmoid.
+
+252
+00:21:15,150 --> 00:21:22,875
+An S-shaped curve that squashes any number into the range zero to one, rising smoothly through a half at z equals zero.
+
+253
+00:21:22,875 --> 00:21:33,250
+Because the output is between zero and one, you can read it as a probability rather than a verdict: not "this is class one" but "I am eighty-three per cent confident".
+
+254
+00:21:33,250 --> 00:21:42,900
+A weighted sum with a sigmoid on the end is logistic regression, which is a method in its own right and which will keep turning up as a baseline for the rest of the course.
+
+255
+00:21:42,900 --> 00:21:45,725
+And the sigmoid is a smoothed step.
+
+256
+00:21:45,725 --> 00:21:48,600
+That is the whole reason it exists.
+
+257
+00:21:48,600 --> 00:21:54,850
+It does what the step does, while having a slope everywhere, so gradient descent has something to work with.
+
+258
+00:21:54,850 --> 00:21:59,675
+Then two more, which we will meet properly inside hidden layers in Block two.
+
+259
+00:21:59,675 --> 00:22:05,925
+The hyperbolic tangent, tanh, which is a sigmoid rescaled to run from minus one to plus one.
+
+260
+00:22:05,925 --> 00:22:12,550
+And the ReLU, which is simply the rule: if the number is negative, make it zero; otherwise leave it alone.
+
+261
+00:22:12,550 --> 00:22:18,150
+That sounds too crude to be useful and it is the most used activation in deep learning.
+
+262
+00:22:18,150 --> 00:22:27,075
+The thing to carry forward is this: the weighted sum is linear and always gives a flat boundary; the activation is where any bending can come from.
+

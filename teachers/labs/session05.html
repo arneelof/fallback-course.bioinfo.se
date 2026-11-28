@@ -1,0 +1,52 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 5 Lab: Advanced Search and Profile Methods</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 5 Lab: Advanced Search and Profile Methods</h1>
+<p class='meta'>Preview without answers, from <code>labs/session05-blast-and-profiles.text2qti.md</code> (e08eb28 2026-11-24). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='../../notebooks/session05-lab.ipynb' download>download session05-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>Ten questions, one point each, on the BLAST heuristic, PSSMs, profile HMMs and how to read biological search evidence.</p>
+<div class='text'><h2>The notebook</h2><p>Answer from your own copy of <a href="../../notebooks/session05-lab.ipynb">session05-lab.ipynb</a>, which is where the calculations below are worked out. Download it and open it in VS Code, or upload it to Google Colab; see the <a href="../../setup.html">Setup</a> page.</p>
+<p>Choose one answer unless the question says <strong>Select all that apply</strong> — questions 3 and 10 do, and on those an incorrect selection reduces partial credit. All choice questions have six options.</p></div>
+<div class='text'><h2>BLAST: seeds, extension and significance</h2><p>Questions 1–3 use the same seed-and-extend ideas as the first part of the notebook. A word score is the sum of substitution scores at corresponding positions.</p></div>
+<div class='q'><div class='qhead'>Question 1 · number · 1 point</div><p>Score the query word LWG against the word IWG. The required BLOSUM62 entries are S(L,I) = 2, S(W,W) = 11 and S(G,G) = 6. What is the total word score?</p>
+</div>
+<div class='q'><div class='qhead'>Question 2 · choose one · 1 point</div><p>Extend the two strings Thequickbrownfoxjumpsoverthelazydog and Thequietbrowncatpurrswhensheseeshim from their first character, with +1 for a match and −1 for a mismatch. Start at score 0 and use X = 5. Stop when the running score is AT LEAST 5 below the highest score seen so far. Report the alignment only up to the best-scoring endpoint. Columns are numbered from 1. Which triple (best score, reported alignment length, stopping column) does the notebook return?</p>
+<ul><li><p>(9, 13, 20)</p></li><li><p>(9, 20, 20)</p></li><li><p>(4, 20, 20)</p></li><li><p>(9, 13, 21)</p></li><li><p>(9, 12, 20)</p></li><li><p>(9, 13, 19)</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 3 · choose all that apply · 1 point</div><p>For one fixed alignment and scoring system, the bit score is 50 and E = m × n × 2^(-50). The query length m stays fixed while the effective database length n increases tenfold. Select ALL statements that are correct under these assumptions.</p>
+<ul><li><p>The bit score stays 50.</p></li><li><p>The E-value increases tenfold.</p></li><li><p>The raw alignment score stays the same.</p></li><li><p>The E-value decreases tenfold.</p></li><li><p>The bit score increases to 50 + log2(10).</p></li><li><p>The new E-value is the probability that the proteins are unrelated.</p></li></ul>
+</div>
+<div class='text'><h2>PSSMs: counts, background and gaps</h2><p>In Questions 4–5 use five aligned sequences. At position 1, alanine appears four times and glycine is absent. Add one pseudocount to EACH of the 20 amino acids, so the adjusted denominator is 5 + 20 = 25. Use the stated background frequencies and log2 for every log-odds score.</p></div>
+<div class='q'><div class='qhead'>Question 4 · number · 1 point</div><p>Glycine has background frequency q(G) = 0.074. What is its position-1 PSSM score, log2[(1/25)/0.074]? Give your answer in bits to two decimal places.</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · number · 1 point</div><p>Compare AGLSP with GGLSP using the same PSSM. The sequences differ only at position 1. Both alanine and glycine have background frequency 0.074. Alanine has adjusted count 5 and glycine adjusted count 1. By how many bits does the score of AGLSP exceed that of GGLSP?</p>
+</div>
+<div class='q'><div class='qhead'>Question 6 · choose one · 1 point</div><p>The notebook builds a six-column teaching profile from AGLS-P, AGLTRP, RGISRP, AALS-Q and AA-S-P. Treat a gap as a 21st symbol and add one pseudocount to each symbol at each column, giving denominator 26. The gap background frequency is 4/30; amino-acid background frequencies are scaled by 26/30. For residues in the query use q(A)=0.074, q(R)=0.052, q(S)=0.057 and q(P)=0.039 before that scaling. Score each candidate by summing log2(adjusted frequency / background) across its six columns. Which placement of ONE gap in RASRP has the highest score?</p>
+<ul><li><p>RA-SRP</p></li><li><p>-RASRP</p></li><li><p>R-ASRP</p></li><li><p>RAS-RP</p></li><li><p>RASR-P</p></li><li><p>RASRP-</p></li></ul>
+</div>
+<div class='text'><h2>Profile HMMs: transitions, emissions and paths</h2><p>Questions 7–9 use the profile-HMM model in the notebook. Transition probabilities come from outgoing transition counts. Match and insert states emit residues; deletion states are silent.</p></div>
+<div class='q'><div class='qhead'>Question 7 · number · 1 point</div><p>In the training alignment, the insertion state I5 emits a three-residue insertion QNA. Its observed outgoing transitions are I5→I5 twice, I5→M6 once and I5→D6 zero times. With NO transition pseudocounts, what is the estimated probability P(I5→I5)? Give a value between 0 and 1.</p>
+</div>
+<div class='q'><div class='qhead'>Question 8 · number · 1 point</div><p>Match state M6 emits one residue in each of five training sequences. Two of these five emissions are arginine (R). Add one emission pseudocount to EACH of the 20 amino acids. What is the estimated emission probability P(R | M6)?</p>
+</div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>Run the notebook&rsquo;s eight-match-state profile HMM on the slide query MGLTARPQ. Use the model trained from the five-sequence alignment with one pseudocount on every legal outgoing transition and every amino-acid emission. Which Viterbi path is returned? B and E are silent Begin and End states.</p>
+<ul><li><p>B → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → E</p></li><li><p>B → M1 → M2 → M3 → M4 → I4 → D5 → M6 → M7 → M8 → E</p></li><li><p>B → M1 → M2 → M3 → D4 → M5 → I5 → M6 → M7 → M8 → E</p></li><li><p>B → M1 → M2 → M3 → M4 → M5 → I5 → D6 → M7 → M8 → E</p></li><li><p>B → M1 → M2 → D3 → M4 → M5 → I5 → M6 → M7 → M8 → E</p></li><li><p>B → M1 → M2 → M3 → M4 → M5 → D6 → I6 → M7 → M8 → E</p></li></ul>
+</div>
+<div class='text'><h2>Interpreting biological evidence</h2><p>The notebook provides saved results, so no online search is needed. A local HBB→myoglobin BLAST example reports E = 63, bit score 10.8 and alignment length 125 with the original two-hit settings. Repeating the same pair without the two-hit requirement finds a 145-residue alignment with E = 5.38e-11 and bit score 45.4. Independently, saved InterPro/Pfam annotations verified on 14 November 2026 assign Globin family PF00042 to HBB residues 27–142 of 147 (E = 1.3e-29) and myoglobin residues 28–141 of 154 (E = 1.2e-20). These are results from different search models and search spaces.</p></div>
+<div class='q'><div class='qhead'>Question 10 · choose all that apply · 1 point</div><p>Which statements about the saved BLAST and Pfam results are supported? Select ALL that apply.</p>
+<ul><li><p>The first BLAST run did not recover the stronger alignment found after the two-hit requirement was disabled.</p></li><li><p>The shared PF00042 matches support homologous globin-family regions in HBB and myoglobin.</p></li><li><p>These results alone do not establish that HBB and myoglobin have identical biological functions.</p></li><li><p>The initial E-value of 63 proves that HBB and myoglobin are unrelated.</p></li><li><p>The Pfam E-value for myoglobin is the probability that myoglobin is unrelated to the globin family.</p></li><li><p>The smallest E-value across these different search models proves which method is most accurate.</p></li></ul>
+</div>
+</main></body></html>

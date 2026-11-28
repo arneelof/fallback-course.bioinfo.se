@@ -1,0 +1,550 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:04.750
+The bottom track is NCBI RefSeq annotating the same region.
+
+2
+00:00:04.750 --> 00:00:11.750
+Keeping it separate from GENCODE is deliberate — you can always see which collection an annotation came from.
+
+3
+00:00:11.750 --> 00:00:19.750
+And because both are drawn on the same coordinates, you can compare them directly: where they agree on an exon boundary, and where they do not.
+
+4
+00:00:19.750 --> 00:00:27.075
+This subtrack is the curated part of RefSeq: reference messenger RNAs, and non-coding RNA records.
+
+5
+00:00:27.075 --> 00:00:31.250
+The computationally predicted ones are in a separate subtrack.
+
+6
+00:00:31.250 --> 00:00:40.675
+So this is the reviewed material, which is a sensible place to start, although each record still has its own evidence and review status worth checking.
+
+7
+00:00:41.275 --> 00:00:47.450
+The small arrows along the HBB model point left, while the coordinates increase to the right.
+
+8
+00:00:47.450 --> 00:00:53.200
+HBB is on the minus strand, so transcription runs towards lower coordinates.
+
+9
+00:00:53.200 --> 00:00:59.400
+In this picture the five-prime end of the transcript is on the right and the three-prime end is on the left.
+
+10
+00:00:59.400 --> 00:01:04.400
+The green RNA below points the other way, because it is on the other strand.
+
+11
+00:01:04.400 --> 00:01:07.625
+This matters as soon as you retrieve a sequence.
+
+12
+00:01:07.625 --> 00:01:14.025
+Ask for it in the gene's orientation and you get something different from the chromosome's forward strand.
+
+13
+00:01:14.625 --> 00:01:18.925
+Zoomed in on the rightmost exon, where this transcript begins.
+
+14
+00:01:18.925 --> 00:01:22.975
+The thin part is the five-prime untranslated region.
+
+15
+00:01:22.975 --> 00:01:30.850
+Where it thickens, coding starts, and the green mark at that boundary is the start codon — the methionine the protein begins with.
+
+16
+00:01:30.850 --> 00:01:38.525
+Inside the coding part, alternating shades of blue separate one codon from the next, so the reading frame is visible.
+
+17
+00:01:38.525 --> 00:01:43.200
+Green marks methionine wherever it occurs, not only at the beginning.
+
+18
+00:01:43.200 --> 00:01:48.550
+It is the position, at the boundary where coding starts, that makes this one the start.
+
+19
+00:01:49.150 --> 00:01:55.075
+Following the transcript left brings us to the last exon, and a red mark: the stop codon.
+
+20
+00:01:55.075 --> 00:01:57.625
+The RNA does not end there.
+
+21
+00:01:57.625 --> 00:02:03.200
+It carries on into the three-prime untranslated region, the thinner stretch to the left.
+
+22
+00:02:03.200 --> 00:02:07.125
+The stop codon ends translation, not the transcript.
+
+23
+00:02:07.125 --> 00:02:13.100
+And note that this small red mark means something entirely different from the large red feature earlier.
+
+24
+00:02:13.100 --> 00:02:16.175
+Same colour, different track, different meaning.
+
+25
+00:02:16.775 --> 00:02:20.700
+Which brings us to a question that sounds simple and is not.
+
+26
+00:02:20.700 --> 00:02:24.175
+Someone asks you for "the HBB sequence".
+
+27
+00:02:24.175 --> 00:02:25.700
+Which one?
+
+28
+00:02:25.700 --> 00:02:28.800
+The DNA at its place on the chromosome?
+
+29
+00:02:28.800 --> 00:02:31.075
+The mature transcript?
+
+30
+00:02:31.075 --> 00:02:33.950
+Only the part that codes for protein?
+
+31
+00:02:33.950 --> 00:02:36.075
+The protein itself?
+
+32
+00:02:36.075 --> 00:02:48.550
+We will take them one at a time, all from a single annotated transcript — the reviewed human RefSeq transcript, on GRCh38 — so that every difference in length has a reason you can point at.
+
+33
+00:02:48.550 --> 00:02:56.675
+And notice already that this transcript spans sixteen hundred and eight bases, while the window we have been looking at is wider than that.
+
+34
+00:02:56.675 --> 00:03:00.250
+The window and the transcript are not the same boundary.
+
+35
+00:03:00.850 --> 00:03:03.850
+Two answers come straight off the record.
+
+36
+00:03:03.850 --> 00:03:11.475
+The transcript is six hundred and twenty-eight nucleotides — its three exons joined, untranslated regions included.
+
+37
+00:03:11.475 --> 00:03:15.575
+The protein is a hundred and forty-seven amino acids.
+
+38
+00:03:15.575 --> 00:03:21.200
+The two are connected, but the transcript plainly contains more than the protein accounts for.
+
+39
+00:03:21.200 --> 00:03:25.475
+One thing to notice: the transcript is written with T, not U.
+
+40
+00:03:25.475 --> 00:03:29.325
+That is a storage convention and nothing biological.
+
+41
+00:03:29.325 --> 00:03:35.700
+You cannot tell from the letters alone whether you are holding a transcript or a piece of genomic DNA.
+
+42
+00:03:35.700 --> 00:03:38.300
+Only the record tells you that.
+
+43
+00:03:38.900 --> 00:03:51.975
+For the genomic version you have to say what to include, and the export menu is a list of biological choices: the five-prime untranslated region, the three-prime untranslated region, coding exons, introns.
+
+44
+00:03:51.975 --> 00:03:56.600
+Take all of them and you get the complete genomic span of this transcript.
+
+45
+00:03:56.600 --> 00:04:05.025
+Add upstream or downstream bases and you have gone past the transcript into the DNA around it, and the length changes accordingly.
+
+46
+00:04:05.025 --> 00:04:10.650
+The formatting options are separate, and they change presentation rather than content.
+
+47
+00:04:10.650 --> 00:04:19.150
+Exons in capitals and introns in lower case is a good habit — it makes the organisation legible without altering a single base.
+
+48
+00:04:19.750 --> 00:04:24.550
+Sixteen hundred and eight nucleotides, because the introns are still in.
+
+49
+00:04:24.550 --> 00:04:30.050
+The two introns contribute a hundred and thirty bases and eight hundred and fifty.
+
+50
+00:04:30.050 --> 00:04:36.350
+Take those nine hundred and eighty away and six hundred and twenty-eight are left, which is the transcript.
+
+51
+00:04:36.350 --> 00:04:40.950
+The arithmetic follows from the exon structure and from nothing else.
+
+52
+00:04:40.950 --> 00:04:50.825
+The capitals cover the untranslated parts of the exons as well as the coding parts — a useful reminder that an exon and a coding region are not the same thing.
+
+53
+00:04:50.825 --> 00:04:58.225
+And because HBB is on the minus strand, what comes back is the reverse complement of the chromosome's forward sequence.
+
+54
+00:04:58.225 --> 00:05:03.875
+That is the gene's orientation, so this and the transcript can be read side by side.
+
+55
+00:05:04.475 --> 00:05:10.075
+Take the untranslated regions out and four hundred and forty-four nucleotides remain.
+
+56
+00:05:10.075 --> 00:05:15.625
+Fifty of them were in front, at the five-prime end, and a hundred and thirty-four behind.
+
+57
+00:05:15.625 --> 00:05:19.200
+It starts with ATG and ends with TAA.
+
+58
+00:05:19.200 --> 00:05:25.800
+A hundred and forty-eight triplets: a hundred and forty-seven codons for amino acids, and one stop.
+
+59
+00:05:25.800 --> 00:05:31.525
+Which is exactly the protein we were handed earlier, initiator methionine included.
+
+60
+00:05:31.525 --> 00:05:34.750
+The stop codon contributes no residue.
+
+61
+00:05:34.750 --> 00:05:36.875
+One trap in the header.
+
+62
+00:05:36.875 --> 00:05:42.525
+The coordinates there are the outer boundaries of the coding region, and they span the introns.
+
+63
+00:05:42.525 --> 00:05:47.625
+Subtract them and you have measured a piece of chromosome, not the length of this sequence.
+
+64
+00:05:48.225 --> 00:05:50.875
+So the four versions fit together.
+
+65
+00:05:50.875 --> 00:05:55.200
+Genomic DNA keeps the exon and intron organisation.
+
+66
+00:05:55.200 --> 00:06:00.700
+The transcript is the exons joined, with both untranslated regions still there.
+
+67
+00:06:00.700 --> 00:06:04.425
+The coding sequence is the part that gets translated.
+
+68
+00:06:04.425 --> 00:06:07.000
+The protein is what comes out.
+
+69
+00:06:07.000 --> 00:06:11.775
+Two of those arrows are things the cell does — transcription, then splicing.
+
+70
+00:06:11.775 --> 00:06:13.750
+The third is not.
+
+71
+00:06:13.750 --> 00:06:18.450
+Choosing the coding sequence is a decision you make about what to analyse.
+
+72
+00:06:18.450 --> 00:06:23.100
+Which is why the shortest sequence is not automatically the most useful.
+
+73
+00:06:23.100 --> 00:06:26.900
+A variant in an intron needs the genomic sequence.
+
+74
+00:06:26.900 --> 00:06:31.975
+A question about an untranslated region needs something that still has one.
+
+75
+00:06:31.975 --> 00:06:37.000
+A question about the amino acids needs the coding sequence, or the protein.
+
+76
+00:06:37.000 --> 00:06:40.925
+Work out what you are asking before you decide what to download.
+
+77
+00:06:41.525 --> 00:06:46.125
+We have pulled DNA, RNA and protein out of one transcript.
+
+78
+00:06:46.125 --> 00:06:48.650
+Now a different kind of question.
+
+79
+00:06:48.650 --> 00:06:52.775
+Suppose you want to find a DNA variant and see where it falls.
+
+80
+00:06:52.775 --> 00:06:57.100
+Look at this display and ask which parts of it would actually help you.
+
+81
+00:06:57.100 --> 00:07:04.375
+Both annotation sources are on screen, GENCODE and RefSeq, drawn against the same coordinates.
+
+82
+00:07:04.375 --> 00:07:12.500
+We will keep the RefSeq transcript we have been using, so variant positions can be compared against exons and introns we already know.
+
+83
+00:07:13.100 --> 00:07:16.225
+Zoomed in on HBB, RefSeq only.
+
+84
+00:07:16.225 --> 00:07:20.350
+Thick blocks are coding, the thin line between them is an intron.
+
+85
+00:07:20.350 --> 00:07:24.200
+That is our reference for reading anything we add on top.
+
+86
+00:07:24.200 --> 00:07:28.950
+Underneath is where the rest of the browser lives, in collapsed categories.
+
+87
+00:07:28.950 --> 00:07:32.325
+Expression, if we wanted RNA abundance.
+
+88
+00:07:32.325 --> 00:07:35.875
+Comparative genomics, regulation, repeats.
+
+89
+00:07:35.875 --> 00:07:43.375
+Our question is about variants with clinical interpretations attached, so we open phenotypes, variants and literature.
+
+90
+00:07:43.975 --> 00:07:48.400
+We add the ClinVar track and keep only its short-variant subtrack.
+
+91
+00:07:48.400 --> 00:07:54.700
+The parent track is set to pack and the subtrack to dense, which collapses it into one compact row.
+
+92
+00:07:54.700 --> 00:08:03.725
+That is what we want — a single row of variant marks sitting directly under the transcript, so you can look straight up from a mark and see what it lands on.
+
+93
+00:08:04.325 --> 00:08:07.875
+Before asking what a variant does, ask where it is.
+
+94
+00:08:07.875 --> 00:08:12.900
+Compare each mark in the ClinVar row with the transcript directly above it.
+
+95
+00:08:12.900 --> 00:08:16.425
+The first arrow points at a mark over the thin line.
+
+96
+00:08:16.425 --> 00:08:18.525
+That is the intron.
+
+97
+00:08:18.525 --> 00:08:21.675
+The second points at one over a thick block.
+
+98
+00:08:21.675 --> 00:08:25.075
+That is coding, where a change can alter a codon.
+
+99
+00:08:25.075 --> 00:08:28.100
+The coding one is easy to reason about.
+
+100
+00:08:28.100 --> 00:08:34.250
+So what could the intronic one possibly do, given that the intron is cut out of the RNA anyway?
+
+101
+00:08:34.850 --> 00:08:37.275
+Take the coding one first.
+
+102
+00:08:37.275 --> 00:08:41.175
+Zoomed to individual bases, an A becomes a T.
+
+103
+00:08:41.175 --> 00:08:47.400
+GAG becomes GTG, and glutamate at position seven of beta-globin becomes valine.
+
+104
+00:08:47.400 --> 00:08:51.500
+Haemoglobin carrying that beta-globin is haemoglobin S.
+
+105
+00:08:51.500 --> 00:08:57.100
+Now the intronic one — twenty-one bases before the start of exon two, a G becoming an A.
+
+106
+00:08:57.100 --> 00:09:00.850
+That creates a new site the cell can use when it splices.
+
+107
+00:09:00.850 --> 00:09:09.925
+And when the cell uses it, the last nineteen bases of the first intron stay in the mature messenger RNA, bringing a premature stop codon with them.
+
+108
+00:09:09.925 --> 00:09:16.900
+Some transcripts from that copy still splice normally, so the result is less working beta-globin rather than none.
+
+109
+00:09:16.900 --> 00:09:24.050
+Which answers the question: a change inside an intron can matter a great deal, by changing where the intron ends.
+
+110
+00:09:24.650 --> 00:09:26.875
+The browser told us where.
+
+111
+00:09:26.875 --> 00:09:30.350
+It does not tell us how any of that was established.
+
+112
+00:09:30.350 --> 00:09:32.925
+For that you follow the link back.
+
+113
+00:09:32.925 --> 00:09:40.450
+Opening the intronic variant's details at UCSC gives an accession, and the accession leads to the ClinVar record.
+
+114
+00:09:40.450 --> 00:09:47.300
+There you get the exact change, the condition it was assessed against, the individual submissions, and the papers cited.
+
+115
+00:09:47.300 --> 00:09:54.250
+In this case somebody looked at the RNA directly and found the extra intronic sequence we have just been discussing.
+
+116
+00:09:54.250 --> 00:09:57.175
+That is the habit worth taking away.
+
+117
+00:09:57.175 --> 00:10:01.725
+The browser is the map; the record underneath it is the evidence.
+
+118
+00:10:01.725 --> 00:10:04.775
+Now the same region in a different browser.
+
+119
+00:10:05.375 --> 00:10:12.700
+Ensembl organises the same kinds of information differently, and it is worth being able to find your bearings in both.
+
+120
+00:10:12.700 --> 00:10:16.600
+Top label: the assembly, GRCh38 again.
+
+121
+00:10:16.600 --> 00:10:20.825
+Then the coordinates, the stretch of chromosome eleven on screen.
+
+122
+00:10:20.825 --> 00:10:29.700
+Then HBB itself — blocks for exons, lines for introns, and small chevrons pointing left, because the gene is on the reverse strand.
+
+123
+00:10:29.700 --> 00:10:34.600
+Below it the non-coding RNA, pointing the other way, on the other strand.
+
+124
+00:10:34.600 --> 00:10:37.550
+And a possible transcript at the bottom.
+
+125
+00:10:37.550 --> 00:10:41.025
+Everything we learned to read at UCSC is here.
+
+126
+00:10:41.025 --> 00:10:43.550
+Only the layout has changed.
+
+127
+00:10:44.150 --> 00:10:52.475
+Ensembl's Feature Explorer puts the download options in one place, and it makes the point of the last ten minutes better than anything else could.
+
+128
+00:10:52.475 --> 00:10:57.625
+The menu has two columns, one for the gene and one for the selected transcript.
+
+129
+00:10:57.625 --> 00:11:04.750
+Check which column you are in before you click, because both of them offer genomic sequence and they do not mean the same thing.
+
+130
+00:11:04.750 --> 00:11:09.950
+The whole annotated gene is three thousand nine hundred and thirty-two bases.
+
+131
+00:11:09.950 --> 00:11:14.600
+The genomic region of this one transcript is sixteen hundred and eight.
+
+132
+00:11:14.600 --> 00:11:21.225
+Its exons are a hundred and forty-two, two hundred and twenty-three, and two hundred and sixty-three bases.
+
+133
+00:11:21.225 --> 00:11:24.500
+Spliced together, six hundred and twenty-eight.
+
+134
+00:11:24.500 --> 00:11:27.800
+Coding sequence, four hundred and forty-four.
+
+135
+00:11:27.800 --> 00:11:31.700
+Protein, a hundred and forty-seven amino acids.
+
+136
+00:11:31.700 --> 00:11:39.125
+Six different answers to "send me the HBB sequence", every one of them correct, all from a single gene record.
+
+137
+00:11:39.125 --> 00:11:41.575
+So say which one you want.
+

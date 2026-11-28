@@ -1,0 +1,886 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.475
+Block three.
+
+2
+00:00:01.475 --> 00:00:05.675
+From single chains to interactions, and generative models.
+
+3
+00:00:05.675 --> 00:00:12.700
+On the page, this block is the sections "From single chains to interactions" and "Generative structure modelling".
+
+4
+00:00:12.700 --> 00:00:14.325
+Three things.
+
+5
+00:00:14.325 --> 00:00:22.425
+Complexes: proteins do not work alone, and predicting how two chains fit together is a harder problem with its own failure modes.
+
+6
+00:00:22.425 --> 00:00:26.350
+Then diffusion, which is how generative models work.
+
+7
+00:00:26.350 --> 00:00:30.250
+And then design: making proteins that do not exist.
+
+8
+00:00:30.250 --> 00:00:38.050
+And a question running underneath all of it, which I will return to at the end: when a model tells you something, what have you actually learned?
+
+9
+00:00:38.650 --> 00:00:44.200
+Proteins work in complexes, so predicting a single chain is only half the job.
+
+10
+00:00:44.200 --> 00:00:47.625
+The coevolution argument extends naturally.
+
+11
+00:00:47.625 --> 00:00:57.925
+If two proteins interact, residues at their interface are under the same kind of pressure as residues in a core: a change on one side has to be accommodated on the other.
+
+12
+00:00:57.925 --> 00:01:03.525
+So interfaces coevolve too, and the signal should be visible across the two families.
+
+13
+00:01:03.525 --> 00:01:07.050
+There is a complication, and it is the hard part.
+
+14
+00:01:07.050 --> 00:01:13.375
+For a single chain, the alignment is straightforward: all these sequences are versions of this protein.
+
+15
+00:01:13.375 --> 00:01:21.475
+For two proteins you need to know which sequence in family A interacts with which sequence in family B, across all the organisms.
+
+16
+00:01:21.475 --> 00:01:25.525
+Pair them wrongly and the coevolution signal is destroyed.
+
+17
+00:01:25.525 --> 00:01:33.475
+In bacteria you can often use the fact that interacting genes sit next to each other in the genome; in eukaryotes it is harder.
+
+18
+00:01:33.475 --> 00:01:35.350
+Two approaches.
+
+19
+00:01:35.350 --> 00:01:45.375
+FoldDock showed that AlphaFold2, trained only on single chains, can predict complexes if you simply join the chains together with a gap and feed in paired alignments.
+
+20
+00:01:45.375 --> 00:01:50.550
+That it works at all is interesting: the network had never been shown a complex.
+
+21
+00:01:50.550 --> 00:01:54.575
+And AlphaFold-Multimer, which was retrained for the job.
+
+22
+00:01:55.175 --> 00:02:02.350
+And complexes need their own confidence scores, because the single-chain ones do not answer the question you care about.
+
+23
+00:02:02.350 --> 00:02:16.825
+From the model itself: ipTM, the interface predicted TM-score, which AlphaFold-Multimer reports; and pDockQ, used by FoldDock, which is computed from the pLDDT at the interface and the number of contacts across it.
+
+24
+00:02:16.825 --> 00:02:26.300
+Against a known true structure: DockQ, running from nought to one, which is the standard measure of how well a predicted complex matches an experimental one.
+
+25
+00:02:26.300 --> 00:02:34.200
+And the point that connects to the previous block: each chain can be perfectly predicted while their placement relative to each other is wrong.
+
+26
+00:02:34.200 --> 00:02:40.275
+That is precisely the PAE picture again, now between chains rather than between domains.
+
+27
+00:02:40.275 --> 00:02:50.050
+So when you assess a complex, look at the PAE block between the two chains, not at their individual pLDDTs, which may both be excellent and irrelevant.
+
+28
+00:02:50.650 --> 00:02:55.625
+This is one of the most important slides in the session, and it is a short one.
+
+29
+00:02:55.625 --> 00:03:00.925
+A plausible predicted complex is not evidence that two proteins interact.
+
+30
+00:03:00.925 --> 00:03:03.425
+Think about what the model does.
+
+31
+00:03:03.425 --> 00:03:06.950
+You give it two chains and ask it to put them together.
+
+32
+00:03:06.950 --> 00:03:08.975
+It puts them together.
+
+33
+00:03:08.975 --> 00:03:20.175
+It is not asked, and does not answer, whether these two proteins are ever in the same place at the same time in a cell, or whether that interaction happens under any physiological condition.
+
+34
+00:03:20.175 --> 00:03:25.425
+So a structure predictor can suggest how two supplied molecules could interact.
+
+35
+00:03:25.425 --> 00:03:28.300
+It cannot establish whether they do.
+
+36
+00:03:28.300 --> 00:03:31.800
+Combined with other evidence, it becomes powerful.
+
+37
+00:03:31.800 --> 00:03:47.250
+The example on the slide is a good one: all-against-all modelling of fourteen fertilisation proteins pointed towards a pentameric complex of sperm IZUMO1, SPACA6 and TMEM81 with egg JUNO and CD9.
+
+38
+00:03:47.250 --> 00:03:53.725
+That is a real hypothesis about a real process, generated computationally and then pursued.
+
+39
+00:03:53.725 --> 00:03:57.325
+But the structure was the hypothesis, not the result.
+
+40
+00:03:57.925 --> 00:04:03.925
+Now a failure mode that is specific to these tools, and which I think is under-appreciated.
+
+41
+00:04:03.925 --> 00:04:10.475
+Run a complex prediction five times with different random seeds and you get five different answers.
+
+42
+00:04:10.475 --> 00:04:14.550
+So the question becomes: can you tell which of them is right?
+
+43
+00:04:14.550 --> 00:04:17.600
+Here is the experiment, from the notebook.
+
+44
+00:04:17.600 --> 00:04:20.100
+Five seeds per complex.
+
+45
+00:04:20.100 --> 00:04:29.400
+For every complex tested, the seed with the highest ipTM is a good model, with DockQ between nought point six one and nought point eight five.
+
+46
+00:04:29.400 --> 00:04:31.725
+That sounds encouraging.
+
+47
+00:04:31.725 --> 00:04:38.600
+But: for the antibody D one point three, three of the five seeds put the antibody in completely the wrong place.
+
+48
+00:04:38.600 --> 00:04:48.900
+And worse, correct models of a Fab bound to MHC class one score ipTM nought point seven three, while wrong D one point three models score nought point seven eight.
+
+49
+00:04:48.900 --> 00:04:51.925
+A higher confidence on a worse answer.
+
+50
+00:04:51.925 --> 00:04:57.800
+So no single ipTM threshold separates right from wrong across different complexes.
+
+51
+00:04:57.800 --> 00:05:11.225
+And the same thing at larger scale: on a hundred and ten antibody-antigen complexes that were not in training, sampling two hundred models raised the DockQ of the best model from below nought point three to above nought point five.
+
+52
+00:05:11.225 --> 00:05:13.650
+The good answer is in there.
+
+53
+00:05:13.650 --> 00:05:17.000
+But the confidence score often cannot pick it out.
+
+54
+00:05:17.000 --> 00:05:23.300
+So sampling quality and ranking quality are two different things, and the field is better at the first.
+
+55
+00:05:23.300 --> 00:05:28.400
+Practically: generate many models rather than one, and be sceptical of the ranking.
+
+56
+00:05:28.400 --> 00:05:46.400
+Two refinements worth knowing: trimming a construct to just the interacting domains raises ipTM for the same interface, which tells you the score is partly about the rest of the protein; and ipSAE, from twenty twenty-five, counts only well-placed pairs rather than averaging over everything.
+
+57
+00:05:47.000 --> 00:05:57.025
+This slide is a rough guide to when a complex prediction is worth believing, and I want to be clear that it is a heuristic from this lecture, not an established classification.
+
+58
+00:05:57.025 --> 00:06:00.375
+Treat it as a way of thinking rather than a rule.
+
+59
+00:06:00.375 --> 00:06:10.025
+Broadly, confidence is well-founded when the interaction is evolutionarily conserved, both partners have deep alignments, and the interface is large and rigid.
+
+60
+00:06:10.025 --> 00:06:24.175
+It is least reliable when the interface is small, when one partner is flexible or disordered, when the alignment is shallow, and when there are competing partners, so that the model is asked which of several plausible arrangements is the real one.
+
+61
+00:06:24.175 --> 00:06:31.550
+That last case is worth dwelling on: proteasome paralogs, or IZUMO1 with its several competing partners.
+
+62
+00:06:31.550 --> 00:06:36.475
+The model will produce one answer, confidently, where biology has several.
+
+63
+00:06:36.475 --> 00:06:45.925
+In the lab each group predicts one complex from each region on the AlphaFold Server and checks whether the confidence actually tracks how hard the problem is.
+
+64
+00:06:45.925 --> 00:06:51.850
+The targets are one S H W, five F four E, eight T Q seven and one Y C R.
+
+65
+00:06:52.450 --> 00:06:57.300
+Now we change direction: from predicting structures to generating them.
+
+66
+00:06:57.300 --> 00:07:03.400
+And the mechanism is diffusion, which is also what is behind the image generators you have seen.
+
+67
+00:07:03.400 --> 00:07:07.025
+Three steps, and only the middle one involves learning.
+
+68
+00:07:07.025 --> 00:07:09.725
+Step one, the forward process.
+
+69
+00:07:09.725 --> 00:07:13.975
+Take a real example and add a small amount of Gaussian noise.
+
+70
+00:07:13.975 --> 00:07:16.150
+Then add a little more.
+
+71
+00:07:16.150 --> 00:07:20.350
+Then more again, for many steps, until nothing is left but noise.
+
+72
+00:07:20.350 --> 00:07:25.525
+There is no learning here; it is just a recipe for destroying data gradually.
+
+73
+00:07:25.525 --> 00:07:27.550
+Step two, training.
+
+74
+00:07:27.550 --> 00:07:34.600
+Show the network a noisy example and tell it which step it came from, and ask it to predict the noise that was added.
+
+75
+00:07:34.600 --> 00:07:43.050
+That is an ordinary supervised learning problem, with the Session nine training loop, and the labels are free because you added the noise yourself.
+
+76
+00:07:43.050 --> 00:07:45.425
+Step three, generation.
+
+77
+00:07:45.425 --> 00:07:47.675
+Start from pure noise.
+
+78
+00:07:47.675 --> 00:07:52.925
+Ask the network what noise it sees, remove a little of it, and repeat, many times.
+
+79
+00:07:52.925 --> 00:07:59.925
+What is left at the end is a new sample that looks like the training data but is not any particular example of it.
+
+80
+00:07:59.925 --> 00:08:07.550
+The trick, and the reason this works better than trying to generate in one shot, is that each step is a small, easy correction.
+
+81
+00:08:07.550 --> 00:08:16.125
+You are never asking the model to produce a whole protein out of nothing; you are asking it to make something slightly less noisy, hundreds of times.
+
+82
+00:08:16.125 --> 00:08:28.750
+Two relatives worth naming: flow matching, which learns a smooth path from noise to data and needs fewer steps, and the variational autoencoder, which samples from a learned low-dimensional space instead.
+
+83
+00:08:29.350 --> 00:08:34.825
+The notebook does this on the smallest possible example, so that you can see the whole thing.
+
+84
+00:08:34.825 --> 00:08:38.400
+The data is a thousand points arranged in a ring.
+
+85
+00:08:38.400 --> 00:08:45.000
+Train a small network to predict the noise, then start from pure noise and run a hundred denoising steps.
+
+86
+00:08:45.000 --> 00:08:46.925
+Out comes a ring.
+
+87
+00:08:46.925 --> 00:08:51.550
+Not the same thousand points; a new set of points with the same shape.
+
+88
+00:08:51.550 --> 00:09:02.375
+And the training behaves as you would expect from Session nine: the noise-prediction error falls from nought point nine three nine at step one to nought point six three eight by step two thousand.
+
+89
+00:09:02.375 --> 00:09:07.175
+The reason I like this toy is that it makes the claim concrete and modest.
+
+90
+00:09:07.175 --> 00:09:13.025
+The model has learned the shape of the data distribution, well enough to draw new samples from it.
+
+91
+00:09:13.025 --> 00:09:19.075
+Nothing more mystical than that is happening when the same procedure runs on protein coordinates.
+
+92
+00:09:19.075 --> 00:09:28.025
+And the third discussion problem asks the right question about it: has such a model learned the distribution, or has it memorised its training examples?
+
+93
+00:09:28.025 --> 00:09:34.775
+That question matters a great deal for protein design, where you want to know whether a generated protein is new.
+
+94
+00:09:35.375 --> 00:09:38.950
+Briefly, AlphaFold3, and what is different.
+
+95
+00:09:38.950 --> 00:09:48.000
+It predicts all atoms at once, for any molecule made of atoms: proteins, nucleic acids, small molecules, ions, modified residues.
+
+96
+00:09:48.000 --> 00:09:53.275
+So complexes with DNA or a drug are in scope, which they were not before.
+
+97
+00:09:53.275 --> 00:10:00.275
+And it generates coordinates with a diffusion module, rather than the geometric structure module of AlphaFold2.
+
+98
+00:10:00.275 --> 00:10:08.475
+That brings a cost, and it is the one from two slides ago: sampling means several different answers and the ranking problem comes back.
+
+99
+00:10:08.475 --> 00:10:22.425
+It also means the model can hallucinate plausible structure in regions that are actually disordered, because a generative model's job is to produce something that looks like the training data, and disordered regions do not look like anything.
+
+100
+00:10:22.425 --> 00:10:35.250
+And the honest assessment from the blind test: in CASP sixteen, AlphaFold3 was slightly better for protein complexes, and that difference disappeared when AlphaFold2 was given massive sampling.
+
+101
+00:10:35.250 --> 00:10:39.600
+So it is an advance in scope more than a step change in accuracy.
+
+102
+00:10:40.200 --> 00:10:45.425
+A slide about how we know any of this, which I think belongs in a course like this.
+
+103
+00:10:45.425 --> 00:10:49.100
+AlphaFold3 was published without training code.
+
+104
+00:10:49.100 --> 00:10:53.950
+Open reproductions followed, and that is how the community checks things.
+
+105
+00:10:53.950 --> 00:10:56.450
+Compare two kinds of claim.
+
+106
+00:10:56.450 --> 00:11:12.000
+ESMFold2 is a frozen six-billion-parameter language model plus an AlphaFold3-style diffusion module, about seven billion parameters, released under the MIT licence: you can run it, test it on your own data, and find out where it fails.
+
+107
+00:11:12.000 --> 00:11:15.400
+OpenDDE is released under Apache.
+
+108
+00:11:15.400 --> 00:11:17.950
+These are results you can check.
+
+109
+00:11:17.950 --> 00:11:32.000
+Then there are companies reporting large gains, with their biggest improvements claimed exactly where AlphaFold3 is weakest, on examples unlike the training set, with no released code, no model and no independent evaluation.
+
+110
+00:11:32.000 --> 00:11:34.600
+That is a claim, not a result.
+
+111
+00:11:34.600 --> 00:11:36.750
+It may well be true.
+
+112
+00:11:36.750 --> 00:11:41.500
+You cannot know, and neither can they, in the sense that matters scientifically.
+
+113
+00:11:41.500 --> 00:11:48.700
+That distinction is not cynicism; it is the difference between a field that can correct itself and one that cannot.
+
+114
+00:11:48.700 --> 00:11:54.875
+And it applies to your own work: a method nobody else can run is a method nobody else can check.
+
+115
+00:11:54.875 --> 00:12:04.950
+One more honest note, from our own group's work: for RNA, current methods largely recognise recurring motifs rather than generalising to new RNA folds.
+
+116
+00:12:04.950 --> 00:12:08.500
+The protein success has not simply carried over.
+
+117
+00:12:09.100 --> 00:12:16.750
+Now design, which is the other half of the twenty twenty-four Nobel Prize, and the pipeline is three steps plus an experiment.
+
+118
+00:12:16.750 --> 00:12:18.825
+Generate a backbone.
+
+119
+00:12:18.825 --> 00:12:21.725
+Choose a sequence that will fold into it.
+
+120
+00:12:21.725 --> 00:12:24.500
+Check computationally that it does.
+
+121
+00:12:24.500 --> 00:12:27.275
+Then test it in the laboratory.
+
+122
+00:12:27.275 --> 00:12:33.375
+And I want to flag the third step before we get there, because it is where most misunderstandings live.
+
+123
+00:12:33.375 --> 00:12:42.650
+Refolding your designed sequence with AlphaFold and finding that it gives back the backbone you started from is a consistency check between two models.
+
+124
+00:12:42.650 --> 00:12:44.875
+It is not validation.
+
+125
+00:12:44.875 --> 00:12:49.700
+Both models can be wrong in the same direction, and they share training data.
+
+126
+00:12:49.700 --> 00:12:54.225
+The validation is the last step, and it is still experimental.
+
+127
+00:12:54.225 --> 00:13:09.200
+Hundreds of RFdiffusion designs have been tested in the laboratory, and the one I would point at is a binder against influenza haemagglutinin whose cryo-electron microscopy structure was, in the authors' words, nearly identical to the design model.
+
+128
+00:13:09.200 --> 00:13:12.550
+That is what a validated design looks like.
+
+129
+00:13:13.150 --> 00:13:19.150
+Before the design tools themselves, a conceptual problem that the whole field is grappling with.
+
+130
+00:13:19.150 --> 00:13:21.925
+A protein is not one structure.
+
+131
+00:13:21.925 --> 00:13:23.650
+Loops move.
+
+132
+00:13:23.650 --> 00:13:25.525
+Domains swing.
+
+133
+00:13:25.525 --> 00:13:36.125
+Many proteins switch between distinct states: haemoglobin's T and R states from Session six are the textbook case, and the whole point of haemoglobin is that it changes shape.
+
+134
+00:13:36.125 --> 00:13:43.750
+AlphaFold gives you one structure, and says nothing about which state it is, or how likely that state is relative to others.
+
+135
+00:13:43.750 --> 00:13:51.425
+Molecular dynamics is honest about this, since it produces a trajectory, but it is far too slow, as Block one said.
+
+136
+00:13:51.425 --> 00:13:55.150
+So three attempts to get an ensemble out of a predictor.
+
+137
+00:13:55.150 --> 00:14:08.875
+AFsample samples the same network very hard: it leaves dropout on at prediction time, which is deliberately the opposite of Session nine's rule, and generates around six thousand models per target instead of twenty-five.
+
+138
+00:14:08.875 --> 00:14:12.675
+It topped CASP fifteen for protein assemblies.
+
+139
+00:14:12.675 --> 00:14:20.950
+AlphaFlow retrains AlphaFold as a generative model with flow matching, so each run draws a different structure from a distribution.
+
+140
+00:14:20.950 --> 00:14:36.575
+And BioEmu is a learned shortcut for molecular dynamics, trained on more than two hundred milliseconds of simulation plus stability data, producing thousands of structures per hour on one GPU and free energies to within about one kilocalorie per mole.
+
+141
+00:14:36.575 --> 00:14:43.550
+And the caution, which I think is the right note: a set of models is only an ensemble if the proportions are right.
+
+142
+00:14:43.550 --> 00:14:51.300
+If a protein spends ninety per cent of its time in state A, a good ensemble should give you state A ninety per cent of the time.
+
+143
+00:14:51.300 --> 00:14:55.100
+Checking that is much harder than checking a single structure.
+
+144
+00:14:55.100 --> 00:14:58.675
+Variety is not the same as the right variety.
+
+145
+00:14:59.275 --> 00:15:03.225
+Step one of the pipeline: where does a new backbone come from?
+
+146
+00:15:03.225 --> 00:15:10.825
+RFdiffusion applies exactly the diffusion procedure we built on the ring, with protein coordinates instead of points.
+
+147
+00:15:10.825 --> 00:15:19.000
+Start from residues placed at random, and denoise repeatedly, using a fine-tuned RoseTTAFold to do the denoising.
+
+148
+00:15:19.000 --> 00:15:25.200
+Out comes a protein backbone that looks like a real fold and is not any particular existing one.
+
+149
+00:15:25.200 --> 00:15:28.800
+Unconditional generation is a curiosity.
+
+150
+00:15:28.800 --> 00:15:35.475
+What makes it useful is conditioning: holding part of the problem fixed while the rest is generated around it.
+
+151
+00:15:35.475 --> 00:15:41.175
+Hold a target protein's surface fixed, and generate a binder shaped to fit against it.
+
+152
+00:15:41.175 --> 00:15:51.625
+Or hold a functional motif fixed, say the three residues of an active site in their correct relative geometry, and build a stable scaffold around them that holds them in place.
+
+153
+00:15:51.625 --> 00:15:55.375
+That second one is a genuinely new capability.
+
+154
+00:15:55.375 --> 00:16:00.400
+The classical approach was to search known folds for one that could host your motif.
+
+155
+00:16:00.400 --> 00:16:02.950
+This builds a fold to order.
+
+156
+00:16:03.550 --> 00:16:07.625
+Step two, and it is the inverse of everything else in this course.
+
+157
+00:16:07.625 --> 00:16:11.050
+Normally: sequence given, structure unknown.
+
+158
+00:16:11.050 --> 00:16:14.250
+Here: structure given, sequence unknown.
+
+159
+00:16:14.250 --> 00:16:18.100
+Which amino acid sequence will fold into this backbone?
+
+160
+00:16:18.100 --> 00:16:23.375
+That is called inverse folding, and it turns out to be much easier than folding.
+
+161
+00:16:23.375 --> 00:16:35.275
+ProteinMPNN treats the backbone as a graph: each residue is a node, connected to its nearest neighbours in space rather than in sequence, which is the right notion of neighbour for this problem.
+
+162
+00:16:35.275 --> 00:16:39.400
+An encoder lets each residue read its structural environment.
+
+163
+00:16:39.400 --> 00:16:49.325
+Then a decoder chooses amino acids one at a time, conditioned on the structure and on the choices already made, exactly as a language model writes text.
+
+164
+00:16:49.325 --> 00:16:57.400
+The headline number: fifty-two point four per cent native sequence recovery, against thirty-two point nine per cent for Rosetta.
+
+165
+00:16:57.400 --> 00:17:03.475
+That is, when given a real backbone, it proposes the real amino acid more than half the time.
+
+166
+00:17:03.475 --> 00:17:10.950
+Note that recovering the native sequence is a proxy: a different sequence may fold just as well, and sometimes better.
+
+167
+00:17:10.950 --> 00:17:19.050
+And it has a practical virtue that made it widely used immediately: it rescued designs that had previously failed in the laboratory.
+
+168
+00:17:19.050 --> 00:17:24.725
+The same backbones, given better sequences, became proteins that actually folded.
+
+169
+00:17:24.725 --> 00:17:36.450
+The randomness comes from sampling each amino acid from its predicted probabilities with a temperature, so the same backbone gives you different sequences on each run, and you can make many and test several.
+
+170
+00:17:37.050 --> 00:17:42.450
+And now a trick I find genuinely elegant, which closes a loop with Session nine.
+
+171
+00:17:42.450 --> 00:17:45.275
+AlphaFold2 is differentiable.
+
+172
+00:17:45.275 --> 00:17:48.325
+Which means you can backpropagate through it.
+
+173
+00:17:48.325 --> 00:17:52.950
+Session nine used that to change the weights while the input stayed fixed.
+
+174
+00:17:52.950 --> 00:17:55.475
+BindCraft does the opposite.
+
+175
+00:17:55.475 --> 00:17:58.425
+Freeze the weights, and change the input.
+
+176
+00:17:58.425 --> 00:18:10.250
+Concretely: represent the binder's sequence as undecided, a weight for each amino acid at each position, and define the score as AlphaFold's confidence that this binder binds the target.
+
+177
+00:18:10.250 --> 00:18:16.975
+Then run gradient descent on the sequence itself, until AlphaFold is as confident as it can be made.
+
+178
+00:18:16.975 --> 00:18:20.350
+You are optimising the question rather than the model.
+
+179
+00:18:20.350 --> 00:18:30.300
+The idea started as hallucination, around twenty twenty-one: optimise a sequence until a predictor is confident it folds into something, and see what you get.
+
+180
+00:18:30.300 --> 00:18:45.300
+BindCraft applies it to binders, and reports experimental success rates between ten and a hundred per cent, with no high-throughput screening, against targets including cell-surface receptors, allergens, de novo designed proteins and Cas9.
+
+181
+00:18:45.300 --> 00:18:50.525
+Designed binders reduced IgE binding to birch allergen in patient samples.
+
+182
+00:18:50.525 --> 00:18:57.875
+And the warning that applies to all three of these tools, and which I want to state clearly: they optimise against a predictor.
+
+183
+00:18:57.875 --> 00:19:03.250
+A design that makes AlphaFold confident is a hypothesis about a protein.
+
+184
+00:19:03.250 --> 00:19:05.450
+It is not a protein.
+
+185
+00:19:05.450 --> 00:19:09.500
+Every single one of these papers ends in a laboratory.
+
+186
+00:19:10.100 --> 00:19:17.700
+Where this stands now, with the results and the claims kept apart, because that distinction is the last thing I want to teach you.
+
+187
+00:19:17.700 --> 00:19:18.975
+Results.
+
+188
+00:19:18.975 --> 00:19:24.500
+The pipeline works: designed binders bind, in the laboratory, confirmed structurally.
+
+189
+00:19:24.500 --> 00:19:40.800
+Bennett and colleagues in twenty twenty-six designed antibodies, including nanobodies and single-chain and full antibodies, against chosen epitopes, and cryo-electron microscopy confirmed the designed binding pose and the loop conformations at atomic accuracy.
+
+190
+00:19:40.800 --> 00:19:46.475
+Designing an antibody against a chosen epitope was, very recently, not possible.
+
+191
+00:19:46.475 --> 00:19:56.650
+And the honest part of that same paper: the first designs bound only modestly, and affinity maturation in the laboratory was needed to reach nanomolar binders.
+
+192
+00:19:56.650 --> 00:20:00.325
+The experiment is still inside the loop, not after it.
+
+193
+00:20:00.325 --> 00:20:13.475
+Boltz-2 predicts binding affinity and approaches physics-based free-energy perturbation on held-out benchmarks while being at least a thousand times faster, which, if it holds up, matters a great deal for drug discovery.
+
+194
+00:20:13.475 --> 00:20:14.775
+Claims.
+
+195
+00:20:14.775 --> 00:20:21.150
+Drug-design engines reporting large gains with no code, no model and no independent test.
+
+196
+00:20:21.150 --> 00:20:25.025
+Treat them as claims until someone outside can check.
+
+197
+00:20:25.025 --> 00:20:29.225
+And then the question on the slide: what is left for experiments?
+
+198
+00:20:29.225 --> 00:20:31.950
+My answer, and you may disagree.
+
+199
+00:20:31.950 --> 00:20:36.375
+Experiments decide whether a design works, which no model can.
+
+200
+00:20:36.375 --> 00:20:42.950
+They measure what models cannot: affinity in a living cell, toxicity, whether anything happens at all.
+
+201
+00:20:42.950 --> 00:20:49.325
+And they produce the data that the next model is trained on, which means the loop runs in both directions.
+
+202
+00:20:49.325 --> 00:20:55.200
+A field that stopped doing experiments would stop improving its models within one generation.
+
+203
+00:20:55.800 --> 00:20:58.300
+The last slide of the course.
+
+204
+00:20:58.300 --> 00:21:06.725
+Modern structure prediction combines alignment and evolution with neural networks, attention, pair representations and geometry.
+
+205
+00:21:06.725 --> 00:21:10.350
+Every piece of that sentence is a session you have done.
+
+206
+00:21:10.350 --> 00:21:16.725
+And the line I would like you to leave with: a model is a hypothesis with a confidence estimate attached.
+
+207
+00:21:16.725 --> 00:21:19.125
+It is not an experiment.
+
+208
+00:21:19.125 --> 00:21:31.600
+That holds for AlphaFold's pLDDT, for a designed binder before anyone has expressed it, for a complex prediction that has not been tested, and for the predictor you built in your capstone project.
+
+209
+00:21:31.600 --> 00:21:36.800
+It is not a reason for scepticism about these methods, which are extraordinary.
+
+210
+00:21:36.800 --> 00:21:42.275
+It is the thing that lets you use them well: knowing what you have, and knowing what you do not.
+
+211
+00:21:42.875 --> 00:21:45.325
+That is the end of the lectures.
+
+212
+00:21:45.325 --> 00:21:54.900
+What remains is your capstone project: build a secondary-structure predictor, choose your input, your model and your test set, and report honestly what you got.
+
+213
+00:21:54.900 --> 00:22:05.300
+Everything in this course is relevant to it, and Session seven's lesson is the one that will decide your result: the representation of the input matters as much as the model.
+
+214
+00:22:05.300 --> 00:22:09.300
+Choose a test set with no homologs of your training data.
+
+215
+00:22:09.300 --> 00:22:12.250
+Compare against a simple baseline.
+
+216
+00:22:12.250 --> 00:22:14.625
+Report more than accuracy.
+
+217
+00:22:14.625 --> 00:22:19.200
+And tell us what did not work, which is usually the more interesting half.
+
+218
+00:22:19.200 --> 00:22:28.050
+The Session twelve page has all of this written out, and its "Check your understanding" section at the end is the fastest way to find out whether it stuck.
+
+219
+00:22:28.050 --> 00:22:32.100
+The course notebook is linked in the box under the page's title.
+
+220
+00:22:32.100 --> 00:22:34.225
+Thank you for this course.
+
+221
+00:22:34.225 --> 00:22:36.225
+It has been a pleasure.
+

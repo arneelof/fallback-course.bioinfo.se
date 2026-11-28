@@ -1,0 +1,880 @@
+1
+00:00:00,000 --> 00:00:01,400
+Block two.
+
+2
+00:00:01,400 --> 00:00:04,650
+Can we learn from sequences without labels?
+
+3
+00:00:04,650 --> 00:00:09,925
+On the page, this block is the section "Can we learn from sequences without labels?".
+
+4
+00:00:09,925 --> 00:00:17,025
+This block answers the session's second question, and it contains the architecture that replaced everything in Block one.
+
+5
+00:00:17,025 --> 00:00:30,050
+We will start from the economics of labels, meet language models through one you have used yourself, build self-attention from scratch, assemble the Transformer, and then look inside a protein language model to see what it knows.
+
+6
+00:00:30,650 --> 00:00:36,000
+Here is the economic fact that drives the whole of modern machine learning in biology.
+
+7
+00:00:36,000 --> 00:00:38,375
+Labels are expensive.
+
+8
+00:00:38,375 --> 00:00:44,750
+Every experimentally supported signal peptide in our dataset is somebody doing an experiment.
+
+9
+00:00:44,750 --> 00:00:48,575
+There are one thousand nine hundred and thirty-six of them.
+
+10
+00:00:48,575 --> 00:00:55,025
+That is a career's worth of work across a field, and it is not going to increase by a factor of a thousand.
+
+11
+00:00:55,025 --> 00:00:57,900
+Sequences are abundant and free.
+
+12
+00:00:57,900 --> 00:01:02,050
+UniProt, from Session three, holds hundreds of millions.
+
+13
+00:01:02,050 --> 00:01:09,150
+They arrive by the million from sequencing projects that were done for other reasons, and nobody has to label anything.
+
+14
+00:01:09,150 --> 00:01:17,050
+So the question that defines this block is: can a model learn useful biology from the sequences alone, with no labels at all?
+
+15
+00:01:17,050 --> 00:01:25,250
+And the answer, which would have sounded implausible fifteen years ago, is yes, and the mechanism is almost embarrassingly simple.
+
+16
+00:01:25,250 --> 00:01:29,175
+You ask the model to predict missing or future residues.
+
+17
+00:01:29,175 --> 00:01:34,725
+The sequence provides its own training signal, because the answer is the part you hid.
+
+18
+00:01:34,725 --> 00:01:37,725
+That is called self-supervised learning.
+
+19
+00:01:38,325 --> 00:01:44,075
+Let me explain language models through one you have used, because you already have the intuition.
+
+20
+00:01:44,075 --> 00:01:47,300
+Your phone's keyboard suggests the next word.
+
+21
+00:01:47,300 --> 00:01:50,175
+ChatGPT writes paragraphs.
+
+22
+00:01:50,175 --> 00:01:57,250
+Both are doing the same thing: given everything so far, produce a probability for every possible next token.
+
+23
+00:01:57,250 --> 00:02:03,125
+To write, such a model predicts, picks a likely token, appends it to what it has, and repeats.
+
+24
+00:02:03,125 --> 00:02:06,275
+That loop is the whole of text generation.
+
+25
+00:02:06,275 --> 00:02:10,000
+The name GPT spells out exactly what it is.
+
+26
+00:02:10,000 --> 00:02:12,750
+Generative: it produces text.
+
+27
+00:02:12,750 --> 00:02:25,725
+Pre-trained: it first learns from enormous amounts of unlabelled text; GPT-3, in twenty twenty, had a hundred and seventy-five billion weights and was trained on something like three hundred billion tokens.
+
+28
+00:02:25,725 --> 00:02:28,875
+Transformer: the architecture of this block.
+
+29
+00:02:28,875 --> 00:02:36,200
+Now here is the part worth pausing on, because it explains why a trivial-sounding task produces something impressive.
+
+30
+00:02:36,200 --> 00:02:42,275
+To continue the sentence "the capital of Sweden is", the model must know a fact about the world.
+
+31
+00:02:42,275 --> 00:02:48,675
+To continue a sentence that began three paragraphs earlier, it must track what the paragraph is about.
+
+32
+00:02:48,675 --> 00:02:57,125
+Predicting the next token well is not a shallow skill: doing it excellently requires grammar, facts, and something that behaves like reasoning.
+
+33
+00:02:57,125 --> 00:03:00,550
+One clarification, since people conflate them.
+
+34
+00:03:00,550 --> 00:03:15,700
+ChatGPT, from November twenty twenty-two, is a GPT model that was then trained further on example conversations and on human ratings of its answers, so that it responds like an assistant instead of simply continuing your text.
+
+35
+00:03:15,700 --> 00:03:19,950
+The base model predicts; the extra training makes it answer.
+
+36
+00:03:19,950 --> 00:03:23,450
+And for proteins, everything carries straight over.
+
+37
+00:03:23,450 --> 00:03:26,125
+The tokens are amino acids.
+
+38
+00:03:26,125 --> 00:03:29,950
+The vocabulary is twenty instead of fifty thousand.
+
+39
+00:03:29,950 --> 00:03:32,400
+The data is UniProt.
+
+40
+00:03:32,400 --> 00:03:41,050
+And the claim is the same: to predict a hidden residue in the middle of a signal peptide, the model must learn that this region is hydrophobic.
+
+41
+00:03:41,050 --> 00:03:44,650
+The biology is forced on it by the prediction task.
+
+42
+00:03:45,250 --> 00:03:52,075
+There are two ways to set up that self-supervised task, and the difference decides what the model can do afterwards.
+
+43
+00:03:52,075 --> 00:03:55,525
+Autoregressive, which is the GPT style.
+
+44
+00:03:55,525 --> 00:03:58,825
+Predict the next token from the ones before it.
+
+45
+00:03:58,825 --> 00:04:01,700
+The model only ever sees the past.
+
+46
+00:04:01,700 --> 00:04:09,975
+That is a restriction, and it is also exactly what makes generation possible: you can run it forward, one token at a time, for ever.
+
+47
+00:04:09,975 --> 00:04:15,300
+Masked, which is the BERT style, and which ESM-2 uses for proteins.
+
+48
+00:04:15,300 --> 00:04:21,725
+Hide some of the tokens at random, and ask the model to predict them from everything around them, both sides.
+
+49
+00:04:21,725 --> 00:04:30,425
+The model sees the full context, which makes it better at understanding a sequence it is given, and means it cannot straightforwardly generate.
+
+50
+00:04:30,425 --> 00:04:37,475
+You have met this distinction already today, one block ago: the forward LSTM against the bidirectional one.
+
+51
+00:04:37,475 --> 00:04:40,075
+Same trade, different century.
+
+52
+00:04:40,075 --> 00:04:46,500
+And the thing that makes either worth doing: to predict well, a model has to learn what tends to go with what.
+
+53
+00:04:46,500 --> 00:04:56,825
+Those regularities end up stored in its internal vectors, which we call embeddings, and it turns out those vectors are useful for tasks the model was never trained on.
+
+54
+00:04:56,825 --> 00:04:59,875
+That is the entire payoff of this block.
+
+55
+00:05:00,475 --> 00:05:09,075
+Before the real thing, the notebook builds a tiny protein language model, and its result is worth seeing precisely because it is unimpressive.
+
+56
+00:05:09,075 --> 00:05:15,450
+We measure in bits per residue: how surprised the model is, on average, by the next amino acid.
+
+57
+00:05:15,450 --> 00:05:17,375
+Lower is better.
+
+58
+00:05:17,375 --> 00:05:25,000
+Guessing uniformly among twenty amino acids costs log to base two of twenty, which is four point three two two bits.
+
+59
+00:05:25,000 --> 00:05:34,725
+Knowing only the overall amino-acid composition, that is, knowing that leucine is common and tryptophan is rare, gets you to four point one six four bits.
+
+60
+00:05:34,725 --> 00:05:41,250
+And an LSTM that actually reads the previous residues: four point zero seven one bits.
+
+61
+00:05:41,250 --> 00:05:46,825
+So reading the sequence buys about a tenth of a bit over simply knowing which letters are common.
+
+62
+00:05:46,825 --> 00:05:53,650
+That is a small gain, and I show it to make a point: the idea of a language model is not magic in itself.
+
+63
+00:05:53,650 --> 00:05:57,775
+A small model on a small amount of data learns very little.
+
+64
+00:05:57,775 --> 00:06:03,025
+What turns this into something transformative is scale, and a better architecture.
+
+65
+00:06:03,025 --> 00:06:07,200
+The better architecture is attention, and it is the next slide.
+
+66
+00:06:07,800 --> 00:06:12,275
+Self-attention, which is the central mechanism of everything modern.
+
+67
+00:06:12,275 --> 00:06:15,225
+It is four steps, and each one is simple.
+
+68
+00:06:15,225 --> 00:06:18,425
+We are computing a new vector for residue i.
+
+69
+00:06:18,425 --> 00:06:24,275
+Step one: compare residue i with every residue j in the sequence, including itself.
+
+70
+00:06:24,275 --> 00:06:28,625
+Step two: that comparison gives each j a relevance score for i.
+
+71
+00:06:28,625 --> 00:06:34,175
+Step three: push those scores through a softmax, so they are all positive and sum to one.
+
+72
+00:06:34,175 --> 00:06:36,200
+Now they are weights.
+
+73
+00:06:36,200 --> 00:06:42,950
+Step four: update residue i to be a weighted average of the values of all the residues, using those weights.
+
+74
+00:06:42,950 --> 00:06:44,625
+That is it.
+
+75
+00:06:44,625 --> 00:06:51,975
+Each position looks at every other position, decides how relevant each one is, and mixes them together accordingly.
+
+76
+00:06:51,975 --> 00:06:55,325
+Think about what this gives you compared with Block one.
+
+77
+00:06:55,325 --> 00:07:05,325
+A recurrent network has to carry information from position ten to position two hundred by passing it along a hundred and ninety times, surviving each step.
+
+78
+00:07:05,325 --> 00:07:13,225
+Attention lets position two hundred look directly at position ten, in one operation, with nothing in between to degrade it.
+
+79
+00:07:13,225 --> 00:07:23,375
+The weights drawn on this slide are illustrative, but the notebook computes real ones for a toy sentence and checks that each row of the attention matrix sums to one point zero.
+
+80
+00:07:23,975 --> 00:07:28,125
+Now, how is the comparison in step one actually computed?
+
+81
+00:07:28,125 --> 00:07:34,350
+Through three learned transformations, and the names are worth getting straight because they are used everywhere.
+
+82
+00:07:34,350 --> 00:07:40,250
+Each position's vector is turned into three different vectors by three learned linear maps.
+
+83
+00:07:40,250 --> 00:07:42,875
+The query: what am I looking for?
+
+84
+00:07:42,875 --> 00:07:45,325
+The key: what do I have to offer?
+
+85
+00:07:45,325 --> 00:07:49,275
+The value: what do I actually contribute if I am selected?
+
+86
+00:07:49,275 --> 00:07:57,800
+The score of position j for position i is the match between i's query and j's key, computed as a dot product, which is Session one.
+
+87
+00:07:57,800 --> 00:08:01,625
+The analogy that makes it stick is a database lookup.
+
+88
+00:08:01,625 --> 00:08:03,650
+You come with a query.
+
+89
+00:08:03,650 --> 00:08:05,975
+Every entry has a key.
+
+90
+00:08:05,975 --> 00:08:16,850
+You compare your query with all the keys, and instead of taking the single best match, as a database would, you take a weighted blend of all the values in proportion to how well their keys matched.
+
+91
+00:08:16,850 --> 00:08:25,450
+Written for all positions at once, it is one line: softmax of Q K transpose divided by the square root of d k, all times V.
+
+92
+00:08:25,450 --> 00:08:34,000
+The division by the square root of the key dimension is housekeeping: without it the dot products grow with dimension and the softmax saturates.
+
+93
+00:08:34,000 --> 00:08:45,000
+In the notebook, for a six-token toy sentence, Q, K and V are each one by six by eight, and the attention matrix is six by six: every token against every token.
+
+94
+00:08:45,600 --> 00:08:50,650
+Three properties of attention, and then one warning that I care about a great deal.
+
+95
+00:08:50,650 --> 00:08:54,525
+First: each row of the attention matrix sums to one.
+
+96
+00:08:54,525 --> 00:09:02,675
+Every position distributes a fixed budget of attention across the sequence; it can concentrate it on one position or spread it thinly.
+
+97
+00:09:02,675 --> 00:09:05,650
+Second: any distance, in one step.
+
+98
+00:09:05,650 --> 00:09:14,825
+Position one and position five hundred are exactly as far apart as neighbours, which is the thing recurrent networks and convolutions cannot offer.
+
+99
+00:09:14,825 --> 00:09:18,275
+Third: all positions are computed in parallel.
+
+100
+00:09:18,275 --> 00:09:23,925
+A recurrent network must process position one before position two, by construction.
+
+101
+00:09:23,925 --> 00:09:31,550
+Attention does not, which is precisely why these models could be scaled up on GPUs, and therefore why they took over.
+
+102
+00:09:31,550 --> 00:09:35,500
+The architecture won partly because it suited the hardware.
+
+103
+00:09:35,500 --> 00:09:37,325
+Now the warning.
+
+104
+00:09:37,325 --> 00:09:47,300
+You will see papers, and talks, showing attention maps from protein language models with contacts marked on them, and the implication that the model has learned the structure.
+
+105
+00:09:47,300 --> 00:09:53,900
+A high attention weight means that position j contributed strongly when position i was updated.
+
+106
+00:09:53,900 --> 00:09:56,000
+That is all it means.
+
+107
+00:09:56,000 --> 00:10:02,350
+It is not proof of a three-dimensional contact, and it is not an explanation of the model's behaviour.
+
+108
+00:10:02,350 --> 00:10:07,025
+Attention maps are suggestive and they are not evidence by themselves.
+
+109
+00:10:07,025 --> 00:10:14,550
+The second discussion problem asks you to measure how much structural signal they actually carry, which is the right way to settle it.
+
+110
+00:10:15,150 --> 00:10:19,225
+And here is the glaring hole in what I have described so far.
+
+111
+00:10:19,225 --> 00:10:23,125
+Attention computes a weighted average over positions.
+
+112
+00:10:23,125 --> 00:10:26,100
+An average does not care about order.
+
+113
+00:10:26,100 --> 00:10:30,375
+So take the sequence A, C, D, E and the sequence E, D, C, A.
+
+114
+00:10:30,375 --> 00:10:33,275
+Run pure self-attention on both.
+
+115
+00:10:33,275 --> 00:10:37,950
+You get the same set of output vectors, just in a different arrangement.
+
+116
+00:10:37,950 --> 00:10:40,800
+The mechanism is blind to order.
+
+117
+00:10:40,800 --> 00:10:43,700
+For a protein that is catastrophic.
+
+118
+00:10:43,700 --> 00:10:45,925
+Order is the sequence.
+
+119
+00:10:45,925 --> 00:10:55,700
+A signal peptide at the N-terminus and the same residues at the C-terminus are completely different objects, which is the problem this whole session started from.
+
+120
+00:10:55,700 --> 00:11:06,975
+The fix is to put the position information into the input: each position's vector gets a position encoding added to it, so that the model can tell position three from position three hundred.
+
+121
+00:11:06,975 --> 00:11:16,300
+There are several schemes, some fixed and some learned, and the details are less important than knowing the problem exists and that something must be done about it.
+
+122
+00:11:16,300 --> 00:11:22,275
+I like this slide because it shows that attention on its own is not a complete architecture.
+
+123
+00:11:22,275 --> 00:11:28,250
+It is a very good mechanism with a specific blind spot, which has to be patched deliberately.
+
+124
+00:11:28,850 --> 00:11:36,725
+The Transformer is self-attention plus four additions, and here is the pleasing part: you already know three of them from this course.
+
+125
+00:11:36,725 --> 00:11:38,650
+Multiple heads.
+
+126
+00:11:38,650 --> 00:11:47,375
+Instead of one attention computation, run several in parallel with different learned queries, keys and values, and concatenate the results.
+
+127
+00:11:47,375 --> 00:11:51,575
+Different heads can attend to different kinds of relationship at once.
+
+128
+00:11:51,575 --> 00:11:55,675
+A feed-forward network applied to each position separately.
+
+129
+00:11:55,675 --> 00:12:00,900
+That is Session seven's multilayer perceptron, sitting inside every block.
+
+130
+00:12:00,900 --> 00:12:10,150
+The division of labour is worth remembering: attention moves information between positions, and the feed-forward network processes it within a position.
+
+131
+00:12:10,150 --> 00:12:13,825
+Residual connections and layer normalisation.
+
+132
+00:12:13,825 --> 00:12:25,225
+The residual connection is Session ten's ResNet, and it is here for exactly the same reason: without a path for the gradient that skips the block, you cannot train dozens of blocks stacked up.
+
+133
+00:12:25,225 --> 00:12:30,750
+Layer normalisation re-centres the activations so that the scale does not drift.
+
+134
+00:12:30,750 --> 00:12:34,125
+And position encoding, from the previous slide.
+
+135
+00:12:34,125 --> 00:12:37,300
+So the Transformer is not one invention.
+
+136
+00:12:37,300 --> 00:12:45,250
+It is attention, plus Session seven's MLP, plus Session ten's residual connections, plus a fix for the ordering problem.
+
+137
+00:12:45,250 --> 00:12:48,950
+Which is why it is worth having done this course in order.
+
+138
+00:12:48,950 --> 00:12:59,500
+One technical note: many newer models, ESM-2 among them, apply the layer normalisation before each sub-layer rather than after, which trains more stably at depth.
+
+139
+00:13:00,100 --> 00:13:04,925
+Let me give you the actual sizes, because scale is the whole story of this field.
+
+140
+00:13:04,925 --> 00:13:17,625
+The ESM-2 model used in the notebook: twelve blocks stacked on top of each other, twenty attention heads, four hundred and eighty numbers representing each residue, and thirty-three and a half million weights.
+
+141
+00:13:17,625 --> 00:13:25,725
+Each block is identical in form: attention, then the per-position feed-forward network, with residual connections around both.
+
+142
+00:13:25,725 --> 00:13:35,400
+One vector per residue goes in, one vector per residue comes out, and the vectors get progressively more informed about their context as they pass up the stack.
+
+143
+00:13:35,400 --> 00:13:37,600
+That is the small one.
+
+144
+00:13:37,600 --> 00:13:42,500
+The largest ESM-2 has forty-eight blocks and fifteen billion weights.
+
+145
+00:13:42,500 --> 00:13:45,825
+And keep in mind what is being computed here.
+
+146
+00:13:45,825 --> 00:13:49,700
+The output is not a prediction of anything biological.
+
+147
+00:13:49,700 --> 00:13:52,375
+It is a vector per residue.
+
+148
+00:13:52,375 --> 00:13:57,950
+The usefulness of those vectors to other tasks is the subject of the rest of the session.
+
+149
+00:13:58,550 --> 00:14:04,125
+A clarifying slide, because these two names are used as though they were two different fields.
+
+150
+00:14:04,125 --> 00:14:10,275
+The architectural difference between a GPT model and a BERT model is, essentially, one mask.
+
+151
+00:14:10,275 --> 00:14:18,550
+A GPT-style decoder masks the future: when computing position i, the attention is only allowed to look at positions up to i.
+
+152
+00:14:18,550 --> 00:14:26,850
+That restriction is what lets it generate, because generation means producing position i when the future genuinely does not exist yet.
+
+153
+00:14:26,850 --> 00:14:33,750
+A BERT-style encoder lets every position attend to every other, and learns by filling in masked tokens.
+
+154
+00:14:33,750 --> 00:14:40,600
+It cannot generate in the straightforward way, and it is better suited to understanding a sequence you hand it whole.
+
+155
+00:14:40,600 --> 00:14:43,375
+ESM-2 is of this kind.
+
+156
+00:14:43,375 --> 00:14:50,225
+And notice, for the third time this session, that this is the forward versus bidirectional trade from Block one.
+
+157
+00:14:50,225 --> 00:14:55,325
+Forward LSTM and GPT: can generate, cannot see ahead.
+
+158
+00:14:55,325 --> 00:15:01,125
+Bidirectional LSTM and BERT: can see everything, cannot generate.
+
+159
+00:15:01,125 --> 00:15:08,300
+For annotating a protein you already have, which is most of what we do in this course, you want the bidirectional kind.
+
+160
+00:15:08,900 --> 00:15:17,000
+A short history, because the line from language to biology is more direct than people assume, and parts of it run through this field.
+
+161
+00:15:17,000 --> 00:15:28,600
+Attention was first invented as an addition to recurrent translation models: the decoder was allowed to look back at the encoder's states rather than squeezing a whole sentence into one vector.
+
+162
+00:15:28,600 --> 00:15:40,725
+Then the Transformer paper threw away the recurrence and kept only the attention, which is what made processing all positions in parallel possible, which is what made training on enormous corpora practical.
+
+163
+00:15:40,725 --> 00:15:43,750
+And a historical detail that I enjoy.
+
+164
+00:15:43,750 --> 00:15:52,975
+Before SignalP existed, the group behind it used a network that erased the central residue of a window and predicted it from the surrounding residues.
+
+165
+00:15:52,975 --> 00:16:03,000
+Nielsen and colleagues point out in a recent retrospective that this is, presumably, the first machine learning language model in biological sequence analysis.
+
+166
+00:16:03,000 --> 00:16:07,950
+Masked language modelling, in the early nineteen nineties, in our own field.
+
+167
+00:16:07,950 --> 00:16:10,525
+Then two results that mattered.
+
+168
+00:16:10,525 --> 00:16:20,275
+Rao and colleagues found that the attention maps of protein language models contain contact information, although the models were never trained on any structure.
+
+169
+00:16:20,275 --> 00:16:29,575
+And the largest ESM-2 models turned out to predict three-dimensional structure directly, which is ESMFold, and which is Session twelve.
+
+170
+00:16:30,175 --> 00:16:34,325
+So: does a protein language model actually know any biology?
+
+171
+00:16:34,325 --> 00:16:36,650
+Here is a direct test.
+
+172
+00:16:36,650 --> 00:16:42,525
+Take ESM-2 and ask it to fill in masked positions, and look at what it proposes.
+
+173
+00:16:42,525 --> 00:16:49,575
+In the hydrophobic h-region of a signal peptide, the model gives leucine a probability of nought point four one.
+
+174
+00:16:49,575 --> 00:16:55,700
+Leucine is the archetypal h-region residue, and the model is strongly confident about it.
+
+175
+00:16:55,700 --> 00:17:01,675
+Now do the same in a cytoplasmic protein: no residue gets above nought point one one.
+
+176
+00:17:01,675 --> 00:17:09,925
+The model is appropriately uncertain, because in a generic cytoplasmic context there is far less constraint on which residue should be there.
+
+177
+00:17:09,925 --> 00:17:17,825
+So the model has learned that a particular kind of region is strongly constrained to be hydrophobic, and that other contexts are not.
+
+178
+00:17:17,825 --> 00:17:21,100
+And nobody told it about signal peptides.
+
+179
+00:17:21,100 --> 00:17:26,975
+There is no label anywhere in its training; it saw sequences and was asked to fill in blanks.
+
+180
+00:17:26,975 --> 00:17:37,300
+Which is the same discovery as Session ten's filter finding the hydrophobic core, arrived at from a completely different direction, and with no supervision at all this time.
+
+181
+00:17:37,900 --> 00:17:43,900
+Here is what I think is the single most important idea in this block, so I will say it slowly.
+
+182
+00:17:43,900 --> 00:17:50,375
+With one-hot encoding, every leucine in every protein is represented by the identical vector.
+
+183
+00:17:50,375 --> 00:17:52,725
+Leucine is leucine.
+
+184
+00:17:52,725 --> 00:17:58,675
+The representation carries no information about where that leucine is or what surrounds it.
+
+185
+00:17:58,675 --> 00:18:04,175
+With a protein language model, each residue's vector is computed from its surroundings.
+
+186
+00:18:04,175 --> 00:18:13,700
+A leucine in the middle of a signal peptide and a leucine in a cytoplasmic loop get different vectors, because the attention stack mixed in different neighbours.
+
+187
+00:18:13,700 --> 00:18:18,825
+That is called a contextual embedding, and it is the thing that changed this field.
+
+188
+00:18:18,825 --> 00:18:22,925
+Think about what it does to the problem we have been working on all session.
+
+189
+00:18:22,925 --> 00:18:30,025
+Session ten's convolution had to detect the hydrophobic pattern and then, because of pooling, lost where it was.
+
+190
+00:18:30,025 --> 00:18:37,650
+A contextual embedding has the context baked into the representation of each position before any classifier sees it.
+
+191
+00:18:37,650 --> 00:18:45,150
+You are no longer asking a classifier to work out the context; you are handing it a representation that already encodes it.
+
+192
+00:18:45,150 --> 00:18:56,625
+And you have met this idea once before, in a different guise: Foldseek's 3Di alphabet in Session six, which encoded each residue by its structural environment rather than its identity.
+
+193
+00:18:56,625 --> 00:18:59,300
+Same principle, learned differently.
+
+194
+00:18:59,900 --> 00:19:04,150
+And here is that claim, measured, which is the kind of thing I like.
+
+195
+00:19:04,150 --> 00:19:13,450
+Take pairs of leucines and measure the cosine similarity of their vectors, which is Session one's dot product normalised, running from minus one to one.
+
+196
+00:19:13,450 --> 00:19:19,200
+With one-hot encoding, any two leucines have a cosine similarity of exactly one.
+
+197
+00:19:19,200 --> 00:19:21,425
+They are the same vector.
+
+198
+00:19:21,425 --> 00:19:23,675
+There is nothing to measure.
+
+199
+00:19:23,675 --> 00:19:31,525
+With ESM-2: two leucines that are both inside signal peptides have a similarity of nought point seven four five.
+
+200
+00:19:31,525 --> 00:19:37,375
+A signal-peptide leucine against a cytoplasmic leucine: nought point six three three.
+
+201
+00:19:37,375 --> 00:19:40,450
+So the representation knows the difference.
+
+202
+00:19:40,450 --> 00:19:46,725
+Leucines in similar contexts have more similar vectors than leucines in different contexts.
+
+203
+00:19:46,725 --> 00:19:52,025
+And a third comparison that is more interesting still, because it is the hard case.
+
+204
+00:19:52,025 --> 00:19:57,600
+Two leucines in transmembrane helices: nought point seven four two with each other.
+
+205
+00:19:57,600 --> 00:20:03,275
+A transmembrane leucine against a signal-peptide leucine: nought point six eight two.
+
+206
+00:20:03,275 --> 00:20:05,550
+Look at that last number.
+
+207
+00:20:05,550 --> 00:20:15,525
+Transmembrane and signal-peptide leucines are more similar to each other, nought point six eight, than signal-peptide and cytoplasmic leucines are, nought point six three.
+
+208
+00:20:15,525 --> 00:20:22,075
+Which is biologically right: both are hydrophobic stretches, and they are genuinely similar environments.
+
+209
+00:20:22,075 --> 00:20:28,225
+But they are still distinguished, which is exactly the distinction our Session ten network could not make.
+
+210
+00:20:28,225 --> 00:20:36,225
+This is what a classifier on top of a protein language model gets to work with, and it is why Block three's results come out as they do.
+
+211
+00:20:36,825 --> 00:20:42,350
+The general recipe, which by now you have met three times in this course under different names.
+
+212
+00:20:42,350 --> 00:20:47,525
+Pretrain one large model, once, on an enormous amount of unlabelled data.
+
+213
+00:20:47,525 --> 00:20:58,175
+Then reuse it for many different tasks, each with its own small labelled dataset: either by freezing it and training a small classifier on its outputs, or by fine-tuning it.
+
+214
+00:20:58,175 --> 00:21:11,800
+In Session ten this was transfer learning: a frozen ImageNet ResNet, and DINOv2 trained on a hundred and forty-two million unlabelled images, both beating a network trained from scratch on a few hundred tissue tiles.
+
+215
+00:21:11,800 --> 00:21:14,875
+This is that recipe, for sequences.
+
+216
+00:21:14,875 --> 00:21:17,275
+Two things to keep hold of.
+
+217
+00:21:17,275 --> 00:21:24,925
+It helps most exactly when labelled data are scarce, which is the common case in biology, and which Block three measures.
+
+218
+00:21:24,925 --> 00:21:28,275
+And it does not remove the need for an honest split.
+
+219
+00:21:28,275 --> 00:21:42,600
+A pretrained model makes it harder to reason about leakage, not easier, as Session eight's closing question pointed out: proving that a model trained on all of UniProt never saw your test protein is essentially impossible from outside.
+
+220
+00:21:42,600 --> 00:21:48,450
+It never saw its label, which is the thing that matters, but be careful about what you claim.
+

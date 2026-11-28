@@ -1,0 +1,1150 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.400
+Block two.
+
+2
+00:00:01.400 --> 00:00:04.875
+Two questions, and they turn out to be the same question.
+
+3
+00:00:04.875 --> 00:00:10.925
+Who vouches for each claim in a record — and once you know that, how do you actually get the data out.
+
+4
+00:00:11.525 --> 00:00:17.000
+Here is the distinction this whole block rests on, and it is subtler than it first appears.
+
+5
+00:00:17.000 --> 00:00:22.275
+These four words describe *sources of a claim*, not kinds of record.
+
+6
+00:00:22.275 --> 00:00:26.300
+That matters, because one record routinely mixes them.
+
+7
+00:00:26.300 --> 00:00:34.325
+A single Swiss-Prot entry contains curated statements, experimental observations and predicted features on the same page.
+
+8
+00:00:34.325 --> 00:00:38.925
+A PDB entry is both submitted and experimental at once.
+
+9
+00:00:38.925 --> 00:00:41.250
+Taking them one at a time.
+
+10
+00:00:41.250 --> 00:00:44.900
+Submitted means INSDC as deposited.
+
+11
+00:00:44.900 --> 00:00:48.350
+Somebody sent this in, and it is stored as sent.
+
+12
+00:00:48.350 --> 00:00:55.875
+Quality varies enormously, and there is a great deal of redundancy, because nothing is removed when something better arrives.
+
+13
+00:00:55.875 --> 00:01:01.850
+Predicted means a program inferred it, from a genome or from similarity to something else.
+
+14
+00:01:01.850 --> 00:01:07.350
+Curated means staff read the evidence, weighed it, and merged records accordingly.
+
+15
+00:01:07.350 --> 00:01:12.650
+That is expensive, which is why there is so much less of it than of the alternatives.
+
+16
+00:01:12.650 --> 00:01:15.725
+Experimental means somebody measured it.
+
+17
+00:01:15.725 --> 00:01:21.450
+The summary sentence: databases differ less in what they store than in who vouches for it.
+
+18
+00:01:21.450 --> 00:01:26.450
+When you open an unfamiliar database, that is the question to ask first.
+
+19
+00:01:26.450 --> 00:01:33.300
+A word about why curation is rarer than you might expect, since it is obviously the most reliable of the four.
+
+20
+00:01:33.300 --> 00:01:38.275
+Curation is a person reading the literature and deciding what it supports.
+
+21
+00:01:38.275 --> 00:01:46.325
+That takes an expert an appreciable amount of time per entry, and the number of experts does not grow when the number of sequences does.
+
+22
+00:01:46.325 --> 00:01:53.150
+Swiss-Prot has been curated continuously since nineteen eighty-six and holds a few hundred thousand entries.
+
+23
+00:01:53.150 --> 00:01:57.525
+In the same period, sequencing has produced hundreds of millions.
+
+24
+00:01:57.525 --> 00:02:02.675
+So the fraction of our data that anybody has read is falling, and will keep falling.
+
+25
+00:02:02.675 --> 00:02:06.775
+That is not a criticism of anyone; it is arithmetic.
+
+26
+00:02:06.775 --> 00:02:14.550
+It does mean that "somebody has checked this" is an increasingly strong claim about a record, and worth noticing when it is true.
+
+27
+00:02:15.150 --> 00:02:17.475
+Four claims on the slide.
+
+28
+00:02:17.475 --> 00:02:21.650
+For each one, decide which of the four sources stands behind it.
+
+29
+00:02:21.650 --> 00:02:25.900
+The sequence of that predicted protein record: predicted.
+
+30
+00:02:25.900 --> 00:02:29.500
+And the record says so — MODEL REFSEQ.
+
+31
+00:02:29.500 --> 00:02:35.225
+The atom positions in two H H B: experimental, from X-ray diffraction.
+
+32
+00:02:35.225 --> 00:02:40.625
+But also submitted, because the depositors sent in the coordinates they refined.
+
+33
+00:02:40.625 --> 00:02:43.325
+Both labels are correct at once.
+
+34
+00:02:43.325 --> 00:02:48.125
+The function text in the Swiss-Prot entry for beta-globin: curated.
+
+35
+00:02:48.125 --> 00:02:53.825
+A person read the literature and wrote that sentence, and there is a citation attached to it.
+
+36
+00:02:53.825 --> 00:02:58.625
+A sequence as deposited in ENA: submitted, and nothing more.
+
+37
+00:02:58.625 --> 00:03:02.500
+Nobody has vouched for it beyond the person who sent it.
+
+38
+00:03:02.500 --> 00:03:06.875
+The second one is the interesting case, and I want to underline it.
+
+39
+00:03:06.875 --> 00:03:11.450
+A record being experimental does not stop it being submitted.
+
+40
+00:03:11.450 --> 00:03:16.275
+These categories overlap, and a claim can have more than one kind of backing.
+
+41
+00:03:16.275 --> 00:03:24.050
+Asking "which one is it?" is the wrong question; asking "what is behind this, and how much does that support it?" is the right one.
+
+42
+00:03:24.650 --> 00:03:31.425
+UniProt's knowledgebase has two sections, and the difference between them matters every single time you use it.
+
+43
+00:03:31.425 --> 00:03:34.125
+Swiss-Prot is the reviewed section.
+
+44
+00:03:34.125 --> 00:03:40.900
+Curators check the function, the domains and the literature, and there is exactly one entry per protein.
+
+45
+00:03:40.900 --> 00:03:45.025
+If two submissions describe the same protein, they are merged.
+
+46
+00:03:45.025 --> 00:03:48.200
+TrEMBL is the unreviewed section.
+
+47
+00:03:48.200 --> 00:03:55.025
+Entries are annotated automatically, and most of them are translations of predicted coding sequences.
+
+48
+00:03:55.025 --> 00:03:57.225
+Nobody has read them.
+
+49
+00:03:57.225 --> 00:04:02.500
+One thing people consistently get wrong: these are not a subset and a superset.
+
+50
+00:04:02.500 --> 00:04:06.075
+An entry sits in one or the other, never both.
+
+51
+00:04:06.075 --> 00:04:10.675
+When a TrEMBL entry is reviewed, it *moves* into Swiss-Prot.
+
+52
+00:04:10.675 --> 00:04:13.825
+And the sizes are not remotely comparable.
+
+53
+00:04:13.825 --> 00:04:19.450
+Reviewed entries number in the hundreds of thousands; unreviewed in the hundreds of millions.
+
+54
+00:04:19.450 --> 00:04:29.375
+That ratio has only ever moved in one direction since sequencing became cheap, and it will keep moving, because curation is done by people and sequencing is not.
+
+55
+00:04:29.375 --> 00:04:35.025
+So when somebody says "it is in UniProt", the useful follow-up question is: which part?
+
+56
+00:04:35.625 --> 00:04:46.850
+UniProt also grades how confident it is that the protein exists at all — which is a question most people never think to ask, and which has a surprising number of interesting answers.
+
+57
+00:04:46.850 --> 00:04:50.500
+Every entry carries a protein existence level.
+
+58
+00:04:50.500 --> 00:04:59.075
+Level one means protein-level evidence: somebody has detected the protein itself, by mass spectrometry or antibody or structure.
+
+59
+00:04:59.075 --> 00:05:05.000
+Level two means transcript-level evidence — the RNA was seen, the protein inferred.
+
+60
+00:05:05.000 --> 00:05:08.125
+Level three is inferred from homology.
+
+61
+00:05:08.125 --> 00:05:10.675
+Level four is predicted.
+
+62
+00:05:10.675 --> 00:05:13.275
+Level five is uncertain.
+
+63
+00:05:13.275 --> 00:05:21.425
+Beta-globin is level one, as you would hope for a protein that has been studied since the nineteen-fifties and crystallised hundreds of times.
+
+64
+00:05:21.425 --> 00:05:30.875
+But for a protein from a newly sequenced genome, the level may well be four, and then the word "protein" in that record is doing a lot of optimistic work.
+
+65
+00:05:30.875 --> 00:05:35.825
+It means: a gene-finding program thinks there is an open reading frame here.
+
+66
+00:05:35.825 --> 00:05:38.325
+Nobody has seen the product.
+
+67
+00:05:38.325 --> 00:05:41.075
+Why does this matter in practice?
+
+68
+00:05:41.075 --> 00:05:44.850
+Because the existence level is a filter you can use.
+
+69
+00:05:44.850 --> 00:05:56.525
+If you are building a reference set of proteins — to train something, to count something, to compare organisms — including level four and five entries means including things that may not exist.
+
+70
+00:05:56.525 --> 00:05:59.200
+For some questions that is fine.
+
+71
+00:05:59.200 --> 00:06:09.650
+For others it will systematically inflate your numbers, in a way that correlates with how well studied the organism is, which is exactly the kind of bias that is hard to see afterwards.
+
+72
+00:06:09.650 --> 00:06:12.525
+UniProt lets you filter on it.
+
+73
+00:06:12.525 --> 00:06:15.850
+Most people never do, and most people should.
+
+74
+00:06:16.450 --> 00:06:20.350
+If you have a protein and one question about it, start here.
+
+75
+00:06:20.350 --> 00:06:39.250
+The Swiss-Prot entry for beta-globin — accession P six eight eight seven one — gives you the function, the disease variants including sickle-cell anaemia, the post-translational modifications, the sequence features, and links out to essentially everything else: the gene, the transcripts, the structures, the families, the interactions.
+
+76
+00:06:39.250 --> 00:06:46.525
+That makes it the best single entry point for a protein-level question, and it is where I would start nine times out of ten.
+
+77
+00:06:46.525 --> 00:06:49.325
+One component we have not mentioned.
+
+78
+00:06:49.325 --> 00:06:58.500
+UniProt has a third part, UniParc, which stores every unique protein sequence exactly once, under an identifier that is never reused.
+
+79
+00:06:58.500 --> 00:07:01.025
+It is not somewhere you browse.
+
+80
+00:07:01.025 --> 00:07:10.275
+It is how you recognise that a record in one database and a record in another hold literally the same sequence, even when neither of them cites the other.
+
+81
+00:07:10.275 --> 00:07:18.200
+One more feature worth knowing about, because it saves an enormous amount of time: the evidence attached to individual statements.
+
+82
+00:07:18.200 --> 00:07:22.775
+A Swiss-Prot entry does not simply assert that a protein does something.
+
+83
+00:07:22.775 --> 00:07:30.950
+Beside each annotation there is a note of where that came from — a publication, an experiment, a similarity, an automatic rule.
+
+84
+00:07:30.950 --> 00:07:33.475
+You can click through to the paper.
+
+85
+00:07:33.475 --> 00:07:38.300
+So when you need to cite a protein's function, you do not cite the database.
+
+86
+00:07:38.300 --> 00:07:44.625
+You follow the evidence to the paper and cite that, having checked that it says what the annotation claims.
+
+87
+00:07:44.625 --> 00:07:51.250
+That is the difference between using a database and quoting it, and it is the habit this whole block is aiming at.
+
+88
+00:07:51.850 --> 00:07:57.200
+Protein families are hierarchical, and InterPro is where you see the hierarchy.
+
+89
+00:07:57.200 --> 00:08:06.275
+For beta-globin there are five nested entries, running from the globin superfamily at the top down to the beta-type globins specifically at the bottom.
+
+90
+00:08:06.275 --> 00:08:15.075
+Which level you want depends entirely on your question — "is this a globin?" and "is this a beta-globin?" are different questions with different answers.
+
+91
+00:08:15.075 --> 00:08:27.225
+The signatures come from about a dozen member databases, and InterPro's job is to reconcile them: where several member databases describe the same family, InterPro merges them into one entry.
+
+92
+00:08:27.225 --> 00:08:36.100
+Most of those signatures are profile hidden Markov models, which is Session five's subject, so you will understand what is underneath them in two weeks.
+
+93
+00:08:36.100 --> 00:08:40.775
+A piece of recent history worth knowing, because old links are everywhere.
+
+94
+00:08:40.775 --> 00:08:46.250
+Pfam's own website was retired in twenty twenty-three and merged into InterPro.
+
+95
+00:08:46.250 --> 00:08:49.300
+If you have a bookmark, it now sends you here.
+
+96
+00:08:49.300 --> 00:09:02.200
+And for non-coding RNA, Rfam plays the equivalent role, using covariance models — which score base pairing together with the sequence, because for RNA the structure is often more conserved than the bases.
+
+97
+00:09:02.200 --> 00:09:06.150
+Beta-globin has no Rfam entry, being a protein.
+
+98
+00:09:06.150 --> 00:09:13.350
+Rfam's transfer RNA family is R F zero zero zero zero five, if you want to see what one looks like.
+
+99
+00:09:13.950 --> 00:09:18.650
+A structure, and a number that describes the experiment rather than the model.
+
+100
+00:09:18.650 --> 00:09:27.900
+Two H H B is human deoxyhaemoglobin, determined by X-ray diffraction, at a resolution of one point seven four ångström.
+
+101
+00:09:27.900 --> 00:09:30.850
+Smaller numbers mean finer detail.
+
+102
+00:09:30.850 --> 00:09:35.625
+Now, resolution is widely misunderstood, so let me be precise.
+
+103
+00:09:35.625 --> 00:09:42.225
+It describes the *data*: how much detail the diffraction measurements could resolve.
+
+104
+00:09:42.225 --> 00:09:47.800
+It does not describe the correctness of the atomic model that was built into those data.
+
+105
+00:09:47.800 --> 00:10:02.675
+A model at one point seven four ångström is built on good data, and it can still have errors in it — particularly in flexible regions, in side chains at the surface, and in anything the crystallographer had to interpret rather than read off.
+
+106
+00:10:02.675 --> 00:10:07.075
+So resolution tells you what was possible, not what was achieved.
+
+107
+00:10:07.075 --> 00:10:13.850
+Beta-globin appears in hundreds of PDB entries, at various resolutions and in various states.
+
+108
+00:10:13.850 --> 00:10:23.075
+Session six treats coordinates like these as data to be analysed, which is the right frame of mind: they are measurements with uncertainty, not facts.
+
+109
+00:10:23.075 --> 00:10:28.625
+Two more things about a PDB entry that are easy to miss and change how you read it.
+
+110
+00:10:28.625 --> 00:10:35.275
+The first is that what is deposited is a *model* fitted to data, plus the data themselves.
+
+111
+00:10:35.275 --> 00:10:38.200
+The coordinates are an interpretation.
+
+112
+00:10:38.200 --> 00:10:44.475
+For most of a well-resolved structure that interpretation is not in doubt; at the edges it can be.
+
+113
+00:10:44.475 --> 00:10:46.850
+The second is the crystal.
+
+114
+00:10:46.850 --> 00:10:56.725
+A protein in a crystal is at high concentration, often at low temperature, frequently with additives that helped it crystallise, and packed against copies of itself.
+
+115
+00:10:56.725 --> 00:10:59.650
+Most of the time this does not matter.
+
+116
+00:10:59.650 --> 00:11:07.725
+Occasionally it does — a loop is held in place by a neighbouring molecule, or a conformation is selected that is rare in solution.
+
+117
+00:11:07.725 --> 00:11:17.450
+So a structure is a snapshot of one state under one set of conditions, which is exactly the point Session six returns to with haemoglobin's T and R forms.
+
+118
+00:11:18.050 --> 00:11:22.225
+And here is the same protein, predicted rather than measured.
+
+119
+00:11:22.225 --> 00:11:30.900
+The AlphaFold database entry carries a confidence score called pLDDT, given per residue on a scale from zero to a hundred.
+
+120
+00:11:30.900 --> 00:11:36.100
+It is the model's own estimate of how right it is about each part of the structure.
+
+121
+00:11:36.100 --> 00:11:41.850
+The bands are worth memorising, because you will use them constantly from Session twelve onwards.
+
+122
+00:11:41.850 --> 00:11:46.375
+Above ninety, the model is accurate down to the side-chain positions.
+
+123
+00:11:46.375 --> 00:11:50.925
+Above seventy, the backbone is usually right even if details are not.
+
+124
+00:11:50.925 --> 00:12:01.100
+Below fifty, confidence is very low — and one common reason for that is intrinsic disorder, where the protein may have no single structure for the model to be right about.
+
+125
+00:12:01.100 --> 00:12:08.100
+A low pLDDT is sometimes a correct statement about biology rather than a failure of prediction.
+
+126
+00:12:08.100 --> 00:12:12.900
+AlphaFold DB covers essentially every protein in UniProt.
+
+127
+00:12:12.900 --> 00:12:17.250
+That is a sentence that would have been science fiction in twenty nineteen.
+
+128
+00:12:17.850 --> 00:12:22.800
+Both are numbers attached to a structure, and they mean entirely different things.
+
+129
+00:12:22.800 --> 00:12:28.200
+I labour this because the two get put side by side in tables, and they should not be.
+
+130
+00:12:28.200 --> 00:12:34.475
+Resolution is a property of experimental data — a statement about an instrument and a crystal.
+
+131
+00:12:34.475 --> 00:12:41.150
+pLDDT is a model's opinion of itself — a statement about a neural network's confidence.
+
+132
+00:12:41.150 --> 00:12:48.125
+They are not comparable, they are not convertible, and a structure with a good pLDDT has not been measured at all.
+
+133
+00:12:48.125 --> 00:12:56.525
+For beta-globin, with hundreds of experimental structures available, the predicted model adds very little; you would use the experiment.
+
+134
+00:12:56.525 --> 00:13:03.825
+AlphaFold DB matters most for the enormous number of proteins that have no structure at all, which is most of them.
+
+135
+00:13:03.825 --> 00:13:11.625
+There is a third number you will meet alongside these, and it is worth naming now so it does not confuse you later: the B-factor.
+
+136
+00:13:11.625 --> 00:13:18.675
+In an experimental structure it describes how much an atom moves, or how poorly it is pinned down by the data.
+
+137
+00:13:18.675 --> 00:13:25.400
+In an AlphaFold model, the field in the file that would hold the B-factor holds the pLDDT instead.
+
+138
+00:13:25.400 --> 00:13:32.250
+So the same column of the same file format means two unrelated things depending on where the file came from.
+
+139
+00:13:32.250 --> 00:13:39.125
+Software that averages them together will produce a number that means nothing at all, and such software exists.
+
+140
+00:13:39.125 --> 00:13:40.900
+Read the header.
+
+141
+00:13:40.900 --> 00:13:43.325
+The file says which it is.
+
+142
+00:13:43.925 --> 00:13:51.000
+Interaction databases differ in how direct their evidence is, and the range is wider than most people assume.
+
+143
+00:13:51.000 --> 00:14:00.350
+At the most direct end: a curated record of a physical interaction that somebody measured, by co-immunoprecipitation or two-hybrid or structure.
+
+144
+00:14:00.350 --> 00:14:12.925
+At the least direct end: an association inferred from indirect signals — the two proteins are co-expressed, or co-mentioned in the literature, or their genes sit next to each other in many bacterial genomes.
+
+145
+00:14:12.925 --> 00:14:18.725
+IntAct, part of the IMEx consortium, holds curated experimental interactions.
+
+146
+00:14:18.725 --> 00:14:28.625
+STRING answers a deliberately broader question — which proteins are functionally associated — by combining experimental and predicted evidence into a single score.
+
+147
+00:14:28.625 --> 00:14:37.850
+FunCoup, built here at Stockholm University, constructs a comparable network by a different route, and a later course in the programme covers it properly.
+
+148
+00:14:37.850 --> 00:14:40.475
+The thing to carry away is this.
+
+149
+00:14:40.475 --> 00:14:48.500
+A line between two proteins in a network diagram can mean somebody watched them bind, or it can mean they appear in the same papers.
+
+150
+00:14:48.500 --> 00:14:52.725
+Those are very different claims, and the picture looks identical.
+
+151
+00:14:52.725 --> 00:14:56.425
+Always check which you are looking at before you build on it.
+
+152
+00:14:57.025 --> 00:15:05.450
+A short slide to close the protein tour, and it is the same caution as the RNA expression slide one block ago, moved up a level.
+
+153
+00:15:05.450 --> 00:15:11.625
+Knowing a protein's sequence tells you nothing about how much of it is present, or where in the cell it is.
+
+154
+00:15:11.625 --> 00:15:13.625
+Those are measurements.
+
+155
+00:15:13.625 --> 00:15:23.400
+The Human Protein Atlas is where to look for them in human: tissues, cell lines, subcellular location, with microscopy images and abundance estimates.
+
+156
+00:15:23.400 --> 00:15:30.575
+The microscopy can show you which compartment a protein sits in, which is information no sequence record carries.
+
+157
+00:15:30.575 --> 00:15:34.175
+And keep RNA and protein measurements apart.
+
+158
+00:15:34.175 --> 00:15:43.050
+Translation and degradation both sit between the transcript and the protein, so RNA abundance and protein abundance can genuinely differ.
+
+159
+00:15:43.050 --> 00:15:49.900
+Comparing amounts also needs the method and the samples, not just two numbers that happen to be in the same units.
+
+160
+00:15:49.900 --> 00:15:55.875
+If somebody asks you "is this protein in blood", the sequence record does not answer that.
+
+161
+00:15:55.875 --> 00:16:01.000
+It is a perfectly reasonable question and it belongs somewhere else entirely.
+
+162
+00:16:01.600 --> 00:16:05.100
+Here is the whole thread of the lecture in one picture.
+
+163
+00:16:05.100 --> 00:16:13.775
+Each row is a different database's record of the same underlying biology — the gene, the transcript, the protein, the structure, the complex.
+
+164
+00:16:13.775 --> 00:16:19.550
+And each one is reached from the row above it by following a cross-reference, not by searching again.
+
+165
+00:16:19.550 --> 00:16:23.900
+That is the practical demonstration of the first of our two habits.
+
+166
+00:16:23.900 --> 00:16:26.500
+You type a name once, at the top.
+
+167
+00:16:26.500 --> 00:16:29.550
+Everything after that is navigation.
+
+168
+00:16:29.550 --> 00:16:38.725
+The notebook fetches every one of these records live, so what you see on the slide is what the databases say today, not what they said when the slide was made.
+
+169
+00:16:38.725 --> 00:16:44.075
+If something has changed since this was recorded, the notebook will show you the change.
+
+170
+00:16:44.075 --> 00:16:48.425
+The lab ends with a dossier of your own, for human myoglobin.
+
+171
+00:16:49.025 --> 00:16:53.500
+A practical point about searching that will save you a great deal of time.
+
+172
+00:16:53.500 --> 00:17:05.400
+An everything-at-once search — the single box on a database's front page — returns genome records, gene records, transcript records, protein records and literature, mixed together in one list.
+
+173
+00:17:05.400 --> 00:17:11.225
+You then have to sort them out by eye, and the categories are not always obvious from the titles.
+
+174
+00:17:11.225 --> 00:17:19.250
+The same words typed into NCBI Gene, or into UniProt specifically, give you a short list of exactly one kind of thing.
+
+175
+00:17:19.250 --> 00:17:25.475
+So the habit is: decide which biological level you want *before* you search, not after.
+
+176
+00:17:25.475 --> 00:17:29.600
+It turns a page of mixed results into a handful of candidates.
+
+177
+00:17:29.600 --> 00:17:34.350
+There is a second reason to narrow before you search, beyond saving time.
+
+178
+00:17:34.350 --> 00:17:39.200
+A specific collection lets you filter in ways the general search cannot.
+
+179
+00:17:39.200 --> 00:17:43.050
+In NCBI Gene you can restrict to an organism.
+
+180
+00:17:43.050 --> 00:17:46.650
+In UniProt you can restrict to reviewed entries.
+
+181
+00:17:46.650 --> 00:17:53.350
+Those filters do not exist on the front page, because the front page does not know what kind of thing you are looking for.
+
+182
+00:17:53.350 --> 00:17:56.650
+And a warning about the word "human" in a query.
+
+183
+00:17:56.650 --> 00:18:07.100
+Typing it does not filter by organism — it searches for the word, which appears in the descriptions of records from every organism that has ever been compared to a human one.
+
+184
+00:18:07.100 --> 00:18:09.250
+You will get zebrafish.
+
+185
+00:18:09.250 --> 00:18:11.825
+Use the organism filter.
+
+186
+00:18:12.425 --> 00:18:16.650
+And here is the version of all this that you can actually repeat.
+
+187
+00:18:16.650 --> 00:18:25.500
+NCBI's E-utilities, reached through Bio dot Entrez in Biopython; the UniProt REST API; the PDB REST API.
+
+188
+00:18:25.500 --> 00:18:32.675
+All three let you fetch records from a script, and the course notebook builds the entire beta-globin dossier that way.
+
+189
+00:18:32.675 --> 00:18:36.425
+Two advantages over clicking, and they are both large.
+
+190
+00:18:36.425 --> 00:18:39.225
+The first is reproducibility.
+
+191
+00:18:39.225 --> 00:18:42.350
+The script *is* the record of what you did.
+
+192
+00:18:42.350 --> 00:18:47.825
+There is no ambiguity about which record you fetched or when, because the code says so.
+
+193
+00:18:47.825 --> 00:18:49.900
+The second is scale.
+
+194
+00:18:49.900 --> 00:18:54.175
+The same four lines that fetch one protein fetch four hundred.
+
+195
+00:18:54.175 --> 00:19:03.250
+Clicking does not scale at all, and the moment your question involves more than a handful of records, the script is not the harder route — it is the easier one.
+
+196
+00:19:03.850 --> 00:19:06.125
+You have an identifier.
+
+197
+00:19:06.125 --> 00:19:11.575
+How you retrieve the record depends on what you intend to do with it, and there are three routes.
+
+198
+00:19:11.575 --> 00:19:19.250
+A record page is right when you want to read one entry — follow its evidence, see its cross-references, download its sequence.
+
+199
+00:19:19.250 --> 00:19:24.200
+The UniProt beta-globin page is the example we have been using all morning.
+
+200
+00:19:24.200 --> 00:19:31.575
+A command or a script is right when the retrieval has to be repeated, or when the result feeds straight into an analysis.
+
+201
+00:19:31.575 --> 00:19:39.850
+An application programming interface — an API — is the documentation that tells you how to ask and which formats you can have back.
+
+202
+00:19:39.850 --> 00:19:45.675
+And a genome browser is right when the question is where something lies, and what sits next to it.
+
+203
+00:19:45.675 --> 00:19:48.475
+All three reach the same records.
+
+204
+00:19:48.475 --> 00:19:55.675
+The browser is the one you have used least and the one the lab leans on hardest, so the rest of this block is spent there.
+
+205
+00:19:56.275 --> 00:20:05.525
+Here is the beta-globin locus in the UCSC Genome Browser, on GRCh38 — hg38 in UCSC's own naming.
+
+206
+00:20:05.525 --> 00:20:08.875
+Several things in this view are worth pointing out.
+
+207
+00:20:08.875 --> 00:20:15.425
+The ruler across the top gives the coordinates, and every track below it is drawn against that same ruler.
+
+208
+00:20:15.425 --> 00:20:24.325
+That is the whole idea of a browser: separate kinds of information, forced onto one coordinate system, so that you can see what lines up with what.
+
+209
+00:20:24.325 --> 00:20:27.725
+The transcripts appear as blocks joined by lines.
+
+210
+00:20:27.725 --> 00:20:31.175
+The blocks are exons and the lines are introns.
+
+211
+00:20:31.175 --> 00:20:37.250
+Where a block is thick, that is coding sequence; where it is thin, that is untranslated region.
+
+212
+00:20:37.250 --> 00:20:45.400
+And the small chevrons point left, because HBB is transcribed from the reverse strand — towards lower reference coordinates.
+
+213
+00:20:45.400 --> 00:20:51.825
+Three transcript annotations are stacked here: GENCODE, curated RefSeq, and MANE Select.
+
+214
+00:20:51.825 --> 00:20:58.625
+They are different annotation projects describing the same DNA, which is useful precisely when they disagree.
+
+215
+00:20:58.625 --> 00:21:02.500
+The thing I actually want you to notice is the title bar.
+
+216
+00:21:02.500 --> 00:21:08.750
+It carries the region and the assembly, which is exactly and completely what a retrieval log needs.
+
+217
+00:21:08.750 --> 00:21:14.125
+Copy that one line into your notes and somebody else can return to the identical view.
+
+218
+00:21:14.125 --> 00:21:15.825
+One warning.
+
+219
+00:21:15.825 --> 00:21:21.975
+What you can see depends on which tracks are switched on, how they are displayed, and what filters are applied.
+
+220
+00:21:21.975 --> 00:21:29.125
+If something you expected is not there, it may be hidden, it may be filtered out, or you may need to zoom in further.
+
+221
+00:21:29.125 --> 00:21:33.475
+Absence in a browser window is not absence from the database.
+
+222
+00:21:34.075 --> 00:21:37.975
+A colleague asks you for the sequence of human HBB.
+
+223
+00:21:37.975 --> 00:21:43.175
+This slide is the reason you should ask what they plan to do with it before you send anything.
+
+224
+00:21:43.175 --> 00:21:49.550
+Start from the reference transcript, N M underscore zero zero zero five one eight point five.
+
+225
+00:21:49.550 --> 00:21:53.300
+There are four different sequences you might reasonably mean.
+
+226
+00:21:53.300 --> 00:21:58.575
+The genomic span of that transcript is one thousand six hundred and eight bases.
+
+227
+00:21:58.575 --> 00:22:05.850
+That covers the exons and the introns between them, and it is what you need if the question concerns an intronic variant.
+
+228
+00:22:05.850 --> 00:22:09.850
+The spliced transcript is six hundred and twenty-eight bases.
+
+229
+00:22:09.850 --> 00:22:14.525
+The exons joined together, with both untranslated ends still on.
+
+230
+00:22:14.525 --> 00:22:17.750
+That is what you need to see which exons meet.
+
+231
+00:22:17.750 --> 00:22:25.650
+If the download is labelled cDNA, it is this sequence written with DNA letters — a T wherever the RNA has a U.
+
+232
+00:22:25.650 --> 00:22:31.750
+The coding sequence is four hundred and forty-four bases: start codon through stop codon.
+
+233
+00:22:31.750 --> 00:22:38.275
+The remaining one hundred and eighty-four bases of the spliced transcript are the untranslated regions.
+
+234
+00:22:38.275 --> 00:22:46.850
+And the protein, N P underscore zero zero zero five zero nine point one, is one hundred and forty-seven amino acids.
+
+235
+00:22:46.850 --> 00:22:52.050
+Now do that last piece of arithmetic, because it is the one that catches people.
+
+236
+00:22:52.050 --> 00:23:00.300
+Four hundred and forty-four divided by three is one hundred and forty-eight, and the protein is one hundred and forty-seven residues.
+
+237
+00:23:00.300 --> 00:23:03.250
+The missing triplet is the stop codon.
+
+238
+00:23:03.250 --> 00:23:07.975
+It is part of the coding sequence and it codes for no amino acid.
+
+239
+00:23:07.975 --> 00:23:10.625
+Four sequences, four lengths.
+
+240
+00:23:10.625 --> 00:23:20.250
+The FASTA header and the length together tell you which one you were actually sent — which is the cheapest check in this entire lecture, and it costs you one glance.
+
+241
+00:23:20.850 --> 00:23:23.450
+The view you saw is not fixed.
+
+242
+00:23:23.450 --> 00:23:27.650
+A browser is a set of answers waiting for you to choose the question.
+
+243
+00:23:27.650 --> 00:23:31.400
+Start by keeping what you need and hiding what you do not.
+
+244
+00:23:31.400 --> 00:23:37.900
+We wanted to see where the exons lie, so the curated RefSeq transcript stays and the rest goes.
+
+245
+00:23:37.900 --> 00:23:45.200
+Where a track offers both modes, dense squashes it into a single row and pack keeps the individual features labelled.
+
+246
+00:23:45.200 --> 00:23:48.350
+Then change the question and change the tracks.
+
+247
+00:23:48.350 --> 00:23:52.000
+Which parts of this region are conserved across species?
+
+248
+00:23:52.000 --> 00:23:59.775
+Stay at the same coordinates, add a conservation track, and compare the signal over the exons against the DNA around them.
+
+249
+00:23:59.775 --> 00:24:02.725
+Where was RNA actually detected?
+
+250
+00:24:02.725 --> 00:24:07.525
+That is an RNA sequencing coverage track, for a particular tissue.
+
+251
+00:24:07.525 --> 00:24:11.425
+Which DNA was accessible in a particular cell type?
+
+252
+00:24:11.425 --> 00:24:13.950
+That is a regulation track.
+
+253
+00:24:13.950 --> 00:24:19.300
+In every case the track description tells you which species, which tissue, which assay.
+
+254
+00:24:19.300 --> 00:24:25.375
+Read it, because "there is a signal here" means nothing until you know what was measured and in what.
+
+255
+00:24:25.375 --> 00:24:32.500
+UCSC groups these by type and gives you Track Search to find one by name; Ensembl has its Track panel.
+
+256
+00:24:32.500 --> 00:24:40.700
+And one caution for when you start treating two tracks as independent confirmation: tracks can draw on the same underlying dataset.
+
+257
+00:24:40.700 --> 00:24:44.625
+Agreement between them is then not evidence of anything.
+
+258
+00:24:45.225 --> 00:24:52.925
+Put ClinVar beside the curated RefSeq transcript and two variants show up in HBB, in quite different places.
+
+259
+00:24:52.925 --> 00:24:55.850
+The first falls in a coding exon.
+
+260
+00:24:55.850 --> 00:25:03.250
+In transcript coordinates it is c dot twenty A to T, and it replaces a glutamate with a valine in beta-globin.
+
+261
+00:25:03.250 --> 00:25:11.850
+The same change, described against the chromosome, is g dot five two two seven zero zero two T to A on GRCh38.
+
+262
+00:25:11.850 --> 00:25:14.350
+Look at those two descriptions.
+
+263
+00:25:14.350 --> 00:25:17.800
+One says A to T and the other says T to A.
+
+264
+00:25:17.800 --> 00:25:19.950
+That is not an error.
+
+265
+00:25:19.950 --> 00:25:27.375
+The c dot description follows the transcript, and the g dot description follows the forward strand of the chromosome reference.
+
+266
+00:25:27.375 --> 00:25:32.575
+HBB is on the reverse strand, so the two descriptions are complementary.
+
+267
+00:25:32.575 --> 00:25:38.125
+It is the same single change, written down twice, against two different references.
+
+268
+00:25:38.125 --> 00:25:42.750
+The second variant is c dot ninety-three minus twenty-one G to A.
+
+269
+00:25:42.750 --> 00:25:48.425
+The minus tells you it is intronic — twenty-one bases before coding base ninety-three.
+
+270
+00:25:48.425 --> 00:25:56.525
+It is not in the spliced transcript at all, which is exactly why your colleague needed the genomic span rather than the cDNA.
+
+271
+00:25:56.525 --> 00:26:01.800
+And a change inside an intron can still move where the cell splices the RNA.
+
+272
+00:26:01.800 --> 00:26:08.425
+From the position on screen, the ClinVar record takes you to the submissions and the publications behind it.
+
+273
+00:26:08.425 --> 00:26:15.150
+That is the hinge into block three: the browser can show you where a variant is, and it cannot tell you what it does.
+
+274
+00:26:15.150 --> 00:26:17.800
+Only an experiment does that.
+
+275
+00:26:18.400 --> 00:26:24.925
+Your colleague opens Ensembl instead, and finds HBB in the same region of chromosome eleven.
+
+276
+00:26:24.925 --> 00:26:28.300
+The controls look nothing like UCSC's.
+
+277
+00:26:28.300 --> 00:26:30.375
+That does not matter.
+
+278
+00:26:30.375 --> 00:26:37.250
+Assembly, coordinates and strand tell you whether you are in the same place, and those three travel between browsers.
+
+279
+00:26:37.250 --> 00:26:42.850
+What you also need, to compare two downloads, is whether the selected transcripts match.
+
+280
+00:26:42.850 --> 00:26:46.150
+The MANE Select label is what gives you that.
+
+281
+00:26:46.150 --> 00:27:04.000
+MANE is an agreement between NCBI and EMBL-EBI on one representative transcript per human gene, and here it ties Ensembl's E N S T zero zero zero zero zero three three five two nine five point four to RefSeq's N M underscore zero zero zero five one eight point five.
+
+282
+00:27:04.000 --> 00:27:08.700
+Matching exon coordinates, matching coding region, matching sequence.
+
+283
+00:27:08.700 --> 00:27:13.925
+So if your file and your colleague's file differ, you have somewhere specific to look.
+
+284
+00:27:13.925 --> 00:27:16.550
+One of you included introns.
+
+285
+00:27:16.550 --> 00:27:19.475
+One of you exported a wider region.
+
+286
+00:27:19.475 --> 00:27:22.375
+One of you took the other orientation.
+
+287
+00:27:22.375 --> 00:27:27.150
+Those are the three usual answers, and the retrieval log tells you which.
+

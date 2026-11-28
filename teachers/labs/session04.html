@@ -1,0 +1,55 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Session 4 Lab: Sequence Alignment</title><style>
+:root { --bg: #fff; --fg: #1f2933; --muted: #52606d; --card: #f4f6f9; --border: #d9e2ec; --accent: #2b6cb0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14181d; --fg: #e4e7eb; --muted: #9aa5b1; --card: #1f252c;
+  --border: #323f4b; --accent: #63a4ff; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 820px; margin: 0 auto; padding: 24px 16px 60px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; } .meta { color: var(--muted); font-size: 0.9rem; }
+.text { border-left: 4px solid var(--accent); padding: 4px 14px; margin: 26px 0 10px; }
+.text h2 { font-size: 1.15rem; margin: 6px 0; }
+.q { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin: 12px 0; }
+.qhead { color: var(--muted); font-size: 0.85rem; } .q ul { margin: 6px 0; } .q li p { margin: 0; }
+pre { overflow-x: auto; background: var(--card); padding: 8px; border-radius: 6px; } img { max-width: 100%; }
+a { color: var(--accent); }
+</style></head><body><main>
+<h1>Session 4 Lab: Sequence Alignment</h1>
+<p class='meta'>Preview without answers, from <code>labs/session04-manual-alignment.text2qti.md</code> (0eaf22d 2026-11-25). <a href='index.html'>All labs</a></p>
+<p><b>Lab notebook:</b> <a href='../../notebooks/session04-lab.ipynb' download>download session04-lab.ipynb</a> (the same link the students get) and open it in VS Code.</p>
+<p>Pairwise alignment, scoring choices, progressive alignment and conservation, in four steps. Ten questions, one point each; some are select-all-that-apply.</p>
+<div class='text'><h2>Lab instructions</h2><p>Download <a href="../../notebooks/session04-lab.ipynb">session04-lab.ipynb</a> and open it in VS Code or upload it to Google Colab. Run the setup cell and complete the four steps in order. Keep your matrix, alignments and parameter settings so you can explain how you obtained each result. Use the <a href="../../session04.html">Session 4 chapter</a> for the background.</p>
+<p>The live HMMER extension is optional. All assessed results use the supplied sequences, stated scoring settings and the included PF00042.29 alignment.</p>
+<p>Choose one answer unless it says <strong>Select all that apply</strong>. Incorrect selections reduce partial credit on those questions. See <a href="../../course-info.html#labs">Course Information &amp; Logistics</a> and the Canvas module for the pass threshold, deadlines and redo arrangements.</p></div>
+<div class='text'><h2>Step 1 — a global alignment by hand</h2><p>Use the real fragments seqA = HFGKE from human beta-globin (HBB, UniProt P68871, residues 118–122 in the UniProt sequence) and seqB = HGQE from human myoglobin (MB, P02144, residues 25–28). Put seqA on the rows and seqB on the columns. Use BLOSUM62 and a linear gap score of −4 for each gap position. Initialise S[0,0] = 0, S[i,0] = −4i and S[0,j] = −4j. The full matrix contains six rows and five columns including the empty-prefix borders. Use the notebook&rsquo;s BLOSUM62 table and check your own rows as you work. After traceback, calculate percent identity and percent similarity by hand. Divide each count by the total number of alignment columns, including gaps, and multiply by 100. For identity, count columns with two identical residues. For similarity in this lab, count columns with two residues whose BLOSUM62 substitution score is strictly positive. Gap columns contribute only to the denominator.</p></div>
+<div class='q'><div class='qhead'>Question 1 · number · 1 point</div><p>What is S[3,3], where seqA&rsquo;s third residue G and seqB&rsquo;s third residue Q label the cell?</p>
+</div>
+<div class='q'><div class='qhead'>Question 2 · number · 1 point</div><p>What is the score in the bottom-right cell S[5,4]?</p>
+</div>
+<div class='q'><div class='qhead'>Question 3 · choose one · 1 point</div><p>Which alignment and traceback move for seqA&rsquo;s F agree with the optimal global result? In each option, the upper string is seqA and the lower string is seqB. An up move decreases the row index and adds a gap to seqB.</p>
+<ul><li><p><code>HFGKE</code> / <code>HGQ-E</code>. F comes from a diagonal move.</p></li><li><p><code>HFGK-E</code> / <code>H--GQE</code>. F comes from an up move.</p></li><li><p><code>HFGKE</code> / <code>H-GQE</code>. F comes from an up move.</p></li><li><p><code>H-FGKE</code> / <code>HG--QE</code>. F comes from a left move.</p></li><li><p><code>HFGKE</code> / <code>H-GQE</code>. F comes from a left move.</p></li><li><p><code>HFGKE</code> / <code>-HGQE</code>. F comes from a diagonal move.</p></li></ul>
+</div>
+<div class='text'><h2>Step 2 — scoring and statistical interpretation</h2><p>In Q4, score the supplied alignment directly. For Q5, predict what will happen to the optimal score, percent identity and percent similarity when you change the linear gap score. Check your prediction in the notebook and compare it with your hand calculation. Q6 gives a complete shuffle experiment to interpret.</p></div>
+<div class='q'><div class='qhead'>Question 4 · number · 1 point</div><p>The two aligned strings are <code>VMMMVAH--FG</code> and <code>VM--VIHWHYG</code>. Score a match as +2 and a mismatch as −1. A contiguous gap run of length n contributes −4 + (n−1) × (−1), charged separately for each run in either sequence. What is the total alignment score?</p>
+</div>
+<div class='q'><div class='qhead'>Question 5 · choose one · 1 point</div><p>Keep the Step 1 sequences and BLOSUM62, and change the linear gap score from −4 to −8 per position. Using all alignment columns as the denominator and counting strictly positive BLOSUM62 residue pairs for similarity, which combination does the notebook produce?</p>
+<ul><li><p>Score 12, identity 75%, similarity 100%.</p></li><li><p>Score 16, identity 60%, similarity 80%.</p></li><li><p>Score 12, identity 60%, similarity 60%.</p></li><li><p>Score 12, identity 60%, similarity 80%.</p></li><li><p>Score 12, identity 80%, similarity 80%.</p></li><li><p>Score 8, identity 60%, similarity 80%.</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 6 · choose one · 1 point</div><p>A protein alignment scores 48. After shuffling one sequence 199 times and realigning with the same method and settings, 40 shuffled alignments score at least 48. Which interpretation follows?</p>
+<ul><li><p>A score at least this large occurs fairly often under this shuffle procedure, so the observed score gives limited evidence against this particular background.</p></li><li><p>The probability that the two proteins share ancestry is 159/199.</p></li><li><p>The E-value for a search of Swiss-Prot is exactly 40.</p></li><li><p>The alignment has 48% identity and 80% coverage.</p></li><li><p>Only shuffled scores strictly greater than 48 should count in the comparison.</p></li><li><p>Because the observed score exceeds most shuffled scores, it is significant at the 5% level under this shuffle procedure.</p></li></ul>
+</div>
+<div class='text'><h2>Step 3 — a progressive multiple sequence alignment</h2><p>Run the notebook on its three fixed 20-residue globin windows from HBA1, MB and HBB. Use BLOSUM62 and a linear gap score of −6, matching the notebook. The guide tree orders the merges. The small windows are selected teaching examples and may favour a different first pair from a tree inferred from full-length proteins.</p></div>
+<div class='q'><div class='qhead'>Question 7 · choose one · 1 point</div><p>Which statement agrees with the pairwise scores and explains what the first progressive merge establishes?</p>
+<ul><li><p>MB and HBB have the largest score, establishing that the genes are orthologs.</p></li><li><p>HBA1 and HBB have the largest score, establishing that they are the same gene.</p></li><li><p>HBA1 and MB have the largest score, so the procedure aligns these windows before adding HBB.</p></li><li><p>All pairs tie, so the procedure aligns the full-length proteins in alphabetical order.</p></li><li><p>HBA1 and MB have the largest score, so HBB is left out of the multiple alignment.</p></li><li><p>HBA1 and MB have the largest score, so the guide tree establishes that their full-length proteins are the closest evolutionary relatives.</p></li></ul>
+</div>
+<div class='text'><h2>Step 4 — entropy and a protein family logo</h2><p>Compute residue frequencies over non-gap residues. Q8 and Q9 concern three equally weighted residues with no gaps. For Q10, use the bundled Pfam Globin seed snapshot PF00042.29 containing 73 sequences and 141 alignment columns. Distinguish alignment-column indices, mature HBB numbering and the UniProt sequence numbering.</p></div>
+<div class='q'><div class='qhead'>Question 8 · number · 1 point</div><p>A column contains the residues L, L and V. Using H = −sum(p × log2(p)), what is its entropy in bits? Enter your answer to two decimal places.</p>
+</div>
+<div class='q'><div class='qhead'>Question 9 · choose one · 1 point</div><p>With only three equally weighted sequences and no gaps, what is the largest observed column entropy, and what is the theoretical maximum for a protein alphabet with 20 equally frequent residues? Give both values in bits.</p>
+<ul><li><p>0.92 and 2.00</p></li><li><p>1.58 and 4.32</p></li><li><p>3.00 and 20.00</p></li><li><p>4.32 and 4.32</p></li><li><p>1.00 and 4.32</p></li><li><p>1.58 and 1.58</p></li></ul>
+</div>
+<div class='q'><div class='qhead'>Question 10 · choose all that apply · 1 point</div><p>Which statements agree with the supplied PF00042.29 alignment and the notebook&rsquo;s HBB mapping? <strong>Select all that apply.</strong></p>
+<ul><li><p>Mature HBB Phe42 and His92 map to Phe43 and His93 in the full UniProt HBB sequence.</p></li><li><p>Alignment column 42 necessarily corresponds to residue 42 in every sequence.</p></li><li><p>The columns mapped to mature HBB Phe42 and His92 contain the same residue in all 73 sequences in this snapshot.</p></li><li><p>Conservation across this snapshot proves that every globin in nature has these residues.</p></li><li><p>In HBB, the proximal histidine His92 coordinates the haem iron.</p></li><li><p>The height of each letter in an information-content logo equals its frequency in bits regardless of the stack height.</p></li></ul>
+</div>
+<div class='text'><h2>Review, submit and give feedback</h2><p>Check your answers against your matrix, settings and notebook results, then submit the quiz. Complete the separate Session 4 Lab feedback survey in the Canvas module by the same deadline. Follow the course&rsquo;s published arrangements for the on-time bonus.</p></div>
+</main></body></html>
